@@ -12,7 +12,7 @@ ProjectionBestModel(Proj.name, Bin.trans = F, Filt.trans = F, method)
 
 \arguments{
   \item{Proj.name}{ The name of your projection dataset. Note that the Projection() function has therefore to have run on this particular data.
-   It is needed to load back the projections in probabilities from the 'proj' folder.}
+   It is needed to load back the projections in probabilities from the appropriate directory.}
   \item{Bin.trans}{ type True to have the projections also converted into binary values }
   \item{Filt.trans}{ type True to have the projections also converted into filtered values }
   \item{method}{ the evaluation method you want to use, can be 'Roc', 'Kappa', 'TSS' or 'all'. If 'all' is selected, then
@@ -26,11 +26,13 @@ ProjectionBestModel(Proj.name, Bin.trans = F, Filt.trans = F, method)
 
   No values are returned but objects are produced in the "proj" folder (see \code{\link{Models}} for details).
   Example of ProjBestModelByKappa (but all follow the same logic) : a matrix with a column per species
-  containing the predictions in probabilities using the Kappa scores to select the best model. The predictions
+  containing the projections in probabilities using the Kappa scores to select the best model. The projections
   can also be obtained in binary and filtered values (additionnal matrices are thus produced). 
   
 }
-\references{ }
+\references{ 
+Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and projecting potential future shifts under global change. Global Change Biology 9, 1353-1362.
+}
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ }
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{PredictionBestModel}}}
@@ -42,7 +44,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #This line will only run a few models
 Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T)
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
 
 PredictionBestModel(GLM=T, MDA=T, RF=T, method='all', Bin.trans = T, Filt.trans = T)
 

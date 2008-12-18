@@ -31,7 +31,7 @@ PercLoss, PercGain and Turnover are the relative percentages estimated as the fo
 - PercGain = 100 x G/(SR)
 - Turnover = 100 x (L+G)/(SR+G)
 
-Where SR is the current species richness, L the species lost and G those gained.
+Where SR is the current species richness, L the number of species lost and G those gained.
 
 - CurrentSR represents the current modelled species richness in the given pixel.
 - FutureSR0Disp represents the future modelled species richness assuming no migration of species

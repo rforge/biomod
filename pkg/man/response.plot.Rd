@@ -2,7 +2,7 @@
 \alias{response.plot}
 
 \title{ Analysis of the response curves of a model within Biomod}
-\description{ This function enables to plot the response curves of a model independently of the algorithm used for
+\description{ Adaptation of the Evalution Strip proposed by Elith et al.(2005). This function enables to plot the response curves of a model independently of the algorithm used for
 building the model. It therefore permits a direct comparisons of models built using different statistical approaches on the same data. 
   
 }
@@ -17,17 +17,19 @@ response.plot(mod, Sp)
 }
 \details{
   For building such response curves, n-1 variables are set to their median value and only the one
-  of interest is varying accross its whole range. The variations observed and the curve thus obtained show
-  the sensibility of the model to that specific variable. 
+  of interest is varying accross its whole range. The variations observed and the curve thus obtained shows
+  the sensibility of the model to that specific variable. This method doesn't account for interactions between variables.
 }
 \value{
-This is a plotting function, no value is returned.
 }
 
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
-\references{ }
-\seealso{ \code{\link{Models}},  }
+\references{ 
+Elith, J., Ferrier, S., Huettmann, F. & Leathwick, J. R. 2005 The evaluation strip: A new and robust method for plotting 
+predicted responses from species distribution models. Ecological Modelling 186, 280-289.
+}
+\seealso{ \code{\link{Models}}  }
 \examples{
 
 data(Sp.Env)

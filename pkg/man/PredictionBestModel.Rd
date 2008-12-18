@@ -1,7 +1,7 @@
 \name{PredictionBestModel}
 \alias{PredictionBestModel}
 
-\title{ Optimising the predictions using the evaluation scores }
+\title{ Optimising the predictions using the evaluation scores for BIOMOD}
 \description{
   Selects the best model per species within Biomod according to its predictive performance
   evaluated by Roc, Kappa or TSS.
@@ -35,7 +35,10 @@ PredictionBestModel(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA =
   containing the predictions in probabilities using the Kappa scores to select the best model. The predictions
   can also be obtained in binary and filtered values (additionnal matrices are thus produced).  
 }
-\references{ }
+\references{
+Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and projecting potential future shifts under global change. Global Change Biology 9, 1353-1362.
+}
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
 
@@ -48,7 +51,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #This line will only run a few models
 Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T)
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
 
 #you can do the evaluation techique individually
 PredictionBestModel(GLM=T,GBM=T, GAM=T, CTA=T, ANN=T, MDA=T, MARS=T, RF=T, SRE=T, method='Kappa', Bin.trans = T, Filt.trans = T)

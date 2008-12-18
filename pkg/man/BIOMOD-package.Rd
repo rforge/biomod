@@ -2,8 +2,7 @@
 \alias{BIOMOD-package}
 \alias{BIOMOD}
 \docType{package}
-\title{
-Species/climate modelling functions
+\title{ Species/climate modelling functions 
 }
 \description{
 BIOMOD offers the possibility to run 9 state-of-the-art models for describing
@@ -20,14 +19,13 @@ ecosystem...) in function of any explanatory variables.
 Package: \tab BIOMOD\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2008-10-29\cr
-License: \tab What license is it under?\cr
+Date: \tab 2008-12-18\cr
+License: \tab GPL \cr
 }
-~~ Une vue d'ensemble montrant comment utiliser le package, ~~
-~~ y compris ses fonctions les plus importantes ~~
+
 }
 \author{
-Wilfried Thuiller, with participation of Bruno Lafourcade
+Wilfried Thuiller, with participation of Bruno Lafourcade and Robin Engler
 <wilfried.thuiller@ujf-grenoble.fr>
 }
 \references{
@@ -36,8 +34,7 @@ Wilfried Thuiller, with participation of Bruno Lafourcade
 
 \keyword{ package }
 \seealso{
-~~ Liens valides vers d'autres pages de manuel, par exemple ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+
 }
 \examples{
  

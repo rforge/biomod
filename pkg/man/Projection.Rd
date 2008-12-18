@@ -56,7 +56,7 @@ Projection(Proj = NULL, Proj.name, GLM = F, GBM = F, GAM = F, CTA = F, ANN = F, 
 \references{ }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ }
-\seealso { \code{\link{Models}},  \code{\link{ProjectionBestModel}},  \code{\link{EnsembleForecasting}},  \code{\link{ProbDensFunc}},  \code{\link{map.plot}} }
+\seealso{ \code{\link{Models}}, \code{\link{ProjectionBestModel}}, \code{\link{Ensemble.Forecasting}}, \code{\link{ProbDensFunc}}, \code{\link{map.plot}} }
 \examples{
 
 data(Sp.Env)
@@ -65,7 +65,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #This line will only run a few models
 Models(GLM=T, TypeGLM="quad", Test="AIC", MDA=T, RF=T, GBM=F, GAM=F, CTA=F, ANN=F, SRE=F, MARS=F, NbRunEval=1, DataSplit=80,
-ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T)
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
 
 #Render Future projections under climate change scenario
 data(Future1)

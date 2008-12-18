@@ -15,10 +15,10 @@
   }
 }
 \details{
-  These data correspond to a 50x50 km grid for Europe 
+  This data correspond to a 50x50 km grid for Europe 
 }
 \source{
-  ~~ reference to a publication or URL from which the data were obtained ~~
+  
 }
 \references{
   

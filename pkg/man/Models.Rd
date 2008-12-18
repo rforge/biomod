@@ -69,7 +69,8 @@ Models(GLM = F, TypeGLM = simple, Test = AIC, GBM = F, No.trees = 2000, GAM = F,
   the Projection() function ("proj" directory) . The first one contains the models, the second one the predictions on current data, the third 
   contains the projections on other sapce or time scales.
   
-  The models are currently stored as objects to be read exclusively in R.
+  The models are currently stored as objects to be read exclusively in R. To load them back (the same stands for all objects in the same format) 
+  use the \code{\link{load}} function (see examples section below))
   The predictions are stored as R objects and in text files for a facilitated exportation into other softwares.
 
 }
@@ -96,7 +97,7 @@ IndependentResponse=NULL, IndependentExplanatory=NULL)
 #this will take several minutes to run
 Models(GLM = T, TypeGLM = "quad", Test = "AIC", GBM = T, No.trees = 3000, GAM = T, CTA = T, CV.tree = 50, 
 ANN = T, CV.ann = 2, SRE = T, Perc025=T, Perc05=F, MDA = T, MARS = T, RF = T, NbRunEval = 1, DataSplit = 80,
-Yweights=NULL, ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T, KeepPredIndependent = F, VarImport=5)
+Yweights=NULL, Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T, KeepPredIndependent = F, VarImport=5)
 
 #view all the produced objects with ls()
 ls()

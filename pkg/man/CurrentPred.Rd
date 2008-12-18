@@ -11,15 +11,15 @@ CurrentPred(GLM, GBM, GAM, CTA, ANN, SRE, MDA, MARS, RF, BinRoc, BinKappa, BinTS
 }
 
 \arguments{
-  \item{GLM}{,}
-  \item{GAM}{,}
-  \item{GBM}{,}
-  \item{CTA}{,}
-  \item{RF}{,}
-  \item{MDA}{,}
-  \item{SRE}{,}
-  \item{MARS}{and}
-  \item{ANN}{ : select the models by typing True or False for which you want the predictions to be produced in binary and/or filtered format}
+  \item{GLM}{see ANN}
+  \item{GAM}{see ANN}
+  \item{GBM}{see ANN}
+  \item{CTA}{see ANN}
+  \item{RF}{see ANN}
+  \item{MDA}{see ANN}
+  \item{SRE}{see ANN}
+  \item{MARS}{see ANN}
+  \item{ANN}{ select the models by typing True or False for which you want the predictions to be produced in binary and/or filtered format}
   \item{BinRoc}{ set to True if you want the predictions converted from probabilities to binary data using Roc }
   \item{BinKappa}{ set to True if you want the predictions converted from probabilities to binary data using Kappa }
   \item{BinTSS}{ set to True if you want the predictions converted from probabilities to binary data using TSS }
@@ -50,7 +50,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #This line will only run a few models
 Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T)
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
 
 
 #The results of the Models() function are in probabilities (scaled between 0 to 1000). The CurrentPred() function

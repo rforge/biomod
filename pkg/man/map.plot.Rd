@@ -1,7 +1,7 @@
 \name{map.plot}
 \alias{map.plot}
 
-\title{ Plot and compare prediction maps within Biomod }
+\title{ Plot and compare prediction maps within BIOMOD }
 \description{
   This function allows direct comparisons of the predictions across models. The
   maps produced are the same than with the \code{\link{level.plot}} function 
@@ -21,6 +21,8 @@ map.plot(Sp, coor, method, format.type, wanted, color.gradient = "red", Proj.nam
 }
 
 \details{
+The Proj.name argument needs to correspond to a projection that has been made with the Projection() function :
+The function loads back the data from the projection directory (created by the Projection() function). 
   
 }
 \value{
@@ -39,7 +41,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #This line will only run a few models
 Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T)
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
 
 #'Sp' stands for the column of the species in DataBIOMOD without counting the variables.
 #For examples, we give Sp=2 which will plot the second species modelled with the Models function (but it is

@@ -15,8 +15,9 @@ ProbDensFunc(initial, projections, plothist = T, distrib = T, cvsn = T, groups =
   \item{projections}{ a matrix grouping all the predictions where each column is a single prediction. Make sure you keep projections in the same order as the initial vector (line1=site1, line2=site2, etc.). }
   \item{plothist}{ set to TRUE to plot the range change histogram }
   \item{distrib}{ if true, the optimal way for condensing 50, 75, 90 and 95\% of the data will be calculated and shown on the histogram }
-  \item{cvsn}{ stands for current vs new. If true, the range change calculations will be of two types: the percentage of cells currently 
-  occupied by the species to be lost, and the relative percentage of cells currently unoccupied but projected to be, namely 'new' cells, compared to current surface range.}
+  \item{cvsn}{ stands for "current vs new". If true, the range change calculations will be of two types: the percentage of cells currently 
+  occupied by the species to be lost, and the relative percentage of cells currently unoccupied but projected to be, namely 'new' cells, compared to current surface range 
+  (Please read on the BIOMOD manual for further explanation).}
   \item{groups}{ an option for ungrouping the projections enabling a separated visualisation of the prediction range per given group. A 
   matrix is expected where each column is a single prediction and each line is giving details of one parameter (See the examples section). }
   \item{resolution}{ the step used for classes of prediction in graphics. The default value is 5 }
@@ -38,7 +39,7 @@ ProbDensFunc(initial, projections, plothist = T, distrib = T, cvsn = T, groups =
 \references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
-\seealso{  }
+\seealso{ \code{\link{Projection}}, \code{\link{Ensemble.Forecasting}} }
 \examples{
 
 }

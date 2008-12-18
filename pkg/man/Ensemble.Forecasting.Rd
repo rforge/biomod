@@ -50,7 +50,12 @@ Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA 
 
 }
 
-\references{ Araujo and New 2007 }
+\references{ 
+Araújo, M. B. & New, M. 2007 Ensemble forecasting of species distributions. Trends in Ecology and Evolution 22, 42-47.
+Araújo, M. B., Whittaker, R. J., Ladle, R. & Erhard, M. 2005 Reducing uncertainty in projections of extinction risk from climate change. Global Ecology and Biogeography 14, 529-538.
+Marmion, M., Parviainen, M., Luoto, M., Heikkinen, R. K. & Thuiller, W. 2009 Evaluation of consensus methods in predictive species distribution modelling. Diversity and Distributions 15, 59-69.
+Thuiller, W. 2004 Patterns and uncertainties of species' range shifts under climate change. Global Change Biology 10, 2020-2027.
+}
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ 
 
@@ -64,7 +69,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #This line will only run a few models
 Models(GLM=T, TypeGLM="quad", Test="AIC", MDA=T, RF=T, GBM=F, GAM=F, CTA=F, ANN=F, SRE=F, MARS=F, NbRunEval=1, DataSplit=80,
-ROC=T, Optimized.Threshold.ROC=T, Kappa=T, TSS=T)
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
 
 #Render Future projections under climate change scenario
 data(Future1)

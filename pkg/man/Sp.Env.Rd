@@ -2,8 +2,8 @@
 \alias{Sp.Env}
 \docType{data}
 \title{ Species and Environmental data for species-climate modelling within BIOMOD}
-\description{
-  ~~ A concise (1-5 lines) description of the dataset. ~~
+\description{ A dataset comprising the distribution of seven species (binary records where 1=presence and 0=absence)
+  and an associated set of explanatory variables for 2264 sites. This data file is an example dataset for running BIOMOD.
 }
 \usage{data(Sp.Env)}
 \format{
@@ -18,7 +18,7 @@
     \item{\code{Var6}}{an environmental variable}
     \item{\code{Var7}}{an environmental variable}
     \item{\code{Species1}}{binary record of a species geographical localisation}
-    \item{\code{Species2}}{binary record of a species geographical localisationr}
+    \item{\code{Species2}}{binary record of a species geographical localisation}
     \item{\code{Species3}}{binary record of a species geographical localisation}
     \item{\code{Species4}}{binary record of a species geographical localisation}
     \item{\code{Species5}}{binary record of a species geographical localisation}
@@ -30,10 +30,10 @@
   
 }
 \source{
-  ~~ reference to a publication or URL from which the data were obtained ~~
+  
 }
 \references{
-  ~~ possibly secondary sources and usages ~~
+  
 }
 \examples{
 data(Sp.Env)

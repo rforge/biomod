@@ -22,7 +22,7 @@ Rescaler2(DataToRescale, type = "range", OriMinMax = NULL)
   
 }
 \references{  }
-\author{ Wilfried Thuiller, Bruno Lafourcade }
+\author{ Re-adaptation of the function rescaler (reshape) by Robin Engler }
 \note{  
 
 

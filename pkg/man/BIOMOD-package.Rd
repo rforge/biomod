@@ -19,7 +19,7 @@ ecosystem...) in function of any explanatory variables.
 Package: \tab BIOMOD\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2008-12-18\cr
+Date: \tab 2008-12-23\cr
 License: \tab GPL \cr
 }
 

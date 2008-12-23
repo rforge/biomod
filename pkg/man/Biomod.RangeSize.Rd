@@ -56,6 +56,35 @@ Biomod.RangeSize(CurrentPred = NULL, FutureProj = NULL, SpChange.Save = NULL)
 \examples{
 
 
+data(Sp.Env)
+
+Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
+		IndependentResponse=NULL, IndependentExplanatory=NULL)
+
+#This line will only run a few models
+Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+
+
+data(Future1)
+Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=T, MDA=T, RF=T, BinTSS=T)
+
+
+
+#We are going to run the RangeSize function on the models selected by the TSS for each species
+PredictionBestModel(method="TSS")
+ProjectionBestModel(Proj.name="Future1", method="TSS", Bin.trans=T, Filt.trans=T)
+
+load("pred/PredBestModelByTSS_Bin")
+load("proj.Future1/Proj_Future1_BestModelByTSS_Bin")
+
+Biomod.RangeSize(CurrentPred = PredBestModelByTSS_Bin, FutureProj = Proj_Future1_BestModelByTSS_Bin, SpChange.Save="Future1.SpChange.BestTSS")
+
+
+#Visualise the results
+Future1.SpChange.BestTSS$Compt.By.Species
+Future1.SpChange.BestTSS$Diff.By.Pixel[50:100,]
+
 
 }
 

@@ -18,7 +18,7 @@ response.plot(mod, Sp)
 \details{
   For building such response curves, n-1 variables are set to their median value and only the one
   of interest is varying accross its whole range. The variations observed and the curve thus obtained shows
-  the sensibility of the model to that specific variable. This method doesn't account for interactions between variables.
+  the sensibility of the model to that specific variable. This method does therefore not account for interactions between variables.
 }
 \value{
 }
@@ -39,7 +39,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #Let's run only a few models : GLM, MDA and RF. This will take a few moments to run.
 #Do note that the response.plot() function works for all the models available. Feel free to switch them on or off.
-Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80)
+Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80, TSS=T)
 
 #The response plots for the first species modelled
 species=1

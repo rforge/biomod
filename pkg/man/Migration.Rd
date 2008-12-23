@@ -34,12 +34,51 @@ Migration(CurrentPred = NULL, FutureProj = NULL, X = NULL, Y = NULL, MaxMigr = N
 
 
 
+
 }
 \references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ }
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{Biomod.RangeSize}}, \code{\link{Biomod.Turnover}} }
 \examples{
+
+
+
+data(Sp.Env)
+
+Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
+		IndependentResponse=NULL, IndependentExplanatory=NULL)
+
+#This line will only run a few models
+Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
+Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+
+
+data(Future1)
+Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=T, MDA=T, RF=T, BinTSS=T)
+
+
+#We are going to run the Turnover function on the models selected by the TSS for each species
+PredictionBestModel(method="Roc")
+ProjectionBestModel(Proj.name="Future1", method="Roc", Bin.trans=T)
+
+
+
+load("pred/PredBestModelByRoc_Bin")
+load("proj.Future1/Proj_Future1_BestModelByRoc_Bin")
+
+data(CoorXY)
+Migration(CurrentPred = PredBestModelByRoc_Bin, FutureProj = Proj_Future1_BestModelByRoc_Bin,
+  X=CoorXY[,1], Y=CoorXY[,2], MaxMigr=5*0.1666*8, Pred.Save="Future1.Migration.BestRoc")
+
+
+cbind(Proj_Future1_BestModelByRoc_Bin[,1], Future1.Migration.BestRoc[,1], Proj_Future1_BestModelByRoc_Bin[,2], Future1.Migration.BestRoc[,2])[700:730,]
+
+
+par(mfrow=c(1,2))
+level.plot(Proj_Future1_BestModelByRoc_Bin[,1], XY=CoorXY, show.scale=F, title="unlimited migration")
+level.plot(Future1.Migration.BestRoc[,1], XY=CoorXY, show.scale=F, title="limited migration")
+
 
 
 }

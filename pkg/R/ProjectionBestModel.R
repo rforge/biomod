@@ -1,5 +1,5 @@
 `ProjectionBestModel` <-
-function(Proj.name, Bin.trans=F, Filt.trans=F, method)
+function(Proj.name, Bin.trans=T, Filt.trans=T, method='all')
 {
     Th <- c('Kappa','TSS','Roc','all')
     if(sum(Th == method) == 0) stop("\n : uncorrect method name , should be one of 'Kappa' 'TSS' 'Roc' 'all'")
@@ -13,11 +13,11 @@ function(Proj.name, Bin.trans=F, Filt.trans=F, method)
         i <- 1
         while(i <= Biomod.material[["NbSpecies"]]) {
             eval(parse(text=paste("load('pred/BestModelBy", method, "')", sep="")))
-            j <- which(Biomod.material[["algo"]] == eval(parse(text=paste("BestModelBy",method,"[i,1]",sep=""))))
+            j <- as.character(eval(parse(text=paste("BestModelBy",method,"[i,1]",sep=""))))
             load(paste(getwd(), "/proj.", Proj.name, "/Proj_",Proj.name, "_", Biomod.material[["species.names"]][i],sep=''))
             g[,i] <- eval(parse(text=paste("Proj",Proj.name,Biomod.material[["species.names"]][i],sep='_')))[,j]
-            if(Bin.trans)    gg[,i] <- eval(parse(text=paste("BinaryTransformation(g[,i], as.numeric(Evaluation.results.", method, "[[i]][j,4]))",sep='')))
-            if(Filt.trans)   ggg[,i] <- eval(parse(text=paste("FilteringTransformation(g[,i], as.numeric(Evaluation.results.", method, "[[i]][j,4]))",sep='')))
+            if(Bin.trans)    eval(parse(text=paste("gg[,i] <- BinaryTransformation(g[,i], as.numeric(Evaluation.results.", method, "[[i]][j,4]))",sep='')))
+            if(Filt.trans)   eval(parse(text=paste("ggg[,i] <- FilteringTransformation(g[,i], as.numeric(Evaluation.results.", method, "[[i]][j,4]))",sep='')))
             i <- i + 1
         }
              

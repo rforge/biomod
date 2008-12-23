@@ -118,10 +118,11 @@ data(CoorXY)  #this data is needed for the next two plotting functions
               #with the map.plot() function which requires the coordinate data to be named "CoorXY". 
 
 load("pred/Pred_Species2")
+x11()
 level.plot(Pred_Species2[,"GLM"], CoorXY)
 
 for(i in 1:3)
-map.plot(Sp=i, method='Roc', format.type='probs', wanted='prediction' , color.gradient='red')
+map.plot(Sp=i, coor=CoorXY, method='Roc', format.type='probs', wanted='prediction' , color.gradient='red')
 
 
 #Another series of functions enable to perform further steps, see ?CurrentPred and ?PredictionBestModel.

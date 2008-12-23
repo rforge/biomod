@@ -52,9 +52,9 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 
 #View the data
-level.plot(DataBIOMOD[,3], CoorXY, level.range=c(0,5000))
+level.plot(DataBIOMOD[,3], CoorXY, level.range=c(0,5000), title="variable 3")
 level.plot(DataBIOMOD[,3], CoorXY, level.range=c(0,5000), color.gradient='grey')
-level.plot(DataBIOMOD[,9], CoorXY, level.range=c(0,5000)) 
+level.plot(DataBIOMOD[,9], CoorXY, title="distribution of 'species2'") 
 
 }
                  

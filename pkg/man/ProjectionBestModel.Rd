@@ -7,7 +7,7 @@
   
 }
 \usage{
-ProjectionBestModel(Proj.name, Bin.trans = F, Filt.trans = F, method)
+ProjectionBestModel(Proj.name, Bin.trans = T, Filt.trans = T, method='all')
 }
 
 \arguments{
@@ -59,10 +59,10 @@ ProjectionBestModel(Proj.name="Future1", method='all', Bin.trans = T, Filt.trans
 load("pred/BestModelByTSS")
 BestModelByTSS
 
-load("proj/Proj_Future1_BestModelByTSS_Bin")
+load("proj.Future1/Proj_Future1_BestModelByTSS_Bin")
 Proj_Future1_BestModelByTSS_Bin[1:100,]
 
-load("proj/Proj_Future1_BestModelByTSS_Filt")
+load("proj.Future1/Proj_Future1_BestModelByTSS_Filt")
 Proj_Future1_BestModelByTSS_Filt[1:100,]
 
 

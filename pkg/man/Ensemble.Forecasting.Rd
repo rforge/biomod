@@ -38,21 +38,23 @@ Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA 
  between the weights enhancing a weak discrimination between models (please read the BIOMOD manual for some examples).
   
 }
-\value{ A list is returned, named after the Proj.name argument (see examples), and several objects are produced in the "proj" folder.
+\value{ 
+
+ A list is returned, named after the Proj.name argument (see examples), and several objects are produced in the "proj" folder.
  The list contains the details of the ensemble forecast process for every species modelled. For each species, the information is as follows :
 
-  \item{`stats`}{ contains a 2-columns matrix : if Test=T, the first one gives the assumed predictive performance for each consensus method. These scores are
+  \item{stats}{ contains a 2-columns matrix : if Test=T, the first one gives the assumed predictive performance for each consensus method. These scores are
   obtained by applying the same ensemble computation on the current predictions as on the future forecasts, and compared with the data input for that species 
   (using the Roc evaluation method). If binary=T, the second column gives the threshold obtained by each method for converting the probabilities into presence-absence predictions
   (see the manual for more details).}
-  \item{`weights`}{ contains the weights awarded to each model selected for the ensemble forecasts (only concerns the weighted.mean).}
-  \item{`PCA.median`} defines the model selected by the median PCA consensus approach. Note that nothing else is produced in regards to this method.
+  \item{weights}{ contains the weights awarded to each model selected for the ensemble forecasts (only concerns the weighted.mean).}
+  \item{PCA.median} defines the model selected by the median PCA consensus approach. Note that nothing else is produced in regards to this method.
 
 }
 
 \references{ 
-Araújo, M. B. & New, M. 2007 Ensemble forecasting of species distributions. Trends in Ecology and Evolution 22, 42-47.
-Araújo, M. B., Whittaker, R. J., Ladle, R. & Erhard, M. 2005 Reducing uncertainty in projections of extinction risk from climate change. Global Ecology and Biogeography 14, 529-538.
+Araujo, M. B. & New, M. 2007 Ensemble forecasting of species distributions. Trends in Ecology and Evolution 22, 42-47.
+Araujo, M. B., Whittaker, R. J., Ladle, R. & Erhard, M. 2005 Reducing uncertainty in projections of extinction risk from climate change. Global Ecology and Biogeography 14, 529-538.
 Marmion, M., Parviainen, M., Luoto, M., Heikkinen, R. K. & Thuiller, W. 2009 Evaluation of consensus methods in predictive species distribution modelling. Diversity and Distributions 15, 59-69.
 Thuiller, W. 2004 Patterns and uncertainties of species' range shifts under climate change. Global Change Biology 10, 2020-2027.
 }

@@ -37,7 +37,7 @@ Optimized.Threshold.Roc=F, Kappa=F, TSS=F, KeepPredIndependent=F, VarImport=0)
  
     if(NbRunEval==0){
         DataSplit <- 100
-        if(!exists("DataEvalBIOMOD")) cat("\n\n Warning : The models will be evaluated on the calibration data only \n\t it could lead to over-optimistic predictive performances. \n\n")
+        if(!exists("DataEvalBIOMOD")) cat("\n\n Warning : The models will be evaluated on the calibration data only (NbRunEval=0) \n\t it could lead to over-optimistic predictive performances. \n\n")
     }
     if(DataSplit==100) NbRunEval <- 1
     Ids <- data.frame(matrix(0, nrow=ceiling(nrow(DataBIOMOD)*(DataSplit/100)), ncol=NbRunEval))

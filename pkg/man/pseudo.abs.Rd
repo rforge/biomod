@@ -77,6 +77,7 @@ pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), st
 Dataset.Sp1.circles.8[1:20,]
 
 #you can plot it yourself (or set plot=T in the function call)
+x11()
 plot(Dataset.Sp1.circles.8[,1],Dataset.Sp1.circles.8[,2]) 
 
 #use the nb.points argument for only selecting a limited number of points

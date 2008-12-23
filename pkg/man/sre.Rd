@@ -14,10 +14,11 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Perc025 = F, Perc05 = F
   \item{Response}{ a vector giving your species' presences and absences data }
   \item{Explanatory}{ a matrix containing the environmental variables for the sites given in Response. It must
   have as many rows as there are elements in Response. }
-  \item{NewData}{  }
+  \item{NewData}{ The data for which you want to render predictions with the sre. It must be a matrix of the same type as
+  the one given in Explanatory and with precisely the same variable names. }
   \item{Perc025}{ if True, the 2.5\% most extreme values for each variable will not be taken into account
   for determining the tolerance boundaries for the considered species.  }
-  \item{Perc05}{ same as for  Perc025 but the 5\% most extreme values will be avoided }
+  \item{Perc05}{ same as for Perc025 but the 5\% most extreme values will be avoided }
 }
 \details{
 
@@ -31,17 +32,28 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Perc025 = F, Perc05 = F
   considered unsuitable. 
 }
 \value{
-  Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
-  
+  A vector of the same length as there are rows in NewData giving the prediction in binary (1=presence, 0=absence)
 }
+
 \references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ }
-\seealso{  }
+\seealso{ \code{\link{Models}} }
 \examples{
+
+data(Sp.Env)
+
+g <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8])
+gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc025=T)
+ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc05=T)
+
+
+par(mfrow=c(1,4))
+level.plot(Sp.Env[,10], XY=CoorXY[,1:2], show.scale=F, title="original data")
+level.plot(g, XY=CoorXY[,1:2], show.scale=F, title="full data calibration")
+level.plot(gg, XY=CoorXY[,1:2], show.scale=F, title="Perc025=T")
+level.plot(ggg, XY=CoorXY[,1:2], show.scale=F, title="Perc05=T")
+
 
 }
 

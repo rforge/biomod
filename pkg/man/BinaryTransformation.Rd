@@ -10,18 +10,17 @@ BinaryTransformation(ProbData, CutOffdata)
 }
 
 \arguments{
-  \item{ProbData}{ a vector or matrix containing the data to be converted }
-  \item{CutOffdata}{ a numeric value (if ProbData is a vector) or a vector (if ProbData is a matrix) containing the threshold(s) 
-  to be used for converting ProbData. A value needs to be given for each column of ProbData (if a matrix) }
+  \item{ProbData}{ a vector containing the data to be converted }
+  \item{CutOffdata}{ a numeric value containing the threshold to be used for converting ProbData.}
 }
 
 \details{
- 
   
 }
 \value{
-A binary (0 or 1) vector or matrix .   
+A binary (0 or 1) vector.   
 }
+
 \references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{  
@@ -30,6 +29,11 @@ A binary (0 or 1) vector or matrix .
 }
 \seealso{ \code{\link{help}}}
 \examples{
+
+xx <- rnorm(50,10)
+yy <- BinaryTransformation(xx, 10)
+
+cbind(xx,yy)
 
 }
 

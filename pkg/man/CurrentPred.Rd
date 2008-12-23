@@ -7,7 +7,7 @@
   by the Models() function of Biomod for current data.
 }
 \usage{
-CurrentPred(GLM, GBM, GAM, CTA, ANN, SRE, MDA, MARS, RF, BinRoc, BinKappa, BinTSS, FiltRoc, FiltKappa, FiltTSS)
+CurrentPred(GLM=T, GBM=T, GAM=T, CTA=T, ANN=T, SRE=T, MDA=T, MARS=T, RF=T, BinRoc, BinKappa, BinTSS, FiltRoc, FiltKappa, FiltTSS)
 }
 
 \arguments{

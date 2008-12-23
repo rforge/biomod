@@ -1,7 +1,7 @@
 `sre` <-
 function(Response=NULL, Explanatory=NULL, NewData=NULL, Perc025=F, Perc05=F)
 {
-    #NbVar <- dim(Explanatory)[2]
+    NbVar <- dim(Explanatory)[2]
     #assign("NbVar", NbVar, where=1)
     Var.Names <- colnames(Explanatory)
 
@@ -22,17 +22,17 @@ function(Response=NULL, Explanatory=NULL, NewData=NULL, Perc025=F, Perc05=F)
     else Data <- Explanatory[Response == 1,  ]
     if(Perc025!=F & Perc05!=F) stop("\n Select only percentile option at one time. Either Perc025=T & Perc05=F, OR Perc025=F & Perc05=T OR Perc025=F & Perc05=F \n")
 
-        prediction <- matrix(0, nrow=dim(NewData)[1], ncol=2*Biomod.material[["NbVar"]])
+        prediction <- matrix(0, nrow=dim(NewData)[1], ncol=2*NbVar)
         a <- 1
         j <- 1
-        while(j <= Biomod.material[["NbVar"]]) {
+        while(j <= NbVar) {
             prediction[, a] <- eval(parse(text=paste("NewData$",paste(Var.Names[j]), collapse=""))) >= min(eval(parse(text=paste("Data$", paste(Var.Names[j]), collapse=""))))
             prediction[, a + 1] <- eval(parse(text=paste("NewData$", paste(Var.Names[j]), collapse=""))) <= max(eval(parse(text=paste("Data$",paste(Var.Names[j]), collapse=""))))
             j <- j + 1
             a <- a + 2
         }
-        Pred <- apply(prediction[, 1:(2 * Biomod.material[["NbVar"]])], 1, FUN = function(x)
-        { sum(x)/(2 * Biomod.material[["NbVar"]])
+        Pred <- apply(prediction[, 1:(2 * NbVar)], 1, FUN = function(x)
+        { sum(x)/(2 * NbVar)
         }
         )
         Pred <- trunc(Pred)
@@ -58,17 +58,17 @@ function(Response=NULL, Explanatory=NULL, NewData=NULL, Perc025=F, Perc05=F)
         Data <- temp2[,2:ncol(temp2)]
       }
       else Data <- Explanatory[Response[,z] == 1,]
-            prediction <- matrix(0, nrow=dim(NewData)[1], ncol =2 * Biomod.material[["NbVar"]])
+            prediction <- matrix(0, nrow=dim(NewData)[1], ncol =2 * NbVar)
             a <- 1
             j <- 1
-            while(j <= Biomod.material[["NbVar"]]) {
+            while(j <= NbVar) {
                 prediction[,a] <- eval(parse(text=paste("NewData$", paste(Var.Names[j]),collapse=""))) >= min(eval(parse(text=paste("Data$", paste(Var.Names[j]), collapse=""))))
                 prediction[,a+1] <- eval(parse(text=paste("NewData$", paste(Var.Names[j]),collapse=""))) <= max(eval(parse(text=paste("Data$", paste(Var.Names[j]), collapse=""))))
                 j <- j + 1
                 a <- a + 2
             }
-            Pred[,z] <- apply(prediction[,1:(2*Biomod.material[["NbVar"]])], 1,FUN = function(x)
-            { sum(x)/(2 * Biomod.material[["NbVar"]])
+            Pred[,z] <- apply(prediction[,1:(2*NbVar)], 1,FUN = function(x)
+            { sum(x)/(2 * NbVar)
             }
             )
             Pred[,z] <- trunc(Pred[,z])

@@ -73,14 +73,14 @@ Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=T, MDA=T, RF=T, BinKa
 
 
 #view the results produced, example with the projections in probabilities :
-load("proj/Proj_Future1_Species2")
-head(Proj_Future1_Species2)
+load("proj.Future1/Proj_Future1_Species2")
+Proj_Future1_Species2[100:150,]
 
 
 #and plot them
 data(CoorXY)
-load("proj/Proj_Future1_Species2_BinKappa")
-load("proj/Proj_Future1_Species2_FiltKappa")
+load("proj.Future1/Proj_Future1_Species2_BinKappa")
+load("proj.Future1/Proj_Future1_Species2_FiltKappa")
 
 par(mfrow=c(1,4))
 level.plot(Sp.Env[,10], CoorXY, show.scale=F, title="original data")

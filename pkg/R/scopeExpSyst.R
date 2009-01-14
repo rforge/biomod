@@ -17,11 +17,11 @@ function(enviroTrain, mod)
         if(mod == "GBM")  junk <- c(junk, paste(vname))
         
         if(mod == "GLMq") {
-            if(is.numeric(XXX[,i]))      junk <- c(junk, paste(vname, "+I(", vname, ")^2+I(",vname, ")^3"))
+            if(is.numeric(XXX[,i]))      junk <- c(junk, paste(vname, "+I(", vname, "^2)+I(",vname, "^3)"))
             else if(is.factor(XXX[,i]))  junk <- c(junk, paste(vname))
         }
         if(mod == "GLMp") {
-            if(is.numeric(XXX[,i]))     junk <- c(junk, paste(vname, "+I(", vname, ")^2+I(",vname, ")^3+", "poly(", vname, ",2) + poly(", vname, ",3)"))
+            if(is.numeric(XXX[,i]))     junk <- c(junk, paste(vname, "+I(", vname, "^2)+I(",vname, "^3)+", "poly(", vname, ",2) + poly(", vname, ",3)"))
             else if(is.factor(XXX[,i])) junk <- c(junk, paste(vname))
         }
         junk2 <- c(paste(junk2), paste(junk))

@@ -65,7 +65,7 @@ Optimized.Threshold.Roc=F, Kappa=F, TSS=F, KeepPredIndependent=F, VarImport=0)
         cat("#####\t\t\t", Biomod.material[["species.names"]][i], "\t\t\t#####\n")
         assign("i", i, pos= 1)
         mat <- matrix(NA, nr=nrow(DataBIOMOD), nc=9, dimnames=list(1:nrow(DataBIOMOD), Biomod.material[["algo"]]))
-        if(exists("DataEvalBIOMOD") && KeepPredIndependent) mat.ind <- matrix(NA, nr=nrow(DataBIOMOD), nc=9, dimnames=list(1:nrow(DataBIOMOD), Biomod.material[["algo"]]))
+        if(exists("DataEvalBIOMOD") && KeepPredIndependent) mat.ind <- matrix(NA, nr=nrow(DataEvalBIOMOD), nc=9, dimnames=list(1:nrow(DataEvalBIOMOD), Biomod.material[["algo"]]))
        
         if(exists("Models.information")){
            Models.information[[Biomod.material[["species.names"]][i]]] <- list()
@@ -102,8 +102,14 @@ Optimized.Threshold.Roc=F, Kappa=F, TSS=F, KeepPredIndependent=F, VarImport=0)
         i <- i + 1
     }
     rm(sp, i, g.pred, pos=1)
-    save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material, Models.information,  
-     file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else file='Biomod_run.RData')
+    if(exists("Models.information")){
+      save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material, Models.information,
+        file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else file='Biomod_run.RData')
+    }
+    else {
+      save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material,
+        file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else file='Biomod_run.RData')
+    }
  
   
 }

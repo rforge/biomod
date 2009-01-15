@@ -296,7 +296,7 @@ function(Model, Ids, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, 
     }
     	
   	if(exists("DataEvalBIOMOD") && KeepPredIndependent){
-    		assign("g.pred", predtest, pos=1)
+    		assign("predtest", predtest, pos=1)
   	}
     
     assign("g.pred", g.pred, pos=1)

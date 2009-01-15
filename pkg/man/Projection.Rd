@@ -34,8 +34,8 @@ Projection(Proj = NULL, Proj.name, GLM = F, GBM = F, GAM = F, CTA = F, ANN = F, 
 }
 
 \Warning{
-  As a general reminder, do think about reloading these objects stored in the .RData file also produced by the Models() function from one R session to another .
-  They contain vital information for the models to work properly.
+  From one R session to another and as a general reminder, do think about reloading the objects stored in the .RData file produced by the Models() function.
+  They contain vital information for the models to work properly when called by pther functions such as Projection().
 }
 
 \details{

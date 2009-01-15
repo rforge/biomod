@@ -14,12 +14,12 @@ MDA=F, MARS=F, RF=F, BinRoc=F, BinKappa=F, BinTSS=F, FiltRoc=F, FiltKappa=F, Fil
 
     dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=F)
 
-    if(BinRoc && !exists("Evaluation.results.Roc")) { BinRoc=F; cat("\n Roc cannot be used to transform probabilities into binary values, it wasen't performed earlier")}
-    if(FiltRoc && !exists("Evaluation.results.Roc")) { FiltRoc=F; cat("\n Roc cannot be used to transform probabilities into filtered values, it wasen't performed earlier")}   
-    if(BinKappa && !exists("Evaluation.results.Kappa")) { BinKappa=F; cat("\n Kappa cannot be used to transform probabilities into binary values, it wasen't performed earlier")}
-    if(FiltKappa && !exists("Evaluation.results.Kappa")) { FiltKappa=F; cat("\n Kappa cannot be used to transform probabilities into filtered values, it wasen't performed earlier")}
-    if(BinTSS && !exists("Evaluation.results.TSS")) { BinTSS=F; cat("\n TSS cannot be used to transform probabilities into binary values, it wasen't performed earlier")}
-    if(FiltTSS && !exists("Evaluation.results.TSS")) { FiltTSS=F; cat("\n TSS cannot be used to transform probabilities into filtered values, it wasen't performed earlier")}
+    if(BinRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc=F; cat("\n Roc cannot be used to transform probabilities into binary values, it was not selected in Models()")}
+    if(FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { FiltRoc=F; cat("\n Roc cannot be used to transform probabilities into filtered values, it was not selected in Models()")}   
+    if(BinKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa=F; cat("\n Kappa cannot be used to transform probabilities into binary values, it was not selected in Models()")}
+    if(FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { FiltKappa=F; cat("\n Kappa cannot be used to transform probabilities into filtered values, it was not selected in Models()")}
+    if(BinTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS=F; cat("\n TSS cannot be used to transform probabilities into binary values, it was not selected in Models()")}
+    if(FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { FiltTSS=F; cat("\n TSS cannot be used to transform probabilities into filtered values, it was not selected in Models()")}
 
     Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]] <- nrow(Proj)
     assign("Biomod.material", Biomod.material, pos=1)
@@ -28,7 +28,7 @@ MDA=F, MARS=F, RF=F, BinRoc=F, BinKappa=F, BinTSS=F, FiltRoc=F, FiltKappa=F, Fil
     algo.d['SRE'] <- algo.d['GLM'] <- algo.d['GAM'] <- F
  
     w <- names(which(!Biomod.material[["algo.choice"]][names(which(algo.c))]))
-    if(length(w) > 0) cat(paste("the following model has not been used to render projections : ", paste(w, sep=" "),"\n it has not been trained \n", sep=""))     
+    if(length(w) > 0) cat(paste("\n The following model has not been used to render projections : ", paste(w, sep=" "),"\n it has not been trained \n", sep=""))     
     algo.c[names(which(!Biomod.material[["algo.choice"]]))] <- F
     assign("proj.choice", algo.c, pos=1) 
     

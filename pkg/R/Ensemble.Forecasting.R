@@ -11,7 +11,7 @@ function(ANN=T,CTA=T,GAM=T,GBM=T,GLM=T,MARS=T,MDA=T,RF=T,SRE=T, Proj.name, weigh
     G<-gg<-ggg<-gggg<-ggggg<-gggggg <- matrix(nc=Biomod.material[["NbSpecies"]],nr=Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]],dimnames= list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material[["species.names"]]))
     thm <- thpond <- c()
     
-    ens.choice <- proj.choice
+    ens.choice <- p.choice <- proj.choice
     for(j in Biomod.material[["algo"]]) if(!eval(parse(text=j))) ens.choice[j] <- F
     
     for(i in 1:Biomod.material[["NbSpecies"]]){
@@ -32,7 +32,7 @@ function(ANN=T,CTA=T,GAM=T,GBM=T,GLM=T,MARS=T,MDA=T,RF=T,SRE=T, Proj.name, weigh
             consensus.test[,3] <- apply(test.data[,ens.choice], 1, median)
         }
         #--------------- defining the weigths        
-        k <- proj.choice
+        k <- p.choice
         for(a in Biomod.material[["algo"]]) if(ens.choice[a]) k[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[i]][a,1]) else k[a] <- 0 
         if(weight.method=='Roc') k['SRE'] <- 0
         
@@ -67,7 +67,7 @@ function(ANN=T,CTA=T,GAM=T,GBM=T,GLM=T,MARS=T,MDA=T,RF=T,SRE=T, Proj.name, weigh
         }
         
         #doing the methods' binary results means across models 
-        for(j in 1:3){
+        for(j in 1:3){ if(Biomod.material$evaluation.choice[Th[j]]){
             kdata <- rep(0, Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]]) 
             for(k in Biomod.material[["algo"]][ens.choice]) if(k!='SRE') kdata <- kdata + BinaryTransformation(sp.data[,k], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[j], sep="")))[[Biomod.material[["species.names"]][i]]][k,4]))
             if(SRE) kdata <- kdata + sp.data[,'SRE']/1000
@@ -79,12 +79,15 @@ function(ANN=T,CTA=T,GAM=T,GBM=T,GLM=T,MARS=T,MDA=T,RF=T,SRE=T, Proj.name, weigh
                 if(SRE) kdata <- kdata + sp.data[,'SRE']/1000
                 consensus.test[,3+j] <- gdata / sum(ens.choice) *1000
             }
-        }
+        }}
         
         #test the methods with AUC
         if(Test){
             test <- matrix(nc=1,nr=6,dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'),"score")) 
-            for(j in 1:6) test[j,1] <- somers2(consensus.test[,j], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
+            for(j in 1:3) test[j,1] <- somers2(consensus.test[,j], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
+            if(Biomod.material$evaluation.choice["Roc"]) test[4,1] <- somers2(consensus.test[,4], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
+            if(Biomod.material$evaluation.choice["Kappa"]) test[5,1] <- somers2(consensus.test[,5], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
+            if(Biomod.material$evaluation.choice["TSS"]) test[6,1] <- somers2(consensus.test[,6], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
         }  
         
         G[,i] <- consensus.mat[,1]
@@ -104,30 +107,30 @@ function(ANN=T,CTA=T,GAM=T,GBM=T,GLM=T,MARS=T,MDA=T,RF=T,SRE=T, Proj.name, weigh
     assign(paste("consensus_", Proj.name, "_mean", sep=""), G)
     assign(paste("consensus_", Proj.name, "_mean_weighted", sep=""), gg)
     assign(paste("consensus_", Proj.name, "_median", sep=""), ggg)
-    assign(paste("consensus_", Proj.name, "_Roc_mean", sep=""), gggg)
-    assign(paste("consensus_", Proj.name, "_Kappa_mean", sep=""), ggggg)
-    assign(paste("consensus_", Proj.name, "_TSS_mean", sep=""), gggggg)
+    if(Biomod.material$evaluation.choice["Roc"]) assign(paste("consensus_", Proj.name, "_Roc_mean", sep=""), gggg)
+    if(Biomod.material$evaluation.choice["Kappa"]) assign(paste("consensus_", Proj.name, "_Kappa_mean", sep=""), ggggg)
+    if(Biomod.material$evaluation.choice["TSS"]) assign(paste("consensus_", Proj.name, "_TSS_mean", sep=""), gggggg)
     
     eval(parse(text=paste("save(consensus_", Proj.name, "_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean')", sep="")))
     eval(parse(text=paste("save(consensus_", Proj.name, "_mean_weighted, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean_weighted')", sep="")))
     eval(parse(text=paste("save(consensus_", Proj.name, "_median, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_median')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_Roc_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Roc_mean')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_Kappa_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Kappa_mean')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_TSS_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_TSS_mean')", sep="")))
+    if(Biomod.material$evaluation.choice["Roc"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Roc_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Roc_mean')", sep="")))
+    if(Biomod.material$evaluation.choice["Kappa"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Kappa_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Kappa_mean')", sep="")))
+    if(Biomod.material$evaluation.choice["TSS"]) eval(parse(text=paste("save(consensus_", Proj.name, "_TSS_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_TSS_mean')", sep="")))
     
     
     if(binary){                                                                              
     assign(paste("consensus_", Proj.name, "_mean_bin", sep=""), BinaryTransformation(G,as.data.frame(thm))*1000)
     assign(paste("consensus_", Proj.name, "_mean_weighted_bin", sep=""), BinaryTransformation(gg,as.data.frame(thpond))*1000)
-    assign(paste("consensus_", Proj.name, "_Roc_mean_bin", sep=""), BinaryTransformation(gggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
-    assign(paste("consensus_", Proj.name, "_Kappa_mean_bin", sep=""), BinaryTransformation(ggggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
-    assign(paste("consensus_", Proj.name, "_TSS_mean_bin", sep=""), BinaryTransformation(gggggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
+    if(Biomod.material$evaluation.choice["Roc"]) assign(paste("consensus_", Proj.name, "_Roc_mean_bin", sep=""), BinaryTransformation(gggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
+    if(Biomod.material$evaluation.choice["Kappa"]) assign(paste("consensus_", Proj.name, "_Kappa_mean_bin", sep=""), BinaryTransformation(ggggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
+    if(Biomod.material$evaluation.choice["TSS"]) assign(paste("consensus_", Proj.name, "_TSS_mean_bin", sep=""), BinaryTransformation(gggggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
     
     eval(parse(text=paste("save(consensus_", Proj.name, "_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean_bin')", sep="")))
     eval(parse(text=paste("save(consensus_", Proj.name, "_mean_weighted_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean_weighted_bin')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_Roc_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Roc_mean_bin')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_Kappa_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Kappa_mean_bin')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_TSS_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_TSS_mean_bin')", sep="")))
+    if(Biomod.material$evaluation.choice["Roc"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Roc_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Roc_mean_bin')", sep="")))
+    if(Biomod.material$evaluation.choice["Kappa"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Kappa_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Kappa_mean_bin')", sep="")))
+    if(Biomod.material$evaluation.choice["TSS"]) eval(parse(text=paste("save(consensus_", Proj.name, "_TSS_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_TSS_mean_bin')", sep="")))
     }
       
     assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)

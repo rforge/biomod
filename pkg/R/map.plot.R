@@ -42,6 +42,7 @@ function(Sp, coor, method, format.type, wanted, color.gradient='red', Proj.name=
         'brown2')
     }
 
+    if(Biomod.material$evaluation.choice[[method]]){
     vec2 <- vec <- ""
     met <- eval(parse(text=paste("Evaluation.results.", method, sep="")))[[Sp]]
     
@@ -49,6 +50,8 @@ function(Sp, coor, method, format.type, wanted, color.gradient='red', Proj.name=
         vec <- paste(vec, row.names(met)[i], "\n")
         vec2 <- paste(vec2, "  =  ", round(as.numeric(met[i,1]),digits=3), "\n") 
     }                                                                               
+    } else {vec2 <- "" ; vec <- "not available" }
+    
            
     x11()
     layout(matrix(c(rep(1,6),5:9,2,15:19,2,10:14,3,20:24,4), nr=5, byrow=T), widths=c(1,1,1,1,1,1), heights=c(1,0.5,4,0.5,4))

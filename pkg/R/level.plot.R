@@ -27,6 +27,11 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
         'brown2')
     }
       
+      
+    #SRCvalues <- c(-2,-1,0,1)
+    #if(sum(match(SRCvalues, data.in)) == length(data.in)){ SRC plot}  
+      
+      
     g <- gg <- data.in
     gg <- gg-level.range[1] 
     gg <- gg/level.range[2] *100+1

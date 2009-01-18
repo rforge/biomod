@@ -1,5 +1,5 @@
 `ProbDensFunc` <-
-function(initial, projections, plothist=T, distrib=T, cvsn=T, groups=NULL, resolution=5){
+function(initial, projections, plothist=TRUE, distrib=TRUE, cvsn=TRUE, groups=NULL, resolution=5){
     
     if(!is.null(groups) && !is.matrix(groups)) stop("\n 'groups' should be a matrix \n")
     groups <- groups[,which(projections[1,]!="NA")]

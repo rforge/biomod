@@ -70,15 +70,15 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models
-Models(GLM=T, TypeGLM="quad", Test="AIC", MDA=T, RF=T, GBM=F, GAM=F, CTA=F, ANN=F, SRE=F, MARS=F, NbRunEval=1, DataSplit=80,
-Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+Models(GLM=TRUE, TypeGLM="quad", Test="AIC", MDA=TRUE, RF=TRUE, GBM=FALSE, GAM=FALSE, CTA=FALSE, ANN=FALSE, SRE=FALSE, MARS=FALSE, NbRunEval=1, DataSplit=80,
+Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=T, MDA=T, RF=T, BinKappa=T, FiltKappa=T)
+Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
 #Run the ensemble forecasting function on this scenario
-Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=T, binary=T, bin.method='Roc', Test=T)
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=TRUE)
 
 #The list returned contains some of the results (see the value section for details)
 #Some objects, named consensus_..., are stored in the proj folder

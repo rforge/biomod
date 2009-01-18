@@ -39,7 +39,7 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #Let's run only a few models : GLM, MDA and RF. This will take a few moments to run.
 #Do note that the response.plot() function works for all the models available. Feel free to switch them on or off.
-Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80, TSS=T)
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80, TSS=TRUE)
 
 #The response plots for the first species modelled
 species=1

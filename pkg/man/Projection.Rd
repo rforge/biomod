@@ -64,12 +64,12 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models
-Models(GLM=T, TypeGLM="quad", Test="AIC", MDA=T, RF=T, GBM=F, GAM=F, CTA=F, ANN=F, SRE=F, MARS=F, NbRunEval=1, DataSplit=80,
-Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+Models(GLM=TRUE, TypeGLM="quad", Test="AIC", MDA=TRUE, RF=TRUE, GBM=FALSE, GAM=FALSE, CTA=FALSE, ANN=FALSE, SRE=FALSE, MARS=FALSE, NbRunEval=1, DataSplit=80,
+Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=T, MDA=T, RF=T, BinKappa=T, FiltKappa=T)
+Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
 
 #view the results produced, example with the projections in probabilities :
@@ -83,10 +83,10 @@ load("proj.Future1/Proj_Future1_Species2_BinKappa")
 load("proj.Future1/Proj_Future1_Species2_FiltKappa")
 
 par(mfrow=c(1,4))
-level.plot(Sp.Env[,10], CoorXY, show.scale=F, title="original data")
-level.plot(Proj_Future1_Species2[,"GLM"], CoorXY, show.scale=F, title="probabilities by GLM")
-level.plot(Proj_Future1_Species2_BinKappa[,"GLM"], CoorXY, show.scale=F, title="binary by Kappa")
-level.plot(Proj_Future1_Species2_FiltKappa[,"GLM"], CoorXY, show.scale=F, title="filtered by Kappa")
+level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
+level.plot(Proj_Future1_Species2[,"GLM"], CoorXY, show.scale=FALSE, title="probabilities by GLM")
+level.plot(Proj_Future1_Species2_BinKappa[,"GLM"], CoorXY, show.scale=FALSE, title="binary by Kappa")
+level.plot(Proj_Future1_Species2_FiltKappa[,"GLM"], CoorXY, show.scale=FALSE, title="filtered by Kappa")
 
 
 }

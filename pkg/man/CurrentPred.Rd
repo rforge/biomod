@@ -49,14 +49,14 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models
-Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
+Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
 
 
 #The results of the Models() function are in probabilities (scaled between 0 to 1000). The CurrentPred() function
 #enables to produce binary or filtered results. Here we decide to create binary data using the Roc and TSS thresholds, 
 #and filtered data using only the TSS threshold.
-CurrentPred(BinRoc=T, BinKappa=F, BinTSS=T, FiltRoc=F, FiltKappa=F, FiltTSS=T) 
+CurrentPred(BinRoc=TRUE, BinKappa=FALSE, BinTSS=TRUE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=TRUE) 
 
 
 #let's view some examples of them
@@ -74,10 +74,10 @@ data(CoorXY)
 
 
 par(mfrow=c(1,4))
-level.plot(Sp.Env[,10], CoorXY, show.scale=F, title="original data")
-level.plot(Pred_Species2[,"GLM"], CoorXY, show.scale=F, title="probabilities with GLM")
-level.plot(Pred_Species2_BinRoc[,"GLM"], CoorXY, show.scale=F, title="binary by Roc")
-level.plot(Pred_Species2_FiltTSS[,"GLM"], CoorXY, show.scale=F, title="filtered by TSS")
+level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
+level.plot(Pred_Species2[,"GLM"], CoorXY, show.scale=FALSE, title="probabilities with GLM")
+level.plot(Pred_Species2_BinRoc[,"GLM"], CoorXY, show.scale=FALSE, title="binary by Roc")
+level.plot(Pred_Species2_FiltTSS[,"GLM"], CoorXY, show.scale=FALSE, title="filtered by TSS")
 
 
 }

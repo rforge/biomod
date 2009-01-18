@@ -68,20 +68,20 @@ presences <- data.frame(x=sample(1:100, 10), y=sample(1:100, 10))
 
 #this is our data : recorded presences and a bank of data for which you have no a priori information
 plot(fulldata[,1], fulldata[,2])
-par(new=T)
+par(new=TRUE)
 plot(presences[,1], presences[,2], col='red', xlim=c(1,100), ylim=c(1,100), pch=19)
 
-pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=T) 
+pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 
-#view what is in the dataset produced : absences, and presences (only if add.pres=T)
+#view what is in the dataset produced : absences, and presences (only if add.pres=TRUE)
 Dataset.Sp1.circles.8[1:20,]
 
-#you can plot it yourself (or set plot=T in the function call)
+#you can plot it yourself (or set plot=TRUE in the function call)
 x11()
 plot(Dataset.Sp1.circles.8[,1],Dataset.Sp1.circles.8[,2]) 
 
 #use the nb.points argument for only selecting a limited number of points
-pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=T, nb.points=2000, plot=T) 
+pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE, nb.points=2000, plot=TRUE) 
 
   
 }

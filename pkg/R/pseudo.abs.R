@@ -1,6 +1,6 @@
 `pseudo.abs` <-
-function(coor, status, env=NULL, strategy='random', distance=0, nb.points=NULL, add.pres=T, 
-		    species.name= 'Sp1', create.dataset=F, plot=F, acol='grey80', pcol='red')
+function(coor, status, env=NULL, strategy='random', distance=0, nb.points=NULL, add.pres=TRUE, 
+		    species.name= 'Sp1', create.dataset=FALSE, plot=FALSE, acol='grey80', pcol='red')
 
 {	
 	if(strategy=='sre' && is.null(env)) stop("\n you must enter some environmental data to use the sre method \n")

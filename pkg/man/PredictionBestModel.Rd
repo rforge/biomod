@@ -50,15 +50,15 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models
-Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
+Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
 
 #you can do the evaluation techique individually
-PredictionBestModel(GLM=T,GBM=T, GAM=T, CTA=T, ANN=T, MDA=T, MARS=T, RF=T, SRE=T, method='Kappa', Bin.trans = T, Filt.trans = T)
-PredictionBestModel(GLM=T,GBM=T, GAM=T, CTA=T, ANN=T, MDA=T, MARS=T, RF=T, SRE=T, method='TSS', Bin.trans = T, Filt.trans = T)
+PredictionBestModel(GLM=TRUE,GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, SRE=TRUE, method='Kappa', Bin.trans = TRUE, Filt.trans = TRUE)
+PredictionBestModel(GLM=TRUE,GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, SRE=TRUE, method='TSS', Bin.trans = TRUE, Filt.trans = TRUE)
 
 #or all at once
-PredictionBestModel(GLM=T,GBM=T, GAM=T, CTA=T, ANN=T, MDA=T, MARS=T, RF=T, SRE=T, method='all', Bin.trans = T, Filt.trans = T)
+PredictionBestModel(GLM=TRUE,GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, SRE=TRUE, method='all', Bin.trans = TRUE, Filt.trans = TRUE)
 
 #visualise the objects produced, example for Roc
 load("pred/BestModelByRoc")

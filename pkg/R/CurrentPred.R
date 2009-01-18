@@ -1,5 +1,5 @@
 `CurrentPred` <-
-function(GLM=T, GBM=T, GAM=T, CTA=T, ANN=T, SRE=T, MDA=T, MARS=T, RF=T, BinRoc, BinKappa, BinTSS, FiltRoc, FiltKappa, FiltTSS)
+function(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc, BinKappa, BinTSS, FiltRoc, FiltKappa, FiltTSS)
 {
     algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
     algo.c[names(which(!Biomod.material[["algo.choice"]]))] <- F

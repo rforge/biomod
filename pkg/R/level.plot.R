@@ -1,5 +1,5 @@
 `level.plot` <-
-function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=T, title="level plot"){  
+function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot"){  
     
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n") 
     if(ncol(XY)!=2) stop("\n wrong coordinates given in 'XY' : there should be two columns \n")

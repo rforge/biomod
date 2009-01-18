@@ -1,5 +1,5 @@
 `sre` <-
-function(Response=NULL, Explanatory=NULL, NewData=NULL, Perc025=F, Perc05=F)
+function(Response=NULL, Explanatory=NULL, NewData=NULL, Perc025=FALSE, Perc05=FALSE)
 {
     NbVar <- dim(Explanatory)[2]
     #assign("NbVar", NbVar, where=1)

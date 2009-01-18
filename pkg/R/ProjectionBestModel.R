@@ -1,5 +1,5 @@
 `ProjectionBestModel` <-
-function(Proj.name, Bin.trans=T, Filt.trans=T, method='all')
+function(Proj.name, Bin.trans=TRUE, Filt.trans=TRUE, method='all')
 {
     Th <- c('Kappa','TSS','Roc','all')
     if(sum(Th == method) == 0) stop("\n : uncorrect method name , should be one of 'Kappa' 'TSS' 'Roc' 'all'")

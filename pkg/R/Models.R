@@ -1,7 +1,7 @@
 `Models` <-
-function(GLM=F, TypeGLM=simple, Test=AIC, GBM=F, No.trees= 2000, GAM=F, Spline=3, CTA=F, CV.tree=50,
-ANN=F, CV.ann=5, SRE=F, Perc025=F, Perc05=F, MDA=F, MARS=F, RF=F, NbRunEval=1, DataSplit=100, Yweights=NULL, Roc=F,
-Optimized.Threshold.Roc=F, Kappa=F, TSS=F, KeepPredIndependent=F, VarImport=0)
+function(GLM=FALSE, TypeGLM=simple, Test=AIC, GBM=FALSE, No.trees= 2000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50,
+ANN=FALSE, CV.ann=5, SRE=FALSE, Perc025=FALSE, Perc05=FALSE, MDA=FALSE, MARS=FALSE, RF=FALSE, NbRunEval=1, DataSplit=100, Yweights=NULL, Roc=FALSE,
+Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE, VarImport=0)
 {
     require(nnet, quietly=T)
     require(rpart, quietly=T)

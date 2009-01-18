@@ -95,9 +95,9 @@ Initial.State(Response=Sp.Env[,10:12], Explanatory=Sp.Env[,2:8],
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #this will take several minutes to run
-Models(GLM = T, TypeGLM = "quad", Test = "AIC", GBM = T, No.trees = 3000, GAM = T, CTA = T, CV.tree = 50, 
-ANN = T, CV.ann = 2, SRE = T, Perc025=T, Perc05=F, MDA = T, MARS = T, RF = T, NbRunEval = 1, DataSplit = 80,
-Yweights=NULL, Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T, KeepPredIndependent = F, VarImport=5)
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, GAM = TRUE, CTA = TRUE, CV.tree = 50, 
+ANN = TRUE, CV.ann = 2, SRE = TRUE, Perc025=TRUE, Perc05=FALSE, MDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 1, DataSplit = 80,
+Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5)
 
 #view all the produced objects with ls()
 ls()

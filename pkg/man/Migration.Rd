@@ -50,17 +50,17 @@ Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8],
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models
-Models(GLM = T, TypeGLM = "quad", Test = "AIC", MDA = T, RF = T, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, MARS = F, NbRunEval = 0, DataSplit = 80,
-Roc=T, Optimized.Threshold.Roc=T, Kappa=T, TSS=T)
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
+Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
 
 
 data(Future1)
-Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=T, MDA=T, RF=T, BinTSS=T)
+Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinTSS=TRUE)
 
 
 #We are going to run the Turnover function on the models selected by the TSS for each species
 PredictionBestModel(method="Roc")
-ProjectionBestModel(Proj.name="Future1", method="Roc", Bin.trans=T)
+ProjectionBestModel(Proj.name="Future1", method="Roc", Bin.trans=TRUE)
 
 
 
@@ -76,8 +76,8 @@ cbind(Proj_Future1_BestModelByRoc_Bin[,1], Future1.Migration.BestRoc[,1], Proj_F
 
 
 par(mfrow=c(1,2))
-level.plot(Proj_Future1_BestModelByRoc_Bin[,1], XY=CoorXY, show.scale=F, title="unlimited migration")
-level.plot(Future1.Migration.BestRoc[,1], XY=CoorXY, show.scale=F, title="limited migration")
+level.plot(Proj_Future1_BestModelByRoc_Bin[,1], XY=CoorXY, show.scale=FALSE, title="unlimited migration")
+level.plot(Future1.Migration.BestRoc[,1], XY=CoorXY, show.scale=FALSE, title="limited migration")
 
 
 

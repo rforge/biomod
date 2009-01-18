@@ -44,15 +44,15 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Perc025 = F, Perc05 = F
 data(Sp.Env)
 
 g <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8])
-gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc025=T)
-ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc05=T)
+gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc025=TRUE)
+ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc05=TRUE)
 
 
 par(mfrow=c(1,4))
-level.plot(Sp.Env[,10], XY=CoorXY[,1:2], show.scale=F, title="original data")
-level.plot(g, XY=CoorXY[,1:2], show.scale=F, title="full data calibration")
-level.plot(gg, XY=CoorXY[,1:2], show.scale=F, title="Perc025=T")
-level.plot(ggg, XY=CoorXY[,1:2], show.scale=F, title="Perc05=T")
+level.plot(Sp.Env[,10], XY=CoorXY[,1:2], show.scale=FALSE, title="original data")
+level.plot(g, XY=CoorXY[,1:2], show.scale=FALSE, title="full data calibration")
+level.plot(gg, XY=CoorXY[,1:2], show.scale=FALSE, title="Perc025=TRUE")
+level.plot(ggg, XY=CoorXY[,1:2], show.scale=FALSE, title="Perc05=TRUE")
 
 
 }

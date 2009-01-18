@@ -1,5 +1,5 @@
 `Ensemble.Forecasting` <-
-function(ANN=T,CTA=T,GAM=T,GBM=T,GLM=T,MARS=T,MDA=T,RF=T,SRE=T, Proj.name, weight.method, decay=1.6, PCA.median=T, binary=T, bin.method='Roc', Test=F)
+function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=F)
 {
     if(bin.method!='Roc' && bin.method!='Kappa' && bin.method!='TSS') stop("\n bin.method should be one of 'Roc', 'Kappa' or 'TSS'  \n")
     if(weight.method!='Roc' && weight.method!='Kappa' && weight.method!='TSS') stop("\n weight.method should be one of 'Roc', 'Kappa', or 'TSS' \n") 

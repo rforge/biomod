@@ -1,5 +1,5 @@
 `KappaRepet` <-
-function(Obs, Fit, TSS=F)
+function(Obs, Fit, TSS=FALSE)
 {
 	if(sum(Obs)==0) stop("\n The observed data only contains 0")
 	tab <- as.data.frame(matrix(0, nrow=101, ncol=2))  ### il faut préciser que: "nrow = 101" sinon le data frame se remplit de "NA" au fur et à mesure plutôt que de "0" (et si il y a des NA cela pose problème plus loin).

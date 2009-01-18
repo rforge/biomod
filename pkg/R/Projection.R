@@ -1,6 +1,6 @@
 `Projection` <-
-function(Proj=NULL, Proj.name, GLM=F, GBM=F, GAM=F, CTA=F, ANN=F, SRE=F, Perc025=F, Perc05=F,
-MDA=F, MARS=F, RF=F, BinRoc=F, BinKappa=F, BinTSS=F, FiltRoc=F, FiltKappa=F, FiltTSS=F)
+function(Proj=NULL, Proj.name, GLM=FALSE, GBM=FALSE, GAM=FALSE, CTA=FALSE, ANN=FALSE, SRE=FALSE, Perc025=FALSE, Perc05=FALSE,
+MDA=FALSE, MARS=FALSE, RF=FALSE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE)
 {
     require(nnet, quietly=T)                                                                    
     require(rpart, quietly=T)

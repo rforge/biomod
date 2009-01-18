@@ -1,5 +1,5 @@
 `KappaSRE` <-
-function(Obs, Fit, TSS=F)
+function(Obs, Fit, TSS=FALSE)
 {
 if(sum(Obs)==0) stop("\n\n The observed data only contains 0")
 Misc <- table(Fit, Obs)

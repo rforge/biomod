@@ -1,5 +1,5 @@
 `PredictionBestModel` <-
-function(ANN=T, CTA=T, GAM=T, GBM=T,GLM=T, MARS=T, MDA=T, RF=T, SRE=T, Bin.trans=T, Filt.trans=T, method='all')
+function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, RF=TRUE, SRE=TRUE, Bin.trans=TRUE, Filt.trans=TRUE, method='all')
 {
     Th <- c('Kappa','TSS','Roc', 'all')
     if(sum(Th == method) == 0) stop("\n : uncorrect method name , should be one of 'Kappa' 'TSS' 'Roc'")

@@ -9,11 +9,11 @@
 
 }
 \usage{
-pseudo.abs(coor, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = T, species.name = "Sp1", create.dataset=F, plot = F, acol = "grey80", pcol = "red")
+pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = T, species.name = "Sp1", create.dataset=F, plot = F, acol = "grey80", pcol = "red")
 }
 
 \arguments{
-  \item{coor}{ a 2 columns matrix giving the coordinates of the points (the presences recorded and the whole set of potential absences available) }
+  \item{coor}{ a 2 columns matrix giving the coordinates of the points (the presences recorded and the whole set of potential absences available). It is not needed for the sre strategy. }
   \item{status}{ a vector containing the presence-absence (1-0) information for the coor data. Any point for
    which a "1" is not given will be awarded a zero by default, thus considered an absence }
   \item{strategy}{ the strategy to use for selecting the pseudo-absences (see the examples below): 

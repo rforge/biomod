@@ -1,10 +1,11 @@
 `pseudo.abs` <-
-function(coor, status, env=NULL, strategy='random', distance=0, nb.points=NULL, add.pres=TRUE, 
+function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=NULL, add.pres=TRUE, 
 		    species.name= 'Sp1', create.dataset=FALSE, plot=FALSE, acol='grey80', pcol='red')
 
 {	
-	if(strategy=='sre' && is.null(env)) stop("\n you must enter some environmental data to use the sre method \n")
-	nam <- paste(species.name, strategy, sep='.')
+	if(strategy=='sre' && is.null(env)) stop("\n you must enter some environmental data to use the sre strategy \n")
+	if(strategy!='sre' && is.null(coor) stop("\n you must give the coordinates for this strategy \n")
+  nam <- paste(species.name, strategy, sep='.')
 	pres <- which(status==1)
 	abs <- (1:length(status))[-pres]
 

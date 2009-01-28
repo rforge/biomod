@@ -1,10 +1,12 @@
 `pseudo.abs` <-
 function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=NULL, add.pres=TRUE, 
-		    species.name= 'Sp1', create.dataset=FALSE, plot=FALSE, acol='grey80', pcol='red')
+		    species.name= 'SpNoName', create.dataset=FALSE, plot=FALSE, acol='grey80', pcol='red')
 
 {	
 	if(strategy=='sre' && is.null(env)) stop("\n you must enter some environmental data to use the sre strategy \n")
-	if(strategy!='sre' && is.null(coor) stop("\n you must give the coordinates for this strategy \n")
+	if(strategy!='sre' && is.null(coor)) stop("\n you must enter coordinates for this strategy \n")
+	if(plot && is.null(coor)) stop("\n you must enter coordinates for plotting \n")
+	
   nam <- paste(species.name, strategy, sep='.')
 	pres <- which(status==1)
 	abs <- (1:length(status))[-pres]
@@ -42,7 +44,8 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
       }
 
 	if(add.pres) out.set <- c(pres, abs.set)
-	if(create.dataset) assign(paste("Dataset",nam,sep="."), cbind(coor[out.set,],status[out.set]), pos=1)
+	if(create.dataset) if(is.null(coor)) { assign(paste("Dataset",nam,sep="."), status[out.set], pos=1) 
+                     } else assign(paste("Dataset",nam,sep="."), cbind(coor[out.set,],status[out.set]), pos=1)
 	assign(nam, out.set, pos=1)
 
 	if(plot){

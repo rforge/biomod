@@ -9,7 +9,7 @@
 
 }
 \usage{
-pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = T, species.name = "Sp1", create.dataset=F, plot = F, acol = "grey80", pcol = "red")
+pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = T, species.name = "SpNoName", create.dataset=F, plot = F, acol = "grey80", pcol = "red")
 }
 
 \arguments{

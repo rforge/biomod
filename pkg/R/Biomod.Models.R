@@ -1,6 +1,7 @@
 `Biomod.Models` <-
 function(Model, Ids, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, NbRunEval, Spline, 
-                            DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
+         DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
+         
 {
 
     if(Model == 'GLM') {
@@ -44,7 +45,6 @@ function(Model, Ids, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, 
         size.final <- 0
     }                     
     
-    Run <- ncol(Ids)
     if(Model != 'SRE') AUC.train <- 0
     Kappa.train <- 0
     TSS.train <- 0
@@ -52,7 +52,7 @@ function(Model, Ids, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, 
         
 	
   	#Cross validation
-  	for(k in 1:Run){
+  	for(k in 1:ncol(Ids)){
   	
   	    assign("sp", Ids[,k], pos=1)
   	
@@ -152,13 +152,13 @@ function(Model, Ids, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, 
 	           
 	  
     #mean AUC, decay and size from the calibration
-    if(Model != 'SRE') AUC.train <- AUC.train/Run
-    Kappa.train <- Kappa.train/Run
-    TSS.train <- TSS.train/Run
+    if(Model != 'SRE') AUC.train <- AUC.train/ncol(Ids)
+    Kappa.train <- Kappa.train/ncol(Ids)
+    TSS.train <- TSS.train/ncol(Ids)
     
     if(Model == 'ANN'){
-        decay.final <- decay.final/Run
-        size.final <- size.final/Run          
+        decay.final <- decay.final/ncol(Ids)
+        size.final <- size.final/ncol(Ids)          
     }    
 
     #Final model calibrated on all the data

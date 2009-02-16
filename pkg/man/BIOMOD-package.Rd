@@ -18,9 +18,9 @@ ecosystem...) in function of any explanatory variables.
 \tabular{ll}{
 Package: \tab BIOMOD\cr
 Type: \tab Package\cr
-Version: \tab 1.0-1\cr
-Date: \tab 2009-01-15\cr
-License: \tab GPL \cr
+Version: \tab 1.0-2\cr
+Date: \tab 2009-02-16\cr
+License: \tab GPL-2 \cr
 }
 
 }

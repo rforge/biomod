@@ -20,6 +20,15 @@ MDA=FALSE, MARS=FALSE, RF=FALSE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, Fil
     if(FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { FiltKappa=F; cat("\n Kappa cannot be used to transform probabilities into filtered values, it was not selected in Models()")}
     if(BinTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS=F; cat("\n TSS cannot be used to transform probabilities into binary values, it was not selected in Models()")}
     if(FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { FiltTSS=F; cat("\n TSS cannot be used to transform probabilities into filtered values, it was not selected in Models()")}
+    
+    #checking for the variable name compatibility with initial data
+    nb <- 0
+    for(i in 1:ncol(Proj))
+      if(sum(colnames(Proj)[i]==Biomod.material[["VarNames"]])==1) nb <- nb+1
+    if(nb!=Biomod.material[["NbVar"]]) stop("The variable names given do not correspond to the one used for calibrating the models \n Projections cannot proceed. \n") 
+    
+    #reorder the variables correctly 
+    Proj <- Proj[match(Biomod.material[["VarNames"]],colnames(Proj))]
 
     Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]] <- nrow(Proj)
     assign("Biomod.material", Biomod.material, pos=1)

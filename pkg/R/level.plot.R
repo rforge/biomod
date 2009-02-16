@@ -29,7 +29,7 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
       
       
     #SRCvalues <- c(-2,-1,0,1)
-    #if(sum(match(SRCvalues, data.in)) == length(data.in)){ SRC plot}  
+    #if(sum(match(SRCvalues, unique(data.in))) == length(data.in)){ SRC plot}  
       
       
     g <- gg <- data.in
@@ -44,7 +44,8 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
         par(mar=c(0.1,0.1,0.1,0.1))
         plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE) 
         polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
-        legend(0.2,0.92,legend=list(round(level.range[2], digits=2),'','','','',round(sum(level.range)/4*3, digits=2),'','','','',round(sum(level.range)/2, digits=2),'','','','',round(sum(level.range)/4, digits=2),'','','','',round(level.range[1], digits=2)),cex=1, fill=rev(color.system[c(1,seq(2,101,length.out=19),102)]),bty='n')
+        legend(0.2,0.92,legend=list(round(level.range[2], digits=2),'','','','',round((3*level.range[2]+level.range[1])/4, digits=2),'','','','',round(sum(level.range)/2, digits=2),
+         '','','','',round((level.range[2]+3*level.range[1])/4, digits=2),'','','','',round(level.range[1], digits=2)),cex=1, fill=rev(color.system[c(1,seq(2,101,length.out=19),102)]),bty='n')
     }
      else plot(XY[,2]~XY[,1], col=color.system[gg], pch=19, xlab='', ylab='', xaxt='n', yaxt='n', main=title)  
 }

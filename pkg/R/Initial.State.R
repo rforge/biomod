@@ -29,6 +29,7 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
     assign("DataBIOMOD", cbind(Explanatory, Response), pos=1)
     Biomod.material <- list()
     Biomod.material[["NbVar"]] <- dim(Explanatory)[2]
+    Biomod.material[["VarNames"]] <- colnames(Explanatory)
     Biomod.material[["NbSpecies"]] <- dim(Response)[2]
     Biomod.material[["species.names"]] <- colnames(Response)   
     assign("Biomod.material", Biomod.material, pos=1)

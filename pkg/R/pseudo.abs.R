@@ -4,7 +4,7 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 
 {	
 	if(strategy=='sre' && is.null(env)) stop("\n you must enter some environmental data to use the sre strategy \n")
-	if(strategy!='sre' && is.null(coor)) stop("\n you must enter coordinates for this strategy \n")
+	if(strategy!='sre' && strategy!='random' && is.null(coor)) stop("\n you must enter coordinates for this strategy \n")
 	if(plot && is.null(coor)) stop("\n you must enter coordinates for plotting \n")
 	
   nam <- paste(species.name, strategy, sep='.')
@@ -13,6 +13,7 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 
 	out <- rep(F, length(abs))
 
+  #running the different strategies
 	if(strategy=='random') abs.set <- abs
 	
 	if(strategy=='per'){
@@ -38,20 +39,28 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 		pred <- sre(status, env, env)
 		abs.set <- subset(abs, pred[-(1:length(pres))] == 0)
 	}
-	if(!is.null(nb.points)) {
+	
+	#selecting only a limited number of absences from the whole bank
+	if(!is.null(nb.points)){
 		abs.set <- sample(abs.set,nb.points)
 		nam <- paste(nam, "partial", sep=".")
-      }
-
-	if(add.pres) out.set <- c(pres, abs.set)
-	if(create.dataset) if(is.null(coor)) { assign(paste("Dataset",nam,sep="."), status[out.set], pos=1) 
-                     } else assign(paste("Dataset",nam,sep="."), cbind(coor[out.set,],status[out.set]), pos=1)
-	assign(nam, out.set, pos=1)
-
-	if(plot){
-            x11()
+  }
+  
+  #plotting
+  if(plot){
+    x11()
 		plot(coor[abs.set,2]~coor[abs.set,1], xlim=c(min(coor[,1]), max(coor[,1])), ylim=c(min(coor[,2]), max(coor[,2])), col=acol, xlab="", ylab="", main=nam, xaxt='n', yaxt='n')
 		par(new=T);plot(coor[pres,2]~coor[pres,1], col=pcol, ylim=c(min(coor[,2]), max(coor[,2])), xlim=c(min(coor[,1]), max(coor[,1])), xlab="", ylab="", xaxt='n', yaxt='n')
 	}
+	
+  #creating the final output
+	if(add.pres) out.set <- c(pres, abs.set)
+	if(create.dataset) 
+      if(is.null(coor)) { assign(paste("Dataset",nam,sep="."), status[out.set], pos=1) 
+      } else assign(paste("Dataset",nam,sep="."), cbind(coor[out.set,],status[out.set]), pos=1)
+      
+	assign(nam, out.set, pos=1)
+	return(out.set)
+
 }
 

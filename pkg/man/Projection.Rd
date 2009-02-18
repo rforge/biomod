@@ -35,12 +35,15 @@ Projection(Proj = NULL, Proj.name, GLM = F, GBM = F, GAM = F, CTA = F, ANN = F, 
 
 \Warning{
   From one R session to another and as a general reminder, do think about reloading the objects stored in the .RData file produced by the Models() function.
-  They contain vital information for the models to work properly when called by pther functions such as Projection().
+  They contain vital information for the models to work properly when called by other functions such as Projection().
 }
 
 \details{
   Note that the models set to TRUE need to have been run in the Models function to be able to run with Projection(). 
   Else, they simply won't be taken into account.
+  
+  Also take in consideration that the models can only render predictions and/or projections using the same set of variables 
+  than the ones used to calibrate them. Mind that R is case-sensitive.
 }
 
 \value{

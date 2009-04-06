@@ -11,7 +11,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
     G<-gg<-ggg<-gggg<-ggggg<-gggggg <- matrix(nc=Biomod.material[["NbSpecies"]],nr=Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]],dimnames= list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material[["species.names"]]))
     thm <- thpond <- c()
     
-    ens.choice <- p.choice <- proj.choice
+    ens.choice <- p.choice <- Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]]
     for(j in Biomod.material[["algo"]]) if(!eval(parse(text=j))) ens.choice[j] <- F
     
     for(i in 1:Biomod.material[["NbSpecies"]]){

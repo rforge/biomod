@@ -1,6 +1,6 @@
 `Models` <-
 function(GLM=FALSE, TypeGLM=simple, Test=AIC, GBM=FALSE, No.trees= 2000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50, ANN=FALSE, CV.ann=5, SRE=FALSE, Perc025=FALSE, Perc05=FALSE, MDA=FALSE, MARS=FALSE, RF=FALSE,
-NbRunEval=1, DataSplit=100, PA.selection=FALSE, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
+NbRunEval=1, DataSplit=100, NbRepPA=1, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
     require(nnet, quietly=T)
@@ -35,53 +35,33 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","MDA","RF","SRE")
     Biomod.material[["algo.choice"]] <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
     Biomod.material[["evaluation.choice"]] <- c(Roc=Roc, TSS=TSS, Kappa=Kappa)
+    Biomod.material[["NbRunEval"]] <- NbRunEval
+    Biomod.material[["NbRepPA"]] <- NbRepPA
     assign("Biomod.material", Biomod.material, pos=1)
  
     #run the pseudo.absence function once for each species, keeping all the absences possible each time
     #only the row names are stored in PA.data
-    if(PA.selection){
+    if(NbRepPA > 0){
         PA.data <- vector('list', Biomod.material[["NbSpecies"]])
         names(PA.data) <- Biomod.material[["species.names"]]  
+        Biomod.PA.sample <- PA.data
                  
         for(i in 1:Biomod.material[["NbSpecies"]]){
             PA.data[[i]] <- pseudo.abs(coor=coor, status=DataBIOMOD[,Biomod.material[["NbVar"]]+i], env=DataBIOMOD[,1:Biomod.material[["NbVar"]]], 
               strategy=strategy, distance=distance, nb.points=NULL, add.pres=TRUE, species.name= 'SpNoName', create.dataset=FALSE)                                        
         }
         assign("Biomod.PA.data",PA.data, pos=1)
-     }
+    }
  
     #defining evaluation runs
     if(NbRunEval==0){
         DataSplit <- 100
-        if(!exists("DataEvalBIOMOD")) cat("\n\n Warning : The models will be evaluated on the calibration data only (NbRunEval=0) \n\t it could lead to over-optimistic predictive performances. \n\n")
+        if(!exists("DataEvalBIOMOD")) cat("\n\n Warning : The models will be evaluated on the calibration data only (NbRunEval=0 and no independent data) \n\t it could lead to over-optimistic predictive performances. \n\n")
     }
-    if(DataSplit==100) NbRunEval <- 1
-    Ids <- data.frame(matrix(0, nrow=ceiling(nrow(DataBIOMOD)*(DataSplit/100)), ncol=NbRunEval))
-       
-    
-    
-    
-    
-       
-    #if(PA.selection) array.d <- Biomod.material[["NbSpecies"]] else array.d <- 1   
-    #ARRAY <- array(NA,c(,,,array.d))
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-       
-       
-       
-       
+    if(DataSplit==100) NbRunEval <- 0   
+            
     #create list to store results from some specific models   
     if(GBM | ANN | RF | MARS | MDA) assign('Models.information', list(), pos=1)
-    
     
     #create matrix to store variable importance results
     if(VarImport != 0){
@@ -105,35 +85,87 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     while(i <= Biomod.material[["NbSpecies"]]) {
         cat("#####\t\t\t", Biomod.material[["species.names"]][i], "\t\t\t#####\n")
         assign("i", i, pos= 1)
-        mat <- matrix(NA, nr=nrow(DataBIOMOD), nc=9, dimnames=list(1:nrow(DataBIOMOD), Biomod.material[["algo"]]))
-        if(exists("DataEvalBIOMOD") && KeepPredIndependent) mat.ind <- matrix(NA, nr=nrow(DataEvalBIOMOD), nc=9, dimnames=list(1:nrow(DataEvalBIOMOD), Biomod.material[["algo"]]))
-       
+               
         if(exists("Models.information")){
            Models.information[[Biomod.material[["species.names"]][i]]] <- list()
            assign('Models.information', Models.information, pos=1) 
+        }  
+
+    
+        ########-------PA runs-------#########
+    
+        #check the number of absences wanted compared to those available
+        #for the case where the number of absences wanted is higher than those available -> set NbRepPA.pos to 1 and do a single PA run with all the absences available
+        NbRepPA.pos <- 1
+        if(NbRepPA != 0){
+            NbRepPA.pos <- NbRepPA
+            nbpres <- sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])
+            if(nb.absences > (length(Biomod.PA.data[[i]]) - nbpres)) { 
+                NbRepPA.pos <- 1                                           #############-------ERROR   ---> don't re define nb.absences directly, or else it will be redefined for all the following species too
+                nb.absences <- length(Biomod.PA.data[[i]]) - nbpres        # maybe no need to give the nb.absences info -> take all the data
+            }  
+        }      
+            
+        #constructing the storing array for the species considering nbPA, nbRep, nbAbsences
+        reps <- c()
+        if(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("Eval.rep", j, sep="")) 
+        
+        if(NbRepPA == 0) {
+            ndata <- nrow(DataBIOMOD) 
+            ARRAY <- array(NA, c(ndata, 9, NbRunEval+1), dimnames=list(1:ndata, Biomod.material[["algo"]], c("full.data", reps)))
+            if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind <- array(NA, c(nrow(DataEvalBIOMOD), 9, NbRunEval+1), dimnames=list(1:nrow(DataEvalBIOMOD), Biomod.material[["algo"]], c("total.data", reps)))
+        } else {
+            ndata <- nb.absences + nbpres
+            PAs <- c()
+            if(NbRepPA.pos != 0) for(j in 1:NbRepPA.pos) PAs <- c(PAs, paste("PA.rep", j, sep=""))
+            ARRAY <- array(NA, c(ndata, 9, NbRunEval+1, NbRepPA.pos), dimnames=list(1:ndata, Biomod.material[["algo"]], c("total.data", reps), PAs))
+            if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind <- array(NA, c(nrow(DataEvalBIOMOD), 9, NbRunEval+1, NbRepPA.pos), dimnames=list(1:nrow(DataEvalBIOMOD), Biomod.material[["algo"]], c("total.data", reps), PAs))
+        }   
+
+        assign("ARRAY", ARRAY, pos=1)
+        Ids <- data.frame(matrix(0, nrow=ceiling(ndata*(DataSplit/100)), ncol=NbRunEval))
+        
+
+        for(pa in 1:NbRepPA.pos){
+
+            assign("pa", pa, pos=1)
+            if(NbRepPA != 0) cat("#####\t\t   pseudo-absence run", pa, "       \t\t#####\n")           
+                
+            #defining the data (the lines) to be used for calibration
+            if(NbRepPA == 0) PA.samp <- 1:nrow(DataBIOMOD)
+            else {
+                absamp <- sample((nbpres+1):length(Biomod.PA.data[[i]]), nb.absences)
+                PA.samp <- Biomod.PA.data[[i]][c(1:nbpres,absamp)]
+                
+                rpa <- paste("PA", pa, sep="")
+                Biomod.PA.sample[[i]][[rpa]] <- PA.samp  #storing the lines selected for each PA run 
+            }        
+                
+            #defining the Ids to be selected for the evaluation runs
+            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- SampleMat2(DataBIOMOD[PA.samp,(Biomod.material[["NbVar"]]+i)], DataSplit/100)$calibration
+                   
+            for(a in Biomod.material[["algo"]][Biomod.material[["algo.choice"]]]){
+                
+                  g <- list(Biomod.Models(a, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, NbRunEval, Spline, DataSplit,
+                            Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport))
+                            
+                  if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,pa] <- predind
+                  
+                  if(a=='ANN' | a=='GBM' | a=='RF' | a=='MARS' | a=='MDA'){
+                      Models.information[[Biomod.material[["species.names"]][i]]][[a]][[paste("PA", pa, sep="")]] <- g                     # Models.information[[Biomod.material[["species.names"]][i]]][[paste(a, "_PA", pa, sep="")]]
+                      assign('Models.information', Models.information, pos=1)
+                  } 
+            }    
+            
         }
         
-        if(NbRunEval==1 && DataSplit==100) { Ids <- data.frame(matrix(seq(1:nrow(DataBIOMOD)), ncol=1))
-        } else for(j in 1:NbRunEval) Ids[,j] <- SampleMat2(DataBIOMOD[,Biomod.material[["NbVar"]]+i], DataSplit/100)$calibration
+        assign(paste("Pred_", Biomod.material[["species.names"]][i], sep=""), ARRAY)
+        eval(parse(text=paste("save(Pred_",Biomod.material[["species.names"]][i],", file='", getwd(),"/pred/Pred_",Biomod.material[["species.names"]][i], "')", sep="")))
+        #store the total number of models produced for that species. It will be used by Projection()
+        if(NbRepPA!=0) Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]*dim(ARRAY)[4] else Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]
+                
+        #######--------end-runs-------########
         
-        for(a in Biomod.material[["algo"]][Biomod.material[["algo.choice"]]]){
-            
-              g <- list(Biomod.Models(a, Ids, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, NbRunEval, Spline, DataSplit,
-                        Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport))
-                        
-          
-              mat[,a] <- g.pred
-              if(exists("DataEvalBIOMOD") && KeepPredIndependent) mat.ind[,a] <- predtest
-          
-              if(a=='ANN' | a=='GBM' | a=='RF' | a=='MARS' | a=='MDA'){
-                  Models.information[[Biomod.material[["species.names"]][i]]][a] <- g 
-                  assign('Models.information', Models.information, pos=1)
-              }
-        }  
-       
-        assign(paste("Pred_",Biomod.material[["species.names"]][i], sep=""), mat)
-        write.table(mat, file=paste(getwd(),"/pred/Pred_",Biomod.material[["species.names"]][i],".txt", sep=""), row.names=F)
-        eval(parse(text=paste("save(Pred_",Biomod.material[["species.names"]][i],", file='",getwd(),"/pred/Pred_",Biomod.material[["species.names"]][i], "')", sep="")))
   
         if(exists("DataEvalBIOMOD") && KeepPredIndependent) {
             assign(paste("Pred_",Biomod.material[["species.names"]][i], "_indpdt", sep=""), mat.ind)
@@ -143,7 +175,12 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
   
         i <- i + 1
     }
-    rm(sp, i, g.pred, pos=1)
+    
+    if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
+    
+    rm(i, calib.lines, pos=1, ARRAY)
+    assign("Biomod.material", Biomod.material, pos=1)
+    
     if(exists("Models.information")){
       save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material, Models.information,
         file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else file='Biomod_run.RData')

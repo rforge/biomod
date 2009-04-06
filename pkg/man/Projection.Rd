@@ -7,7 +7,7 @@
 species or land-use classes for other areas, other resolutions or other time scales.
 }
 \usage{
-Projection(Proj = NULL, Proj.name, GLM = F, GBM = F, GAM = F, CTA = F, ANN = F, SRE = F, Perc025 = F, Perc05 = F, MDA = F, MARS = F, RF = F, BinRoc = F, BinKappa = F, BinTSS = F, FiltRoc = F, FiltKappa = F, FiltTSS = F)
+Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, Perc025 = FALSE, Perc05 = TRUE, MDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
 }
 
 \arguments{
@@ -20,8 +20,8 @@ Projection(Proj = NULL, Proj.name, GLM = F, GBM = F, GAM = F, CTA = F, ANN = F, 
   \item{CTA}{ if TRUE, the model will be used to render projections }
   \item{ANN}{ if TRUE, the model will be used to render projections }
   \item{SRE}{ if TRUE, the model will be used to render projections }
-  \item{Perc025}{ if True, the 0.025 extreme percentiles of the response data will not be used by the SRE for calibration}
-  \item{Perc05}{ if True, the 0.05 extreme percentiles of the response data will not be used by the SRE for calibration}
+  \item{Perc025}{ if TRUE, the 0.025 extreme percentiles of the response data will not be used by the SRE for calibration}
+  \item{Perc05}{ if TRUE, the 0.05 extreme percentiles of the response data will not be used by the SRE for calibration}
   \item{MDA}{ if TRUE, the model will be used to render projections }
   \item{MARS}{ if TRUE, the model will be used to render projections }
   \item{RF}{ if TRUE, the model will be used to render projections } 
@@ -31,6 +31,7 @@ Projection(Proj = NULL, Proj.name, GLM = F, GBM = F, GAM = F, CTA = F, ANN = F, 
   \item{FiltRoc}{ set it to TRUE if you want the results to be also produced as filtered values using the Roc curve threshold for all models }
   \item{FiltKappa}{ set it to TRUE if you want the results to be also produced as filtered value using Kappa threshold for all models }
   \item{FiltTSS}{ set it to TRUE if you want the results to be also produced as filtered value using TSS threshold for all models }
+  \item{repetition.models}{ type TRUE to render projections on the 100 percent calibrated model and also on the repetition models. }
 }
 
 \Warning{
@@ -77,7 +78,7 @@ Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TR
 
 #view the results produced, example with the projections in probabilities :
 load("proj.Future1/Proj_Future1_Species2")
-Proj_Future1_Species2[100:150,]
+Proj_Future1_Species2[100:150,,1,1]
 
 
 #and plot them
@@ -87,9 +88,9 @@ load("proj.Future1/Proj_Future1_Species2_FiltKappa")
 
 par(mfrow=c(1,4))
 level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
-level.plot(Proj_Future1_Species2[,"GLM"], CoorXY, show.scale=FALSE, title="probabilities by GLM")
-level.plot(Proj_Future1_Species2_BinKappa[,"GLM"], CoorXY, show.scale=FALSE, title="binary by Kappa")
-level.plot(Proj_Future1_Species2_FiltKappa[,"GLM"], CoorXY, show.scale=FALSE, title="filtered by Kappa")
+level.plot(Proj_Future1_Species2[,"GLM",1,1], CoorXY, show.scale=FALSE, title="probabilities by GLM")
+level.plot(Proj_Future1_Species2_BinKappa[,"GLM",1,1], CoorXY, show.scale=FALSE, title="binary by Kappa")
+level.plot(Proj_Future1_Species2_FiltKappa[,"GLM",1,1], CoorXY, show.scale=FALSE, title="filtered by Kappa")
 
 
 }

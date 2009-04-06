@@ -1,6 +1,6 @@
 `Projection` <-
-function(Proj=NULL, Proj.name, GLM=FALSE, GBM=FALSE, GAM=FALSE, CTA=FALSE, ANN=FALSE, SRE=FALSE, Perc025=FALSE, Perc05=FALSE,
-MDA=FALSE, MARS=FALSE, RF=FALSE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
+function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, Perc025=FALSE, Perc05=TRUE,
+MDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE)
 {
     require(nnet, quietly=T)                                                                    

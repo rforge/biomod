@@ -8,7 +8,7 @@
   performance of the models produced. 
 }
 \usage{
-Models(GLM = F, TypeGLM = simple, Test = AIC, GBM = F, No.trees = 2000, GAM = F, Spline = 3, CTA = F, CV.tree = 50, ANN = F, CV.ann = 5, SRE = F, Perc025 = F, Perc05 = F, MDA = F, MARS = F, RF = F, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = F, Optimized.Threshold.Roc = F, Kappa = F, TSS = F, KeepPredIndependent = F, VarImport = 0)
+Models(GLM = F, TypeGLM = simple, Test = AIC, GBM = F, No.trees = 2000, GAM = F, Spline = 3, CTA = F, CV.tree = 50, ANN = F, CV.ann = 5, SRE = F, Perc025 = F, Perc05 = F, MDA = F, MARS = F, RF = F, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = F, Optimized.Threshold.Roc = F, Kappa = F, TSS = F, KeepPredIndependent = F, VarImport = 0, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
 }
 
 \arguments{
@@ -24,8 +24,8 @@ Models(GLM = F, TypeGLM = simple, Test = AIC, GBM = F, No.trees = 2000, GAM = F,
   \item{ANN}{ type True to run the Artificial Neural Network, or False to switch it off }
   \item{CV.ann}{ number of cross validation for the ANN }
   \item{SRE}{ type True to run the Surface Range Envelope, or False to switch it off }
-  \item{Perc025}{ if True, the 0.025 extreme percentiles of the response data will not be used by the SRE for calibration (see \code{\link{Initial.State}} for further details)}
-  \item{Perc05}{ if True, the 0.05 extreme percentiles of the response data will not be used by the SRE for calibration (see \code{\link{Initial.State}} for further details)}
+  \item{Perc025}{ if True, the 0.025 extreme percentiles of the response data will not be used by the SRE for calibration (see \code{\link{sre}} for further details)}
+  \item{Perc05}{ if True, the 0.05 extreme percentiles of the response data will not be used by the SRE for calibration (see \code{\link{sre}} for further details)}
   \item{MDA}{ type True to run the Mixture Discriminant Analysis, or False to switch it off  }
   \item{MARS}{ type True to run the Multiple Adaptive Regression Splines, or False to switch it off }
   \item{RF}{ type True to run the Random Forest, or False to switch it off }
@@ -40,6 +40,11 @@ Models(GLM = F, TypeGLM = simple, Test = AIC, GBM = F, No.trees = 2000, GAM = F,
   \item{TSS}{ If True, the True Skill Statistic score will be evaluated and a threshold produced for all the models selected and for each species }
   \item{KeepPredIndependent}{ If true, the predictions on the independent data will be saved. Otherwise, only the predictive accuracy on the evaluation set are conserved (NbRunEval) }
   \item{VarImport}{ if True, this parameter enables a direct comparison of the explanatory variable importance across models (see the manual for further explanations) }
+  \item{NbRepPA}{ The number of repetitions for the selection of pseudo absences}
+  \item{strategy}{ the strategy to use for selecting pseudo absences. Can be either "circles", "squares", "per", "random" or "sre". See \code{\link{pseudo.abs}} for details.}
+  \item{coor}{ a dataframe containing environmental variables. Only necessary for the sre strategy of the pseudo absences selection procedure}
+  \item{distance}{ a value giving the distance to use for the "per", "circles" and "squares" strategy of the pseudo absences selection. See \code{\link{pseudo.abs}} for details.}
+  \item{nb.absences}{ the number of pseudo absences wanted to run the models with. They are randomly selected from the pool of pseudo absences available selected by the given strategy.}
 }
 
 \details{
@@ -119,7 +124,7 @@ data(CoorXY)  #this data is needed for the next two plotting functions
 
 load("pred/Pred_Species2")
 x11()
-level.plot(Pred_Species2[,"GLM"], CoorXY)
+level.plot(Pred_Species2[,"GLM",1,1], CoorXY)
 
 for(i in 1:3)
 map.plot(Sp=i, coor=CoorXY, method='Roc', format.type='probs', wanted='prediction' , color.gradient='red')

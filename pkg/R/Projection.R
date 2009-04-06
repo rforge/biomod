@@ -1,6 +1,7 @@
 `Projection` <-
 function(Proj=NULL, Proj.name, GLM=FALSE, GBM=FALSE, GAM=FALSE, CTA=FALSE, ANN=FALSE, SRE=FALSE, Perc025=FALSE, Perc05=FALSE,
-MDA=FALSE, MARS=FALSE, RF=FALSE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE)
+MDA=FALSE, MARS=FALSE, RF=FALSE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
+repetition.models=TRUE)
 {
     require(nnet, quietly=T)                                                                    
     require(rpart, quietly=T)
@@ -12,113 +13,144 @@ MDA=FALSE, MARS=FALSE, RF=FALSE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, Fil
     require(randomForest, quietly=T)
     require(gam, quietly=T)	
 
-    dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=F)
+    dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=F) #showWarnings=F -> permits overwritting of an already existing directory without signaling (dangerous?)
 
-    if(BinRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc=F; cat("\n Roc cannot be used to transform probabilities into binary values, it was not selected in Models()")}
-    if(FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { FiltRoc=F; cat("\n Roc cannot be used to transform probabilities into filtered values, it was not selected in Models()")}   
-    if(BinKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa=F; cat("\n Kappa cannot be used to transform probabilities into binary values, it was not selected in Models()")}
-    if(FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { FiltKappa=F; cat("\n Kappa cannot be used to transform probabilities into filtered values, it was not selected in Models()")}
-    if(BinTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS=F; cat("\n TSS cannot be used to transform probabilities into binary values, it was not selected in Models()")}
-    if(FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { FiltTSS=F; cat("\n TSS cannot be used to transform probabilities into filtered values, it was not selected in Models()")}
+    if(BinRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc=F ; cat("Roc cannot be used to transform probabilities into binary values, it was not selected in Models() \n ")}
+    if(FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { FiltRoc=F ; cat("Roc cannot be used to transform probabilities into filtered values, it was not selected in Models() \n")}   
+    if(BinKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa=F ; cat("Kappa cannot be used to transform probabilities into binary values, it was not selected in Models() \n")}
+    if(FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { FiltKappa=F ; cat("Kappa cannot be used to transform probabilities into filtered values, it was not selected in Models() \n")}
+    if(BinTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS=F ; cat("TSS cannot be used to transform probabilities into binary values, it was not selected in Models() \n")}
+    if(FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { FiltTSS=F ; cat("TSS cannot be used to transform probabilities into filtered values, it was not selected in Models() \n")}
     
     #checking for the variable name compatibility with initial data
     nb <- 0
-    for(i in 1:ncol(Proj))
-      if(sum(colnames(Proj)[i]==Biomod.material[["VarNames"]])==1) nb <- nb+1
-    if(nb!=Biomod.material[["NbVar"]]) stop("The variable names given do not correspond to the one used for calibrating the models \n Projections cannot proceed. \n") 
+    for(i in 1:ncol(Proj)) if(sum(colnames(Proj)[i]==Biomod.material[["VarNames"]]) == 1) nb <- nb+1
+    if(nb != Biomod.material[["NbVar"]]) stop("The variable names given do not correspond to the one used for calibrating the models \n Projections cannot proceed. \n") 
     
     #reorder the variables correctly 
     Proj <- Proj[match(Biomod.material[["VarNames"]],colnames(Proj))]
 
-    Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]] <- nrow(Proj)
-    assign("Biomod.material", Biomod.material, pos=1)
-
-    algo.c <- algo.d <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
-    algo.d['SRE'] <- algo.d['GLM'] <- algo.d['GAM'] <- F
- 
+    #check and error messages for the models that are wanted but not available
+    algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
     w <- names(which(!Biomod.material[["algo.choice"]][names(which(algo.c))]))
-    if(length(w) > 0) cat(paste("\n The following model has not been used to render projections : ", paste(w, sep=" "),"\n it has not been trained \n", sep=""))     
+    ww <- ""
+    for(i in 1:length(w)) ww <- paste(ww, w[i])
+    if(length(w) > 0) cat(paste("\n\n The following models can not be used to render projections : ", ww,"\n they have not been trained in Models() \n\n", sep=""))     
     algo.c[names(which(!Biomod.material[["algo.choice"]]))] <- F
-    assign("proj.choice", algo.c, pos=1) 
-    
+
+    #save information on the projection
+    Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]] <- nrow(Proj)
+    Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]] <- algo.c
+    assign("Biomod.material", Biomod.material, pos=1) 
+
+    #the proj will be transformed for the models set to true in algo.cc. The point of this is for the GAM and GLM which will variably need or not transformations.
     algo.cc <- algo.c
     algo.cc['SRE'] <- F
     
-    i <- 1
-    while(i <= Biomod.material[["NbSpecies"]]){ cat(paste(Biomod.material[["species.names"]][i], " \n"))
-       
-        #create matrices to store projections
-        g <- gg <- ggg <- gggg <- k <- kk <- kkk<- matrix(NA, nrow=nrow(Proj), ncol=9, dimnames=list(seq(nrow(Proj)), Biomod.material[["algo"]])) 
     
-        for(a in Biomod.material[["algo"]][algo.c]){
-            if(a != 'SRE') object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material[["species.names"]][i], "_", a, sep=""))))      
-
-            #établir les projections, cas particuliers de GLM et GAM qui remplissent les matrices en même temps
-            if(a == 'GLM') {
-                if(object$deviance == object$null.deviance) {  algo.cc["GLM"] <- F
-                    if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,i] <- rep(0, nrow(g))
-                    else g[,a] <- gg[,a] <- ggg[,a] <- gggg[,a] <- k[,a] <- kk[,a] <- kkk[,a] <- rep(1000, nrow(g))  #en fait je pense que ça sert à rien vu que c'est refait à l'étape des transformations
-                } else g[,a] <- as.integer(as.numeric(predict.glm(object, Proj, type="response")) *1000)
-            }
-
-            if(a == 'GAM') {
-                if(object$deviance == object$null.deviance) {  algo.cc["GAM"] <- F
-                    if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,i] <- rep(0, nrow(g))
-                    else g[,a] <- gg[,a] <- ggg[,a] <- gggg[,a] <- k[,a] <- kk[,a] <- kkk[,a] <- rep(1000, nrow(g)) 
-                } else g[,a] <- as.integer(as.numeric(predict.gam(object, Proj, type="response")) *1000)
-            }
+    #------- projection loop per species -------#   
+    i <- 1
+    while(i <= Biomod.material[["NbSpecies"]]){ 
+        
+        cat(paste(Biomod.material[["species.names"]][i], " \n"))
+        
+        #------- defining the number of models to use for projecting -------#
+        NbPA <- Biomod.material$NbRun[i] / (Biomod.material$NbRunEval+1)     
+        if(repetition.models) NbProj <- Biomod.material$NbRunEval +1 else NbProj <- 1
+        
+        
+        #------- create arrays to store projections -------#
+        PAs <- reps <- c()
+        if(Biomod.material$NbRunEval != 0) for(j in 1:Biomod.material$NbRunEval) reps <- c(reps, paste("Eval.rep", j, sep="")) 
+        if(Biomod.material$NbRepPA != 0)   for(j in 1:NbPA) PAs <- c(PAs, paste("PA.rep", j, sep=""))
+        
+        ARRAY <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data.model", reps), PAs))
+        g <- gg <- ggg <- gggg <- k <- kk <- kkk    <-   ARRAY
+        
+        #------- looping for PAs, reps, and models -------#    
+        for(j in 1:NbPA){
+            run.name <- paste("PA", j, sep="")
             
-            if(a == 'GBM') g[,a] <- as.integer(as.numeric(predict.gbm(object,Proj,Models.information[[i]]$GBM$best.iter, type='response')) *1000)
-            if(a == 'CTA') g[,a] <- as.integer(as.numeric(predict(object, Proj, type="vector")) *1000)
-            if(a == 'ANN') g[,a] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="raw")), type="range", OriMinMax=Models.information[[i]]$ANN$RawPred) *1000) 
-            if(a == 'SRE') g[,a] <- as.integer(as.numeric(sre(DataBIOMOD[,Biomod.material[["NbVar"]]+i], DataBIOMOD[, 1:Biomod.material[["NbVar"]]], Proj, Perc025, Perc05)) *1000)
-            if(a == 'MDA') g[,a] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="post")[,2]), type="range", OriMinMax=Models.information[[i]]$MDA$RawPred) *1000) 
-            if(a == 'MARS') g[,a] <- as.integer(Rescaler2(as.numeric(predict(object, Proj)), type="range", OriMinMax=Models.information[[i]]$MARS$RawPred) *1000) 
-            if(a == 'RF') g[,a] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="prob")[,2]), type="range", OriMinMax=Models.information[[i]]$RF$RawPred) *1000) 
-            
-            #making the binary and filtered transformations if wanted
-            if(algo.cc[a]){
-                if(BinRoc) gg[,a] <- as.numeric(BinaryTransformation(g[,a], as.numeric(Evaluation.results.Roc[[i]][a,4])))
-                if(FiltRoc) ggg[,a] <- as.numeric(FilteringTransformation(g[,a], as.numeric(Evaluation.results.Roc[[i]][a,4])))
-                if(BinKappa) gggg[,a] <- as.numeric(BinaryTransformation(g[,a], Evaluation.results.Kappa[[i]][a,4]))
-                if(FiltKappa) k[,a] <- as.numeric(FilteringTransformation(g[,a], Evaluation.results.Kappa[[i]][a,4]))
-                if(BinTSS) kk[,a] <- as.numeric(BinaryTransformation(g[,a], Evaluation.results.TSS[[i]][a,4]))
-                if(FiltTSS) kkk[,a] <- as.numeric(FilteringTransformation(g[,a], Evaluation.results.TSS[[i]][a,4]))
-            }
-             ggg[,'SRE']<-k[,'SRE']<-kkk[,'SRE'] <-  g[,'SRE']
-             gg[,'SRE']<-gggg[,'SRE']<-kk[,'SRE'] <-  g[,'SRE']/1000
-        }     
+            for(NP in 1:NbProj){
+                for(a in Biomod.material[["algo"]][algo.c]){
+                
+                    run.name2 <- run.name 
+              
+                    if(a != 'SRE') {
+                      if(NP==1) object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_PA", j, sep=""))))
+                      else { 
+                        object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_PA", j, "_rep", NP-1, sep=""))))
+                        run.name2 <- paste(run.name, "_rep", NP-1, sep="")}
+                    }                   
+        
+                    #------- making the projections with the model loaded -------# Special case of GLM and GAM which fill all arrays at once
+                    if(a == 'GLM') {
+                        if(object$deviance == object$null.deviance) {  
+                            algo.cc["GLM"] <- F    #in this case, the projections need no binary or filtered transformation 
+                            if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,a,NP,j] <- rep(0, nrow(Proj))
+                            else g[,a,NP,j] <- gg[,a,NP,j] <- ggg[,a,NP,j] <- gggg[,a,NP,j] <- k[,a,NP,j] <- kk[,a,NP,j] <- kkk[,a,NP,j] <- rep(1000, nrow(Proj)) 
+                        } else g[,a,NP,j] <- as.integer(as.numeric(predict.glm(object, Proj, type="response")) *1000)
+                    }
+        
+                    if(a == 'GAM') {
+                        if(object$deviance == object$null.deviance) {  
+                            algo.cc["GAM"] <- F    #in this case, the projections need no binary or filtered transformation 
+                            if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,a,NP,j] <- rep(0, nrow(Proj))
+                            else g[,a,NP,j] <- gg[,a,NP,j] <- ggg[,a,NP,j] <- gggg[,a,NP,j] <- k[,a,NP,j] <- kk[,a,NP,j] <- kkk[,a,NP,j] <- rep(1000, nrow(Proj)) 
+                        } else g[,a,NP,j] <- as.integer(as.numeric(predict.gam(object, Proj, type="response")) *1000)
+                    }
+                    
+                    if(a == 'GBM') g[,a,NP,j] <- as.integer(as.numeric(predict.gbm(object, Proj, Models.information[[i]]$GBM[[paste("PA", j, sep="")]][[1]]$best.iter[[run.name2]], type='response')) *1000)
+                    if(a == 'CTA') g[,a,NP,j] <- as.integer(as.numeric(predict(object, Proj, type="vector")) *1000)
+                    if(a == 'ANN') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="raw")), type="range", OriMinMax=Models.information[[i]]$ANN[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'SRE') g[,a,NP,j] <- as.integer(as.numeric(sre(DataBIOMOD[,Biomod.material[["NbVar"]]+i], DataBIOMOD[, 1:Biomod.material[["NbVar"]]], Proj, Perc025, Perc05)) *1000)
+                    if(a == 'MDA') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="post")[,2]), type="range", OriMinMax=Models.information[[i]]$MDA[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'MARS') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj)), type="range", OriMinMax=Models.information[[i]]$MARS[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'RF') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="prob")[,2]), type="range", OriMinMax=Models.information[[i]]$RF[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    
+                    #------- making the binary and filtered transformations if wanted -------#
+                    if(algo.cc[a]){
+                        if(BinRoc) gg[,a,NP,j] <- as.numeric(BinaryTransformation(g[,a,NP,j], as.numeric(Evaluation.results.Roc[[i]][a,4])))
+                        if(FiltRoc) ggg[,a,NP,j] <- as.numeric(FilteringTransformation(g[,a,NP,j], as.numeric(Evaluation.results.Roc[[i]][a,4])))
+                        if(BinKappa) gggg[,a,NP,j] <- as.numeric(BinaryTransformation(g[,a,NP,j], Evaluation.results.Kappa[[i]][a,4]))
+                        if(FiltKappa) k[,a,NP,j] <- as.numeric(FilteringTransformation(g[,a,NP,j], Evaluation.results.Kappa[[i]][a,4]))
+                        if(BinTSS) kk[,a,NP,j] <- as.numeric(BinaryTransformation(g[,a,NP,j], Evaluation.results.TSS[[i]][a,4]))
+                        if(FiltTSS) kkk[,a,NP,j] <- as.numeric(FilteringTransformation(g[,a,NP,j], Evaluation.results.TSS[[i]][a,4]))
+                    }
+                     ggg[,'SRE',NP,j] <- k[,'SRE',NP,j] <- kkk[,'SRE',NP,j] <-  g[,'SRE',NP,j]   #filtered values for SRE = projections by SRE
+                     gg[,'SRE',NP,j] <- gggg[,'SRE',NP,j] <- kk[,'SRE',NP,j] <-  g[,'SRE',NP,j]/1000   #binary values for SRE = projections by SRE /1000
 
-        #exportation des objets créés dans le dossier de travail            
+                } #models       
+            } #NbProj -> coresponds to if repetition models were selected (==1 or ==NbRunEval+1)     
+        } #NbPA 
+        
+
+        #------- exportation of the objects created in the working directory -------#           
         assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i], sep="_"), g)
         eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"')", sep="")))
-        write.table(g, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],".txt", sep=""), row.names=F)
+        #write.table(g, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],".txt", sep=""), row.names=F)
         
         if(BinRoc){assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i],"BinRoc", sep="_"), gg)
-                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinRoc')", sep="")))
-                   write.table(gg, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinRoc.txt", sep=""), row.names=F)}  
+                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinRoc')", sep="")))}  
                     
         if(FiltRoc){assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i],"FiltRoc", sep="_"), ggg)
-                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltRoc')", sep="")))
-                    write.table(ggg, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltRoc.txt", sep=""), row.names=F)}   
+                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltRoc')", sep="")))}   
                          
         if(BinKappa){assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i],"BinKappa", sep="_"), gggg)
-                     eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinKappa')", sep="")))
-                     write.table(gggg, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinKappa.txt", sep=""), row.names=F)}
+                     eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinKappa')", sep="")))}
                      
         if(FiltKappa){assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i],"FiltKappa", sep="_"), k)
-                      eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_", Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltKappa')", sep="")))
-                      write.table(k, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltKappa.txt", sep=""), row.names=F)}
+                      eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_", Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltKappa')", sep="")))}
                       
         if(BinTSS){assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i],"BinTSS", sep="_"), kk)
-                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinTSS')", sep="")))
-                   write.table(kk, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinTSS.txt", sep=""), row.names=F)}
+                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_BinTSS')", sep="")))}
     
         if(FiltTSS){assign(paste("Proj",Proj.name,Biomod.material[["species.names"]][i],"FiltTSS", sep="_"), kkk)
-                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltTSS')", sep="")))
-                    write.table(kkk, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltTSS.txt", sep=""), row.names=F)}
+                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],"_FiltTSS')", sep="")))}
                     
+               
         i <- i+1                                       
-    }
+    }  #while
 }
 
+                      

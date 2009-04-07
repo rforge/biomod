@@ -44,10 +44,12 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     for(k in 1:(ncol(Ids)+1)){
   	    
   	    if(k == (ncol(Ids)+1)) { 
-              m.name <- paste("PA", pa, sep="")
+              if(Biomod.material$NbRepPA==0) m.name <- "full"
+              else m.name <- paste("PA", pa, sep="")
               calib.lines <- pred.lines <- PA.samp 
          } else {
-              m.name <- paste("PA", pa, "_rep", k, sep="")   
+              if(Biomod.material$NbRepPA==0) m.name <- paste("full_rep", k, sep="")
+              else  m.name <- paste("PA", pa, "_rep", k, sep="")  
               calib.lines <- PA.samp[Ids[,k]]
               pred.lines <- PA.samp[-Ids[,k]]
         } 

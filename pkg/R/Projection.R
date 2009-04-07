@@ -69,56 +69,53 @@ repetition.models=TRUE)
         
         #------- looping for PAs, reps, and models -------#    
         for(j in 1:NbPA){
-            run.name <- paste("PA", j, sep="")
+            if(Biomod.material$NbRepPA == 0) run.name <- "full" 
+            else  run.name <- paste("PA", j, sep="")
             
-            for(NP in 1:NbProj){
+            for(NbP in 1:NbProj){
                 for(a in Biomod.material[["algo"]][algo.c]){
-                
-                    run.name2 <- run.name 
-              
-                    if(a != 'SRE') {
-                      if(NP==1) object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_PA", j, sep=""))))
-                      else { 
-                        object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_PA", j, "_rep", NP-1, sep=""))))
-                        run.name2 <- paste(run.name, "_rep", NP-1, sep="")}
-                    }                   
+                    
+                    run.name2 <- run.name
+                    if(NbP > 1) run.name2 <- paste(run.name, "_rep", NbP-1, sep="")
+                    if(a != 'SRE') object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))))
+                 
         
                     #------- making the projections with the model loaded -------# Special case of GLM and GAM which fill all arrays at once
                     if(a == 'GLM') {
                         if(object$deviance == object$null.deviance) {  
                             algo.cc["GLM"] <- F    #in this case, the projections need no binary or filtered transformation 
-                            if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,a,NP,j] <- rep(0, nrow(Proj))
-                            else g[,a,NP,j] <- gg[,a,NP,j] <- ggg[,a,NP,j] <- gggg[,a,NP,j] <- k[,a,NP,j] <- kk[,a,NP,j] <- kkk[,a,NP,j] <- rep(1000, nrow(Proj)) 
-                        } else g[,a,NP,j] <- as.integer(as.numeric(predict.glm(object, Proj, type="response")) *1000)
+                            if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,a,NbP,j] <- rep(0, nrow(Proj))
+                            else g[,a,NbP,j] <- gg[,a,NbP,j] <- ggg[,a,NbP,j] <- gggg[,a,NbP,j] <- k[,a,NbP,j] <- kk[,a,NbP,j] <- kkk[,a,NbP,j] <- rep(1000, nrow(Proj)) 
+                        } else g[,a,NbP,j] <- as.integer(as.numeric(predict.glm(object, Proj, type="response")) *1000)
                     }
         
                     if(a == 'GAM') {
                         if(object$deviance == object$null.deviance) {  
                             algo.cc["GAM"] <- F    #in this case, the projections need no binary or filtered transformation 
-                            if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,a,NP,j] <- rep(0, nrow(Proj))
-                            else g[,a,NP,j] <- gg[,a,NP,j] <- ggg[,a,NP,j] <- gggg[,a,NP,j] <- k[,a,NP,j] <- kk[,a,NP,j] <- kkk[,a,NP,j] <- rep(1000, nrow(Proj)) 
-                        } else g[,a,NP,j] <- as.integer(as.numeric(predict.gam(object, Proj, type="response")) *1000)
+                            if((sum(DataBIOMOD[,Biomod.material[["NbVar"]]+i])/nrow(DataBIOMOD)) < 0.5) g[,a,NbP,j] <- rep(0, nrow(Proj))
+                            else g[,a,NbP,j] <- gg[,a,NbP,j] <- ggg[,a,NbP,j] <- gggg[,a,NbP,j] <- k[,a,NbP,j] <- kk[,a,NbP,j] <- kkk[,a,NbP,j] <- rep(1000, nrow(Proj)) 
+                        } else g[,a,NbP,j] <- as.integer(as.numeric(predict.gam(object, Proj, type="response")) *1000)
                     }
                     
-                    if(a == 'GBM') g[,a,NP,j] <- as.integer(as.numeric(predict.gbm(object, Proj, Models.information[[i]]$GBM[[paste("PA", j, sep="")]][[1]]$best.iter[[run.name2]], type='response')) *1000)
-                    if(a == 'CTA') g[,a,NP,j] <- as.integer(as.numeric(predict(object, Proj, type="vector")) *1000)
-                    if(a == 'ANN') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="raw")), type="range", OriMinMax=Models.information[[i]]$ANN[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
-                    if(a == 'SRE') g[,a,NP,j] <- as.integer(as.numeric(sre(DataBIOMOD[,Biomod.material[["NbVar"]]+i], DataBIOMOD[, 1:Biomod.material[["NbVar"]]], Proj, Perc025, Perc05)) *1000)
-                    if(a == 'MDA') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="post")[,2]), type="range", OriMinMax=Models.information[[i]]$MDA[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
-                    if(a == 'MARS') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj)), type="range", OriMinMax=Models.information[[i]]$MARS[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
-                    if(a == 'RF') g[,a,NP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="prob")[,2]), type="range", OriMinMax=Models.information[[i]]$RF[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'GBM') g[,a,NbP,j] <- as.integer(as.numeric(predict.gbm(object, Proj, Models.information[[i]]$GBM[[paste("PA", j, sep="")]][[1]]$best.iter[[run.name2]], type='response')) *1000)
+                    if(a == 'CTA') g[,a,NbP,j] <- as.integer(as.numeric(predict(object, Proj, type="vector")) *1000)
+                    if(a == 'ANN') g[,a,NbP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="raw")), type="range", OriMinMax=Models.information[[i]]$ANN[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'SRE') g[,a,NbP,j] <- as.integer(as.numeric(sre(DataBIOMOD[,Biomod.material[["NbVar"]]+i], DataBIOMOD[, 1:Biomod.material[["NbVar"]]], Proj, Perc025, Perc05)) *1000)
+                    if(a == 'MDA') g[,a,NbP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="post")[,2]), type="range", OriMinMax=Models.information[[i]]$MDA[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'MARS') g[,a,NbP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj)), type="range", OriMinMax=Models.information[[i]]$MARS[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
+                    if(a == 'RF') g[,a,NbP,j] <- as.integer(Rescaler2(as.numeric(predict(object, Proj, type="prob")[,2]), type="range", OriMinMax=Models.information[[i]]$RF[[paste("PA", j, sep="")]][[1]]$RawPred[[run.name2]]) *1000) 
                     
                     #------- making the binary and filtered transformations if wanted -------#
                     if(algo.cc[a]){
-                        if(BinRoc) gg[,a,NP,j] <- as.numeric(BinaryTransformation(g[,a,NP,j], as.numeric(Evaluation.results.Roc[[i]][a,4])))
-                        if(FiltRoc) ggg[,a,NP,j] <- as.numeric(FilteringTransformation(g[,a,NP,j], as.numeric(Evaluation.results.Roc[[i]][a,4])))
-                        if(BinKappa) gggg[,a,NP,j] <- as.numeric(BinaryTransformation(g[,a,NP,j], Evaluation.results.Kappa[[i]][a,4]))
-                        if(FiltKappa) k[,a,NP,j] <- as.numeric(FilteringTransformation(g[,a,NP,j], Evaluation.results.Kappa[[i]][a,4]))
-                        if(BinTSS) kk[,a,NP,j] <- as.numeric(BinaryTransformation(g[,a,NP,j], Evaluation.results.TSS[[i]][a,4]))
-                        if(FiltTSS) kkk[,a,NP,j] <- as.numeric(FilteringTransformation(g[,a,NP,j], Evaluation.results.TSS[[i]][a,4]))
+                        if(BinRoc) gg[,a,NbP,j] <- as.numeric(BinaryTransformation(g[,a,NbP,j], as.numeric(Evaluation.results.Roc[[i]][a,4])))
+                        if(FiltRoc) ggg[,a,NbP,j] <- as.numeric(FilteringTransformation(g[,a,NbP,j], as.numeric(Evaluation.results.Roc[[i]][a,4])))
+                        if(BinKappa) gggg[,a,NbP,j] <- as.numeric(BinaryTransformation(g[,a,NbP,j], Evaluation.results.Kappa[[i]][a,4]))
+                        if(FiltKappa) k[,a,NbP,j] <- as.numeric(FilteringTransformation(g[,a,NbP,j], Evaluation.results.Kappa[[i]][a,4]))
+                        if(BinTSS) kk[,a,NbP,j] <- as.numeric(BinaryTransformation(g[,a,NbP,j], Evaluation.results.TSS[[i]][a,4]))
+                        if(FiltTSS) kkk[,a,NbP,j] <- as.numeric(FilteringTransformation(g[,a,NbP,j], Evaluation.results.TSS[[i]][a,4]))
                     }
-                     ggg[,'SRE',NP,j] <- k[,'SRE',NP,j] <- kkk[,'SRE',NP,j] <-  g[,'SRE',NP,j]   #filtered values for SRE = projections by SRE
-                     gg[,'SRE',NP,j] <- gggg[,'SRE',NP,j] <- kk[,'SRE',NP,j] <-  g[,'SRE',NP,j]/1000   #binary values for SRE = projections by SRE /1000
+                     ggg[,'SRE',NbP,j] <- k[,'SRE',NbP,j] <- kkk[,'SRE',NbP,j] <-  g[,'SRE',NbP,j]   #filtered values for SRE = projections by SRE
+                     gg[,'SRE',NbP,j] <- gggg[,'SRE',NbP,j] <- kk[,'SRE',NbP,j] <-  g[,'SRE',NbP,j]/1000   #binary values for SRE = projections by SRE /1000
 
                 } #models       
             } #NbProj -> coresponds to if repetition models were selected (==1 or ==NbRunEval+1)     

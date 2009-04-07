@@ -7,13 +7,13 @@ building the model. It therefore permits a direct comparisons of models built us
   
 }
 \usage{
-response.plot(mod, Sp)
+response.plot(model, Data)
 }
 
 \arguments{
-  \item{mod}{ the model for which you want the response curves to be plotted, should be one of GAM, GBM, GLM, ANN, CTA, SRE, RF, MDA MARS.}
-  \item{Sp}{ the species for which you want the response curves to be plotted. A number should be given refering to the column number in the dataset given 
-  in the Response argument of the \code{\link{Initial.State}} function }
+  \item{model}{ the model for which you want the response curves to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, MDA and MARS.}
+  \item{Data}{ the variables for which you want the response curves to be plotted. A data frame is wanted with one column per vriable. They have to have the names 
+   as the ones used to calibrate the model.}
 }
 \details{
   For building such response curves, n-1 variables are set to their median value and only the one
@@ -29,8 +29,10 @@ response.plot(mod, Sp)
 Elith, J., Ferrier, S., Huettmann, F. & Leathwick, J. R. 2005 The evaluation strip: A new and robust method for plotting 
 predicted responses from species distribution models. Ecological Modelling 186, 280-289.
 }
+
 \seealso{ \code{\link{Models}}  }
 \examples{
+
 
 data(Sp.Env)
 
@@ -39,22 +41,32 @@ Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8],
 
 #Let's run only a few models : GLM, MDA and RF. This will take a few moments to run.
 #Do note that the response.plot() function works for all the models available. Feel free to switch them on or off.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80, TSS=TRUE)
-
-#The response plots for the first species modelled
-species=1
-
-response.plot("GLM", Sp=species)
-response.plot("MDA", Sp=species)
-response.plot("RF", Sp=species)	
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80, TSS=TRUE, NbRepPA=0)
 
 
-#for the second species modelled, and so on ...
-species=2
+#The response plots for the first species modelled 
 
-response.plot("GLM", Sp=species)
-response.plot("MDA", Sp=species)
-response.plot("RF", Sp=species)	
+load("models/Species2_GLM_full")
+response.plot(Species2_GLM_full, Sp.Env[2:8])
+
+load("models/Species2_MDA_full")
+response.plot(Species2_MDA_full, Sp.Env[2:8])
+
+load("models/Species2_RF_full")
+response.plot(Species2_RF_full, Sp.Env[2:8])
+
+
+
+#for the second species modelled
+
+load("models/Species3_GLM_full")
+response.plot(Species3_GLM_full, Sp.Env[2:8])
+
+load("models/Species3_MDA_full")
+response.plot(Species3_MDA_full, Sp.Env[2:8])
+
+load("models/Species3_RF_full")
+response.plot(Species3_RF_full, Sp.Env[2:8])
 
 
 }

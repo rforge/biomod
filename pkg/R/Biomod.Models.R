@@ -35,8 +35,6 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     g.list <- list()
         
 	
-	
-	  #################################
 	  #################################
 	
 	  #model loop for repetitions + final model
@@ -134,7 +132,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         
         #running the evaluation procedures for the evaluation runs
         #no extra prediction to be made -> using the g.pred (on full PA.samp) and getting the right lines
-    		if(k!=(ncol(Ids)+1)){            
+    		
+        if(k!=(ncol(Ids)+1)){            
             if(Model == 'SRE'){ 
                 Kappa.train <- Kappa.train + KappaSRE(DataBIOMOD[pred.lines,Biomod.material[["NbVar"]]+i], g.pred[-Ids[,k],])$Kappa 
                 TSS.train <- TSS.train + KappaSRE(DataBIOMOD[pred.lines,Biomod.material[["NbVar"]]+i], g.pred[-Ids[,k],], TSS=T)$TSS 
@@ -154,6 +153,14 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
       		  }
         }
         
+        #saving the evaluation stats for the repetition models  
+        if(k != (ncol(Ids)+1)){
+            if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c('NA', 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, Biomod.material[["NbVar"]]+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,]), digits=3))  
+            if(Kappa) Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c('NA', 'none', KappaRepet(DataBIOMOD[PA.samp, Biomod.material$NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)]) 
+            if(TSS) Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c('NA', 'none', KappaRepet(DataBIOMOD[PA.samp, Biomod.material$NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)])   
+
+        }    
+
         #save the prediction in array
         if(Biomod.material[["NbRepPA"]] == 0){
             if(k == (ncol(Ids)+1)) ARRAY[,Model,1] <- g.pred[,]  else  ARRAY[,Model,(k+1)] <- g.pred[,]
@@ -203,7 +210,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         }
         VarImportance[[i]][Model,] <-  round(1 - (TempVarImp/VarImport), digits=3)
     }
-	 
+	  assign("VarImportance", VarImportance, pos=1)
+	  
 	 
     #Predictions on the independent data if any.
     if(exists("DataEvalBIOMOD")){
@@ -220,23 +228,23 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
 
     #running the evaluation procedures
     if(Roc && Model != 'SRE'){
-        Evaluation.results.Roc[[i]][Model,] <- c(round(AUC.train, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,]), digits=3))  
-	      if(exists("DataEvalBIOMOD")) Evaluation.results.Roc[[i]][Model,2] <- round(somers2(predind,DataEvalBIOMOD[,Biomod.material[["NbVar"]] +i])["C"], digits=3) 
+        Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c(round(AUC.train, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,]), digits=3))  
+	      if(exists("DataEvalBIOMOD")) Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,2] <- round(somers2(predind,DataEvalBIOMOD[,Biomod.material[["NbVar"]] +i])["C"], digits=3) 
         assign("Evaluation.results.Roc", Evaluation.results.Roc, pos=1)
 	  }    
     if(Kappa){
-	      Evaluation.results.Kappa[[i]][Model,] <- c(round(Kappa.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,], TSS=T)[c(1,2,4,6)]) 
-        if(exists("DataEvalBIOMOD")) Evaluation.results.Kappa[[i]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,Biomod.material[["NbVar"]]+i], predind)$Kappa, digits=3) 
+	      Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c(round(Kappa.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,], TSS=T)[c(1,2,4,6)]) 
+        if(exists("DataEvalBIOMOD")) Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,Biomod.material[["NbVar"]]+i], predind)$Kappa, digits=3) 
         assign("Evaluation.results.Kappa", Evaluation.results.Kappa, pos=1)
     }	
     if(TSS){
-	      Evaluation.results.TSS[[i]][Model,] <- c(round(TSS.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,], TSS=T)[c(1,2,4,6)])  
-	      if(exists("DataEvalBIOMOD")) Evaluation.results.TSS[[i]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,Biomod.material[["NbVar"]]+i], predind, TSS=T)$TSS, digits=3) 
+	      Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c(round(TSS.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,Biomod.material[["NbVar"]]+i], g.pred[,], TSS=T)[c(1,2,4,6)])  
+	      if(exists("DataEvalBIOMOD")) Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,Biomod.material[["NbVar"]]+i], predind, TSS=T)$TSS, digits=3) 
         assign("Evaluation.results.TSS", Evaluation.results.TSS, pos=1)
     }
     	
   	if(exists("DataEvalBIOMOD") && KeepPredIndependent) assign("predind", predind, pos=1)
-    assign("VarImportance", VarImportance, pos=1)
+    
                   
     return(g.list)
 }

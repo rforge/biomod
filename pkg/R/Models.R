@@ -72,10 +72,24 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     } else assign("VarImportance", NA, pos=1)
     
     
-    #create output objects to store the results of the evaluation procedures
-    g <- vector('list',Biomod.material[["NbSpecies"]])
-    names(g) <- Biomod.material[["species.names"]]
-    for(i in 1:Biomod.material[["NbSpecies"]]) g[[i]] <- data.frame(matrix(NA, nrow=sum(Biomod.material[["algo.choice"]]), ncol=6, dimnames=list(Biomod.material[["algo"]][Biomod.material[["algo.choice"]]], c('Cross.validation','indepdt.data','Final.model','Cutoff','Sensitivity','Specificity'))))
+    #create output objects to store the results of the evaluation procedures 
+    if(NbRepPA == 0) { PAs <- rep("full", (NbRunEval+1)*Biomod.material$NbSpecies)
+    } else{ PAs <- c() ; for(j in 1:NbRepPA) PAs <- c(PAs, paste("PA", j, sep="")) 
+           PAs <- rep(rep(PAs, each=NbRunEval+1), Biomod.material$NbSpecies)
+    }
+    reps <- ""
+    if(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("rep", j, sep=""))
+    sp <- rep(Biomod.material$species.names, each=length(reps))
+    if(NbRepPA != 0) sp <- rep(sp, each=NbRepPA)
+    reps <- rep(reps, Biomod.material$NbSpecies)
+    if(NbRepPA != 0) reps <- rep(reps, NbRepPA)
+    
+    g <- vector('list',length(reps))
+    gnames <- rep(NA, length(g))
+    for(i in 1:length(g)) if(reps[i]!="") gnames[i] <- paste(sp[i],"_", PAs[i], "_", reps[i], sep="") else gnames[i] <- paste(sp[i],"_", PAs[i], sep="")
+                      
+    for(i in 1:length(g)) g[[i]] <- data.frame(matrix(NA, nrow=sum(Biomod.material$algo.choice), ncol=6, dimnames=list(Biomod.material$algo[Biomod.material$algo.choice], c('Cross.validation','indepdt.data','Final.model','Cutoff','Sensitivity','Specificity'))))
+    names(g) <- gnames
     if(Roc) assign("Evaluation.results.Roc", g, pos=1) else assign("Evaluation.results.Roc", NA, pos=1)
     if(Kappa) assign("Evaluation.results.Kappa", g, pos=1) else assign("Evaluation.results.Kappa", NA, pos=1)
     if(TSS) assign("Evaluation.results.TSS", g, pos=1) else assign("Evaluation.results.TSS", NA, pos=1)

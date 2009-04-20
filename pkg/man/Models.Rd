@@ -8,7 +8,7 @@
   performance of the models produced. 
 }
 \usage{
-Models(GLM = F, TypeGLM = simple, Test = AIC, GBM = F, No.trees = 2000, GAM = F, Spline = 3, CTA = F, CV.tree = 50, ANN = F, CV.ann = 5, SRE = F, Perc025 = F, Perc05 = F, MDA = F, MARS = F, RF = F, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = F, Optimized.Threshold.Roc = F, Kappa = F, TSS = F, KeepPredIndependent = F, VarImport = 0, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
+Models(GLM = F, TypeGLM = "simple", Test = "AIC", GBM = F, No.trees = 2000, GAM = F, Spline = 3, CTA = F, CV.tree = 50, ANN = F, CV.ann = 5, SRE = F, Perc025 = F, Perc05 = F, MDA = F, MARS = F, RF = F, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = F, Optimized.Threshold.Roc = F, Kappa = F, TSS = F, KeepPredIndependent = F, VarImport = 0, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
 }
 
 \arguments{

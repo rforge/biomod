@@ -12,17 +12,17 @@ Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA 
 }
 
 \arguments{
-  \item{ANN}{,}
-  \item{CTA}{,}
-  \item{GAM}{,}
-  \item{GBM}{,}
-  \item{GLM}{,}
-  \item{MARS}{,}
-  \item{MDA}{,}
-  \item{RF}{ and }
-  \item{SRE}{ : if TRUE, the model will be taken into account for making ensemble forecasts (setting a model to False is 
-  usefull if you don't like or trust a model that has high evaluation scores) }
-  \item{Proj.name}{ the name under which the results will be stored }
+  \item{ANN}{ type TRUE if you want this model to be used for building the ensemble forecasts (setting a model to False is usefull if you don't like or trust a model that has high evaluation scores)}
+  \item{CTA}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{GAM}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{GBM}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{GLM}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{MARS}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{MDA}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{RF}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{SRE}{ type TRUE if you want this model to be used for building the ensemble forecasts  }
+  \item{Proj.name}{ the same name used for rendering the projections with the Projection() function. It will be used for loading the projection result files. 
+   It is also the base under which the results will be stored. }
   \item{weight.method}{ the evaluation method you want to make a hierarchie of the models }
   \item{decay}{ will define the relative importance of the weights. A high value will strongly discriminate the 'good' models from the 'bad' ones (see the details section) }
   \item{PCA.median}{ if True, a single model using a standard PCA will be selected to be considered as the best representation of the predictions' variability.
@@ -40,8 +40,10 @@ Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA 
 }
 \value{ 
 
- A list is returned, named after the Proj.name argument (see examples), and several objects are produced in the "proj" folder.
- The list contains the details of the ensemble forecast process for every species modelled. For each species, the information is as follows :
+  Some objects are stored directly on the hard disk in the same directory as for the projections
+
+  A list is returned, named after the Proj.name argument (see examples), and several objects are produced in the "proj" folder.
+  The list contains the details of the ensemble forecast process for every species modelled. For each species, the information is as follows :
 
   \item{stats}{ contains a 2-columns matrix : if Test=T, the first one gives the assumed predictive performance for each consensus method. These scores are
   obtained by applying the same ensemble computation on the current predictions as on the future forecasts, and compared with the data input for that species 

@@ -1,5 +1,5 @@
 `map.plot` <-
-function(Sp, coor, method, format.type, wanted, color.gradient='red', Proj.name=NULL){  
+function(Sp, repnb=1, dim4=1, coor, method, format.type, wanted, color.gradient='red', Proj.name=NULL){  
     
     Th <- c('Kappa','TSS','Roc')
     mod <- c(Biomod.material[["algo"]], 'all')
@@ -25,28 +25,29 @@ function(Sp, coor, method, format.type, wanted, color.gradient='red', Proj.name=
         for(i in seq(93,10,length.out=100)) color.system <- c(color.system, gray(i/100))
         color.system <- c(gray(0.93), color.system, gray(0))
     }
-    if(color.gradient=='blue') {
-        color.system <- c('grey88',
-        rainbow(45, start=0.5, end=0.65),                       
-        rainbow(10, start=0.65, end=0.7),
-        rainbow(45, start=0.7, end=0.85),
-        'red')
-    }
-    if(color.gradient=='red') {    
+    if(color.gradient=='blue')
         color.system <- c(
-        'grey88',
-        c(rep(c(colors()[c(417,417,515)]), each=5),
-        rev(rainbow(55, start=0.13, end=0.23 )),
-        rev(rainbow(50, start=0.08, end=0.13 )[seq(1,50,length.out=15)]),
+        'grey88', 
+        rainbow(45, start=0.5, end=0.65), 
+        rainbow(10, start=0.65, end=0.7), 
+        rainbow(45, start=0.7, end=0.85), 
+        'red')
+        
+    if(color.gradient=='red')  
+        color.system <- c(
+        'grey88', c(
+        rep(c(colors()[c(417,417,515)]), each=5), 
+        rev(rainbow(55, start=0.13, end=0.23 )), 
+        rev(rainbow(50, start=0.08, end=0.13 )[seq(1,50,length.out=15)]), 
         rev(rainbow(50, end=0.08)[seq(1,50,length.out=15)])), 
         'brown2')
-    }
+
 
     if(Biomod.material$evaluation.choice[[method]]){
     vec2 <- vec <- ""
     met <- eval(parse(text=paste("Evaluation.results.", method, sep="")))[[Sp]]
     
-    for(i in 1:sum(Biomod.material[["algo.choice"]])) {
+    for(i in 1:sum(Biomod.material$algo.choice)) {
         vec <- paste(vec, row.names(met)[i], "\n")
         vec2 <- paste(vec2, "  =  ", round(as.numeric(met[i,1]),digits=3), "\n") 
     }                                                                               

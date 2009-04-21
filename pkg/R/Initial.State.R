@@ -16,6 +16,15 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
         }
     }
     if(!is.null(IndependentResponse)) {
+        if(ncol(Response) != ncol(IndependentResponse)) stop("Independent data should have the same number of columns as the data used for calibration")
+        
+        nb <- 0
+        for(i in 1:ncol(IndependentExplanatory)) if(sum(colnames(IndependentExplanatory)[i]==colnames(Explanatory)) == 1) nb <- nb+1
+        if(nb != ncol(Explanatory)) stop("The variable names given in IndependentExplanatory do not correspond to the one used for calibrating the models \n") 
+        
+        #reorder the variables correctly 
+        IndependentExplanatory <- IndependentExplanatory[match(colnames(Explanatory),colnames(IndependentExplanatory))]
+            
         if(is.vector(Response) || is.double(Response)) {
             Response <- as.data.frame(Response)
             dimnames(Response) <- list(seq(dim(Response)[1]), sp.name)

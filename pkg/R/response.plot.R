@@ -16,7 +16,7 @@ function(model, Data){
     par(mar = c(0.1, 0.1, 0.1, 0.1))
     plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
-    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves", class(model)[1], sep=""),col="#4c57eb")
+    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
 
     for(i in 1:NbVar) {

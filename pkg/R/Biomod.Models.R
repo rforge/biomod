@@ -161,12 +161,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
 
         }    
 
-        #save the prediction in array
-        if(Biomod.material[["NbRepPA"]] == 0){
-            if(k == (ncol(Ids)+1)) ARRAY[,Model,1] <- g.pred[,]  else  ARRAY[,Model,(k+1)] <- g.pred[,]
-        } else { 
-            if(k == (ncol(Ids)+1)) ARRAY[,Model,1,pa] <- g.pred[,]  else  ARRAY[,Model,(k+1),pa] <- g.pred[,]
-        }
+        #save the predictions in the array
+        if(k == (ncol(Ids)+1)) Array[,Model,1,pa] <- g.pred[,]  else  Array[,Model,(k+1),pa] <- g.pred[,] 
         
         #saving the model on the hard disk
         if(Model != 'SRE') eval(parse(text=paste("assign('",Biomod.material[["species.names"]][i],"_", Model, "_", m.name,"', model.sp)", sep="")))
@@ -178,7 +174,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     
     }
 	  
-    assign("ARRAY", ARRAY, pos=1)         
+    assign("Array", Array, pos=1)         
 	  
     #mean evaluations from the calibration
     if(Model != 'SRE') AUC.train <- AUC.train/ncol(Ids)
@@ -189,12 +185,12 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     #Evaluation of Predictor Importance in the model:
     if(VarImport > 0){
         cat("Evaluating Predictor Contributions in " , Model, "...", "\n")
-        TempVarImp <- as.data.frame(matrix(data=0, nrow=1, ncol=Biomod.material[["NbVar"]]))
-        names(TempVarImp) <- names(DataBIOMOD)[1:Biomod.material[["NbVar"]]]
+        TempVarImp <- as.data.frame(matrix(data=0, nrow=1, ncol=Biomod.material$NbVar))
+        names(TempVarImp) <- names(DataBIOMOD)[1:Biomod.material$NbVar]
         
-        for(J in 1:Biomod.material[["NbVar"]]){
+        for(J in 1:Biomod.material$NbVar){
             for(K in 1:VarImport){
-                TempDS <- DataBIOMOD[PA.samp,1:Biomod.material[["NbVar"]]]
+                TempDS <- DataBIOMOD[PA.samp,1:Biomod.material$NbVar]
                 TempDS[,J] <- sample(TempDS[,J])
                  
                 if(Model == 'ANN') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler2(as.numeric(predict(model.sp, TempDS, type="raw")), type="range", OriMinMax=range(TempArray)) *1000))

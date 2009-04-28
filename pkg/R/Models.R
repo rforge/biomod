@@ -23,7 +23,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     #check that the weight matrix (if any was specified) was entered correctly:
     if(!is.null(Yweights)){
         if(is.null(dim(Yweights))) Yweights <- as.data.frame(Yweights)
-        if(ncol(Yweights) != Biomod.material[["NbSpecies"]]) stop("The number of 'Weight' columns does not match the number of species. Simulation cannot proceed.")
+        if(ncol(Yweights) != Biomod.material$NbSpecies) stop("The number of 'Weight' columns does not match the number of species. Simulation cannot proceed.")
         if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
     }
     
@@ -34,7 +34,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     #create usefull vectors for condensing code   
     Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","MDA","RF","SRE")
     Biomod.material[["algo.choice"]] <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
-    Biomod.material[["evaluation.choice"]] <- c(Roc=Roc, TSS=TSS, Kappa=Kappa)
+    Biomod.material[["evaluation.choice"]] <- c(Roc=Roc, Kappa=Kappa, TSS=TSS)
     Biomod.material[["NbRunEval"]] <- NbRunEval
     Biomod.material[["NbRepPA"]] <- NbRepPA
     assign("Biomod.material", Biomod.material, pos=1)
@@ -149,8 +149,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
                 absamp <- sample((nbpres+1):length(Biomod.PA.data[[i]]), nb.absences.pos)
                 PA.samp <- Biomod.PA.data[[i]][c(1:nbpres,absamp)]
                 
-                rpa <- paste("PA", pa, sep="")
-                Biomod.PA.sample[[i]][[rpa]] <- PA.samp  #storing the lines selected for each PA run 
+                Biomod.PA.sample[[i]][[paste("PA", pa, sep="")]] <- PA.samp  #storing the lines selected for each PA run 
             }        
                 
             #defining the Ids to be selected for the evaluation runs
@@ -185,10 +184,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         i <- i + 1
     }
     
-    if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
-    
     rm(i, pa, calib.lines, ARRAY, Array, pos=1)
     assign("Biomod.material", Biomod.material, pos=1)
+    if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     
     if(exists("Models.information")){
       save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material, Models.information,

@@ -26,6 +26,7 @@ function(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, MDA=TRUE, M
             for(j in 1:(dim(sp.data)[4])){  #loop by number of pseudo-absences repetitions
                 for(k in 1:(dim(sp.data)[3])){ #loop by number of Datasplit calibration process repetitions
        
+                    #writing the name to use for getting the right info in Evaluation.results lists
                     if(Biomod.material$NbRepPA == 0) nam <- paste(Biomod.material$species.names[i], "_full", sep="") else nam <- paste(Biomod.material$species.names[i], "_PA", j, sep="")
                     if(k!=1) nam <- paste(nam, "_rep", k-1, sep="")
                         

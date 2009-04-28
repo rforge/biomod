@@ -22,8 +22,8 @@ repetition.models=TRUE)
    
     #checking for the variable name compatibility with initial data
     nb <- 0
-    for(i in 1:ncol(Proj)) if(sum(colnames(Proj)[i]==Biomod.material[["VarNames"]]) == 1) nb <- nb+1
-    if(nb != Biomod.material[["NbVar"]]) stop("The variable names given do not correspond to the one used for calibrating the models \n Projections cannot proceed. \n") 
+    for(i in 1:ncol(Proj)) if(sum(colnames(Proj)[i]==Biomod.material$VarNames) == 1) nb <- nb+1
+    if(nb != Biomod.material$NbVar) stop("The variable names given do not correspond to the one used for calibrating the models \n Projections cannot proceed. \n") 
     
     #reorder the variables correctly 
     Proj <- Proj[match(Biomod.material$VarNames, colnames(Proj))]

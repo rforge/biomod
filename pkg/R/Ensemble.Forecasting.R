@@ -1,139 +1,196 @@
-`Ensemble.Forecasting` <-
-function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=F)
+`Ensemble.Forecasting2` <-
+function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE)
 {
+   
     if(bin.method!='Roc' && bin.method!='Kappa' && bin.method!='TSS') stop("\n bin.method should be one of 'Roc', 'Kappa' or 'TSS'  \n")
     if(weight.method!='Roc' && weight.method!='Kappa' && weight.method!='TSS') stop("\n weight.method should be one of 'Roc', 'Kappa', or 'TSS' \n") 
 
-    Th <- c('Roc', 'Kappa', 'TSS')
-    list.out <- vector('list', Biomod.material[["NbSpecies"]])
-    names(list.out) <- Biomod.material[["species.names"]]
-
-    G<-gg<-ggg<-gggg<-ggggg<-gggggg <- matrix(nc=Biomod.material[["NbSpecies"]],nr=Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]],dimnames= list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material[["species.names"]]))
-    thm <- thpond <- c()
+    Th <- c('Roc', 'Kappa', 'TSS')   
     
+    #store the models wanted and shut down the models that cannot run (not trained)
     ens.choice <- p.choice <- Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]]
-    for(j in Biomod.material[["algo"]]) if(!eval(parse(text=j))) ens.choice[j] <- F
+    for(j in Biomod.material$algo) if(!eval(parse(text=j))) ens.choice[j] <- F
     
-    for(i in 1:Biomod.material[["NbSpecies"]]){
-        cat(paste(Biomod.material[["species.names"]][i], " \n"))
-        out <- list()   # for storing the information on weights awarded, evaluation results, pca.median model selected, etc.
+    #create storing list of outputs
+    list.out <- vector('list', Biomod.material$NbSpecies)
+    names(list.out) <- Biomod.material$species.names
+    
+    #final consensus array using all repetitions into a single output
+    ARRAY.fin <- array(NA, c(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$NbSpecies, 6), 
+     dimnames=list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$species.names, c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'))) 
+    
+    #--------- start species loop ---------       
+    for(i in 1:Biomod.material$NbSpecies){
+        cat(paste(Biomod.material$species.names[i], " \n"))
+        
+        if(Test) nbrun <- 2 else nbrun <- 1
+        for(ii in 1:nbrun){
 
-        consensus.mat <- matrix(NA, nr=Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], nc=6)
-        load(paste(getwd(), "/proj.", Proj.name, "/Proj_", Proj.name, "_", Biomod.material[["species.names"]][i], sep=""))      
-        sp.data <- eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material[["species.names"]][i], sep="")))
-        consensus.mat[,1] <- apply(sp.data[,ens.choice], 1, mean)
-        consensus.mat[,3] <- apply(sp.data[,ens.choice], 1, median)
-        
-        if(Test){
-            consensus.test <- matrix(NA, nr=nrow(DataBIOMOD), nc=6)
-            load(paste(getwd(), "/pred/Pred_", Biomod.material[["species.names"]][i], sep=""))      
-            test.data <- eval(parse(text=paste("Pred_", Biomod.material[["species.names"]][i], sep="")))        
-            consensus.test[,1] <- apply(test.data[,ens.choice], 1, mean)
-            consensus.test[,3] <- apply(test.data[,ens.choice], 1, median)
-        }
-        #--------------- defining the weigths        
-        k <- p.choice
-        for(a in Biomod.material[["algo"]]) if(ens.choice[a]) k[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[i]][a,1]) else k[a] <- 0 
-        if(weight.method=='Roc') k['SRE'] <- 0
-        
-        z <-rep(1,sum(k!=0))  
-      	for(j in 2:sum(k!=0)) z[j] <- z[j-1] * decay 
-      	z <- c(rep(0,(9-sum(k!=0))) ,z/sum(z))
-        W <- rep(0,9) 
-        for(m in 1:9) W[m] <- z[sum(k[m]>k)+1]
-    
-        #--------------- applying weights to projections
-        consensus.mat[,2] <- apply((sp.data[,ens.choice]*rep(W[ens.choice], each=Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]])), 1, sum)
-        if(Test) consensus.test[,2] <- apply((test.data[,ens.choice]*rep(W[ens.choice], each=nrow(DataBIOMOD))), 1, sum)
-              
-        if(binary){
-            thmi <- thpondi <- c()
-            for(a in Biomod.material[["algo"]][Biomod.material[["algo.choice"]]]) {
-                thmi    <- c(thmi,    eval(parse(text=paste("Evaluation.results.", bin.method, sep="")))[[Biomod.material[["species.names"]][i]]][a,4])
-                thpondi <- c(thpondi, eval(parse(text=paste("Evaluation.results.", weight.method, sep="")))[[Biomod.material[["species.names"]][i]]][a,4])
+            #load the projection data
+            if(ii==1){
+                load(paste(getwd(), "/proj.", Proj.name, "/Proj_", Proj.name, "_", Biomod.material$species.names[i], sep=""))      
+                sp.data <- eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], sep="")))
+            } else {
+                load(paste(getwd(), "/pred/Pred_", Biomod.material$species.names[i], sep=""))      
+                sp.data <- eval(parse(text=paste("Pred_", Biomod.material$species.names[i], sep="")))
             }
-            thm <- c(thm, mean(as.numeric(thmi), na.rm=T))
-            thpondi[is.na(thpondi)] <- 0
-            thpond <- c(thpond, sum(as.numeric(thpondi)*W[Biomod.material[["algo.choice"]]]))   
-        }
+   
+   
+            #create storing array
+            NbPA <- Biomod.material$NbRun[i] / (Biomod.material$NbRunEval+1)     
+            nbrep <- 1
+            if(repetition.models) nbrep <- nbrep + Biomod.material$NbRunEval
+            ARRAY <- ARRAY.bin <- array(NA, c(dim(sp.data)[1], nbrep*NbPA, 6), dimnames=list(dimnames(sp.data)[1][[1]],rep("NA", nbrep*NbPA), c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean')))   
 
-        if(PCA.median){
-            if(sum(search()=="package:ade4")==0) library(ade4)  
-              
-            cons <- dudi.pca(sp.data[,ens.choice], scale=T, scannf = F, nf=2)
-            pca.select <- colnames(sp.data[,ens.choice])[which.min(abs(cons$co[,2]))]
-            #x11()
-            #s.corcircle(cons$co, lab = colnames(sp.data[,ens.choice]), full = FALSE, box = F, sub=Biomod.material[["species.names"]][i])
-        }
-        
-        #doing the methods' binary results means across models 
-        for(j in 1:3){ if(Biomod.material$evaluation.choice[Th[j]]){
-            kdata <- rep(0, Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]]) 
-            for(k in Biomod.material[["algo"]][ens.choice]) if(k!='SRE') kdata <- kdata + BinaryTransformation(sp.data[,k], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[j], sep="")))[[Biomod.material[["species.names"]][i]]][k,4]))
-            if(SRE) kdata <- kdata + sp.data[,'SRE']/1000
-            consensus.mat[,3+j] <- kdata / sum(ens.choice) *1000
+            #store the thresholds produced by the ensemble forecasts
+            ths <- vector('list', 6)
+            #storing the information on weights awarded, evaluation results, pca.median model selected, etc.
+            out <- list()   
+            out[["weights"]] <-    matrix(NA, nr=nbrep*NbPA, nc=9, dimnames=list(rep("rep", nbrep*NbPA), Biomod.material$algo))
+            out[["PCA.median"]] <- matrix(NA, nr=nbrep*NbPA, nc=1, dimnames=list(rep("rep", nbrep*NbPA), "model.selected"))
+            out[["thresholds"]] <- matrix(NA, nr=6, nc=nbrep*NbPA, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'), rep("rep", nbrep*NbPA)))
             
-            if(Test){
-                gdata <- rep(0, nrow(DataBIOMOD))
-                for(k in Biomod.material[["algo"]][ens.choice]) if(k!='SRE') gdata <- gdata + BinaryTransformation(test.data[,k], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[j], sep="")))[[Biomod.material[["species.names"]][i]]][k,4])) 
-                if(SRE) kdata <- kdata + sp.data[,'SRE']/1000
-                consensus.test[,3+j] <- gdata / sum(ens.choice) *1000
-            }
-        }}
-        
-        #test the methods with AUC
-        if(Test){
-            test <- matrix(nc=1,nr=6,dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'),"score")) 
-            for(j in 1:3) test[j,1] <- somers2(consensus.test[,j], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
-            if(Biomod.material$evaluation.choice["Roc"]) test[4,1] <- somers2(consensus.test[,4], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
-            if(Biomod.material$evaluation.choice["Kappa"]) test[5,1] <- somers2(consensus.test[,5], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
-            if(Biomod.material$evaluation.choice["TSS"]) test[6,1] <- somers2(consensus.test[,6], DataBIOMOD[,Biomod.material[["NbVar"]]+i])["C"]
-        }  
-        
-        G[,i] <- consensus.mat[,1]
-        gg[,i] <- consensus.mat[,2]
-        ggg[,i] <- consensus.mat[,3]
-        gggg[,i] <- consensus.mat[,4]
-        ggggg[,i] <- consensus.mat[,5]
-        gggggg[,i] <- consensus.mat[,6]
-       
-        out[["stats"]] <- matrix(cbind(if(Test)test else rep(NA,6), if(binary) c(thm[i],thpond[i],NA,500,500,500) else rep(NA,6)), nc=2, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'), c("score","threshold"))) 
-        out[["weights"]] <- as.data.frame(rbind(Biomod.material[["algo"]], round(W,digits=4)))
-        if(PCA.median) out[["PCA.median"]] <- pca.select
-        
-        list.out[[i]] <- out
-    }  
-     
-    assign(paste("consensus_", Proj.name, "_mean", sep=""), G)
-    assign(paste("consensus_", Proj.name, "_mean_weighted", sep=""), gg)
-    assign(paste("consensus_", Proj.name, "_median", sep=""), ggg)
-    if(Biomod.material$evaluation.choice["Roc"]) assign(paste("consensus_", Proj.name, "_Roc_mean", sep=""), gggg)
-    if(Biomod.material$evaluation.choice["Kappa"]) assign(paste("consensus_", Proj.name, "_Kappa_mean", sep=""), ggggg)
-    if(Biomod.material$evaluation.choice["TSS"]) assign(paste("consensus_", Proj.name, "_TSS_mean", sep=""), gggggg)
-    
-    eval(parse(text=paste("save(consensus_", Proj.name, "_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_mean_weighted, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean_weighted')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_median, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_median')", sep="")))
-    if(Biomod.material$evaluation.choice["Roc"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Roc_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Roc_mean')", sep="")))
-    if(Biomod.material$evaluation.choice["Kappa"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Kappa_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Kappa_mean')", sep="")))
-    if(Biomod.material$evaluation.choice["TSS"]) eval(parse(text=paste("save(consensus_", Proj.name, "_TSS_mean, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_TSS_mean')", sep="")))
-    
-    
-    if(binary){                                                                              
-    assign(paste("consensus_", Proj.name, "_mean_bin", sep=""), BinaryTransformation(G,as.data.frame(thm))*1000)
-    assign(paste("consensus_", Proj.name, "_mean_weighted_bin", sep=""), BinaryTransformation(gg,as.data.frame(thpond))*1000)
-    if(Biomod.material$evaluation.choice["Roc"]) assign(paste("consensus_", Proj.name, "_Roc_mean_bin", sep=""), BinaryTransformation(gggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
-    if(Biomod.material$evaluation.choice["Kappa"]) assign(paste("consensus_", Proj.name, "_Kappa_mean_bin", sep=""), BinaryTransformation(ggggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
-    if(Biomod.material$evaluation.choice["TSS"]) assign(paste("consensus_", Proj.name, "_TSS_mean_bin", sep=""), BinaryTransformation(gggggg,as.data.frame(rep(500,Biomod.material[["NbSpecies"]])))*1000)
-    
-    eval(parse(text=paste("save(consensus_", Proj.name, "_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean_bin')", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name, "_mean_weighted_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_mean_weighted_bin')", sep="")))
-    if(Biomod.material$evaluation.choice["Roc"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Roc_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Roc_mean_bin')", sep="")))
-    if(Biomod.material$evaluation.choice["Kappa"]) eval(parse(text=paste("save(consensus_", Proj.name, "_Kappa_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_Kappa_mean_bin')", sep="")))
-    if(Biomod.material$evaluation.choice["TSS"]) eval(parse(text=paste("save(consensus_", Proj.name, "_TSS_mean_bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name, "_TSS_mean_bin')", sep="")))
-    }
+            for(j in 1:(Biomod.material$NbRun[i]/(Biomod.material$NbRunEval+1))){   #considering the number of PA runs that were done
+            
+                for(k in 1:nbrep){
+                 
+                    #writing the name to use for getting the right info in Evaluation.results lists
+                    if(Biomod.material$NbRepPA == 0) nam <- "full" else nam <- paste("PA", j, sep="")
+                    if(k!=1) nam <- paste(nam, "_rep", k-1, sep="")
+                    dimnames(ARRAY)[[2]][(j-1)*nbrep+k] <- nam     #assign name to column of array
+                    nam <- paste(Biomod.material$species.names[i], nam, sep="_")
+ 
+                    #defining the data to use as a 2d matrix
+                    cons.data <- sp.data[,ens.choice,k,j]
+                     
+                               
+                    #doing mean and median
+                    ARRAY[, (j-1)*nbrep+k, 'prob.mean'] <- apply(cons.data, 1, mean)
+                    ARRAY[, (j-1)*nbrep+k, 'median']    <- apply(cons.data, 1, median)
       
+      
+                    #doing the methods' binary results' means across models 
+                    for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
+                        #create a vector to accumulate the binary prediction for each model successively 
+                        kdata <- rep(0, dim(sp.data)[1]) 
+                        for(kk in Biomod.material$algo[ens.choice]) if(kk!='SRE') kdata <- kdata + BinaryTransformation(cons.data[,kk], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4]))
+
+                        if(ens.choice['SRE']) kdata <- kdata + cons.data[,'SRE']/1000  #because SRE already in binary
+                        ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- kdata / sum(ens.choice) *1000
+                        
+                        ths[[jj+3]] <- rep(500, nbrep*NbPA)
+                        
+                    }}
+
+
+                    #Calculating the weighted mean
+                    #defining the weigths       
+                    wk <- p.choice
+                    for(a in Biomod.material$algo) if(ens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,3]) else wk[a] <- 0 
+                    if(weight.method=='Roc') wk['SRE'] <- 0
+                    
+                    #calculate the weights
+                    z <-rep(1,sum(wk!=0))  
+                  	for(wj in 2:sum(wk!=0)) z[wj] <- z[wj-1] * decay 
+                  	z <- c(rep(0,(9-sum(wk!=0))) ,z/sum(z)) 
+                    
+                    #determine which weight for which model
+                    W <- rep(0,9)
+                    for(m in 1:9) {
+                      	if(sum(wk[m]==wk)!=1){ #if 2 or more score are identical -> make a mean weight between the ones concerned
+                        		if(wk[m]!=0){
+                                for(nbm in 1:sum(wk[m]==wk)) W[m] <- W[m] + z[sum(wk[m]>wk)+nbm]		
+                                W[m] <- W[m] / sum(wk[m]==wk) 
+                        		} 
+                      	} else W[m] <- z[sum(wk[m]>wk)+1]
+                    }
+                    #applying weights to projections
+                    ARRAY[, (j-1)*nbrep+k, 'prob.mean.weighted'] <- apply((cons.data*rep(W[ens.choice], each=dim(sp.data)[1])), 1, sum)         
+    
+                        
+                    #calculating the weighted threshold to convert the weighted probabilities to binary and/or filtered values     
+                    thmi <- thpondi <- c()
+                    for(a in Biomod.material$algo[ens.choice]) {
+                        thmi    <- c(thmi,    eval(parse(text=paste("Evaluation.results.", bin.method, sep="")))[[nam]][a,4])
+                        thpondi <- c(thpondi, eval(parse(text=paste("Evaluation.results.", weight.method, sep="")))[[nam]][a,4])
+                    }
+                    ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=T))
+                    thpondi[is.na(thpondi)] <- 0
+                    ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[ens.choice]))   
+
+
+                    #determine the model selected by the PCA consensus approach
+                    if(PCA.median){
+                        if(sum(search()=="package:ade4")==0) library(ade4)  
+                          
+                        cons <- dudi.pca(cons.data, scale=T, scannf = F, nf=2)
+                        pca.select <- colnames(cons.data)[which.min(abs(cons$co[,2]))]
+                        #x11() #plotting the pca 
+                        #s.corcircle(cons$co, lab = colnames(sp.data[,ens.choice]), full = FALSE, box = F, sub=Biomod.material$species.names[i])
+                    }    
+      
+                    
+                    #store the information for each run
+                    out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=T), sum(as.numeric(thpondi)*W[ens.choice]) ,NA,500,500,500)
+                    out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)
+                    if(PCA.median) out[["PCA.median"]][(j-1)*nbrep+k, ] <- pca.select
+                    
+                } #repetition k loop    
+            } #PA rep j loop 
+
+
+            rownames(out[["weights"]]) <- colnames(out[["thresholds"]]) <- rownames(out[["PCA.median"]]) <-dimnames(ARRAY)[[2]]
+            list.out[[i]] <- out
+
+
+            if(ii==1){              
+                #save results on hard disk per species    
+                assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, sep=""), ARRAY) 
+                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"')", sep="")))
+        
+                if(binary){
+                    for(j in c(1,2,4,5,6)) {
+                        if(j<4) { ARRAY.bin[,,j] <- BinaryTransformation(ARRAY[,,j], ths[[j]]) 
+                        } else if(Biomod.material$evaluation.choice[Th[j-3]]) ARRAY.bin[,,j] <- BinaryTransformation(ARRAY[,,j], ths[[j]])   #to check if method was chosen
+                    }
+                    assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin", sep=""), ARRAY.bin) 
+                    eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin')", sep="")))
+                    
+                }
+                
+                #Final consensus on all data available
+                ARRAY.fin[, i, 'prob.mean'] <- apply(ARRAY[,,1], 1, mean)
+                ARRAY.fin[, i, 'prob.mean.weighted'] <- apply(ARRAY[,,2], 1, mean)
+                ARRAY.fin[, i, 'median'] <- apply(ARRAY[,,3], 1, median)
+                if(Biomod.material$evaluation.choice[["Roc"]]) ARRAY.fin[, i, 'Roc.mean'] <- apply(ARRAY[,,4], 1, mean)
+                if(Biomod.material$evaluation.choice[["Kappa"]]) ARRAY.fin[, i, 'Kappa.mean'] <- apply(ARRAY[,,5], 1, mean)
+                if(Biomod.material$evaluation.choice[["TSS"]]) ARRAY.fin[, i, 'TSS.mean'] <- apply(ARRAY[,,6], 1, mean)              
+                
+            } 
+            if(ii==2){ #consensus methods done on current data
+                #test the methods with AUC
+                test <- matrix(nc=nbrep*NbPA, nr=6, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'),dimnames(ARRAY)[[2]]))
+
+                for(j in 1:NbPA){
+                    lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
+                    for(k in 1:nbrep)               
+                    
+                        for(m in 1:6){
+                            if(m<4) { test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]   #to check if method was chosen
+                            } else if(Biomod.material$evaluation.choice[Th[m-3]]) test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]    
+                        }  
+                }
+                list.out[[i]][["test.results"]] <- test       
+            } 
+            
+         
+        } #end of ii loop (test or not)       
+    } #end of species i loop 
+    
+    assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.fin) 
+    eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"')", sep="")))
+
     assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
+    eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results')", sep="")))
     return(list.out)
 }
-

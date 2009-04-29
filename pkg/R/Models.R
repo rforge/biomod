@@ -88,7 +88,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     gnames <- rep(NA, length(g))
     for(i in 1:length(g)) if(reps[i]!="") gnames[i] <- paste(sp[i],"_", PAs[i], "_", reps[i], sep="") else gnames[i] <- paste(sp[i],"_", PAs[i], sep="")
                       
-    for(i in 1:length(g)) g[[i]] <- data.frame(matrix(NA, nrow=sum(Biomod.material$algo.choice), ncol=6, dimnames=list(Biomod.material$algo[Biomod.material$algo.choice], c('Cross.validation','indepdt.data','model.score','Cutoff','Sensitivity','Specificity'))))
+    for(i in 1:length(g)) g[[i]] <- data.frame(matrix(NA, nrow=sum(Biomod.material$algo.choice), ncol=6, dimnames=list(Biomod.material$algo[Biomod.material$algo.choice], c('Cross.validation','indepdt.data','total.score','Cutoff','Sensitivity','Specificity'))))
     names(g) <- gnames
     if(Roc) assign("Evaluation.results.Roc", g, pos=1) else assign("Evaluation.results.Roc", NA, pos=1)
     if(Kappa) assign("Evaluation.results.Kappa", g, pos=1) else assign("Evaluation.results.Kappa", NA, pos=1)

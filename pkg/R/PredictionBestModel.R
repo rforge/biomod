@@ -4,57 +4,95 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, R
     Th <- c('Kappa','TSS','Roc', 'all')
     if(sum(Th == method) == 0) stop("\n : uncorrect method name , should be one of 'Kappa' 'TSS' 'Roc'")
     
-    if(method == 'all') for(k in 1:3) PredictionBestModel(ANN, CTA, GAM, GBM, GLM, MARS, MDA, RF, SRE, Bin.trans, Filt.trans, method=Th[k])
-                      
-    else { if(Biomod.material[["evaluation.choice"]][method]){
     
+    #apply the function to the 3 possible transformation methods if all are selected
+    if(method == 'all') for(k in 1:3) PredictionBestModel(ANN, CTA, GAM, GBM, GLM, MARS, MDA, RF, SRE, Bin.trans, Filt.trans, method=Th[k])   #runs the function alternatively for each method
+                 
+    #run the function for one method at a time                  
+    else { if(Biomod.material$evaluation.choice[method]){
+    
+    
+        NbSp <- Biomod.material$NbSpecies
+        SpNames <- Biomod.material$species.names
         algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
-        algo.c[names(which(!Biomod.material[["algo.choice"]]))] <- F
-
-        g <- as.data.frame(matrix(0, nrow=Biomod.material[["NbSpecies"]], ncol=7, dimnames=list(Biomod.material[["species.names"]], c("Best.Model", "Cal", "Eval", "Tot", "CutOff", "Se", "Sp"))))
-        gg <- ggg <- gggg <- matrix(0, nrow= dim(DataBIOMOD)[1], ncol=Biomod.material[["NbSpecies"]], dimnames=list(seq(dim(DataBIOMOD)[1]), Biomod.material[["species.names"]]))
+        algo.c[names(which(!Biomod.material$algo.choice))] <- F  #switch off the models that are wanted but have not been trained    
     
-        #GAM>GLM>GBM>RF>MARS>MDA>CTA>ANN>SRE
-        G <- as.data.frame(matrix(0, ncol=9, nrow=Biomod.material[["NbSpecies"]], dimnames=list(seq(Biomod.material[["NbSpecies"]]), c("GAM", "GLM", "GBM", "RF", "MARS", "MDA", "CTA", "ANN", "SRE"))))
+        gg <- list()
     
         i <- 1
-        while(i <= Biomod.material[["NbSpecies"]]) {
-            if(exists("DataEvalBIOMOD"))   j <- 2   else    j <- 1
-    
-            eval(parse(text=paste("load('", getwd(), "/pred/Pred_", Biomod.material[["species.names"]][i],"')", sep="")))
-            sp.data <- eval(parse(text=paste("Pred_", Biomod.material[["species.names"]][i], sep="")))
-    
-            for(a in Biomod.material[["algo"]][algo.c]) if(a != 'SRE') eval(parse(text=paste("G$", a, "[i] <- Evaluation.results.", method, "[[i]][a,j]", sep="")))
-            temp <- factor(which.max(G[i,]), levels=seq(along=colnames(G)), labels=colnames(G))   
-                                                                                              
-            for(a in Biomod.material[["algo"]][algo.c]){
-                 if(a == temp) {
-                      g[i, 2:7] <- eval(parse(text=paste("Evaluation.results.", method, sep="")))[[i]][a,1:6]
-                      gg[,i] <- sp.data[,a]
-                      if(Bin.trans)  ggg[,i] <- BinaryTransformation(gg[,i], g[i,5])
-                      if(Filt.trans) gggg[,i] <- FilteringTransformation(gg[,i], g[i,5])
-                 }
-            }
-            i <- i + 1
-        }
-        g[,1] <- factor(max.col(G), levels=seq(along=colnames(G)), labels=colnames(G))     
-        
-        assign(paste("BestModelBy",method,sep=""), g)
-        eval(parse(text=paste("save(BestModelBy",method,", file='", getwd(), "/pred/BestModelBy",method,"')", sep="")))
-            write.table(g, file=paste(getwd(),"/pred/BestModelBy",method,".txt", sep=""), row.names=F)
-        
-        assign(paste("PredBestModelBy",method,sep=""), as.data.frame(gg))
-        eval(parse(text=paste("save(PredBestModelBy",method,", file='", getwd(), "/pred/PredBestModelBy",method,"')", sep="")))
-            write.table(gg, file=paste(getwd(),"/pred/PredBestModelBy",method,".txt", sep=""), row.names=F)
+        while(i <= NbSp) {
             
-        if(Bin.trans) {assign(paste("PredBestModelBy",method,"_Bin",sep=""), as.data.frame(ggg))
-        eval(parse(text=paste("save(PredBestModelBy",method,"_Bin, file='", getwd(), "/pred/PredBestModelBy",method,"_Bin')", sep="")))
-            write.table(ggg, file=paste(getwd(),"/pred/PredBestModelBy",method,"_Bin.txt", sep=""), row.names=F)}
-        
-        if(Filt.trans) {assign(paste("PredBestModelBy",method,"_Filt",sep=""), as.data.frame(gggg))
-        eval(parse(text=paste("save(PredBestModelBy",method,"_Filt, file='", getwd(), "/pred/PredBestModelBy",method,"_Filt')", sep="")))
-            write.table(gggg, file=paste(getwd(),"/pred/PredBestModelBy",method,"_Filt.txt", sep=""), row.names=F)}
+            jj <- 3 #if(exists("DataEvalBIOMOD"))   jj <- 2   else    jj <- 3
+   
+            #load prob data from the pred directory
+            eval(parse(text=paste("load('", getwd(), "/pred/Pred_", SpNames[i],"')", sep="")))
+            sp.data <- eval(parse(text=paste("Pred_", SpNames[i], sep="")))
+            
+            
+            #define an order to select models if there are equals : GAM > GLM > GBM > RF > CTA > MDA > MARS > ANN > SRE
+            G <- matrix(0, ncol=9, nrow=Biomod.material$NbRun[i], dimnames=list(1:Biomod.material$NbRun[i], c("GAM", "GLM", "GBM", "RF", "CTA", "MDA", "MARS", "ANN", "SRE")))            
+            #storing info on best model for each species
+            g <- as.data.frame(matrix(0, nrow=Biomod.material$NbRun[i], ncol=7, dimnames=list(1:Biomod.material$NbRun[i], c("Best.Model", 'Cross.validation','indepdt.data','total.score','Cutoff','Sensitivity','Specificity'))))
+            #storing matrices of outputs 
+            MAT.bin <- MAT.filt <- MAT <- matrix(NA, nr=dim(sp.data)[1], nc=Biomod.material$NbRun[i], dimnames=list(1:dim(sp.data)[1], rep(NA,Biomod.material$NbRun[i])))      
     
-    }}
+    
+            NbPA <- Biomod.material$NbRun[i] / (Biomod.material$NbRunEval+1)   #considering the number of PA runs that were done   
+            nbrep <- Biomod.material$NbRunEval + 1
+    
+       
+            for(j in 1:NbPA){
+                for(k in 1:nbrep){ 
+                 
+                    #writing the name to use for getting the right info in Evaluation.results lists
+                    if(Biomod.material$NbRepPA == 0) nam <- "full" else nam <- paste("PA", j, sep="")
+                    if(k!=1) nam <- paste(nam, "_rep", k-1, sep="")
+                    #assign name to column of matrix                    
+                    dimnames(MAT)[[2]][(j-1)*nbrep+k] <- nam 
+                    rownames(g)[(j-1)*nbrep+k] <- nam   
+                    nam <- paste(Biomod.material$species.names[i], nam, sep="_")
+                    
+                    #determine the best model
+                    for(a in Biomod.material$algo[algo.c]) if(a != 'SRE') eval(parse(text=paste("G[(j-1)*nbrep+k, a] <- as.numeric(Evaluation.results.", method, "[[nam]][a,jj])", sep="")))
+                    temp <- factor(which.max(G[(j-1)*nbrep+k,]), levels=seq(along=colnames(G)), labels=colnames(G))   
+                                                                                                      
+                    for(a in Biomod.material$algo[algo.c]){
+                         if(a == temp) {
+                              g[(j-1)*nbrep+k, 2:7] <- eval(parse(text=paste("Evaluation.results.", method, sep="")))[[nam]][a,1:6]
+                              MAT[,(j-1)*nbrep+k] <- sp.data[,a,k,j]
+                              if(Bin.trans)  MAT.bin[,(j-1)*nbrep+k] <- BinaryTransformation(MAT[,(j-1)*nbrep+k], g[(j-1)*nbrep+k,5])
+                              if(Filt.trans) MAT.filt[,(j-1)*nbrep+k] <- FilteringTransformation(MAT[,(j-1)*nbrep+k], g[(j-1)*nbrep+k,5])
+                         }
+                    }
+                    
+                } #nbrep k loop
+            } #NbPA j loop
+          
+                 
+            g[,1] <- factor(max.col(G), levels=seq(along=colnames(G)), labels=colnames(G))     
+            gg[[SpNames[i]]] <- g
+
+            #objects assignations and storage on hard disk           
+            assign(paste("PredBestModelBy",method, "_", SpNames[i],sep=""), as.data.frame(MAT))
+            eval(parse(text=paste("save(PredBestModelBy",method, "_", SpNames[i],", file='", getwd(), "/pred/PredBestModelBy",method, "_", SpNames[i],"')", sep="")))
+            write.table(MAT, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],".txt", sep="")) 
+            
+            if(Bin.trans) {assign(paste("PredBestModelBy",method, "_", SpNames[i],"_Bin",sep=""), as.data.frame(MAT.bin))
+            eval(parse(text=paste("save(PredBestModelBy",method, "_", SpNames[i],"_Bin, file='", getwd(), "/pred/PredBestModelBy",method, "_", SpNames[i],"_Bin')", sep="")))
+            write.table(MAT.bin, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],"_Bin.txt", sep=""))}
+            
+            if(Filt.trans) {assign(paste("PredBestModelBy",method, "_", SpNames[i],"_Filt",sep=""), as.data.frame(MAT.filt))
+            eval(parse(text=paste("save(PredBestModelBy",method, "_", SpNames[i],"_Filt, file='", getwd(), "/pred/PredBestModelBy",method, "_", SpNames[i],"_Filt')", sep="")))
+            write.table(MAT.filt, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],"_Filt.txt", sep=""))}                            
+                    
+            i <- i + 1
+        } #species i loop
+    
+        #saving the list of best models per method
+        assign(paste("BestModelBy",method,sep=""), gg)
+        eval(parse(text=paste("save(BestModelBy",method,", file='", getwd(), "/pred/BestModelBy",method,"')", sep="")))
+    
+    
+    }} #if method !='all' and method available
 }
 

@@ -37,7 +37,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
    
    
             #create storing array
-            NbPA <- Biomod.material$NbRun[i] / (Biomod.material$NbRunEval+1)     
+            NbPA <- Biomod.material$NbRun[i] / (Biomod.material$NbRunEval+1)  #considering the number of PA runs that were done   
             nbrep <- 1
             if(repetition.models) nbrep <- nbrep + Biomod.material$NbRunEval
             ARRAY <- ARRAY.bin <- array(NA, c(dim(sp.data)[1], nbrep*NbPA, 6), dimnames=list(dimnames(sp.data)[1][[1]],rep("NA", nbrep*NbPA), c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean')))   
@@ -50,8 +50,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
             out[["PCA.median"]] <- matrix(NA, nr=nbrep*NbPA, nc=1, dimnames=list(rep("rep", nbrep*NbPA), "model.selected"))
             out[["thresholds"]] <- matrix(NA, nr=6, nc=nbrep*NbPA, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'), rep("rep", nbrep*NbPA)))
             
-            for(j in 1:(Biomod.material$NbRun[i]/(Biomod.material$NbRunEval+1))){   #considering the number of PA runs that were done
-            
+            for(j in 1:NbPA){
                 for(k in 1:nbrep){
                  
                     #writing the name to use for getting the right info in Evaluation.results lists

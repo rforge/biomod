@@ -159,9 +159,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         #saving the evaluation stats for the repetition models  
         if(k != (ncol(Ids)+1)){
             if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines, NbVar+i])["C"], digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
-            if(Kappa) Evaluation.results.Kappa[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],])[1], digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,])[c(1,2,4,6)]) 
-            if(TSS) Evaluation.results.TSS[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],], TSS=T)[1], digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)])   
-
+            if(Kappa) Evaluation.results.Kappa[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],])$Kappa, digits=3),'none',KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,])[c(1,2,4,6)]) 
+            if(TSS) Evaluation.results.TSS[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],], TSS=T)$TSS, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)])   
         }    
 
         #save the predictions in the array
@@ -170,7 +169,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         #saving the model on the hard disk
         if(Model != 'SRE') eval(parse(text=paste("assign('",SpNames[i],"_", Model, "_", m.name,"', model.sp)", sep="")))
   	    if(Model != 'SRE') eval(parse(text=paste("save(",SpNames[i],"_", Model, "_", m.name, ",file='", getwd(), "/models/", SpNames[i],"_", Model, "_", m.name,"')", sep="")))
-    
+
         # saving best.iter for GBM ; Save Minumum and Maxium of the calibration prediction range for rescaling steps:
         if(Model == 'GBM')  eval(parse(text=paste("g.list$best.iter$", m.name," <- best.iter", sep="")))
         if(Model == 'ANN' | Model == 'MDA' | Model == 'MARS' | Model == 'RF') eval(parse(text=paste("g.list$RawPred$", m.name," <- range(TempArray)", sep="")))       

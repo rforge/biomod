@@ -141,7 +141,7 @@ repetition.models=TRUE)
                       eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_", Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa')", sep="")))}
                       
         if(BinTSS){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"BinTSS", sep="_"), kk)
-                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.materialspecies.names[i],"_BinTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS')", sep="")))}
+                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS')", sep="")))}
     
         if(FiltTSS){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"FiltTSS", sep="_"), kkk)
                     eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS')", sep="")))}

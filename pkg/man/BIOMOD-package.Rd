@@ -13,13 +13,17 @@ for instance, future projections under climate and land use change scenarios.
 Alghouth is has been developed for ecologists to predict species distribution, 
 BIOMOD can also be used to model any binomial data (for instance, gene, molecule,
 ecosystem...) in function of any explanatory variables. 
+
+The 1.1-0 version (and on) enables to model your data using only a limited number 
+of zeros, namely pseudo-absences, when the data is incomplete or the absences are
+not assessed.
 }
 \details{
 \tabular{ll}{
 Package: \tab BIOMOD\cr
 Type: \tab Package\cr
-Version: \tab 1.0-2\cr
-Date: \tab 2009-02-16\cr
+Version: \tab 1.1-0\cr
+Date: \tab 2009-05-04\cr
 License: \tab GPL-2 \cr
 }
 

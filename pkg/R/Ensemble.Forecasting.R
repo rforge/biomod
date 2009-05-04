@@ -1,9 +1,10 @@
-`Ensemble.Forecasting2` <-
+`Ensemble.Forecasting` <-
 function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE)
 {
    
     if(bin.method!='Roc' && bin.method!='Kappa' && bin.method!='TSS') stop("\n bin.method should be one of 'Roc', 'Kappa' or 'TSS'  \n")
     if(weight.method!='Roc' && weight.method!='Kappa' && weight.method!='TSS') stop("\n weight.method should be one of 'Roc', 'Kappa', or 'TSS' \n") 
+    if(is.null(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]])) stop("unknown Projection name \n")
 
     Th <- c('Roc', 'Kappa', 'TSS')   
     
@@ -16,7 +17,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
     names(list.out) <- Biomod.material$species.names
     
     #final consensus array using all repetitions into a single output
-    ARRAY.fin <- array(NA, c(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$NbSpecies, 6), 
+    ARRAY.tot <- array(NA, c(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$NbSpecies, 6), 
      dimnames=list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$species.names, c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'))) 
     
     #--------- start species loop ---------       
@@ -35,7 +36,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                 sp.data <- eval(parse(text=paste("Pred_", Biomod.material$species.names[i], sep="")))
             }
    
-   
             #create storing array
             NbPA <- Biomod.material$NbRun[i] / (Biomod.material$NbRunEval+1)  #considering the number of PA runs that were done   
             nbrep <- 1
@@ -50,8 +50,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
             out[["PCA.median"]] <- matrix(NA, nr=nbrep*NbPA, nc=1, dimnames=list(rep("rep", nbrep*NbPA), "model.selected"))
             out[["thresholds"]] <- matrix(NA, nr=6, nc=nbrep*NbPA, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'), rep("rep", nbrep*NbPA)))
             
-            for(j in 1:NbPA){
-                for(k in 1:nbrep){
+            for(j in 1:NbPA){ 
+                for(k in 1:nbrep){ 
                  
                     #writing the name to use for getting the right info in Evaluation.results lists
                     if(Biomod.material$NbRepPA == 0) nam <- "full" else nam <- paste("PA", j, sep="")
@@ -67,7 +67,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                     ARRAY[, (j-1)*nbrep+k, 'prob.mean'] <- apply(cons.data, 1, mean)
                     ARRAY[, (j-1)*nbrep+k, 'median']    <- apply(cons.data, 1, median)
       
-      
                     #doing the methods' binary results' means across models 
                     for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                         #create a vector to accumulate the binary prediction for each model successively 
@@ -80,7 +79,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                         ths[[jj+3]] <- rep(500, nbrep*NbPA)
                         
                     }}
-
 
                     #Calculating the weighted mean
                     #defining the weigths       
@@ -105,7 +103,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                     }
                     #applying weights to projections
                     ARRAY[, (j-1)*nbrep+k, 'prob.mean.weighted'] <- apply((cons.data*rep(W[ens.choice], each=dim(sp.data)[1])), 1, sum)         
-    
                         
                     #calculating the weighted threshold to convert the weighted probabilities to binary and/or filtered values     
                     thmi <- thpondi <- c()
@@ -127,7 +124,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                         #x11() #plotting the pca 
                         #s.corcircle(cons$co, lab = colnames(sp.data[,ens.choice]), full = FALSE, box = F, sub=Biomod.material$species.names[i])
                     }    
-      
                     
                     #store the information for each run
                     out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=T), sum(as.numeric(thpondi)*W[ens.choice]) ,NA,500,500,500)
@@ -140,7 +136,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
 
             rownames(out[["weights"]]) <- colnames(out[["thresholds"]]) <- rownames(out[["PCA.median"]]) <-dimnames(ARRAY)[[2]]
             list.out[[i]] <- out
-
 
             if(ii==1){              
                 #save results on hard disk per species    
@@ -158,12 +153,16 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                 }
                 
                 #Final consensus on all data available
-                ARRAY.fin[, i, 'prob.mean'] <- apply(ARRAY[,,1], 1, mean)
-                ARRAY.fin[, i, 'prob.mean.weighted'] <- apply(ARRAY[,,2], 1, mean)
-                ARRAY.fin[, i, 'median'] <- apply(ARRAY[,,3], 1, median)
-                if(Biomod.material$evaluation.choice[["Roc"]]) ARRAY.fin[, i, 'Roc.mean'] <- apply(ARRAY[,,4], 1, mean)
-                if(Biomod.material$evaluation.choice[["Kappa"]]) ARRAY.fin[, i, 'Kappa.mean'] <- apply(ARRAY[,,5], 1, mean)
-                if(Biomod.material$evaluation.choice[["TSS"]]) ARRAY.fin[, i, 'TSS.mean'] <- apply(ARRAY[,,6], 1, mean)              
+                if(dim(ARRAY)[2] != 1){ #if only one PA was done  there is no further calculation possible
+                
+                    ARRAY.tot[, i, 'prob.mean'] <- apply(ARRAY[,,1], 1, mean)
+                    ARRAY.tot[, i, 'prob.mean.weighted'] <- apply(ARRAY[,,2], 1, mean)
+                    ARRAY.tot[, i, 'median'] <- apply(ARRAY[,,3], 1, median)
+                    if(Biomod.material$evaluation.choice[["Roc"]]) ARRAY.tot[, i, 'Roc.mean'] <- apply(ARRAY[,,4], 1, mean)
+                    if(Biomod.material$evaluation.choice[["Kappa"]]) ARRAY.tot[, i, 'Kappa.mean'] <- apply(ARRAY[,,5], 1, mean)
+                    if(Biomod.material$evaluation.choice[["TSS"]]) ARRAY.tot[, i, 'TSS.mean'] <- apply(ARRAY[,,6], 1, mean) 
+                } else ARRAY.tot[,i,] <- ARRAY[,1,]
+                             
                 
             } 
             if(ii==2){ #consensus methods done on current data
@@ -186,10 +185,13 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
         } #end of ii loop (test or not)       
     } #end of species i loop 
     
-    assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.fin) 
+    assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.tot) 
     eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"')", sep="")))
 
     assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
     eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results')", sep="")))
+
+    cat("\n") 
+    cat(paste("consensus_", Proj.name,"_results \n", sep=""))
     return(list.out)
 }

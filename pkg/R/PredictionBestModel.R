@@ -57,7 +57,7 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, R
                     temp <- factor(which.max(G[(j-1)*nbrep+k,]), levels=seq(along=colnames(G)), labels=colnames(G))   
                                                                                                       
                     for(a in Biomod.material$algo[algo.c]){
-                         if(a == temp) {
+                         if(a == temp){
                               g[(j-1)*nbrep+k, 2:7] <- eval(parse(text=paste("Evaluation.results.", method, sep="")))[[nam]][a,1:6]
                               MAT[,(j-1)*nbrep+k] <- sp.data[,a,k,j]
                               if(Bin.trans)  MAT.bin[,(j-1)*nbrep+k] <- BinaryTransformation(MAT[,(j-1)*nbrep+k], g[(j-1)*nbrep+k,5])
@@ -68,31 +68,35 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, R
                 } #nbrep k loop
             } #NbPA j loop
           
-                 
+            colnames(MAT.bin) <- colnames(MAT.filt) <- colnames(MAT)     
             g[,1] <- factor(max.col(G), levels=seq(along=colnames(G)), labels=colnames(G))     
             gg[[SpNames[i]]] <- g
 
             #objects assignations and storage on hard disk           
             assign(paste("PredBestModelBy",method, "_", SpNames[i],sep=""), as.data.frame(MAT))
             eval(parse(text=paste("save(PredBestModelBy",method, "_", SpNames[i],", file='", getwd(), "/pred/PredBestModelBy",method, "_", SpNames[i],"')", sep="")))
-            write.table(MAT, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],".txt", sep="")) 
+            write.table(MAT, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],".txt", sep=""), row.names=F) 
             
-            if(Bin.trans) {assign(paste("PredBestModelBy",method, "_", SpNames[i],"_Bin",sep=""), as.data.frame(MAT.bin))
+            if(Bin.trans) {
+            assign(paste("PredBestModelBy",method, "_", SpNames[i],"_Bin",sep=""), as.data.frame(MAT.bin))
             eval(parse(text=paste("save(PredBestModelBy",method, "_", SpNames[i],"_Bin, file='", getwd(), "/pred/PredBestModelBy",method, "_", SpNames[i],"_Bin')", sep="")))
-            write.table(MAT.bin, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],"_Bin.txt", sep=""))}
+            write.table(MAT.bin, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],"_Bin.txt", sep=""), row.names=F)
+            }
             
-            if(Filt.trans) {assign(paste("PredBestModelBy",method, "_", SpNames[i],"_Filt",sep=""), as.data.frame(MAT.filt))
+            if(Filt.trans) {
+            assign(paste("PredBestModelBy",method, "_", SpNames[i],"_Filt",sep=""), as.data.frame(MAT.filt))
             eval(parse(text=paste("save(PredBestModelBy",method, "_", SpNames[i],"_Filt, file='", getwd(), "/pred/PredBestModelBy",method, "_", SpNames[i],"_Filt')", sep="")))
-            write.table(MAT.filt, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],"_Filt.txt", sep=""))}                            
+            write.table(MAT.filt, file=paste(getwd(),"/pred/PredBestModelBy",method, "_", SpNames[i],"_Filt.txt", sep=""), row.names=F)
+            }                            
                     
             i <- i + 1
         } #species i loop
     
         #saving the list of best models per method
-        assign(paste("BestModelBy",method,sep=""), gg)
+        assign(paste("BestModelBy", method, sep=""), gg)
         eval(parse(text=paste("save(BestModelBy",method,", file='", getwd(), "/pred/BestModelBy",method,"')", sep="")))
     
     
-    }} #if method !='all' and method available
+    }}
 }
 

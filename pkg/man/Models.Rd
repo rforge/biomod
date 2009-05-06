@@ -42,7 +42,7 @@ Models(GLM = F, TypeGLM = "simple", Test = "AIC", GBM = F, No.trees = 2000, GAM 
   \item{VarImport}{ if True, this parameter enables a direct comparison of the explanatory variable importance across models (see the manual for further explanations) }
   \item{NbRepPA}{ The number of repetitions for the selection of pseudo absences}
   \item{strategy}{ the strategy to use for selecting pseudo absences. Can be either "circles", "squares", "per", "random" or "sre". See \code{\link{pseudo.abs}} for details.}
-  \item{coor}{ a dataframe containing environmental variables. Only necessary for the sre strategy of the pseudo absences selection procedure}
+  \item{coor}{ a two columned matrix giving the coordinates of your data points. It is needed for the "per", "circles" and "squares" strategies}
   \item{distance}{ a value giving the distance to use for the "per", "circles" and "squares" strategy of the pseudo absences selection. See \code{\link{pseudo.abs}} for details.}
   \item{nb.absences}{ the number of pseudo absences wanted to run the models with. They are randomly selected from the pool of pseudo absences available selected by the given strategy.}
 }

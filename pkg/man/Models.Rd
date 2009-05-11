@@ -102,7 +102,8 @@ IndependentResponse=NULL, IndependentExplanatory=NULL)
 #this will take several minutes to run
 Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, GAM = TRUE, CTA = TRUE, CV.tree = 50, 
 ANN = TRUE, CV.ann = 2, SRE = TRUE, Perc025=TRUE, Perc05=FALSE, MDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 1, DataSplit = 80,
-Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5)
+Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5, 
+NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
 
 #view all the produced objects with ls()
 ls()
@@ -111,12 +112,14 @@ ls()
 VarImportance
 
 #You can load back a model and visualise it with the load() function :
-load("models/Species2_ANN")
-Species2_ANN
+load("models/Species2_ANN_full")
+Species2_ANN_full
 
 #Other functions of the BIOMOD package are very usefull to visualise the different outputs produced. Here are only a few examples :
 
-response.plot("GLM", Sp=1)
+load("models/Species2_GLM_full")
+response.plot(Species2_GLM_full, Sp.Env[2:8])
+
 
 data(CoorXY)  #this data is needed for the next two plotting functions
               #Note that, in our case, the data loaded already has the right name for working

@@ -7,33 +7,33 @@
   evaluated by Roc, Kappa or TSS.
 }
 \usage{
-PredictionBestModel(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA = T, RF = T, SRE = T, Bin.trans = T, Filt.trans = T, method = "all")
-}
+PredictionBestModel(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, MDA = TRUE, RF = TRUE, SRE = TRUE, Bin.trans = TRUE, Filt.trans = TRUE, method = "all")
+}                                                                                                                   
 
 \arguments{
-  \item{ANN}{,} 
-  \item{CTA}{,} 
-  \item{GAM}{,} 
-  \item{GBM}{,} 
-  \item{GLM}{,}
-  \item{MARS}{,} 
-  \item{MDA}{,}
-  \item{RF}{and} 
-  \item{SRE}{ : select the models by typing True or False to be taken into account for selecting the best model (setting to False is usefull 
-  if you don't like a model that has high evaluation scores) }
+  \item{ANN}{type True for that model to be taken into account for selecting the best model (setting to False is usefull if you don't like a model that has high evaluation scores)} 
+  \item{CTA}{type True for that model to be taken into account for selecting the best model} 
+  \item{GAM}{type True for that model to be taken into account for selecting the best model} 
+  \item{GBM}{type True for that model to be taken into account for selecting the best model} 
+  \item{GLM}{type True for that model to be taken into account for selecting the best model}
+  \item{MARS}{type True for that model to be taken into account for selecting the best model} 
+  \item{MDA}{type True for that model to be taken into account for selecting the best model}
+  \item{RF}{type True for that model to be taken into account for selecting the best model} 
+  \item{SRE}{ type True for that model to be taken into account for selecting the best model }
   \item{Bin.trans}{ type True to have the predictions also converted into binary values}
   \item{Filt.trans}{ type True to have the predictions also converted into filtered values }
-  \item{method}{ the evaluation method you want to use, can be 'Roc', 'Kappa', 'TSS' or 'all'. If 'all' is selected, then
-  the best model will be chosen independently for each evaluation method}
+  \item{method}{ the evaluation method you want to use, can be 'Roc', 'Kappa', 'TSS' or 'all'. If 'all', the best model will be chosen independently for each evaluation method}
 }
 \details{
-  
+  The models selected but that have not been run in Models are automatically switched off. In the same line, the binary and 
+  filtered procedures are only done for the evaluation methods that have been selected in Models()
 }
 \value{
   No values are returned but objects are produced in the "pred" folder (see \code{\link{Models}}).
-  Example of PredBestModelByKappa (but all follow the same logic) : a matrix with a column per species
-  containing the predictions in probabilities using the Kappa scores to select the best model. The predictions
-  can also be obtained in binary and filtered values (additionnal matrices are thus produced).  
+  Example of PredBestModelByKappa_Species4 (but all follow the same logic) : a matrix with a column per run
+  containing the predictions in probabilities using the Kappa scores to select the best model for Species4. 
+  The results are stored individually for each species for format conflicts reasons. The predictions can also 
+  be obtained in binary and filtered values (additionnal matrices are thus produced).  
 }
 \references{
 Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and projecting potential future shifts under global change. Global Change Biology 9, 1353-1362.
@@ -46,27 +46,36 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 \examples{
 
 data(Sp.Env)
+data(CoorXY)
+
 Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#This line will only run a few models
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
-Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
+#This line will only run a few models. Here we will have 12 runs per species.
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 #you can do the evaluation techique individually
-PredictionBestModel(GLM=TRUE,GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, SRE=TRUE, method='Kappa', Bin.trans = TRUE, Filt.trans = TRUE)
-PredictionBestModel(GLM=TRUE,GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, SRE=TRUE, method='TSS', Bin.trans = TRUE, Filt.trans = TRUE)
+PredictionBestModel(method='Kappa', Bin.trans=TRUE, Filt.trans=TRUE)
+PredictionBestModel(method='TSS', Bin.trans=TRUE, Filt.trans=TRUE)
 
 #or all at once
-PredictionBestModel(GLM=TRUE,GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, SRE=TRUE, method='all', Bin.trans = TRUE, Filt.trans = TRUE)
+PredictionBestModel(method='all', Bin.trans = TRUE, Filt.trans = TRUE)
 
 #visualise the objects produced, example for Roc
+#The results appear for each run that has been done
 load("pred/BestModelByRoc")
 BestModelByRoc
 
-load("pred/PredBestModelByRoc_Filt")
-PredBestModelByRoc_Filt[50:100,]
+#The prediction data is stored individually for each species
+#each evaluation method and each format produced (in contrary to the
+#outputs of ProjectionBestModel).
+load("pred/PredBestModelByRoc_Species2_Filt")
+PredBestModelByRoc_Species2_Filt[50:100,]
 
+load("pred/PredBestModelByKappa_Species3_Filt")
+PredBestModelByKappa_Species3_Filt[50:100,]
 
 }
 

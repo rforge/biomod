@@ -7,19 +7,19 @@
   by the Models() function of Biomod for current data.
 }
 \usage{
-CurrentPred(GLM=T, GBM=T, GAM=T, CTA=T, ANN=T, SRE=T, MDA=T, MARS=T, RF=T, BinRoc, BinKappa, BinTSS, FiltRoc, FiltKappa, FiltTSS)
+CurrentPred(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE)
 }
 
 \arguments{
-  \item{GLM}{see ANN}
-  \item{GAM}{see ANN}
-  \item{GBM}{see ANN}
-  \item{CTA}{see ANN}
-  \item{RF}{see ANN}
-  \item{MDA}{see ANN}
-  \item{SRE}{see ANN}
-  \item{MARS}{see ANN}
-  \item{ANN}{ select the models by typing True or False for which you want the predictions to be produced in binary and/or filtered format}
+  \item{GLM}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{GAM}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{GBM}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{CTA}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{RF}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{MDA}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{SRE}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{MARS}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{ANN}{  type True or False to produce binary and/or filtered prediction data for that model }
   \item{BinRoc}{ set to True if you want the predictions converted from probabilities to binary data using Roc }
   \item{BinKappa}{ set to True if you want the predictions converted from probabilities to binary data using Kappa }
   \item{BinTSS}{ set to True if you want the predictions converted from probabilities to binary data using TSS }
@@ -29,12 +29,13 @@ CurrentPred(GLM=T, GBM=T, GAM=T, CTA=T, ANN=T, SRE=T, MDA=T, MARS=T, RF=T, BinRo
 }
 \details{
   The thresholds used are those stored in the Evaluation.results.Roc/Kappa/TSS objects produced by the Models() function.
-  As a general reminder, do think about reloading these objects stored in the .RData file also produced by the Models() function from one R session to another .
+  As a general reminder, do think about reloading these objects stored in the .RData file also produced by the Models() function
+  from one R session to another .
 }
 \value{
   No values are returned but a series of objects are produced in the "pred" folder (see \code{\link{Models}} for further details).
-  The files are produced per species and contain the predictions in binary or filtered format with a column per model selected. See the
-  structure in the examples below.
+  Like for the predictions, the files are arrays of 4 diensions and produced per species. They contain the predictions in binary or 
+  filtered predictions data. See the structure in the examples below.
  
 }
 \references{ }
@@ -44,13 +45,16 @@ CurrentPred(GLM=T, GBM=T, GAM=T, CTA=T, ANN=T, SRE=T, MDA=T, MARS=T, RF=T, BinRo
 \examples{
 
 data(Sp.Env)
+data(CoorXY)
 
-Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
-		IndependentResponse=NULL, IndependentExplanatory=NULL)
+#This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
+Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
+IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#This line will only run a few models
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
-Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
+#Here are done 2 PA runs and 2 repetitions for each run. Here we will have 12 runs per species. This will hence take several minutes.
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=1, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
 #The results of the Models() function are in probabilities (scaled between 0 to 1000). The CurrentPred() function
@@ -60,24 +64,52 @@ CurrentPred(BinRoc=TRUE, BinKappa=FALSE, BinTSS=TRUE, FiltRoc=FALSE, FiltKappa=F
 
 
 #let's view some examples of them
-load("pred/Pred_Species2_BinRoc")
-Pred_Species2_BinRoc[120:140,]      #the head() function reads the first six lines of a dataframe
+load("pred/Pred_Species4_BinRoc")
+dim(Pred_Species4_BinRoc)
+dimnames(Pred_Species4_BinRoc)[-1]
+Pred_Species4_BinRoc[120:140,,1,1]
 
 
-load("pred/Pred_Species2_FiltTSS")
-Pred_Species2_FiltTSS[120:140,]        #the head() function reads the first six lines of a dataframe
+load("pred/Pred_Species4_FiltTSS")
+Pred_Species4_FiltTSS[120:140,,1,1]
 
+#Note that the level.plot function will not work directly if NbRepPA > 0
+#But will work on full calibrated models
 
-#and even plot them compared to the original data (here we plot the results for the GLM)
-load("pred/Pred_Species2")
+load("pred/Pred_Species4")
 data(CoorXY)
+nrow(Pred_Species4)
+nrow(CoorXY)
+level.plot(Pred_Species4[,"GLM",1,1], CoorXY, show.scale=FALSE)
+
+#Make full calibrations
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=1000)
 
 
+CurrentPred(BinRoc=TRUE, BinKappa=FALSE, BinTSS=TRUE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=TRUE) 
+
+
+load("pred/Pred_Species4")
+load("pred/Pred_Species4_BinRoc")
+load("pred/Pred_Species4_FiltTSS")
+
+#plot results compared to the original data (here we plot the results for the CTA)   
+#For the 100 percent calibrated model 
 par(mfrow=c(1,4))
 level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
-level.plot(Pred_Species2[,"GLM"], CoorXY, show.scale=FALSE, title="probabilities with GLM")
-level.plot(Pred_Species2_BinRoc[,"GLM"], CoorXY, show.scale=FALSE, title="binary by Roc")
-level.plot(Pred_Species2_FiltTSS[,"GLM"], CoorXY, show.scale=FALSE, title="filtered by TSS")
+level.plot(Pred_Species4[,"CTA",1,1], CoorXY, show.scale=FALSE, title="probabilities with CTA full")
+level.plot(Pred_Species4_BinRoc[,"CTA",1,1], CoorXY, show.scale=FALSE, title="binary by Roc full")
+level.plot(Pred_Species4_FiltTSS[,"CTA",1,1], CoorXY, show.scale=FALSE, title="filtered by TSS full")
+
+#For the second repetitions
+x11()
+par(mfrow=c(1,4))
+level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
+level.plot(Pred_Species4[,"CTA",3,1], CoorXY, show.scale=FALSE, title="probabilities with CTA rep2")
+level.plot(Pred_Species4_BinRoc[,"CTA",3,1], CoorXY, show.scale=FALSE, title="binary by Roc rep2")
+level.plot(Pred_Species4_FiltTSS[,"CTA",3,1], CoorXY, show.scale=FALSE, title="filtered by TSS rep2")
 
 
 }

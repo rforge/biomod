@@ -20,16 +20,17 @@ ProjectionBestModel(Proj.name, Bin.trans = T, Filt.trans = T, method='all')
   
 }
 \details{
-  
+  The Proj.name is dependent of the one already given in \code{\link{Projection}}. It will be used to restore some
+  data in the correspondant directory.
 }
-\value{
 
-  No values are returned but objects are produced in the "proj" folder (see \code{\link{Models}} for details).
+\value{
+  No values are returned but objects are produced in the appropriate folder (see \code{\link{Projection}} for details).
   Example of ProjBestModelByKappa (but all follow the same logic) : a matrix with a column per species
   containing the projections in probabilities using the Kappa scores to select the best model. The projections
   can also be obtained in binary and filtered values (additionnal matrices are thus produced). 
-  
 }
+
 \references{ 
 Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and projecting potential future shifts under global change. Global Change Biology 9, 1353-1362.
 }
@@ -37,17 +38,19 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 \note{ }
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{PredictionBestModel}}}
 \examples{
-
 data(Sp.Env)
-Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
-		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#This line will only run a few models
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
-Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
+#This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
+Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
+IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-PredictionBestModel(GLM=TRUE, MDA=TRUE, RF=TRUE, method='all', Bin.trans = TRUE, Filt.trans = TRUE)
+#Here are done 2 PA runs and 2 repetitions for each run. Here we will have 12 runs per species. This will hence take several minutes.
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5
+   NbRepPA=2, strategy="sre", coor=NULL, distance=0, nb.absences=1000)
 
+
+#Render Future projections under climate change scenario
 data(Future1)
 Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
@@ -59,12 +62,16 @@ ProjectionBestModel(Proj.name="Future1", method='all', Bin.trans = TRUE, Filt.tr
 load("pred/BestModelByTSS")
 BestModelByTSS
 
+#In contrast with PredictionBestModel(), the results are stored in one array per method with
+#the third dimension being the number of species modelled.
+
 load("proj.Future1/Proj_Future1_BestModelByTSS_Bin")
-Proj_Future1_BestModelByTSS_Bin[1:100,]
+dim(Proj_Future1_BestModelByTSS_Bin)
+dimnames(Proj_Future1_BestModelByTSS_Bin)[-1]
+Proj_Future1_BestModelByTSS_Bin[1:10,,]
 
 load("proj.Future1/Proj_Future1_BestModelByTSS_Filt")
-Proj_Future1_BestModelByTSS_Filt[1:100,]
-
+Proj_Future1_BestModelByTSS_Filt[1:10,,]
 
 }
 

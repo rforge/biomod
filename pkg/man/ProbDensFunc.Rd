@@ -24,7 +24,6 @@ ProbDensFunc(initial, projections, plothist = T, distrib = T, cvsn = T, groups =
 }
 
 \details{
-
   The future range changes are calculated as a percentage of the species' present state. For example, if a species currently occupies 100 cells and 
   is estimated by a model to cover 120 cells in the future, the range change will be + 20\%.
 
@@ -33,14 +32,67 @@ ProbDensFunc(initial, projections, plothist = T, distrib = T, cvsn = T, groups =
   predictions. The probability is in fact that of the class and not of isolated events.
 }
 \value{
-  
-
+  This is a plotting function, no objects are returned or created.
 }
 \references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
 \seealso{ \code{\link{Projection}}, \code{\link{Ensemble.Forecasting}} }
 \examples{
+
+#We will do an example with 50 repetitions of the ANN and the MDA to assess the variability
+#in prediction making when the calibration of the model is done on partial data. Only Species7
+#will be done.
+
+Initial.State(Response = Sp.Env[15], Explanatory = Sp.Env[,2:8], 
+IndependentResponse = NULL, IndependentExplanatory = NULL)
+
+Models(MDA=T, ANN=T, RF=T, NbRunEval=50, DataSplit=70, NbRepPA=0, 
+   Roc = T, Optimized.Threshold.Roc = T, Kappa = T, TSS=T)  
+
+Projection(Proj = Future1[,2:8], Proj.name="rep50_Future1", 
+   ANN = T, MDA =T, , RF=T, BinRoc = T, BinKappa = T, BinTSS = T, repetition.models=T)              
+
+
+#we will also compare with the consensus results.
+Ensemble.Forecasting(Proj.name= "rep50_Future1", weight.method='Roc', PCA.median=T, 
+binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+
+
+#constitute the dataframe that will be used by the ProbDensFunc 
+load("proj.rep50_Future1/Proj_rep50_Future1_Species7_BinRoc")                                                                     
+load("proj.rep50_Future1/Proj_rep50_Future1_Species7_BinKappa")
+load("proj.rep50_Future1/Proj_rep50_Future1_Species7_BinTSS")
+
+load("proj.rep50_Future1/Total_consensus_rep50_Future1")
+#But we need binary data
+Bin_consensus <- BinaryTransformation(Total_consensus_rep50_Future1[,1,1], mean(consensus_rep50_Future1_results[["Species7"]][["thresholds"]][1,]))
+
+
+#Build the dataframes that will be used by the function.
+#One for the projections, one for the grouping information.
+DataFrame <- matrix(NA, 2264, 2)
+Groups <- matrix(NA, 2, 451)
+
+models <- c("MDA", "ANN", "RF")
+evaluation <- c("Roc", "Kappa", "TSS")
+
+Groups[1,] <- c(rep(rep(models, each=50), 3), "consensus")
+Groups[2,] <- c(rep(evaluation, each=150), "consensus")
+
+
+for(ev in evaluation){
+   for(m in models){
+      add.data <- eval(parse(text=paste("Proj_rep50_Future1_Species7_Bin", ev, sep="")))
+      DataFrame <- cbind(DataFrame, add.data[, m,, 1]
+   }
+}
+DataFrame <- cbind(DataFrame, Bin_consensus)[,-1][,-1]
+Groups <- Groups[,-1][,-1]
+
+
+ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, distrib=T, cvsn=T, 
+groups=Groups, resolution=5)
 
 }
 

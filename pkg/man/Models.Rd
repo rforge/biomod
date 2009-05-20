@@ -8,7 +8,7 @@
   performance of the models produced. 
 }
 \usage{
-Models(GLM = F, TypeGLM = "simple", Test = "AIC", GBM = F, No.trees = 2000, GAM = F, Spline = 3, CTA = F, CV.tree = 50, ANN = F, CV.ann = 5, SRE = F, Perc025 = F, Perc05 = F, MDA = F, MARS = F, RF = F, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = F, Optimized.Threshold.Roc = F, Kappa = F, TSS = F, KeepPredIndependent = F, VarImport = 0, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
+Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 2000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = F, CV.ann = 5, SRE = FALSE, Perc025 = FALSE, Perc05 = FALSE, MDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE, VarImport = 0, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
 }
 
 \arguments{
@@ -48,12 +48,22 @@ Models(GLM = F, TypeGLM = "simple", Test = "AIC", GBM = F, No.trees = 2000, GAM 
 }
 
 \details{
-  The dataset used is DataBIOMOD produced by the \code{\link{Initial.State}} function. A prior run of this function is therefore necessary.
+  The dataset used is DataBIOMOD produced by the \code{\link{Initial.State}} function. A prior run of this function is therefore necessary. The
+  two arguments explained below are crucial as they determine the number of runs that will be done for each species. Be carefull not to over
+  multiply thevtotal number of runs in order to keep a reasonable running time. 
   
-  NbRunEval : the evaluation is as follows : as already explained in the \code{\link{Initial.State}} help file, the common trend is to split the original dataset
-  into two subsets for the calibration and evaluation processes of the models. Here we provide the possibility to do a series of standard runs with this procedure
-  with the NbRunEval argument to have an evaluation on independent-like data, whilst building the final model on 100 percent of the available data. This is to avoid the 
-  stochastic effect of splitting data before the calibration step.
+  NbRepPA : BIOMOD now enables to calibrate the models with only a limited number of absences from the full dataset given in \code{\link{Initial.State}}.
+  If NbRepPA is equal to 0 the calibration procedure will be the standard one, i.e. taking all the data available. Else (NbRepPA > 0), an inner run of the 
+  \code{\link{pseudo.abs}} function will be done for each species, with the strategy chosen, to determine the pool of pseudo-absences available for calibration.
+  The number of absences taken for calibration is determined by the nb.absences argument. For example, if there are 50000 pseudo-absences available and 
+  nb.absences=2000, those 2000 absences will be randomly selected from the preselected 50000 pseudo-absences. This random selection is repeated NbRepPA-times 
+  to constitute the runs PA1, PA2, and so forth. 
+  
+  NbRunEval : as already explained in the \code{\link{Initial.State}} help file, the common trend is to split the original dataset into two subsets for the calibration 
+  and evaluation steps of the models' construction. Here we provide the possibility to do multiple runs with this standard procedure (NbRunEval times) to have an 
+  evaluation on independent-like data, whilst building the final model on 100 percent of the given data. Since march 2009, all the models produced by BIOMOD and their 
+  related informations are saved on the hard disk. This is to enable the possibility of assessing the stochastic effect of the splitting procedure of the calibration step
+  by being able to render projections with those models.
 
 }
 \value{
@@ -61,28 +71,32 @@ Models(GLM = F, TypeGLM = "simple", Test = "AIC", GBM = F, No.trees = 2000, GAM 
   
   \item{Evaluation.results.Kappa}{ }
   \item{Evaluation.results.Roc}{ }
-  \item{Evaluation.results.TSS}{a list of matrices (one per species) storing the result of the evaluation procedures for Kappa / TSS / Roc for each model : the score
-  of the evaluation runs (if Nb RunEval>0) , the threshold to be used for converting the probabilities into binary or filtered data, the sensitivity and specificity of 
-  the model-threshold combination }
-  \item{VarImportance}{ a list of matrices (one per species) containing the results of the evaluation of the importance of the variables for each model selected. The highest the value,
-  the more influence the variable has on the model. A value of this 0 assumes no influence of that variable on the model. Note that this technique does not account for interactions
-  between the variables.}
-  \item{Models.information}{ Crucial information for the models (but not of any interest for the user)}
+  \item{Evaluation.results.TSS}{a list of matrices (one for each run) storing the result of the evaluation procedures for Kappa / TSS / Roc for each model : 
+  the score of the model on the evaluation and calibration data, the threshold to be used for converting the probabilities into binary or filtered data, the 
+  sensitivity and specificity of the model-threshold combination }
+  \item{VarImportance}{ a list of matrices (one per species) containing the results of the importance of the variables analysis on the final model. The highest the value,
+  the more influence the variable has on the model. A value of this 0 assumes no influence of that variable on the model. Note that this technique does not account for 
+  interactions between the variables.}
+  \item{Models.information}{ Crucial information for the models for rendering projections (but not of any interest for the user)}
+  \item{Biomod.PA.data}{ if NbRepPA>0, it stores the available data for each species after the inner \code{\link{pseudo.abs}} run.}  
+  \item{Biomod.PA.sample}{ if NbRepPA>0, it stores the data that has been selected for each run from Biomod.PA.data for calibrating the models.} 
   
-  Additionnal objects are stored out of R in three different directories for memory storage purposes. Two of them are created
-  by BIOMOD with the Models function on the root of your working directory set in R ("models" and "pred" directories), and the last one by
-  the Projection() function ("proj" directory) . The first one contains the models, the second one the predictions on current data, the third 
-  contains the projections on other sapce or time scales.
   
-  The models are currently stored as objects to be read exclusively in R. To load them back (the same stands for all objects in the same format) 
-  use the \code{\link{load}} function (see examples section below))
-  The predictions are stored as R objects and in text files for a facilitated exportation into other softwares.
-
+  Additionnal objects are stored out of R in two different directories for memory storage purposes. They are created by the function directly on the root
+  of your working directory set in R ("models" and "pred" directories). The first one contains the models, the second one the predictions on current data.
+  Other objects will later be produced in the "pred" directory by other functions. Additionnal directories will be created by the the \code{\link{Projection}} 
+  function. 
+  
+  The models are currently stored as objects to be read exclusively in R. To load them back (the same stands for all objects stored on the hard disk) 
+  use the \code{\link{load}} function (see examples section below). 
+  
+  The predictions are stored as arrays (see the examples) with 4 dimensions. Please, see the "Biomod Manual.pdf" (inside the BIOMOD package) or the 
+  examples below for further details.  
+  %text files -> for a facilitated exportation into other softwares.
+  
 }
 
-
 \references{ }
-
 
 \author{ Wilfried Thuiller, Bruno Lafourcade, Robin Engler }
 \note{
@@ -93,48 +107,58 @@ Models(GLM = F, TypeGLM = "simple", Test = "AIC", GBM = F, No.trees = 2000, GAM 
 
 
 data(Sp.Env)
+data(CoorXY)
 #use fix(Sp.Env) to visualise the dataset
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,10:12], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,12:14], Explanatory=Sp.Env[,2:8], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#this will take several minutes to run
+#Here are done 2 PA runs and 2 repetitions for each run. Here we will have 36 runs per species. This will hence take several minutes.
 Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, GAM = TRUE, CTA = TRUE, CV.tree = 50, 
-ANN = TRUE, CV.ann = 2, SRE = TRUE, Perc025=TRUE, Perc05=FALSE, MDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 1, DataSplit = 80,
-Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5, 
-NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
+
+   ANN = TRUE, CV.ann = 2, SRE = TRUE, Perc025=TRUE, Perc05=FALSE, MDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 2, DataSplit = 80,
+   Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5,
+   NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
+
 
 #view all the produced objects with ls()
 ls()
 
+#Take a look at the format in which the predictions are stored
+load("pred/Pred_Species4")
+dim(Pred_Species4)
+dimnames(Pred_Species4)[-1]
+
+Pred_Species4[1:20,,,1]
+#please check the UserGuide for a full explanation of the structure of the array.
+
+
+#You can load back a model and visualise it with the load() function :
+
+load("models/Species4_ANN_PA1")
+Species4_ANN_PA1
+
+load("models/Species4_ANN_full")
+Species4_ANN_full
+
+
+#to see the results of the evaluation procedures
+Evaluation.results.Kappa
+
+
 #check which variable has the most impact on the models
 VarImportance
 
-#You can load back a model and visualise it with the load() function :
-load("models/Species2_ANN_full")
-Species2_ANN_full
-
-#Other functions of the BIOMOD package are very usefull to visualise the different outputs produced. Here are only a few examples :
-
-load("models/Species2_GLM_full")
-response.plot(Species2_GLM_full, Sp.Env[2:8])
+load("models/Species4_GLM_full")
+response.plot(Species4_GLM_full, Sp.Env[2:8])
 
 
-data(CoorXY)  #this data is needed for the next two plotting functions
-              #Note that, in our case, the data loaded already has the right name for working
-              #with the map.plot() function which requires the coordinate data to be named "CoorXY". 
-
-load("pred/Pred_Species2")
-x11()
-level.plot(Pred_Species2[,"GLM",1,1], CoorXY)
-
-for(i in 1:3)
-map.plot(Sp=i, coor=CoorXY, method='Roc', format.type='probs', wanted='prediction' , color.gradient='red')
+#This next function enables to plot the response curves of the model
+response.plot(Species4_ANN_PA1, Sp.Env[,2:8])
 
 
 #Another series of functions enable to perform further steps, see ?CurrentPred and ?PredictionBestModel.
-
 
 }
 

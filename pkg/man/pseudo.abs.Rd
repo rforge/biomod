@@ -6,7 +6,6 @@
   Collection of methods for building presence-absence (binary) datasets from presence only data. 
   Binary data is needed for running a large number of the species-cimate envelop models available.
   Please read the BIOMOD manual for further explanations.
-
 }
 \usage{
 pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = T, species.name = "SpNoName", create.dataset=F, plot = F, acol = "grey80", pcol = "red")
@@ -71,18 +70,19 @@ plot(fulldata[,1], fulldata[,2])
 par(new=TRUE)
 plot(presences[,1], presences[,2], col='red', xlim=c(1,100), ylim=c(1,100), pch=19)
 
-pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
+pseudo.data <- pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 
 #view what is in the dataset produced : absences, and presences (only if add.pres=TRUE)
-Dataset.Sp1.circles.8[1:20,]
+Dataset.SpNoName.circles.8[1:20,]
 
 #you can plot it yourself (or set plot=TRUE in the function call)
 x11()
-plot(Dataset.Sp1.circles.8[,1],Dataset.Sp1.circles.8[,2]) 
+plot(Dataset.SpNoName.circles.8[,1],Dataset.SpNoName.circles.8[,2]) 
 
 #use the nb.points argument for only selecting a limited number of points
-pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE, nb.points=2000, plot=TRUE) 
-
+pseudo.data2 <- pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE, nb.points=2000, plot=TRUE) 
+length(pseudo.data)
+length(pseudo.data2)
   
 }
 

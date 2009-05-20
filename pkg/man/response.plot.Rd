@@ -12,7 +12,7 @@ response.plot(model, Data)
 
 \arguments{
   \item{model}{ the model for which you want the response curves to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, MDA and MARS.}
-  \item{Data}{ the variables for which you want the response curves to be plotted. A data frame is wanted with one column per vriable. They have to have the names 
+  \item{Data}{ the variables for which you want the response curves to be plotted. A data frame is wanted with one column per vriable. They have to have the same names 
    as the ones used to calibrate the model.}
 }
 \details{
@@ -33,19 +33,20 @@ predicted responses from species distribution models. Ecological Modelling 186, 
 \seealso{ \code{\link{Models}}  }
 \examples{
 
-
 data(Sp.Env)
 
+#This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
 Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
-		IndependentResponse=NULL, IndependentExplanatory=NULL)
+IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Let's run only a few models : GLM, MDA and RF. This will take a few moments to run.
 #Do note that the response.plot() function works for all the models available. Feel free to switch them on or off.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80, TSS=TRUE, NbRepPA=0)
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
+   NbRunEval = 0, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=1000)
 
 
 #The response plots for the first species modelled 
-
 load("models/Species2_GLM_full")
 response.plot(Species2_GLM_full, Sp.Env[2:8])
 
@@ -58,7 +59,6 @@ response.plot(Species2_RF_full, Sp.Env[2:8])
 
 
 #for the second species modelled
-
 load("models/Species3_GLM_full")
 response.plot(Species3_GLM_full, Sp.Env[2:8])
 
@@ -67,7 +67,6 @@ response.plot(Species3_MDA_full, Sp.Env[2:8])
 
 load("models/Species3_RF_full")
 response.plot(Species3_RF_full, Sp.Env[2:8])
-
 
 }
 

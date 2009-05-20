@@ -10,9 +10,10 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         if(TypeGLM == "simple"){Type <- "GLMs" ; cat("Model=GLM linear \n")}
         if(Test == "AIC"){criteria <- 2 ; cat("\t Stepwise procedure using AIC criteria \n")}
         if(Test == "BIC"){criteria <- log(length(PA.samp)) ; cat("\t Stepwise procedure using BIC criteria \n")}
-    }
+    }    
+    
     if(Model == 'GBM') { cat("Model=Generalised Boosting Regression \n") ; cat("\t", No.trees, "maximum different trees and lambda Fold Cross-Validation \n") }    
-    if(Model == 'GAM') { cat("Model=GAM spline \n") ; cat("\t lambda Degrees of smoothing \n") } 
+    if(Model == 'GAM') { cat("Model=GAM spline \n") ; cat("\t", Spline, " Degrees of smoothing \n") } 
     if(Model == 'CTA') { cat("Model=Classification tree \n") ; cat("\t", CV.tree, "Fold Cross-Validation \n") }    
     if(Model == 'ANN') { cat("Model=Artificial Neural Network \n") ; cat("\t", CV.ann, "Fold Cross Validation + 3 Repetitions \n") ; cat("Calibration and evaluation phase: Nb of cross-validations: ", ncol(Ids), "\n") }
     if(Model == 'SRE') cat("Model=Surface Range Envelop \n")  
@@ -43,12 +44,11 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     for(k in 1:(ncol(Ids)+1)){
   	    
   	    if(k == (ncol(Ids)+1)) { #if final model 
-              if(Biomod.material$NbRepPA==0) m.name <- "full"
-              else m.name <- paste("PA", pa, sep="")
+              if(Biomod.material$NbRepPA==0) nam <- "full"  else nam <- paste("PA", pa, sep="")
               calib.lines <- pred.lines <- PA.samp 
          } else {
-              if(Biomod.material$NbRepPA==0) m.name <- paste("full_rep", k, sep="")
-              else  m.name <- paste("PA", pa, "_rep", k, sep="")  
+              if(Biomod.material$NbRepPA==0) nam <- paste("full_rep", k, sep="")
+              else  nam <- paste("PA", pa, "_rep", k, sep="")  
               calib.lines <- PA.samp[Ids[,k]]
               pred.lines <- PA.samp[-Ids[,k]]
         } 
@@ -57,7 +57,6 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
   	
   	    #building each model and making the full prediction
         if(Model == 'ANN'){
-            
             if(k==(ncol(Ids)+1) && ncol(Ids)!=0){ #final model with prior evaluation runs (NbRunEval!=0)
             
                 decay.final <- decay.final/ncol(Ids)
@@ -66,7 +65,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
             		             data=DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], size=size.final, linout=F, entropy=T, skip=F, decay=decay.final, maxit=100, trace=F)
 
             } else { #evaluation runs, or final model if NbRunEval==0
-                truth <- DataBIOMOD[calib.lines,NbVar+i]
+                truth <- DataBIOMOD[calib.lines, NbVar+i]
                 set.seed(200)
                 tr <- CVnnet(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "NNET"), collapse="")))), 
                               data=DataBIOMOD[calib.lines,], truth=truth, linout= F, entropy=T, skip=F, maxit=100, nifold=CV.ann)
@@ -81,7 +80,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
            
             TempArray <- predict(model.sp, DataBIOMOD[PA.samp,], type="raw")
       	    g.pred <- data.frame(as.integer(Rescaler2(as.numeric(TempArray), type="range") *1000)) 		
-  	    }
+  	    }	    
         if(Model == 'CTA'){
             temp <- rpart.control(xval=CV.tree, minbucket=5, minsplit=5,cp=0.001, maxdepth=25)
             model.sp <- rpart(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "CTA"),collapse="")))),DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], control=temp)
@@ -96,7 +95,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         if(Model == 'GAM'){
         		gamStart <- gam(eval(parse(text=paste(paste(SpNames[i]),"~1",collapse=""))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
           	model.sp <- step.gam(gamStart, scope(DataBIOMOD[1:10, 1:NbVar],"s", Spline), keep=functionkeep, direction="both", trace=F, control=gam.control(maxit=50, bf.maxit=50))	
-      #New  model.sp <- gam(eval(parse(text=paste(SpNames[i],paste(scopeGAM(DataBIOMOD[1:10,1:NbVar]),collapse="")))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
+       #New model.sp <- gam(eval(parse(text=paste(SpNames[i],paste(scopeGAM(DataBIOMOD[1:10,1:NbVar]),collapse="")))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
             g.pred <- data.frame(as.integer(as.numeric(testnull(model.sp, Prev, DataBIOMOD[PA.samp,])) *1000))
         }   
         if(Model == 'GBM'){
@@ -105,15 +104,15 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                          response.name = SpNames[i])
             best.iter <- gbm.perf(model.sp,method="OOB",plot.it=F)
         		g.pred <- data.frame(as.integer(predict.gbm(model.sp, DataBIOMOD[PA.samp,], best.iter, type="response")*1000))
-        }
+        }        
         if(Model == 'GLM'){
             glmStart <- glm(eval(parse(text=paste(paste(SpNames[i]), "~1", collapse=""))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
             model.sp <- stepAIC(glmStart, scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], Type), direction="both", trace=F, control=glm.control(maxit=100), k=criteria)
         		g.pred <- data.frame(as.integer(testnull(model.sp, Prev, DataBIOMOD[PA.samp,]) *1000)) 
-        }
+        }                        
         if(Model == 'MARS'){
-            if(is.null(Yweights)) model.sp <- mars(x=DataBIOMOD[calib.lines,1:NbVar], y=DataBIOMOD[calib.lines,NbVar+i], degree=2)
-                             else model.sp <- mars(x=DataBIOMOD[calib.lines,1:NbVar], y=DataBIOMOD[calib.lines,NbVar+i], degree=2, w=Yweights[calib.lines,i])
+            if(is.null(Yweights)) model.sp <- mars(x=DataBIOMOD[calib.lines, 1:NbVar], y=DataBIOMOD[calib.lines, NbVar+i], degree=2)
+                             else model.sp <- mars(x=DataBIOMOD[calib.lines, 1:NbVar], y=DataBIOMOD[calib.lines, NbVar+i], degree=2, w=Yweights[calib.lines,i])
                              
         		TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar])
         		g.pred <- data.frame(as.integer(Rescaler2(TempArray, type="range") *1000))
@@ -156,21 +155,21 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         
         #saving the evaluation stats for the repetition models  
         if(k != (ncol(Ids)+1)){
-            if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines, NbVar+i])["C"], digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
-            if(Kappa) Evaluation.results.Kappa[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],])$Kappa, digits=3),'none',KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,])[c(1,2,4,6)]) 
-            if(TSS) Evaluation.results.TSS[[paste(SpNames[i], "_", m.name, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],], TSS=T)$TSS, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)])   
+            if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines, NbVar+i])["C"], digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
+            if(Kappa) Evaluation.results.Kappa[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],])$Kappa, digits=3),'none',KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,])[c(1,2,4,6)]) 
+            if(TSS) Evaluation.results.TSS[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],], TSS=T)$TSS, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)])   
         }    
 
         #save the predictions in the array
         if(k == (ncol(Ids)+1)) Array[,Model,1,pa] <- g.pred[,]  else  Array[,Model,(k+1),pa] <- g.pred[,] 
         
         #saving the model on the hard disk
-        if(Model != 'SRE') eval(parse(text=paste("assign('",SpNames[i],"_", Model, "_", m.name,"', model.sp)", sep="")))
-  	    if(Model != 'SRE') eval(parse(text=paste("save(",SpNames[i],"_", Model, "_", m.name, ",file='", getwd(), "/models/", SpNames[i],"_", Model, "_", m.name,"')", sep="")))
+        if(Model != 'SRE') eval(parse(text=paste("assign('",SpNames[i],"_", Model, "_", nam,"', model.sp)", sep="")))
+  	    if(Model != 'SRE') eval(parse(text=paste("save(",SpNames[i],"_", Model, "_", nam, ",file='", getwd(), "/models/", SpNames[i],"_", Model, "_", nam,"')", sep="")))
 
         # saving best.iter for GBM ; Save Minumum and Maxium of the calibration prediction range for rescaling steps:
-        if(Model == 'GBM')  eval(parse(text=paste("g.list$best.iter$", m.name," <- best.iter", sep="")))
-        if(Model == 'ANN' | Model == 'MDA' | Model == 'MARS' | Model == 'RF') eval(parse(text=paste("g.list$RawPred$", m.name," <- range(TempArray)", sep="")))       
+        if(Model == 'GBM')  eval(parse(text=paste("g.list$best.iter$", nam," <- best.iter", sep="")))
+        if(Model == 'ANN' | Model == 'MDA' | Model == 'MARS' | Model == 'RF') eval(parse(text=paste("g.list$RawPred$", nam," <- range(TempArray)", sep="")))       
     
     } #nbruns k loop
 	  
@@ -224,23 +223,22 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
 
     #running the evaluation procedures
     if(Roc && Model != 'SRE'){
-        Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c(round(AUC.train, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp,NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp,NbVar+i], g.pred[,]), digits=3))  
-	      if(exists("DataEvalBIOMOD")) Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,2] <- round(somers2(predind,DataEvalBIOMOD[,NbVar +i])["C"], digits=3) 
+        Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,] <- c(round(AUC.train, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp,NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp,NbVar+i], g.pred[,]), digits=3))  
+	      if(exists("DataEvalBIOMOD")) Evaluation.results.Roc[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,2] <- round(somers2(predind,DataEvalBIOMOD[,NbVar +i])["C"], digits=3) 
         assign("Evaluation.results.Roc", Evaluation.results.Roc, pos=1)
 	  }    
     if(Kappa){
-	      Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c(round(Kappa.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,], TSS=T)[c(1,2,4,6)]) 
-        if(exists("DataEvalBIOMOD")) Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,NbVar+i], predind)$Kappa, digits=3) 
+	      Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,] <- c(round(Kappa.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,], TSS=T)[c(1,2,4,6)]) 
+        if(exists("DataEvalBIOMOD")) Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,NbVar+i], predind)$Kappa, digits=3) 
         assign("Evaluation.results.Kappa", Evaluation.results.Kappa, pos=1)
     }	
     if(TSS){
-	      Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,] <- c(round(TSS.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,], TSS=T)[c(1,2,4,6)])  
-	      if(exists("DataEvalBIOMOD")) Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", m.name, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,NbVar+i], predind, TSS=T)$TSS, digits=3) 
+	      Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,] <- c(round(TSS.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,], TSS=T)[c(1,2,4,6)])  
+	      if(exists("DataEvalBIOMOD")) Evaluation.results.TSS[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,NbVar+i], predind, TSS=T)$TSS, digits=3) 
         assign("Evaluation.results.TSS", Evaluation.results.TSS, pos=1)
     }
     	
   	if(exists("DataEvalBIOMOD") && KeepPredIndependent) assign("predind", predind, pos=1)
-    
                   
     return(g.list)
 }

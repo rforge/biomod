@@ -170,7 +170,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                 test <- matrix(nc=nbrep*NbPA, nr=6, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'),dimnames(ARRAY)[[2]]))
 
                 for(j in 1:NbPA){
-                    lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
+                    if(1>0) lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
+                    else lin <- boubou
                     for(k in 1:nbrep)               
                     
                         for(m in 1:6){

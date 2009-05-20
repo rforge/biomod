@@ -183,7 +183,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         i <- i + 1
     }
     
-    rm(i, pa, calib.lines, ARRAY, Array, pos=1)
+    rm(i, pa, calib.lines, Array, pos=1)
     assign("Biomod.material", Biomod.material, pos=1)
     if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     

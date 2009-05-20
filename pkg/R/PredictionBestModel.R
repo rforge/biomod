@@ -11,7 +11,6 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, R
     #run the function for one method at a time                  
     else { if(Biomod.material$evaluation.choice[method]){
     
-    
         NbSp <- Biomod.material$NbSpecies
         SpNames <- Biomod.material$species.names
         algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)

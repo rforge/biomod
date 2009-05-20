@@ -1,7 +1,6 @@
 `Biomod.Models` <-
 function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, NbRunEval, Spline, 
-         DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
-         
+         DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)    
 {
 
     #models messages in R's console
@@ -35,11 +34,10 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     g.list <- list()
         
 	
-	  SpNames <- Biomod.material[["species.names"]]
-	  NbVar <- Biomod.material[["NbVar"]]
+	  SpNames <- Biomod.material$species.names
+	  NbVar <- Biomod.material$NbVar
 	
 	  #################################
-	
 	  #model loop for repetitions + final model
 	  
     for(k in 1:(ncol(Ids)+1)){

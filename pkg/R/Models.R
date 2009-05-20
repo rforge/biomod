@@ -1,6 +1,6 @@
 `Models` <-
 function(GLM=FALSE, TypeGLM=simple, Test=AIC, GBM=FALSE, No.trees= 2000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50, ANN=FALSE, CV.ann=5, SRE=FALSE, Perc025=FALSE, Perc05=FALSE, MDA=FALSE, MARS=FALSE, RF=FALSE,
-NbRunEval=1, DataSplit=100, NbRepPA=1, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
+NbRunEval=1, DataSplit=100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
     require(nnet, quietly=T)
@@ -115,7 +115,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         if(NbRepPA != 0){
             NbRepPA.pos <- NbRepPA
             nbpres <- sum(DataBIOMOD[,Biomod.material$NbVar+i])
-            if(nb.absences > (length(Biomod.PA.data[[i]]) - nbpres)) { 
+            if(nb.absences > (length(Biomod.PA.data[[i]]) - nbpres)) {  #if not enough absences -> only one PA run with nb.absences set to max
                 NbRepPA.pos <- 1                                           
                 nb.absences.pos <- length(Biomod.PA.data[[i]]) - nbpres
             }  
@@ -130,7 +130,6 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     
         if(NbRepPA == 0) ndata <- nrow(DataBIOMOD) 
         if(NbRepPA != 0) ndata <- nb.absences.pos + nbpres
-          
         ARRAY <- array(NA, c(ndata, 9, NbRunEval+1, NbRepPA.pos), dimnames=list(1:ndata, Biomod.material$algo, c("total.data", reps), PAs))
         if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind <- array(NA, c(nrow(DataEvalBIOMOD), 9, NbRunEval+1, NbRepPA.pos), dimnames=list(1:nrow(DataEvalBIOMOD), Biomod.material[["algo"]], c("total.data", reps), PAs))
 
@@ -146,14 +145,14 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             #defining the data (as lines to take from DataBIOMOD) to be used for calibration
             if(NbRepPA == 0) PA.samp <- 1:nrow(DataBIOMOD)
             else {
-                absamp <- sample((nbpres+1):length(Biomod.PA.data[[i]]), nb.absences.pos)
-                PA.samp <- Biomod.PA.data[[i]][c(1:nbpres,absamp)]
+                absamp <- sort(sample((nbpres+1):length(Biomod.PA.data[[i]]), nb.absences.pos))
+                PA.samp <- sort(Biomod.PA.data[[i]][c(1:nbpres,absamp)])
                 
                 Biomod.PA.sample[[i]][[paste("PA", pa, sep="")]] <- PA.samp  #storing the lines selected for each PA run 
             }        
                 
             #defining the Ids to be selected for the evaluation runs
-            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration
+            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- sort(SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration)
                    
             for(a in Biomod.material$algo[Biomod.material$algo.choice]){
                 
@@ -163,7 +162,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
                   if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,1,pa] <- predind
                   
                   if(a=='ANN' | a=='GBM' | a=='RF' | a=='MARS' | a=='MDA'){
-                      Models.information[[Biomod.material$species.names[i]]][[a]][[paste("PA", pa, sep="")]] <- g         # Models.information[[Biomod.material[["species.names"]][i]]][[paste(a, "_PA", pa, sep="")]]
+                      Models.information[[Biomod.material$species.names[i]]][[a]][[paste("PA", pa, sep="")]] <- g         # Models.information[[Biomod.material$species.names[i]]][[paste(a, "_PA", pa, sep="")]]
                       assign('Models.information', Models.information, pos=1)
                   } 
             }    

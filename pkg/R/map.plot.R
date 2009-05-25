@@ -1,5 +1,5 @@
 `map.plot` <-
-function(Sp, repnb=1, dim4=1, coor, method, format.type, wanted, color.gradient='red', Proj.name=NULL){  
+function(Sp, coor, method, format.type, wanted, color.gradient='red', Proj.name=NULL){  
     
     Th <- c('Kappa','TSS','Roc')
     mod <- c(Biomod.material[["algo"]], 'all')

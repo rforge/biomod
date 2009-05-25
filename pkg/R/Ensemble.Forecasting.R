@@ -170,10 +170,10 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                 test <- matrix(nc=nbrep*NbPA, nr=6, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'),dimnames(ARRAY)[[2]]))
 
                 for(j in 1:NbPA){
-                    if(1>0) lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
-                    else lin <- boubou
-                    for(k in 1:nbrep)               
+                    if(Biomod.material$NbRepPA != 0) lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
+                    else lin <- 1:dim(ARRAY.tot)[1]
                     
+                    for(k in 1:nbrep)               
                         for(m in 1:6){
                             if(m<4) { test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]   #to check if method was chosen
                             } else if(Biomod.material$evaluation.choice[Th[m-3]]) test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]    

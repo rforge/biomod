@@ -48,7 +48,7 @@ data(Sp.Env)
 data(CoorXY)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Here are done 2 PA runs and 2 repetitions for each run. Here we will have 12 runs per species. This will hence take several minutes.
@@ -64,23 +64,23 @@ CurrentPred(BinRoc=TRUE, BinKappa=FALSE, BinTSS=TRUE, FiltRoc=FALSE, FiltKappa=F
 
 
 #let's view some examples of them
-load("pred/Pred_Species4_BinRoc")
-dim(Pred_Species4_BinRoc)
-dimnames(Pred_Species4_BinRoc)[-1]
-Pred_Species4_BinRoc[120:140,,1,1]
+load("pred/Pred_Sp277_BinRoc")
+dim(Pred_Sp277_BinRoc)
+dimnames(Pred_Sp277_BinRoc)[-1]
+Pred_Sp277_BinRoc[120:140,,1,1]
 
 
-load("pred/Pred_Species4_FiltTSS")
-Pred_Species4_FiltTSS[120:140,,1,1]
+load("pred/Pred_Sp277_FiltTSS")
+Pred_Sp277_FiltTSS[120:140,,1,1]
 
 #Note that the level.plot function will not work directly if NbRepPA > 0
 #But will work on full calibrated models
 
-load("pred/Pred_Species4")
+load("pred/Pred_Sp277")
 data(CoorXY)
-nrow(Pred_Species4)
+nrow(Pred_Sp277)
 nrow(CoorXY)
-level.plot(Pred_Species4[,"GLM",1,1], CoorXY, show.scale=FALSE)
+level.plot(Pred_Sp277[,"GLM",1,1], CoorXY, show.scale=FALSE)
 
 #Make full calibrations
 Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
@@ -91,25 +91,25 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN
 CurrentPred(BinRoc=TRUE, BinKappa=FALSE, BinTSS=TRUE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=TRUE) 
 
 
-load("pred/Pred_Species4")
-load("pred/Pred_Species4_BinRoc")
-load("pred/Pred_Species4_FiltTSS")
+load("pred/Pred_Sp277")
+load("pred/Pred_Sp277_BinRoc")
+load("pred/Pred_Sp277_FiltTSS")
 
 #plot results compared to the original data (here we plot the results for the CTA)   
 #For the 100 percent calibrated model 
 par(mfrow=c(1,4))
-level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
-level.plot(Pred_Species4[,"CTA",1,1], CoorXY, show.scale=FALSE, title="probabilities with CTA full")
-level.plot(Pred_Species4_BinRoc[,"CTA",1,1], CoorXY, show.scale=FALSE, title="binary by Roc full")
-level.plot(Pred_Species4_FiltTSS[,"CTA",1,1], CoorXY, show.scale=FALSE, title="filtered by TSS full")
+level.plot(Sp.Env[,13], CoorXY, show.scale=FALSE, title="original data")
+level.plot(Pred_Sp277[,"CTA",1,1], CoorXY, show.scale=FALSE, title="probabilities with CTA full")
+level.plot(Pred_Sp277_BinRoc[,"CTA",1,1], CoorXY, show.scale=FALSE, title="binary by Roc full")
+level.plot(Pred_Sp277_FiltTSS[,"CTA",1,1], CoorXY, show.scale=FALSE, title="filtered by TSS full")
 
 #For the second repetitions
 x11()
 par(mfrow=c(1,4))
-level.plot(Sp.Env[,10], CoorXY, show.scale=FALSE, title="original data")
-level.plot(Pred_Species4[,"CTA",3,1], CoorXY, show.scale=FALSE, title="probabilities with CTA rep2")
-level.plot(Pred_Species4_BinRoc[,"CTA",3,1], CoorXY, show.scale=FALSE, title="binary by Roc rep2")
-level.plot(Pred_Species4_FiltTSS[,"CTA",3,1], CoorXY, show.scale=FALSE, title="filtered by TSS rep2")
+level.plot(Sp.Env[,13], CoorXY, show.scale=FALSE, title="original data")
+level.plot(Pred_Sp277[,"CTA",3,1], CoorXY, show.scale=FALSE, title="probabilities with CTA rep2")
+level.plot(Pred_Sp277_BinRoc[,"CTA",3,1], CoorXY, show.scale=FALSE, title="binary by Roc rep2")
+level.plot(Pred_Sp277_FiltTSS[,"CTA",3,1], CoorXY, show.scale=FALSE, title="filtered by TSS rep2")
 
 
 }

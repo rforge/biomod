@@ -6,7 +6,7 @@
   Enables to plot data with 2-dimensional geographical coordinates
 }
 \usage{
-level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = T, title = "level plot")
+level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot")
 }
 
 \arguments{
@@ -32,23 +32,23 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
 data(Sp.Env)
 data(CoorXY) 
 
-level.plot(Sp.Env[,3], CoorXY, title='var 3')
+level.plot(Sp.Env[,5], CoorXY, title='var 3')
 x11()
-level.plot(Sp.Env[,3], CoorXY, color.gradient='grey', title='var 3') 
+level.plot(Sp.Env[,5], CoorXY, color.gradient='grey', title='var 3') 
 
 #add in some extreme values
-Sp.Env[15,3] <- 20000   
-Sp.Env[16,3] <- -5000 
+Sp.Env[15,5] <- 20000   
+Sp.Env[16,5] <- -5000 
 
 x11()
-level.plot(Sp.Env[,3], CoorXY, title='var 3')  
+level.plot(Sp.Env[,5], CoorXY, title='var 3')  
 
 #the extreme values imply a non satisfying view of our data. The contrasts are not clear enough 
 x11()
-hist(Sp.Env[,3], breaks=50, main='variable 3')
+hist(Sp.Env[,5], breaks=50, main='variable 3')
 #Let's narrow the range :
 x11()
-level.plot(Sp.Env[,3], CoorXY, level.range=c(0,5000), title='var 3')
+level.plot(Sp.Env[,5], CoorXY, level.range=c(0,5000), title='var 3')
  
 }
 

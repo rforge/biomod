@@ -7,7 +7,7 @@
   
 }
 \usage{
-ProjectionBestModel(Proj.name, Bin.trans = T, Filt.trans = T, method='all')
+ProjectionBestModel(Proj.name, Bin.trans = TRUE, Filt.trans = TRUE, method='all')
 }
 
 \arguments{
@@ -38,22 +38,26 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 \note{ }
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{PredictionBestModel}}}
 \examples{
+
 data(Sp.Env)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Here are done 2 PA runs and 2 repetitions for each run. Here we will have 12 runs per species. This will hence take several minutes.
 Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
-   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=2, strategy="sre", coor=NULL, distance=0, nb.absences=1000)
 
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
+Projection( Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
+
+#This function needs to be run before hand in order to produce the reference files for ProjectionBestModel
+PredictionBestModel(method='all', Bin.trans = TRUE, Filt.trans = TRUE)
 
 #Determine the best projection according to each evaluation method
 ProjectionBestModel(Proj.name="Future1", method='all', Bin.trans = TRUE, Filt.trans = TRUE)

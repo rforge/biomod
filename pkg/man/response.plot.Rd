@@ -36,7 +36,7 @@ predicted responses from species distribution models. Ecological Modelling 186, 
 data(Sp.Env)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Let's run only a few models : GLM, MDA and RF. This will take a few moments to run.
@@ -47,26 +47,26 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, CV.tree = 50, RF 
 
 
 #The response plots for the first species modelled 
-load("models/Species2_GLM_full")
-response.plot(Species2_GLM_full, Sp.Env[2:8])
+load("models/Sp290_GLM_full")
+response.plot(Sp290_GLM_full, Sp.Env[,4:10])
 
-load("models/Species2_MDA_full")
-response.plot(Species2_MDA_full, Sp.Env[2:8])
+load("models/Sp290_MDA_full")
+response.plot(Sp290_MDA_full, Sp.Env[,4:10])
 
-load("models/Species2_RF_full")
-response.plot(Species2_RF_full, Sp.Env[2:8])
+load("models/Sp290_RF_full")
+response.plot(Sp290_RF_full, Sp.Env[,4:10])
 
 
 
 #for the second species modelled
-load("models/Species3_GLM_full")
-response.plot(Species3_GLM_full, Sp.Env[2:8])
+load("models/Sp277_GLM_full")
+response.plot(Sp277_GLM_full, Sp.Env[,4:10])
 
-load("models/Species3_MDA_full")
-response.plot(Species3_MDA_full, Sp.Env[2:8])
+load("models/Sp277_MDA_full")
+response.plot(Sp277_MDA_full, Sp.Env[,4:10])
 
-load("models/Species3_RF_full")
-response.plot(Species3_RF_full, Sp.Env[2:8])
+load("models/Sp277_RF_full")
+response.plot(Sp277_RF_full, Sp.Env[,4:10])
 
 }
 

@@ -8,7 +8,7 @@
   performance of the models produced. 
 }
 \usage{
-Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 2000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = F, CV.ann = 5, SRE = FALSE, Perc025 = FALSE, Perc05 = FALSE, MDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, Yweights = NULL, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE, VarImport = 0, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL)
+Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 2000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = FALSE, CV.ann = 5, SRE = FALSE, Perc025 = FALSE, Perc05 = FALSE, MDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights = NULL, VarImport = 0, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE)
 }
 
 \arguments{
@@ -31,20 +31,20 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 20
   \item{RF}{ type True to run the Random Forest, or False to switch it off }
   \item{NbRunEval}{ the number of evaluation runs to proceed before the final 100 percent data model is run (see the manual or the details section below for further explanations) }
   \item{DataSplit}{ to determine the ratio used for splitting the original database in calibration and evaluation subsets. The value given (between 0 and 100) is the percentage allocated to calibration }
+  \item{NbRepPA}{ The number of repetitions for the selection of pseudo absences}
+  \item{strategy}{ the strategy to use for selecting pseudo absences. Can be either "circles", "squares", "per", "random" or "sre". See \code{\link{pseudo.abs}} for details.}
+  \item{coor}{ a two columned matrix giving the coordinates of your data points. It is needed for the "per", "circles" and "squares" strategies}
+  \item{distance}{ a value giving the distance to use for the "per", "circles" and "squares" strategy of the pseudo absences selection. See \code{\link{pseudo.abs}} for details.}
+  \item{nb.absences}{ the number of pseudo absences wanted to run the models with. They are randomly selected from the pool of pseudo absences available selected by the given strategy.}
   \item{Yweights}{ a N-columns matrix, N being the number of species, giving the weights that the user can set for the response variables. 
    This is similar to an index of detectability for each site, which allows users to give stronger weights to more reliable presences or absences }
+  \item{VarImport}{ if True, this parameter enables a direct comparison of the explanatory variable importance across models (see the manual for further explanations) }
   \item{Roc}{ If True, the Area Under the ROC curve score will be evaluated for all the models selected and for each species }
   \item{Optimized.Threshold.Roc}{ Type True to determine a threshold with the Roc method optimising the percentage of presences
    and absences correctly predicted (this is not automatic as the Roc curve is a threshold independent method). }
   \item{Kappa}{ If True, the Kappa score will be evaluated and a threshold produced for all the models selected and for each species }
   \item{TSS}{ If True, the True Skill Statistic score will be evaluated and a threshold produced for all the models selected and for each species }
   \item{KeepPredIndependent}{ If true, the predictions on the independent data will be saved. Otherwise, only the predictive accuracy on the evaluation set are conserved (NbRunEval) }
-  \item{VarImport}{ if True, this parameter enables a direct comparison of the explanatory variable importance across models (see the manual for further explanations) }
-  \item{NbRepPA}{ The number of repetitions for the selection of pseudo absences}
-  \item{strategy}{ the strategy to use for selecting pseudo absences. Can be either "circles", "squares", "per", "random" or "sre". See \code{\link{pseudo.abs}} for details.}
-  \item{coor}{ a two columned matrix giving the coordinates of your data points. It is needed for the "per", "circles" and "squares" strategies}
-  \item{distance}{ a value giving the distance to use for the "per", "circles" and "squares" strategy of the pseudo absences selection. See \code{\link{pseudo.abs}} for details.}
-  \item{nb.absences}{ the number of pseudo absences wanted to run the models with. They are randomly selected from the pool of pseudo absences available selected by the given strategy.}
 }
 
 \details{
@@ -111,7 +111,7 @@ data(CoorXY)
 #use fix(Sp.Env) to visualise the dataset
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,12:14], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,12:14], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Here are done 2 PA runs and 2 repetitions for each run. Here we will have 36 runs per species. This will hence take several minutes.
@@ -126,36 +126,33 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, 
 ls()
 
 #Take a look at the format in which the predictions are stored
-load("pred/Pred_Species4")
-dim(Pred_Species4)
-dimnames(Pred_Species4)[-1]
+load("pred/Pred_Sp290")
+dim(Pred_Sp290)
+dimnames(Pred_Sp290)[-1]
 
-Pred_Species4[1:20,,,1]
+Pred_Sp290[1:20,,,1]
 #please check the UserGuide for a full explanation of the structure of the array.
 
 
 #You can load back a model and visualise it with the load() function :
+load("models/Sp290_ANN_PA1")
+Sp290_ANN_PA1
 
-load("models/Species4_ANN_PA1")
-Species4_ANN_PA1
-
-load("models/Species4_ANN_full")
-Species4_ANN_full
-
+load("models/Sp290_ANN_PA1")
+Sp290_ANN_PA1
+str(Sp290_ANN_PA1)
 
 #to see the results of the evaluation procedures
 Evaluation.results.Kappa
 
 
-#check which variable has the most impact on the models
+#check which variable has the most impact on the models (only for the 100 percent model)
 VarImportance
-
-load("models/Species4_GLM_full")
-response.plot(Species4_GLM_full, Sp.Env[2:8])
 
 
 #This next function enables to plot the response curves of the model
-response.plot(Species4_ANN_PA1, Sp.Env[,2:8])
+load("models/Sp290_GLM_PA1")
+response.plot(Sp290_GLM_PA1, Sp.Env[4:10])
 
 
 #Another series of functions enable to perform further steps, see ?CurrentPred and ?PredictionBestModel.

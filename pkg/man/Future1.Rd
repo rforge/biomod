@@ -8,9 +8,11 @@
 }
 \usage{data(Future1)}
 \format{
-  A data frame with 2264 observations on the following 8 variables.
+  A data frame with 2264 observations on the following 10 variables.
   \describe{
-    \item{\code{Id}}{an Id of the sites to be matched with the one of Sp.Env}
+    \item{\code{Idw}}{an Id of the sites to be matched with the one of Sp.Env}
+    \item{\code{X}}{longitude of the sites}
+    \item{\code{Y}}{latitude of the sites} 
     \item{\code{Var1}}{a climate variable}
     \item{\code{Var2}}{a climate variable}
     \item{\code{Var3}}{a climate variable}

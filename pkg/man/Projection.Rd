@@ -67,7 +67,7 @@ data(Sp.Env)
 data(CoorXY)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
@@ -79,24 +79,24 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN
 #Render Future projections under climate change scenario
 data(Future1)
 head(Future1) #the head() function enables to visualise the 5 firts lines of a dataframe
-Projection(Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
 
 #view the results produced, example with the projections in probabilities :
-load("proj.Future1/Proj_Future1_Species5")
-Proj_Future1_Species5[100:150,,1,1]
+load("proj.Future1/Proj_Future1_Sp277")
+Proj_Future1_Sp277[100:150,,1,1]
 
 
 #and plot them
 data(CoorXY)
-load("proj.Future1/Proj_Future1_Species5_BinKappa")
-load("proj.Future1/Proj_Future1_Species5_FiltKappa")
+load("proj.Future1/Proj_Future1_Sp277_BinKappa")
+load("proj.Future1/Proj_Future1_Sp277_FiltKappa")
 
 par(mfrow=c(1,4))
 level.plot(Sp.Env[,13], CoorXY, show.scale=FALSE, title="original data")
-level.plot(Proj_Future1_Species5[,"ANN",2,1], CoorXY, show.scale=FALSE, title="probabilities by GLM")
-level.plot(Proj_Future1_Species5_BinKappa[,"ANN",2,1], CoorXY, show.scale=FALSE, title="binary by Kappa")
-level.plot(Proj_Future1_Species5_FiltKappa[,"ANN",2,1], CoorXY, show.scale=FALSE, title="filtered by Kappa")
+level.plot(Proj_Future1_Sp277[,"GLM",2,1], CoorXY, show.scale=FALSE, title="probabilities by GLM")
+level.plot(Proj_Future1_Sp277_BinKappa[,"GLM",2,1], CoorXY, show.scale=FALSE, title="binary by Kappa")
+level.plot(Proj_Future1_Sp277_FiltKappa[,"GLM",2,1], CoorXY, show.scale=FALSE, title="filtered by Kappa")
 
 
 }

@@ -6,7 +6,7 @@
 }
 
 \usage{
-KappaSRE(Obs, Fit, TSS = F)
+KappaSRE(Obs, Fit, TSS = FALSE)
 }
 
 \arguments{

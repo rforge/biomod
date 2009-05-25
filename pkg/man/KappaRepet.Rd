@@ -7,7 +7,7 @@
 }
 
 \usage{
-KappaRepet(Obs, Fit, TSS = F)
+KappaRepet(Obs, Fit, TSS = FALSE)
 }
 
 \arguments{

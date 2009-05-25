@@ -8,7 +8,7 @@
   across the binary projections of the models. 
 }
 \usage{
-Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA = T, RF = T, SRE = T, Proj.name, weight.method, decay = 1.6, PCA.median = T, binary = T, bin.method = "Roc", Test = F)
+Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, MDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models=TRUE)
 }
 
 \arguments{
@@ -30,6 +30,7 @@ Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA 
   \item{binary}{ set to True if you also want the results in binary (they are produced in probabilities by default) }
   \item{bin.method}{ the method to convert the probabilities to binary values (if wanted) }
   \item{Test}{ set to True if you want the predictive performance of the ensemble method to be evaluated on current data }
+  \item{repetition.models}{ set to True if you want the ensembles to be build with the repetition models taken into account }
 }
 \details{
  The decay is the ratio between a weight and the following or prior one. The formula is : W = W(-1) * decay. For example,
@@ -40,10 +41,10 @@ Ensemble.Forecasting(ANN = T, CTA = T, GAM = T, GBM = T, GLM = T, MARS = T, MDA 
 }
 \value{ 
 
-  Some objects are stored directly on the hard disk in the same directory as for the projections
+  Some objects are stored directly on the hard disk in the same directory as for the projections.
 
-  A list is returned, named after the Proj.name argument (see examples), and several objects are produced in the "proj" folder.
-  The list contains the details of the ensemble forecast process for every species modelled. For each species, the information is as follows :
+  A list is returned, named after the Proj.name argument (see examples). It contains the details of the ensemble forecast process for every species modelled and
+  for every run. For each species, the information is as follows :
 
   \item{stats}{ contains a 2-columns matrix : if Test=T, the first one gives the assumed predictive performance for each consensus method. These scores are
   obtained by applying the same ensemble computation on the current predictions as on the future forecasts, and compared with the data input for that species 
@@ -73,7 +74,7 @@ example(Projection)
 Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=TRUE, repetition.models=TRUE)
 
 #The list returned contains some of the results (see the value section for details)
-load("proj.Future1/consensus_Species4_Future1")
+load("proj.Future1/consensus_Sp277_Future1")
 
 #this next one contains the consensus projections accross all runs for each species and consensus method
 load("proj.Future1/Total_consensus_Future1")
@@ -86,21 +87,21 @@ data <- Total_consensus_Future1
 
 par(mfrow=c(2,7))
 par(mar=c(0.6,0.6,2,0.6))
-level.plot(DataBIOMOD[,12], CoorXY, show.scale=F, title='sp4_original_data', cex=0.5)
-level.plot(data[,1,1], CoorXY, show.scale=F, title='sp4_mean', cex=0.5)
-level.plot(data[,1,2], CoorXY, show.scale=F, title='sp4_weighted_mean', cex=0.5)
-level.plot(data[,1,3], CoorXY, show.scale=F, title='sp4_median', cex=0.5)
-level.plot(data[,1,4], CoorXY, show.scale=F, title='sp4_Roc_mean', cex=0.5)
-level.plot(data[,1,5], CoorXY, show.scale=F, title='sp4_Kappa_mean', cex=0.5)
-level.plot(data[,1,6], CoorXY, show.scale=F, title='sp4_Roc_mean', cex=0.5)
+level.plot(DataBIOMOD[,8], CoorXY, show.scale=F, title='sp277_original_data', cex=0.5)
+level.plot(data[,1,1], CoorXY, show.scale=F, title='sp277_mean', cex=0.5)
+level.plot(data[,1,2], CoorXY, show.scale=F, title='sp277_weighted_mean', cex=0.5)
+level.plot(data[,1,3], CoorXY, show.scale=F, title='sp277_median', cex=0.5)
+level.plot(data[,1,4], CoorXY, show.scale=F, title='sp277_Roc_mean', cex=0.5)
+level.plot(data[,1,5], CoorXY, show.scale=F, title='sp277_Kappa_mean', cex=0.5)
+level.plot(data[,1,6], CoorXY, show.scale=F, title='sp277_Roc_mean', cex=0.5)
 
-level.plot(DataBIOMOD[,13], CoorXY, show.scale=F, title='sp5_original_data', cex=0.5)
-level.plot(data[,2,1], CoorXY, show.scale=F, title='sp5_mean', cex=0.5)
-level.plot(data[,2,2], CoorXY, show.scale=F, title='sp5_weighted_mean', cex=0.5)
-level.plot(data[,2,3], CoorXY, show.scale=F, title='sp5_median', cex=0.5)
-level.plot(data[,2,4], CoorXY, show.scale=F, title='sp5_Roc_mean', cex=0.5)
-level.plot(data[,2,5], CoorXY, show.scale=F, title='sp5_Kappa_mean', cex=0.5)
-level.plot(data[,2,6], CoorXY, show.scale=F, title='sp5_TSS_mean', cex=0.5)
+level.plot(DataBIOMOD[,9], CoorXY, show.scale=F, title='sp164_original_data', cex=0.5)
+level.plot(data[,2,1], CoorXY, show.scale=F, title='sp164_mean', cex=0.5)
+level.plot(data[,2,2], CoorXY, show.scale=F, title='sp164_weighted_mean', cex=0.5)
+level.plot(data[,2,3], CoorXY, show.scale=F, title='sp164_median', cex=0.5)
+level.plot(data[,2,4], CoorXY, show.scale=F, title='sp164_Roc_mean', cex=0.5)
+level.plot(data[,2,5], CoorXY, show.scale=F, title='sp164_Kappa_mean', cex=0.5)
+level.plot(data[,2,6], CoorXY, show.scale=F, title='sp164_TSS_mean', cex=0.5)
 
 
 }

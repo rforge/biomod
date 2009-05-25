@@ -7,7 +7,7 @@
   This function enables an overall viewing of the future predictions range per species and gives the likelihood of range shift estimations.
 }
 \usage{
-ProbDensFunc(initial, projections, plothist = T, distrib = T, cvsn = T, groups = NULL, resolution = 5)
+ProbDensFunc(initial, projections, plothist = TRUE, distrib = TRUE, cvsn = TRUE, groups = NULL, resolution = 5)
 }
 
 \arguments{

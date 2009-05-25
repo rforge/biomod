@@ -7,9 +7,11 @@
 }
 \usage{data(Sp.Env)}
 \format{
-  A data frame with 2264 observations on the following 15 variables.
+  A data frame with 2264 observations on the following 18 variables.
   \describe{
-    \item{\code{Id}}{an Id line for correspondance with the coordinates data}
+    \item{\code{Idw}}{an Id line for correspondance with the coordinates data}
+    \item{\code{X}}{longitude of the sites}
+    \item{\code{Y}}{latitude of the sites}    
     \item{\code{Var1}}{an environmental variable}
     \item{\code{Var2}}{an environmental variable}
     \item{\code{Var3}}{an environmental variable}
@@ -17,13 +19,14 @@
     \item{\code{Var5}}{an environmental variable}
     \item{\code{Var6}}{an environmental variable}
     \item{\code{Var7}}{an environmental variable}
-    \item{\code{Species1}}{binary record of a species geographical localisation}
-    \item{\code{Species2}}{binary record of a species geographical localisation}
-    \item{\code{Species3}}{binary record of a species geographical localisation}
-    \item{\code{Species4}}{binary record of a species geographical localisation}
-    \item{\code{Species5}}{binary record of a species geographical localisation}
-    \item{\code{Species6}}{binary record of a species geographical localisation}
-    \item{\code{Species7}}{binary record of a species geographical localisation}
+    \item{\code{Sp281}}{binary record of a species geographical localisation}
+    \item{\code{Sp290}}{binary record of a species geographical localisation}
+    \item{\code{Sp277}}{binary record of a species geographical localisation}
+    \item{\code{Sp164}}{binary record of a species geographical localisation}
+    \item{\code{Sp163}}{binary record of a species geographical localisation}
+    \item{\code{Sp177}}{binary record of a species geographical localisation}
+    \item{\code{Sp185}}{binary record of a species geographical localisation}
+    \item{\code{Sp191}}{binary record of a species geographical localisation}
   }
 }
 \details{

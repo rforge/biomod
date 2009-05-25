@@ -30,7 +30,7 @@ PredictionBestModel(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, 
 }
 \value{
   No values are returned but objects are produced in the "pred" folder (see \code{\link{Models}}).
-  Example of PredBestModelByKappa_Species4 (but all follow the same logic) : a matrix with a column per run
+  Example of PredBestModelByKappa\_Species4 (but all follow the same logic) : a matrix with a column per run
   containing the predictions in probabilities using the Kappa scores to select the best model for Species4. 
   The results are stored individually for each species for format conflicts reasons. The predictions can also 
   be obtained in binary and filtered values (additionnal matrices are thus produced).  
@@ -48,7 +48,7 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 data(Sp.Env)
 data(CoorXY)
 
-Initial.State(Response=Sp.Env[,10:11], Explanatory=Sp.Env[,2:8], 
+Initial.State(Response=Sp.Env[,14:15], Explanatory=Sp.Env[,4:10], 
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models. Here we will have 12 runs per species.
@@ -71,11 +71,11 @@ BestModelByRoc
 #The prediction data is stored individually for each species
 #each evaluation method and each format produced (in contrary to the
 #outputs of ProjectionBestModel).
-load("pred/PredBestModelByRoc_Species2_Filt")
-PredBestModelByRoc_Species2_Filt[50:100,]
+load("pred/PredBestModelByRoc_Sp164_Filt")
+PredBestModelByRoc_Sp164_Filt[50:100,]
 
-load("pred/PredBestModelByKappa_Species3_Filt")
-PredBestModelByKappa_Species3_Filt[50:100,]
+load("pred/PredBestModelByKappa_Sp163_Filt")
+PredBestModelByKappa_Sp163_Filt[50:100,]
 
 }
 

@@ -8,7 +8,7 @@
   Please read the BIOMOD manual for further explanations.
 }
 \usage{
-pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = T, species.name = "SpNoName", create.dataset=F, plot = F, acol = "grey80", pcol = "red")
+pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = TRUE, species.name = "SpNoName", create.dataset=FALSE, plot = FALSE, acol = "grey80", pcol = "red")
 }
 
 \arguments{

@@ -131,6 +131,13 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         if(Model == 'SRE') g.pred <- data.frame(as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[calib.lines,]$",paste(SpNames[i]), collapse=""))), DataBIOMOD[calib.lines,1:NbVar],DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))
         
         
+        #defining the evaluation stats if a repetition run
+        if(k != (ncol(Ids)+1)){
+           auc.stat <-  somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines,NbVar+i])["C"]
+           kappa.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],])$Kappa
+           tss.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS
+        }
+                
         #running the evaluation procedures for the evaluation runs
         #no extra prediction to be made -> using the g.pred (on full PA.samp) and getting the right lines
         if(k != (ncol(Ids)+1)){ #if repetition run           
@@ -138,9 +145,9 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                 Kappa.train <- Kappa.train + KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],])$Kappa 
                 TSS.train <- TSS.train + KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS 
             } else{
-                AUC.train <- AUC.train + somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines, NbVar+i])["C"]
-          			Kappa.train <- Kappa.train + KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],])$Kappa
-          			TSS.train <- TSS.train + KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS
+                AUC.train <- AUC.train + auc.stat
+          			Kappa.train <- Kappa.train + kappa.stat
+          			TSS.train <- TSS.train + tss.stat
       		  }
         } else {
               if(Model == 'SRE'){ 
@@ -151,14 +158,15 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
           			Kappa.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,])$Kappa
           			TSS.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,], TSS=T)$TSS
       		  }
-        }
+        }     
         
         #saving the evaluation stats for the repetition models  
         if(k != (ncol(Ids)+1)){
-            if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines, NbVar+i])["C"], digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
-            if(Kappa) Evaluation.results.Kappa[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],])$Kappa, digits=3),'none',KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,])[c(1,2,4,6)]) 
-            if(TSS) Evaluation.results.TSS[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(KappaRepet(DataBIOMOD[pred.lines, NbVar +i], g.pred[-Ids[,k],], TSS=T)$TSS, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp, NbVar +i], g.pred[,], TSS=T)[c(1,2,4,6)])   
-        }    
+            if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(auc.stat, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
+            if(Kappa) Evaluation.results.Kappa[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(kappa.stat,digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,])[c(1,2,4,6)]) 
+            if(TSS) Evaluation.results.TSS[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(tss.stat,digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,], TSS=T)[c(1,2,4,6)])   
+        }                                                                                            
+
 
         #save the predictions in the array
         if(k == (ncol(Ids)+1)) Array[,Model,1,pa] <- g.pred[,]  else  Array[,Model,(k+1),pa] <- g.pred[,] 
@@ -228,7 +236,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         assign("Evaluation.results.Roc", Evaluation.results.Roc, pos=1)
 	  }    
     if(Kappa){
-	      Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,] <- c(round(Kappa.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,], TSS=T)[c(1,2,4,6)]) 
+	      Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,] <- c(round(Kappa.train, digits=3), 'none', KappaRepet(DataBIOMOD[PA.samp,NbVar+i], g.pred[,])[c(1,2,4,6)]) 
         if(exists("DataEvalBIOMOD")) Evaluation.results.Kappa[[paste(Biomod.material$species.names[i], "_", nam, sep="")]][Model,2] <- round(KappaRepet(DataEvalBIOMOD[,NbVar+i], predind)$Kappa, digits=3) 
         assign("Evaluation.results.Kappa", Evaluation.results.Kappa, pos=1)
     }	

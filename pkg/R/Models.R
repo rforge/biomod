@@ -20,16 +20,19 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model \n Make sure you really wanted to do that. \n")
       
       
-    #check that the weight matrix (if any was specified) was entered correctly:
-    if(!is.null(Yweights)){
-        if(is.null(dim(Yweights))) Yweights <- as.data.frame(Yweights)
-        if(ncol(Yweights) != Biomod.material$NbSpecies) stop("The number of 'Weight' columns does not match the number of species. Simulation cannot proceed.")
-        if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
-    }
+    #Check that the weight matrix was entered correctly with the pseudo.abs option
+    if(NbRepPA==0){
+       if(!is.null(Yweights)){
+           if(is.null(dim(Yweights))) Yweights <- as.data.frame(Yweights)
+           if(ncol(Yweights) != Biomod.material$NbSpecies) stop("The number of 'Weight' columns does not match the number of species. Simulation cannot proceed.")
+           if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
+       }
+    } else Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
     
     #create the directories in which various objects will be stored (models, predictions and projection). The projection directories are created in the Projection() function.
     dir.create(paste(getwd(), "/models", sep=""), showWarnings=F)
     dir.create(paste(getwd(), "/pred", sep=""), showWarnings=F)
+  
   
     #create usefull vectors for condensing code   
     Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","MDA","RF","SRE")
@@ -38,6 +41,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     Biomod.material[["NbRunEval"]] <- NbRunEval
     Biomod.material[["NbRepPA"]] <- NbRepPA
     assign("Biomod.material", Biomod.material, pos=1)
+ 
  
     #run the pseudo.absence function once for each species, keeping all the absences possible each time
     #only the row names are stored in PA.data
@@ -52,6 +56,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         }
         assign("Biomod.PA.data",PA.data, pos=1)
     }
+ 
  
     #defining evaluation runs
     if(NbRunEval==0){
@@ -70,6 +75,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         for(i in 1:Biomod.material$NbSpecies) VI[[i]] <- data.frame(matrix(NA, nrow=sum(Biomod.material[["algo.choice"]]), ncol=Biomod.material$NbVar, dimnames=list(Biomod.material$algo[Biomod.material$algo.choice], names(DataBIOMOD)[1:Biomod.material$NbVar])))
         assign("VarImportance", VI, pos=1)
     } else assign("VarImportance", NA, pos=1)  
+    
     
     
     #create output objects to store the results of the evaluation procedures 
@@ -121,10 +127,19 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             }  
         }          
         
+        #defining the weights to be awarded for that species, considering the number of absences available
+        #we keep the same format as DataBIOMOD to make it easier to call the corresponding lines in Biomod.models. For that
+        #reason, we award the same weight to all the absences even though it doesn't sum up to a 0.5 prevalence (but lower) but
+        #it will give 0.5 when considering the lines taken for calibration.
+        Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==1),i] <- 1
+        Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==0),i] <- nbpres/nb.absences.pos
+        assign("W", Yweights, pos=1)
+            
+            
             
         #constructing the storing array for the species considering NbRepPA.pos, NbRunEval, nb.absences.pos
         reps <- c()
-        if(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("rep", j, sep="")) 
+        i1080f(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("rep", j, sep="")) 
         PAs <- c()
         if(NbRepPA.pos == 1 && NbRepPA==0) PAs <- "no.PA" else for(j in 1:NbRepPA.pos) PAs <- c(PAs, paste("PA", j, sep=""))
     
@@ -183,7 +198,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         i <- i + 1
     }
     
-    rm(i, pa, calib.lines, Array, pos=1)
+    rm(i, pa, Array, pos=1)
     assign("Biomod.material", Biomod.material, pos=1)
     if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     

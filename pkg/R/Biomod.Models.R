@@ -51,9 +51,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
               else  nam <- paste("PA", pa, "_rep", k, sep="")  
               calib.lines <- PA.samp[Ids[,k]]
               pred.lines <- PA.samp[-Ids[,k]]
-        } 
-  	
-  	    assign("calib.lines", calib.lines, pos=1)
+        }
   	
   	    #building each model and making the full prediction
         if(Model == 'ANN'){
@@ -130,14 +128,14 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         }
         if(Model == 'SRE') g.pred <- data.frame(as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[calib.lines,]$",paste(SpNames[i]), collapse=""))), DataBIOMOD[calib.lines,1:NbVar],DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))
         
-        
+
         #defining the evaluation stats if a repetition run
         if(k != (ncol(Ids)+1)){
            auc.stat <-  somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines,NbVar+i])["C"]
            kappa.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],])$Kappa
            tss.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS
         }
-                
+        
         #running the evaluation procedures for the evaluation runs
         #no extra prediction to be made -> using the g.pred (on full PA.samp) and getting the right lines
         if(k != (ncol(Ids)+1)){ #if repetition run           
@@ -159,7 +157,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
           			TSS.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,], TSS=T)$TSS
       		  }
         }     
-        
+
         #saving the evaluation stats for the repetition models  
         if(k != (ncol(Ids)+1)){
             if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(auc.stat, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
@@ -188,7 +186,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     Kappa.train <- Kappa.train/ncol(Ids)
     TSS.train <- TSS.train/ncol(Ids)
       
-    
+
     #Evaluation of Predictor Importance in the model:
     if(VarImport > 0){
         cat("Evaluating Predictor Contributions in " , Model, "...", "\n")

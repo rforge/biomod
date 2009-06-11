@@ -17,7 +17,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
     names(list.out) <- Biomod.material$species.names
     
     #final consensus array using all repetitions into a single output
-    ARRAY.tot <- array(NA, c(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$NbSpecies, 6), 
+    ARRAY.tot <- ARRAY.tot.bin <- array(NA, c(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$NbSpecies, 6), 
      dimnames=list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$species.names, c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'))) 
     
     #--------- start species loop ---------       
@@ -137,6 +137,10 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
             rownames(out[["weights"]]) <- colnames(out[["thresholds"]]) <- rownames(out[["PCA.median"]]) <-dimnames(ARRAY)[[2]]
             list.out[[i]] <- out
 
+            assign("ths", ths, pos=1)
+
+            assign("ARRAY", ARRAY, pos=1)
+
             if(ii==1){              
                 #save results on hard disk per species    
                 assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, sep=""), ARRAY) 
@@ -153,16 +157,33 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                 }
                 
                 #Final consensus on all data available
-                if(dim(ARRAY)[2] != 1){ #if only one PA was done  there is no further calculation possible
+                if(dim(ARRAY)[2] != 1){ #if only one run was done there is no further calculation possible
                 
                     ARRAY.tot[, i, 'prob.mean'] <- apply(ARRAY[,,1], 1, mean)
                     ARRAY.tot[, i, 'prob.mean.weighted'] <- apply(ARRAY[,,2], 1, mean)
                     ARRAY.tot[, i, 'median'] <- apply(ARRAY[,,3], 1, median)
-                    if(Biomod.material$evaluation.choice[["Roc"]]) ARRAY.tot[, i, 'Roc.mean'] <- apply(ARRAY[,,4], 1, mean)
-                    if(Biomod.material$evaluation.choice[["Kappa"]]) ARRAY.tot[, i, 'Kappa.mean'] <- apply(ARRAY[,,5], 1, mean)
-                    if(Biomod.material$evaluation.choice[["TSS"]]) ARRAY.tot[, i, 'TSS.mean'] <- apply(ARRAY[,,6], 1, mean) 
-                } else ARRAY.tot[,i,] <- ARRAY[,1,]
-                             
+
+                    ARRAY.tot.bin[, i, 'prob.mean'] <-          BinaryTransformation(ARRAY.tot[, i, 'prob.mean'], mean(ths[[1]]))
+                    ARRAY.tot.bin[, i, 'prob.mean.weighted'] <- BinaryTransformation(ARRAY.tot[, i, 'prob.mean.weighted'], mean(ths[[2]]))
+                    ARRAY.tot.bin[, i, 'median'] <-             BinaryTransformation(ARRAY.tot[, i, 'median'], mean(ths[[1]]))
+                    
+                    if(Biomod.material$evaluation.choice[["Roc"]]){ 
+                        ARRAY.tot[, i, 'Roc.mean'] <- apply(ARRAY[,,4], 1, mean)
+                        ARRAY.tot.bin[, i, 'Roc.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'Roc.mean'], 500)
+                    }    
+                    if(Biomod.material$evaluation.choice[["Kappa"]]){ 
+                        ARRAY.tot[, i, 'Kappa.mean'] <- apply(ARRAY[,,5], 1, mean)
+                        ARRAY.tot.bin[, i, 'Kappa.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'Roc.mean'], 500)
+                    }    
+                    if(Biomod.material$evaluation.choice[["TSS"]]){ 
+                        ARRAY.tot[, i, 'TSS.mean'] <- apply(ARRAY[,,6], 1, mean) 
+                        ARRAY.tot.bin[, i, 'TSS.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'TSS.mean'], 500)
+                    }
+                    
+                } else { 
+                    ARRAY.tot[,i,] <- ARRAY[,1,]
+                    ARRAY.tot.bin[,i,] <- BinaryTransformation(ARRAY.tot[,i,], as.numeric(ths))
+                 }           
                 
             } 
             if(ii==2){ #consensus methods done on current data
@@ -188,6 +209,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
     
     assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.tot) 
     eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"')", sep="")))
+
+    assign(paste("Total_consensus_", Proj.name, "_Bin", sep=""), ARRAY.tot.bin) 
+    eval(parse(text=paste("save(Total_consensus_", Proj.name, "_Bin , file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name, "_Bin')", sep="")))
 
     assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
     eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results')", sep="")))

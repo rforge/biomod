@@ -64,6 +64,9 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 20
   evaluation on independent-like data, whilst building the final model on 100 percent of the given data. Since march 2009, all the models produced by BIOMOD and their 
   related informations are saved on the hard disk. This is to enable the possibility of assessing the stochastic effect of the splitting procedure of the calibration step
   by being able to render projections with those models.
+  
+  Yweights : When NbRepPA is set to a value higher than zero, some weights are awarded automatically. For all the runs across all the species, the weights are determined
+  to obtain a prevalence of 0.5, meaning that the presences will have the same importance than the absences in the calibration process of the models. 
 
 }
 \value{

@@ -43,43 +43,44 @@ Migration(CurrentPred = NULL, FutureProj = NULL, X = NULL, Y = NULL, MaxMigr = N
 \examples{
 
 
-
 data(Sp.Env)
-
-Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,2:8], 
-		IndependentResponse=NULL, IndependentExplanatory=NULL)
-
-#This line will only run a few models
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
-Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
-
-
-data(Future1)
-Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinTSS=TRUE)
-
-
-#We are going to run the Turnover function on the models selected by the TSS for each species
-PredictionBestModel(method="Roc")
-ProjectionBestModel(Proj.name="Future1", method="Roc", Bin.trans=TRUE)
-
-
-
-load("pred/PredBestModelByRoc_Bin")
-load("proj.Future1/Proj_Future1_BestModelByRoc_Bin")
-
 data(CoorXY)
-Migration(CurrentPred = PredBestModelByRoc_Bin, FutureProj = Proj_Future1_BestModelByRoc_Bin,
-  X=CoorXY[,1], Y=CoorXY[,2], MaxMigr=5*0.1666*8, Pred.Save="Future1.Migration.BestRoc")
+
+#This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
+Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10], 
+IndependentResponse=NULL, IndependentExplanatory=NULL)
+
+#Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
-cbind(Proj_Future1_BestModelByRoc_Bin[,1], Future1.Migration.BestRoc[,1], Proj_Future1_BestModelByRoc_Bin[,2], Future1.Migration.BestRoc[,2])[700:730,]
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+
+#Render Future projections under climate change scenario
+data(Future1)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+
+Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=T, 
+binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=T, 
+binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+
+load("proj.Future1/Total_consensus_Future1_Bin")
+load("proj.Current/Total_consensus_Current_Bin")
 
 
-par(mfrow=c(1,2))
-level.plot(Proj_Future1_BestModelByRoc_Bin[,1], XY=CoorXY, show.scale=FALSE, title="unlimited migration")
-level.plot(Future1.Migration.BestRoc[,1], XY=CoorXY, show.scale=FALSE, title="limited migration")
 
+Migration(CurrentPred = Total_consensus_Current_Bin[,,1], FutureProj = Total_consensus_Future1_Bin[,,1],
+X=CoorXY[,1], Y=CoorXY[,2], MaxMigr=1, Pred.Save="Future1.Migration")
+  
 
+par(mfrow=c(1,3))
+level.plot(Sp.Env[,13], XY=CoorXY, show.scale=FALSE, title="current distribution", cex=0.8)
+level.plot(Future1.Migration[,1], XY=CoorXY, show.scale=FALSE, title="limited migration", cex=0.8)
+level.plot(Total_consensus_Future1_Bin[,1,1], XY=CoorXY, show.scale=FALSE, title="unlimited migration", cex=0.8)
 
 }
 

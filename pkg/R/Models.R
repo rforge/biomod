@@ -129,17 +129,16 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         
         #defining the weights to be awarded for that species, considering the number of absences available
         #we keep the same format as DataBIOMOD to make it easier to call the corresponding lines in Biomod.models. For that
-        #reason, we award the same weight to all the absences even though it doesn't sum up to a 0.5 prevalence (but lower) but
-        #it will give 0.5 when considering the lines taken for calibration.
-        Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==1),i] <- 1
-        Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==0),i] <- nbpres/nb.absences.pos
-        assign("W", Yweights, pos=1)
-            
-            
+        #reason, we award the same weight to all the absences even though it doesn't sum up to a 0.5 prevalence (but lower)
+        #it will give 0.5 when considering the number of absences, hence the lines taken for calibration.
+        if(NbRepPA != 0){
+            Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==1),i] <- 1
+            Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==0),i] <- nbpres/nb.absences.pos
+        }            
             
         #constructing the storing array for the species considering NbRepPA.pos, NbRunEval, nb.absences.pos
         reps <- c()
-        i1080f(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("rep", j, sep="")) 
+        if(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("rep", j, sep="")) 
         PAs <- c()
         if(NbRepPA.pos == 1 && NbRepPA==0) PAs <- "no.PA" else for(j in 1:NbRepPA.pos) PAs <- c(PAs, paste("PA", j, sep=""))
     

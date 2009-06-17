@@ -12,6 +12,8 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
         nb <- 0
         for(i in 1:length(unique(data.in))) if(sum(unique(data.in)[i]==SRCvalues) == 1) nb <- nb+1
         if(nb==length(unique(data.in))) SRC <- T
+        #if data made of 0s and 1s (binary)
+        if(length(unique(data.in))==2 && sum(match(unique(data.in), SRCvalues))==7) SRC=F
     }
 
     if(SRC){

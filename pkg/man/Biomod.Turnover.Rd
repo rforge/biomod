@@ -45,36 +45,41 @@ Where SR is the current species richness, L the number of species lost and G tho
 \seealso{ \code{\link{Biomod.RangeSize}}, \code{\link{Migration}} }
 \examples{
 
-
+ 
 data(Sp.Env)
+data(CoorXY)
 
-Initial.State(Response=Sp.Env[,9:15], Explanatory=Sp.Env[,2:8], 
-		IndependentResponse=NULL, IndependentExplanatory=NULL)
+#This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
+Initial.State(Response=Sp.Env[,11:18], Explanatory=Sp.Env[,4:10], 
+IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#This line will only run a few models
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, RF = TRUE, GBM = FALSE, GAM = FALSE, CTA = FALSE, ANN = FALSE, SRE = FALSE, MARS = FALSE, NbRunEval = 0, DataSplit = 80,
-Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE)
+#Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
+Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+
+#Render Future projections under climate change scenario
 data(Future1)
-Projection( Proj = Future1[,2:8], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinTSS=TRUE)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+
+Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=T, 
+binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=T, 
+binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+
+load("proj.Future1/Total_consensus_Future1_Bin")
+load("proj.Current/Total_consensus_Current_Bin")
 
 
-
-#We are going to run the Turnover function on the models selected by the TSS for each species
-PredictionBestModel(method="TSS")
-ProjectionBestModel(Proj.name="Future1", method="TSS", Bin.trans=TRUE)
-
-load("pred/PredBestModelByTSS_Bin")
-load("proj.Future1/Proj_Future1_BestModelByTSS_Bin")
-
-
-Biomod.Turnover(CurrentPred = PredBestModelByTSS_Bin, FutureProj = Proj_Future1_BestModelByTSS_Bin, Turnover.Save="Future1.Turnover.BestTSS")
+Biomod.Turnover(CurrentPred = Total_consensus_Current_Bin[,,1], FutureProj = Total_consensus_Future1_Bin[,,1], Turnover.Save="Future1.Turnover.consensus")
 
 
 #Visualise the results
-Future1.Turnover.BestTSS[1150:1200,]
-
+Future1.Turnover.consensus[1150:1200,]
 
 
 }

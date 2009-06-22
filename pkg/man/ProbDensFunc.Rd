@@ -4,17 +4,17 @@
 \title{ Probability Density Function }
 \description{
   Using a variety of parameters in modelling will inevitably bring variability in predictions, especially when it comes to making future predictions.
-  This function enables an overall viewing of the future predictions range per species and gives the likelihood of range shift estimations.
+  This function enables an overall viewing of the future predictions range per species and gives the likelihood of range shift estimations. It will 
+  calculate the optimal way for condensing 50, 75, 90 and 95\% of the data. 
 }
 \usage{
-ProbDensFunc(initial, projections, plothist = TRUE, distrib = TRUE, cvsn = TRUE, groups = NULL, resolution = 5)
+ProbDensFunc(initial, projections, plothist = TRUE, cvsn = TRUE, groups = NULL, resolution = 5)
 }
 
 \arguments{
   \item{initial}{ a vector in a binary format (ones and zeros) representing the current distribution of a species which will be used as a reference for the range change calculations }
   \item{projections}{ a matrix grouping all the predictions where each column is a single prediction. Make sure you keep projections in the same order as the initial vector (line1=site1, line2=site2, etc.). }
   \item{plothist}{ set to TRUE to plot the range change histogram }
-  \item{distrib}{ if true, the optimal way for condensing 50, 75, 90 and 95\% of the data will be calculated and shown on the histogram }
   \item{cvsn}{ stands for "current vs new". If true, the range change calculations will be of two types: the percentage of cells currently 
   occupied by the species to be lost, and the relative percentage of cells currently unoccupied but projected to be, namely 'new' cells, compared to current surface range 
   (Please read on the BIOMOD manual for further explanation).}
@@ -97,7 +97,7 @@ DataFrame <- cbind(DataFrame, Bin_consensus)
 DataFrame <- DataFrame[,-1][,-1]
 
 
-ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, distrib=T, cvsn=T, 
+ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, cvsn=T, 
 groups=Groups, resolution=5)
 
 }

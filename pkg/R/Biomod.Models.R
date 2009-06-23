@@ -53,6 +53,9 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
               pred.lines <- PA.samp[-Ids[,k]]
         }
   	
+  	    #necessary for the GAM, or else it doesn't read DataBIOMOD[calib.lines,] (not in the same environments)
+  	    assign("calib.lines", calib.lines, pos=1)
+  	
   	    #building each model and making the full prediction
         if(Model == 'ANN'){
             if(k==(ncol(Ids)+1) && ncol(Ids)!=0){ #final model with prior evaluation runs (NbRunEval!=0)

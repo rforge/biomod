@@ -8,7 +8,7 @@
   calculate the optimal way for condensing 50, 75, 90 and 95\% of the data. 
 }
 \usage{
-ProbDensFunc(initial, projections, plothist = TRUE, cvsn = TRUE, groups = NULL, resolution = 5)
+ProbDensFunc(initial, projections, plothist = TRUE, cvsn = TRUE, groups = NULL, resolution = 5, save.pdf=FALSE, name="ProbDF_plot")
 }
 
 \arguments{
@@ -21,6 +21,8 @@ ProbDensFunc(initial, projections, plothist = TRUE, cvsn = TRUE, groups = NULL, 
   \item{groups}{ an option for ungrouping the projections enabling a separated visualisation of the prediction range per given group. A 
   matrix is expected where each column is a single prediction and each line is giving details of one parameter (See the examples section). }
   \item{resolution}{ the step used for classes of prediction in graphics. The default value is 5 }
+  \item{save.pdf}{ if True, a pdf of the plot will be saved. Options can be changed by setting the default values of pdf.options() }
+  \item{name}{ the name of the pdf produced if save.pdf is set to True (extension .pdf is already included) }
 }
 
 \details{

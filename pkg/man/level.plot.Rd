@@ -6,7 +6,7 @@
   Enables to plot data with 2-dimensional geographical coordinates
 }
 \usage{
-level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot")
+level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot", save.pdf=FALSE)
 }
 
 \arguments{
@@ -18,6 +18,7 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
   of the graph especially if you have extreme values (see examples section) }
   \item{show.scale}{ a feature for just keeping the graph without the scale (if set to False) }
   \item{title}{ the title wanted for the graph }
+  \item{save.pdf}{ if True, a pdf of the plot will be saved. Options can be changed by setting the default values of pdf.options() }
 }
 
 \details{}

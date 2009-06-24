@@ -1,5 +1,5 @@
 `ProbDensFunc` <-
-function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution=5){
+function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution=5, save.pdf=FALSE, name="ProbDF_plot"){
     
     if(!is.null(groups) && !is.matrix(groups)) stop("\n 'groups' should be a matrix \n")
     if(!is.null(groups) && ncol(groups)!=ncol(projections)) stop("\n 'groups' and 'projections' do not have the same number of columns \n")
@@ -33,10 +33,12 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
     out[["stats"]] <- matrix(c(low50,low75,low90,low95, high50,high75,high90,high95), nc=2, nr=4, dimnames=list(c("50%","75%","90%","95%"), c("lower limit", "upper limit")))    		
 
 
+    if(save.pdf) pdf(paste(name, ".pdf", sep=""))
+
     if(!is.null(groups)){
-    		x11()
+    		if(!save.pdf) x11()
     		par(mfrow=c(1,nrow(groups)))
-    		color.samp <- list()
+    		color.samp <- list()                                          
     		for(pa in 1:nrow(groups)){
     
             lv <- levels(as.factor(as.matrix(groups[pa,])))
@@ -63,7 +65,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
         area2 <- (apply(projections[which(initial==1),],2,sum) / sum(initial==1) -1) * 100
     		area3 <- area - area2
     
-        x11()
+        if(!save.pdf) x11()
         par(mfrow=c(1,nrow(groups))) 
         
         for(i in 1:nrow(groups)){
@@ -84,7 +86,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
     
     #if plot of distribution plot wanted
     if(plothist){
-    		x11()
+    		if(!save.pdf) x11()
         par(mfrow=c(1,1))
     		
   			hist( (low95+high95)/2, breaks=c(low95,high95), col="aliceblue", xlim=c(a,b), ylim=c(0,max(p$density)*1.2), xlab="",ylab="", main="")
@@ -99,6 +101,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
         plot(p, freq=F, col="white", xlim=c(a,b), ylim=c(0,max(p$density)*1.2), main="Probability density function", xlab="Species range change (%)", ylab="Event   occurence   probability")
   	}
   	
+  	if(save.pdf) dev.off()
   	return(out)
 }
 

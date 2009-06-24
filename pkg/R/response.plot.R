@@ -1,5 +1,5 @@
 `response.plot` <-
-function(model, Data){
+function(model, Data, save.pdf=FALSE, name="response_curve"){
 
     NbVar <- ncol(Data)
     Xp <- as.data.frame(matrix(sapply(Data, mean), nrow(Data), NbVar, byrow=TRUE, dimnames=list(NULL, colnames(Data))))
@@ -9,7 +9,8 @@ function(model, Data){
     if(class(model)[1]=="mars" | class(model)[1]=="mda") if(sum(search()=="package:mda")==0) library(mda)
     if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=F)
     
-    x11()
+    if(save.pdf) pdf(paste(name, "pdf", sep="."))
+    
     sqnb <- ceiling(sqrt(NbVar))   #if(!is.na(VarImportance)[[1]]) sqnb <- ceiling(sqrt(NbVar+1)) else  sqnb <- ceiling(sqrt(NbVar))
     layout(matrix(c(rep(1,sqnb),2:(sqnb^2+1)),nc=sqnb, byrow=T), widths=rep(1,sqnb), heights=c(0.3,rep(1,ceiling(NbVar/sqnb))))
     
@@ -40,6 +41,8 @@ function(model, Data){
 
         plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])     
     } 
+   
+    if(save.pdf) dev.off()
    
     if(class(model)[1]=="nnet.formula")  detach(package:nnet)
     if(class(model)[1]=="rpart") detach(package:rpart)

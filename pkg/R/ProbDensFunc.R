@@ -1,5 +1,5 @@
 `ProbDensFunc` <-
-function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution=5, save.pdf=FALSE, name="ProbDF_plot"){
+function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution=5, save.file="no", name="ProbDF_plot"){
     
     if(!is.null(groups) && !is.matrix(groups)) stop("\n 'groups' should be a matrix \n")
     if(!is.null(groups) && ncol(groups)!=ncol(projections)) stop("\n 'groups' and 'projections' do not have the same number of columns \n")
@@ -33,10 +33,12 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
     out[["stats"]] <- matrix(c(low50,low75,low90,low95, high50,high75,high90,high95), nc=2, nr=4, dimnames=list(c("50%","75%","90%","95%"), c("lower limit", "upper limit")))    		
 
 
-    if(save.pdf) pdf(paste(name, ".pdf", sep=""))
+    if(save.file == "pdf") pdf(paste(name, ".pdf", sep=""))
+    if(save.file == "jpeg") jpeg(paste(name, ".jpeg", sep=""))
+    if(save.file == "tiff") tiff(paste(name, ".tiff", sep=""))   
 
     if(!is.null(groups)){
-    		if(!save.pdf) x11()
+    		if(save.file=="no") x11()
     		par(mfrow=c(1,nrow(groups)))
     		color.samp <- list()                                          
     		for(pa in 1:nrow(groups)){
@@ -65,7 +67,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
         area2 <- (apply(projections[which(initial==1),],2,sum) / sum(initial==1) -1) * 100
     		area3 <- area - area2
     
-        if(!save.pdf) x11()
+        if(save.file=="no") x11()
         par(mfrow=c(1,nrow(groups))) 
         
         for(i in 1:nrow(groups)){
@@ -86,7 +88,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
     
     #if plot of distribution plot wanted
     if(plothist){
-    		if(!save.pdf) x11()
+    		if(save.file=="no") x11()
         par(mfrow=c(1,1))
     		
   			hist( (low95+high95)/2, breaks=c(low95,high95), col="aliceblue", xlim=c(a,b), ylim=c(0,max(p$density)*1.2), xlab="",ylab="", main="")
@@ -101,7 +103,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
         plot(p, freq=F, col="white", xlim=c(a,b), ylim=c(0,max(p$density)*1.2), main="Probability density function", xlab="Species range change (%)", ylab="Event   occurence   probability")
   	}
   	
-  	if(save.pdf) dev.off()
+  	if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
   	return(out)
 }
 

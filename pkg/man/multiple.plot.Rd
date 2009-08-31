@@ -7,7 +7,7 @@
   maps produced are the same than with the \code{\link{level.plot}} function 
 }
 \usage{
-multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.pdf=FALSE, name="multiple plot")
+multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file="no", name="multiple plot")
 }
 
 \arguments{
@@ -16,8 +16,8 @@ multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.
   \item{color.gradient}{ available : 'red', 'grey' and 'blue' }
   \item{plots.per.window}{ the number of plots you wish to visualise per window }
   \item{cex}{ to change the point size : >1 will increase size, <1 will decrease it }
-  \item{save.pdf}{ if True, a pdf of the plot will be saved. Options can be changed by setting the default values of pdf.options() }
-  \item{name}{ the name of the pdf produced if save.pdf is set to True (extension .pdf is already included) }
+  \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
+  \item{name}{ the name of the file produced if save.file is different to "no" (extensions are already included) }
 }
 
 \details{
@@ -32,7 +32,7 @@ multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.
 \examples{
 
 
-multiple.plot(Sp.Env[,4:18], CoorXY, plots.per.window=16, cex=0.8
+multiple.plot(Sp.Env[,4:18], CoorXY, plots.per.window=16, cex=0.8)
 
 #just the set of environmental variables 
 multiple.plot(Sp.Env[,4:10], CoorXY, cex=0.8)

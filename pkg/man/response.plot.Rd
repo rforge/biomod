@@ -7,15 +7,15 @@ building the model. It therefore permits a direct comparisons of models built us
   
 }
 \usage{
-response.plot(model, Data, save.pdf=FALSE, name="response_curve")
+response.plot(model, Data, save.file="no", name="response_curve")
 }
 
 \arguments{
   \item{model}{ the model for which you want the response curves to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, MDA and MARS.}
   \item{Data}{ the variables for which you want the response curves to be plotted. A data frame is wanted with one column per vriable. They have to have the same names 
    as the ones used to calibrate the model.}
-  \item{save.pdf}{ if True, a pdf of the plot will be saved. Options can be changed by setting the default values of pdf.options() }
-  \item{name}{ the name of the pdf produced if save.pdf is set to True (extension .pdf is already included) }
+  \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
+  \item{name}{ the name of the file produced if save.file is different to "no" (extensions are already included) }
 }
 \details{
   For building such response curves, n-1 variables are set to their median value and only the one

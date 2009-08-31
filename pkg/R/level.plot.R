@@ -1,5 +1,5 @@
 `level.plot` <-
-function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot", save.pdf=FALSE, multiple.plot=FALSE){  
+function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot", save.file="no", multiple.plot=FALSE){  
     
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n") 
     if(ncol(XY)!=2) stop("\n wrong coordinates given in 'XY' : there should be two columns \n")
@@ -60,8 +60,11 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
         gg[g > level.range[2]] <- 102
     }    
     
-    if(save.pdf) pdf(paste(title, ".pdf", sep=""))
-        
+    if(save.file == "pdf") pdf(paste(title, ".pdf", sep=""))
+    if(save.file == "jpeg") jpeg(paste(title, ".jpeg", sep=""))
+    if(save.file == "tiff") tiff(paste(title, ".tiff", sep=""))      
+    #if(save.file == "postscript") tiff(paste(title, ".ps", sep=""))
+  
     if(show.scale){
         
         if(!multiple.plot) layout(matrix(c(1,2),nr=1), widths=c(5,1), heights=c(1,1))
@@ -86,7 +89,7 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
     }
      else plot(XY[,2]~XY[,1], col=color.system[gg], pch=19, xlab='', ylab='', xaxt='n', yaxt='n', main=title)  
      
-    if(save.pdf) dev.off()
+    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
      
 }
 

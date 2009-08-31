@@ -1,5 +1,5 @@
 `multiple.plot` <-
-function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.pdf=FALSE, name="multiple plot"){
+function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=FALSE, name="multiple plot"){
 
     if(nrow(coor) != nrow(Data)) stop("Uncorrect mapping coordinates : coor and Data are not of the same length")
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n")
@@ -19,10 +19,12 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.pdf=F
     if(NbWindows==1) plots.per.window <- NbPlots
 
 
-    if(save.pdf) pdf(paste(name, ".pdf", sep=""))
+    if(save.file=="pdf") pdf(paste(name, ".pdf", sep=""))
+    if(save.file=="jpeg") jpeg(paste(name, ".jpeg", sep=""))
+    if(save.file=="tiff") tiff(paste(name, ".tiff", sep=""))    
     
     for(W in 1:NbWindows){
-        if(!save.pdf) x11()
+        if(save.file=="no") x11()
         
         Wstart <- (W-1)*plots.per.window + 1
         if(W*plots.per.window > NbPlots) Wfinal <- NbPlots else Wfinal <- W*plots.per.window
@@ -62,5 +64,5 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.pdf=F
     } #W loop   
     
     rm(legendcex, multiple, pos=1)
-    if(save.pdf) dev.off()
+    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
 }

@@ -14,9 +14,9 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
             Response <- as.data.frame(Response)
             dimnames(Response) <- list(seq(dim(Response)[1]), sp.name)
         }
-    }
+    }    
     if(!is.null(IndependentResponse)) {
-        if(ncol(Response) != ncol(IndependentResponse)) stop("Independent data should have the same number of columns as the data used for calibration")
+        if(ncol(as.data.frame(Response)) != ncol(as.data.frame(IndependentResponse))) stop("Independent data should have the same number of columns as the data used for calibration")
         
         nb <- 0
         for(i in 1:ncol(IndependentExplanatory)) if(sum(colnames(IndependentExplanatory)[i]==colnames(Explanatory)) == 1) nb <- nb+1

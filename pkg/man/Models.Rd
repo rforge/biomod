@@ -105,7 +105,7 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 20
 \note{
 
 }
-\seealso{ \code{\link{Initial.State}}, \code{\link{Projection}}, \code{\link{CurrentPred}}, \code{\link{PredictionBestModel}}, \code{\link{response.plot}}, \code{\link{level.plot}}, \code{\link{map.plot}} }
+\seealso{ \code{\link{Initial.State}}, \code{\link{Projection}}, \code{\link{CurrentPred}}, \code{\link{PredictionBestModel}}, \code{\link{response.plot}}, \code{\link{level.plot}} }
 \examples{
 
 

@@ -60,7 +60,7 @@ Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRU
 \references{ }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ }
-\seealso{ \code{\link{Models}}, \code{\link{ProjectionBestModel}}, \code{\link{Ensemble.Forecasting}}, \code{\link{ProbDensFunc}}, \code{\link{map.plot}} }
+\seealso{ \code{\link{Models}}, \code{\link{ProjectionBestModel}}, \code{\link{Ensemble.Forecasting}}, \code{\link{ProbDensFunc}} }
 \examples{
 
 data(Sp.Env)

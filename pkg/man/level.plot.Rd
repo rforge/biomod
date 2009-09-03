@@ -28,7 +28,7 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
 
 \author{ Bruno Lafourcade }
 
-\seealso{ \code{\link{map.plot}} }
+\seealso{ \code{\link{multiple.plot}} }
 \examples{
   
 data(Sp.Env)

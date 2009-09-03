@@ -1,5 +1,5 @@
 `multiple.plot` <-
-function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=FALSE, name="multiple plot"){
+function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file="no", name="multiple plot"){
 
     if(nrow(coor) != nrow(Data)) stop("Uncorrect mapping coordinates : coor and Data are not of the same length")
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n")

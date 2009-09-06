@@ -87,7 +87,7 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
         
         }
     }
-     else plot(XY[,2]~XY[,1], col=color.system[gg], pch=19, xlab='', ylab='', xaxt='n', yaxt='n', main=title)  
+     else plot(XY[,2]~XY[,1], col=color.system[gg], cex=cex, pch=19, xlab='', ylab='', xaxt='n', yaxt='n', main=title)  
      
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
      

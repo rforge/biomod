@@ -30,8 +30,8 @@ function(CurrentPred=NULL, FutureProj=NULL, Turnover.Save=NULL)
     Compt.By.Pixel[,9] <- Compt.By.Pixel[,3]
     Compt.By.Pixel[,10] <- (Compt.By.Pixel[,3] + Compt.By.Pixel[, 4])
     dimnames(Compt.By.Pixel) <- list(seq(1:dim(Compt.By.Pixel)[1]), c(
-        "Disa", "Stable0", "Stable1", "Gain", "PercLoss", "PercGain",
-        "Turnover", "CurrentSR", "FutureSR.0Disp", "FutureSR.1Disp"))
+        "Loss", "Stable0", "Stable1", "Gain", "PercLoss", "PercGain",
+        "Turnover", "CurrentSR", "FutureSR.NoDisp", "FutureSR.FullDisp"))
   assign(Turnover.Save, Compt.By.Pixel, pos=1)
     invisible(Compt.By.Pixel)
 }

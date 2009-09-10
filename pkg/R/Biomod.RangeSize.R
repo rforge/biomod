@@ -28,9 +28,9 @@ SpChange.Save=NULL)
     Compt.By.Species[, 8] <- Compt.By.Species[, 1] + Compt.By.Species[,3]
     Compt.By.Species[, 9] <- Compt.By.Species[,3]
     Compt.By.Species[, 10] <- Compt.By.Species[, 4] + Compt.By.Species[,3]
-    dimnames(Compt.By.Species) <- list(colnames(CurrentPred), c("Disa","Stable0", "Stable1", "Gain", "PercLoss", "PercGain", 
+    dimnames(Compt.By.Species) <- list(colnames(CurrentPred), c("Loss","Stable0", "Stable1", "Gain", "PercLoss", "PercGain", 
         "SpeciesRangeChange", "CurrentRangeSize", 
-        "FutureRangeSize.0Disp", "FutureRangeSize.1Disp"))
+        "FutureRangeSize.NoDisp", "FutureRangeSize.FullDisp"))
     Output <- c()
     Output <- list(Compt.By.Species=Compt.By.Species, Diff.By.Pixel=Diff.By.Pixel)
     assign(SpChange.Save, Output, pos=1)

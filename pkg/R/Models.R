@@ -197,18 +197,14 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         i <- i + 1
     }
     
+    #suppress useless objects
     rm(i, pa, Array, calib.lines, pos=1)
+    if(exists("DataEvalBIOMOD") && KeepPredIndependent) rm(predind, pos=1)
+
     assign("Biomod.material", Biomod.material, pos=1)
     if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     
-    if(exists("Models.information")){
-      save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material, Models.information,
-        file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else file='Biomod_run.RData')
-    }
-    else {
-      save(Evaluation.results.Roc, Evaluation.results.TSS, Evaluation.results.Kappa, VarImportance, Biomod.material, 
-        file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else file='Biomod_run.RData')
-    }
+    #save the workspace
+    save.image(file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else 'Biomod_run.RData')
   
 }
-

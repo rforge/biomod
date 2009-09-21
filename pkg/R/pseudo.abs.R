@@ -1,6 +1,6 @@
 `pseudo.abs` <-
 function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=NULL, add.pres=TRUE, 
-		    species.name= 'SpNoName', create.dataset=FALSE, plot=FALSE, acol='grey80', pcol='red')
+		    create.dataset=FALSE, species.name= 'SpNoName', plot=FALSE, acol='grey80', pcol='red')
 
 {	
 	if(strategy=='sre' && is.null(env)) stop("\n you must enter some environmental data to use the sre strategy \n")
@@ -59,7 +59,7 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
       if(is.null(coor)) { assign(paste("Dataset",nam,sep="."), status[out.set], pos=1) 
       } else assign(paste("Dataset",nam,sep="."), cbind(coor[out.set,],status[out.set]), pos=1)
       
-	assign(nam, out.set, pos=1)
+	#assign(nam, out.set, pos=1)
 	return(out.set)
 
 }

@@ -8,7 +8,7 @@
   Please read the BIOMOD manual for further explanations.
 }
 \usage{
-pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = TRUE, species.name = "SpNoName", create.dataset=FALSE, plot = FALSE, acol = "grey80", pcol = "red")
+pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.points = NULL, add.pres = TRUE, create.dataset=FALSE, species.name = "SpNoName", plot = FALSE, acol = "grey80", pcol = "red")
 }
 
 \arguments{
@@ -29,11 +29,11 @@ pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.
   \item{nb.points}{ an option for selecting only a limited number of absences at random from the already strategy-selected pseudo-absences (see examples). 
   The default (nb.points=NULL) keeps all the possible absences according to the strategy selected }
   \item{add.pres}{ if True, the output will be an object also containing the presence information (see the value section below)}
-  \item{species.name}{ The output will be stored under the name given by this argument, plus the strategy chosen separated by a dot.
-   For example, if you give "larix" in this argument and choose the sre strategy, then the output is stored in the new object larix.sre }
   \item{create.dataset} {type True to create a new dataset in your workspace for direct usage. If set to False, only
-   a vector is produced containing the row indices to take from the original dataset to render a new one where absences
+   an object is returned containing the row indices to take from the original dataset to render a new one where absences
    have been selected according to the settings of the pseudo.abs() function. See sections details and examples for further explanations}
+  \item{species.name}{ The dataset will be stored under the name given by this argument, plus the strategy chosen separated by a dot.
+   For example, if you give "larix" in this argument and choose the sre strategy, then the output is stored in the new object Dataset.larix.sre } 
   \item{plot}{ an option for plotting the outup dataset of presences and absences obtained }
   \item{acol}{ if plot=T, the colours wanted to plot the absences }
   \item{pcol}{ if plot=T, the colours wanted to plot the presences }
@@ -51,33 +51,37 @@ pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.
   running the models.
 }
 \value{
-  An object is created, being either a new dataset with the presences and only the absences desired, either a vector containing
-  the rows to take from the original dataset to constitute the new dataset. The advantage of this last output is that it is a
-  very light object compared to the production of a new dataframe directly. 
+  A vector is returned containing the rows to take from the original dataset to constitute the new dataset. A dataset
+  can also be created if wanted containing the presences and only the absences desired from the original dataset. 
+  The advantage of only the vector being returned is that it is a very light object compared to the production of a whole new dataframe. 
 }
 \references{ }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{ }
 \seealso{ \code{\link{sre}} }
 \examples{
-  
+
 
 fulldata <- data.frame(x=rep(1:100, 100), y=rep(1:100, each=100)) 
 presences <- data.frame(x=sample(1:100, 10), y=sample(1:100, 10))
+
 
 #this is our data : recorded presences and a bank of data for which you have no a priori information
 plot(fulldata[,1], fulldata[,2])
 par(new=TRUE)
 plot(presences[,1], presences[,2], col='red', xlim=c(1,100), ylim=c(1,100), pch=19)
 
-pseudo.data <- pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 
+pseudo.data <- pseudo.abs(plot=T, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 #view what is in the dataset produced : absences, and presences (only if add.pres=TRUE)
 Dataset.SpNoName.circles.8[1:20,]
 
+
 #you can plot it yourself (or set plot=TRUE in the function call)
+pseudo.data <- pseudo.abs(plot=T, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 x11()
 plot(Dataset.SpNoName.circles.8[,1],Dataset.SpNoName.circles.8[,2]) 
+
 
 #use the nb.points argument for only selecting a limited number of points
 pseudo.data2 <- pseudo.abs(coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE, nb.points=2000, plot=TRUE) 

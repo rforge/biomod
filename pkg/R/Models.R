@@ -34,6 +34,14 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     dir.create(paste(getwd(), "/pred", sep=""), showWarnings=F)
   
   
+    #switch SRE and MARS off if one of the variables is a non numeric
+    Nbcat <- rep(0, Biomod.material$NbVar)
+    for(i in 1:Biomod.material$NbVar) Nbcat[i] <- is.factor(DataBIOMOD[,i]) 
+       
+    if(sum(Nbcat) > 0 && MARS){ MARS <- F ; cat(paste("MARS model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==T], collapse=" "), "\n", sep="")) }
+    if(sum(Nbcat) > 0 && SRE){ SRE <- F ; cat(paste("SRE model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==T], collapse=" "), "\n", sep="")) }
+     
+  
     #create usefull vectors for condensing code   
     Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","MDA","RF","SRE")
     Biomod.material[["algo.choice"]] <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
@@ -99,6 +107,24 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(Roc) assign("Evaluation.results.Roc", g, pos=1) else assign("Evaluation.results.Roc", NA, pos=1)
     if(Kappa) assign("Evaluation.results.Kappa", g, pos=1) else assign("Evaluation.results.Kappa", NA, pos=1)
     if(TSS) assign("Evaluation.results.TSS", g, pos=1) else assign("Evaluation.results.TSS", NA, pos=1)
+
+
+    cat(paste(
+    "\n----------------------------------- \n",
+    "Modelling summary \n",
+    "----------------------------------- \n",
+    "Number of species modelled : \t\t" , Biomod.material$NbSpecies, "\n",
+    paste(Biomod.material$species.names, collapse=", "), "\n\n",
+    
+    "numerical variables : \t\t\t" , paste(Biomod.material$VarNames[Nbcat==F], collapse=", "), "\n",  
+    if(sum(Nbcat) > 0) "factorial variables : \t\t\t" , paste(Biomod.material$VarNames[Nbcat==T], collapse=", "), "\n\n",
+    
+    "number of evaluation repetitions : \t" , NbRunEval, "\n",
+    "number of pseudo-absences runs : \t" , NbRepPA, "\n",  
+    "models selected : \t\t\t" ,  paste(Biomod.material$algo[Biomod.material$algo.choice], collapse=", "), "\n",
+    "total number of model runs :  \t\t" , (NbRepPA+1) * (NbRunEval+1) * Biomod.material$NbSpecies * sum(Biomod.material$algo.choice), "\n",
+    "----------------------------------- \n\n\n",
+    sep=""))
 
 
     #start species loop

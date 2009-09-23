@@ -79,7 +79,7 @@ repetition.models=TRUE)
                     if(a != 'SRE'){
                         if(file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))){
                             object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))))
-                        } else cat("WARNING: Could not find data for model", a, "evaluation repetition", Nrep, ". If you are running BIOMOD with the parameter 'NbRunEval' = 0 then this is a serious fail.", "\n")
+                        } else cat("WARNING: Could not find data for model", a, "evaluation repetition", Nrep, ". Probable cause : failure when running Models()", "\n")
                     } else object <- "SRE"
                     
                     if(exists("object")){

@@ -1,32 +1,25 @@
 `scopeExpSyst` <-
 function(enviroTrain, mod)
 {
-    XXX <- enviroTrain
-    NbVar <- dim(enviroTrain)[2]
-    vnames <- names(XXX[])
     i <- 1
     junk2 <- c()
-    while(i <= NbVar) {
-        vname <- names(XXX)[i]
-        junk <- c()
+    while(i <= dim(enviroTrain)[2]) {
         
-        if(mod == "NNET") junk <- c(junk, paste(vname))
-        if(mod == "MDA")  junk <- c(junk, paste(vname))
-        if(mod == "GLMs") junk <- c(junk, paste(vname))
-        if(mod == "CTA")  junk <- c(junk, paste(vname))
-        if(mod == "GBM")  junk <- c(junk, paste(vname))
-        
+	      vname <- names(enviroTrain)[i]
+	      
+        if(mod=="NNET" | mod=="MDA" | mod=="GLMs" | mod=="CTA" | mod=="GBM") junk <- vname
         if(mod == "GLMq") {
-            if(is.numeric(XXX[,i]))      junk <- c(junk, paste(vname, "+I(", vname, "^2)+I(",vname, "^3)"))
-            else if(is.factor(XXX[,i]))  junk <- c(junk, paste(vname))
+            if(is.numeric(enviroTrain[,i]))      junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)", sep="")
+            else if(is.factor(enviroTrain[,i]))  junk <- vname
         }
         if(mod == "GLMp") {
-            if(is.numeric(XXX[,i]))     junk <- c(junk, paste(vname, "+I(", vname, "^2)+I(",vname, "^3)+", "poly(", vname, ",2) + poly(", vname, ",3)"))
-            else if(is.factor(XXX[,i])) junk <- c(junk, paste(vname))
+            if(is.numeric(enviroTrain[,i]))     junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)+", "poly(", vname, ",2) + poly(", vname, ",3)", sep="")
+            else if(is.factor(enviroTrain[,i])) junk <- vname
         }
-        junk2 <- c(paste(junk2), paste(junk))
+        junk2 <- c(junk2, junk)
         i <- i + 1
     }
+
     junk2 <- eval(parse(text=paste("~", paste(junk2, collapse="+"))))
     return(junk2)
 }

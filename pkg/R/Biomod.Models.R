@@ -156,8 +156,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         
         #compute the evaluation stats if a repetition run
         if(!exists("g.pred")) ErrorCounter <- ErrorCounter+1 # If the current evaluation run failed, we record this failure by increasing the counter by 1
-        if(exists("g.pred")){  # The evaluation can only run if the current evaluation run did not fail (NOTE: if we are in the final model loop, i.e. the one with all data, then the run cannot have failed (if yes then BIOMOD stops) so this code will always run in that case
-            
+        if(exists("g.pred")){  # The evaluation can only run if the current evaluation run did not fail 
+        
             if(k != (ncol(Ids)+1)){
                auc.stat <-  somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines,NbVar+i])["C"]
                kappa.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],])$Kappa
@@ -203,7 +203,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
             # saving best.iter for GBM ; Save Minumum and Maxium of the calibration prediction range for rescaling steps:
             if(Model == 'GBM')  eval(parse(text=paste("g.list$best.iter$", nam," <- best.iter", sep="")))
             if(Model == 'ANN' | Model == 'MDA' | Model == 'MARS' | Model == 'RF') eval(parse(text=paste("g.list$RawPred$", nam," <- range(TempArray)", sep="")))       
-        }
+        
+        } #if model did not fail
     } #nbruns k loop
     
     # If one or more of the evaluation runs failed, we report failure to user. This message is important.

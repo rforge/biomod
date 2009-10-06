@@ -109,6 +109,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(TSS) assign("Evaluation.results.TSS", g, pos=1) else assign("Evaluation.results.TSS", NA, pos=1)
 
 
+    if(NbRepPA==0) NbRepPA.pos <- 1 else NbRepPA.pos=NbRepPA
     cat(paste(
     "\n----------------------------------- \n",
     "Modelling summary \n",
@@ -122,7 +123,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     "number of evaluation repetitions : \t" , NbRunEval, "\n",
     "number of pseudo-absences runs : \t" , NbRepPA, "\n",  
     "models selected : \t\t\t" ,  paste(Biomod.material$algo[Biomod.material$algo.choice], collapse=", "), "\n",
-    "total number of model runs :  \t\t" , (NbRepPA+1) * (NbRunEval+1) * Biomod.material$NbSpecies * sum(Biomod.material$algo.choice), "\n",
+    "total number of model runs :  \t\t" , (NbRepPA.pos) * (NbRunEval+1) * Biomod.material$NbSpecies * sum(Biomod.material$algo.choice), "\n",
     "----------------------------------- \n\n\n",
     sep=""))
 

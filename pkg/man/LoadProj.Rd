@@ -6,7 +6,7 @@
 }
 
 \usage{
-LoadModels(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred")
+LoadProj(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred")
 }
 
 \arguments{

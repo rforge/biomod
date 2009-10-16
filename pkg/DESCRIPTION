@@ -2,7 +2,7 @@ Package: BIOMOD
 Type: Package
 Title: species/climate modelling functions
 Depends: reshape,ade4,nnet,rpart,Hmisc,Design,MASS,gbm,mda,randomForest,gam
-Version: 1.1-"
+Version: 1.1-3
 Date: 2009-10-15
 Author: Wilfried Thuiller & Bruno Lafourcade
 Maintainer: Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>

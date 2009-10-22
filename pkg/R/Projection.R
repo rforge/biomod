@@ -76,9 +76,14 @@ repetition.models=TRUE)
                     if(Nrep > 1) run.name2 <- paste(run.name2, "_rep", Nrep-1, sep="")
                     
                     if(exists("object")) rm(object) 
+                    
                     if(a != 'SRE'){
-                        if(file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))){
-                            object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))))
+                        if(file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))){  # if model exists on hardisk
+                        
+                            if(!exists(paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))){    #no loading if already there in R 
+                                object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))))
+                            } else  object <- eval(parse(text=paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep="")))
+                            
                         } else cat("WARNING: Could not find data for model", a, "evaluation repetition", Nrep, ". Probable cause : failure when running Models()", "\n")
                     } else object <- "SRE"
                     

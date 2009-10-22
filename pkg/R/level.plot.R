@@ -63,7 +63,7 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
     if(save.file == "pdf") pdf(paste(title, ".pdf", sep=""))
     if(save.file == "jpeg") jpeg(paste(title, ".jpeg", sep=""))
     if(save.file == "tiff") tiff(paste(title, ".tiff", sep=""))      
-    #if(save.file == "postscript") tiff(paste(title, ".ps", sep=""))
+    if(save.file == "postscript") postscript(paste(title, ".eps", sep=""))
   
     if(show.scale){
         
@@ -89,7 +89,7 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
     }
      else plot(XY[,2]~XY[,1], col=color.system[gg], cex=cex, pch=19, xlab='', ylab='', xaxt='n', yaxt='n', main=title)  
      
-    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
+    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
      
 }
 

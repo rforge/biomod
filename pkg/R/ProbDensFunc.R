@@ -36,6 +36,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
     if(save.file == "pdf") pdf(paste(name, ".pdf", sep=""))
     if(save.file == "jpeg") jpeg(paste(name, ".jpeg", sep=""))
     if(save.file == "tiff") tiff(paste(name, ".tiff", sep=""))   
+    if(save.file == "postscript") postscript(paste(name, ".eps", sep=""))
 
     if(!is.null(groups)){
     		if(save.file=="no") x11()
@@ -103,7 +104,7 @@ function(initial, projections, plothist=TRUE, cvsn=TRUE, groups=NULL, resolution
         plot(p, freq=F, col="white", xlim=c(a,b), ylim=c(0,max(p$density)*1.2), main="Probability density function", xlab="Species range change (%)", ylab="Event   occurence   probability")
   	}
   	
-  	if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
+  	if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
   	return(out)
 }
 

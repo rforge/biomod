@@ -21,7 +21,8 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
 
     if(save.file=="pdf") pdf(paste(name, ".pdf", sep=""))
     if(save.file=="jpeg") jpeg(paste(name, ".jpeg", sep=""))
-    if(save.file=="tiff") tiff(paste(name, ".tiff", sep=""))    
+    if(save.file=="tiff") tiff(paste(name, ".tiff", sep=""))
+    if(save.file=="postscript") postscript(paste(name, ".eps", sep=""))    
     
     for(W in 1:NbWindows){
         if(save.file=="no") x11()
@@ -64,5 +65,5 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
     } #W loop   
     
     rm(legendcex, multiple, pos=1)
-    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
+    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
 }

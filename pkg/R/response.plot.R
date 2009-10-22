@@ -21,6 +21,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
     if(save.file=="jpeg") jpeg(paste(name, "jpeg", sep="."))
     if(save.file=="tiff") tiff(paste(name, "tiff", sep="."))
+    if(save.file=="postscript") postscript(paste(name, "eps", sep="."))
     
     #plotting window
     W.width <- ceiling(sqrt(NbVarShow))
@@ -66,7 +67,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         }
     } 
    
-    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff") dev.off()
+    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
    
     if(class(model)[1]=="nnet.formula")  detach(package:nnet)
     if(class(model)[1]=="rpart") detach(package:rpart)

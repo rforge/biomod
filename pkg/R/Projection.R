@@ -39,6 +39,7 @@ repetition.models=TRUE)
     #save information on the projection
     Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]] <- nrow(Proj)
     Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]] <- algo.c
+    Biomod.material[[paste("proj.", Proj.name, ".repetition.models", sep="")]] <- repetition.models
     assign("Biomod.material", Biomod.material, pos=1) 
 
     #the proj will be transformed for the models set to true in algo.cc. The point of this is for the GAM and GLM which will variably need or not transformations.

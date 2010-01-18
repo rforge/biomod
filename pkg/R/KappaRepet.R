@@ -23,7 +23,7 @@ function(Obs, Fit, TSS=FALSE)
 			Seuil <- Quant[1] + (j*((Quant[5] - Quant[1])/100))
 			Misc<-table(Fit >= Seuil, Obs)
 			if(TSS!=T) a <- KappaStat(Misc) else a <- TSS.Stat(Misc)
-			if(a != "NA") if(a > 0) {tab[j+1, 1] <- Seuil; tab[j+1, 2] <- a}   ### Question here: Pourquoi ne pas garder les Kappa / TSS < = ??.
+			if(!is.na(a)) if(a > 0) {tab[j+1, 1] <- Seuil; tab[j+1, 2] <- a}   ### Question here: Pourquoi ne pas garder les Kappa / TSS < = ??.
 			rm(Misc, Seuil)
 		}
 		

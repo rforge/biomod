@@ -28,9 +28,9 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     if(Model == 'ANN'){ decay.final <- 0 ; size.final <- 0 }                     
     
     #objects for storing results of the evaluation runs
-    if(Model != 'SRE') AUC.train <- 0
-    Kappa.train <- 0
-    TSS.train <- 0
+    if(Roc & Model != 'SRE') AUC.train <- 0
+    if(Kappa) Kappa.train <- 0
+    if(TSS) TSS.train <- 0
     #list for storing some model outputs (ex: best.iter for gbm)
     g.list <- list()
 
@@ -159,30 +159,30 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         if(exists("g.pred")){  # The evaluation can only run if the current evaluation run did not fail 
         
             if(k != (ncol(Ids)+1)){
-               auc.stat <-  somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines,NbVar+i])["C"]
-               kappa.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],])$Kappa
-               tss.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS
+               if(Roc) auc.stat <-  somers2(g.pred[-Ids[,k],], DataBIOMOD[pred.lines,NbVar+i])["C"]
+               if(Kappa) kappa.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],])$Kappa
+               if(TSS) tss.stat <- KappaRepet(DataBIOMOD[pred.lines,NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS
             }
             
             #running the evaluation procedures for the evaluation runs
             #no extra prediction to be made -> using the g.pred (on full PA.samp) and getting the right lines
             if(k != (ncol(Ids)+1)){ #if repetition run           
                 if(Model == 'SRE'){ 
-                    Kappa.train <- Kappa.train + KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],])$Kappa 
-                    TSS.train <- TSS.train + KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS 
+                    if(Kappa) Kappa.train <- Kappa.train + KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],])$Kappa 
+                    if(TSS) TSS.train <- TSS.train + KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[-Ids[,k],], TSS=T)$TSS 
                 } else{
-                    AUC.train <- AUC.train + auc.stat
-                    Kappa.train <- Kappa.train + kappa.stat
-                    TSS.train <- TSS.train + tss.stat
+                    if(Roc) AUC.train <- AUC.train + auc.stat
+                    if(Kappa) Kappa.train <- Kappa.train + kappa.stat
+                    if(TSS) TSS.train <- TSS.train + tss.stat
                 }
             } else {
                   if(Model == 'SRE'){ 
-                    Kappa.final <- KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[,])$Kappa 
-                    TSS.final <- KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[,], TSS=T)$TSS 
+                    if(Kappa) Kappa.final <- KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[,])$Kappa 
+                    if(TSS) TSS.final <- KappaSRE(DataBIOMOD[pred.lines, NbVar+i], g.pred[,], TSS=T)$TSS 
                 } else{
-                    AUC.final <- somers2(g.pred[,], DataBIOMOD[pred.lines, NbVar+i])["C"]
-                    Kappa.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,])$Kappa
-                    TSS.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,], TSS=T)$TSS
+                    if(Roc) AUC.final <- somers2(g.pred[,], DataBIOMOD[pred.lines, NbVar+i])["C"]
+                    if(Kappa) Kappa.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,])$Kappa
+                    if(TSS) TSS.final <- KappaRepet(DataBIOMOD[pred.lines, NbVar+i], g.pred[,], TSS=T)$TSS
                 }
             }
             
@@ -215,9 +215,9 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     assign("Array", Array, pos=1)
     
     #mean evaluations from the calibration
-    if(Model != "SRE") AUC.train <- AUC.train/(ncol(Ids)-ErrorCounter)
-    Kappa.train <- Kappa.train/(ncol(Ids)-ErrorCounter)
-    TSS.train <- TSS.train/(ncol(Ids)-ErrorCounter)
+    if(Roc & Model != "SRE") AUC.train <- AUC.train/(ncol(Ids)-ErrorCounter)
+    if(Kappa) Kappa.train <- Kappa.train/(ncol(Ids)-ErrorCounter)
+    if(TSS) TSS.train <- TSS.train/(ncol(Ids)-ErrorCounter)
     
     
     #Evaluation of Predictor Importance in the model:
@@ -282,3 +282,4 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     return(g.list)
 }
 
+=

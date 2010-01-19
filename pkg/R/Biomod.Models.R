@@ -281,5 +281,3 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                   
     return(g.list)
 }
-
-=

@@ -4,14 +4,17 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
     if(nrow(coor) != nrow(Data)) stop("Uncorrect mapping coordinates : coor and Data are not of the same length")
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n")
 
-    assign("multiple", 564, pos=1)
+    assign("multiple", 564, pos=1) #to communicate to level.plot that a multiple plot is wanted (564 is just random)
 
     #function plotting color boxes
     pbox <- function(co){ 
-        plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE) 
-        polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col=co,border=NA) 
+        plot(x=c(-1,1), y=c(0,1), xlim=c(0,1), ylim=c(0,1), type="n", axes=FALSE) 
+        polygon(x=c(-2,-2,2,2), y=c(-2,2,2,-2), col=co, border=NA) 
     }
 
+    #Take off NA data
+    Data <- Data[ ,!is.na(Data[1,])]
+    
 
     #calculating the number of windows to open    
     NbPlots <- ncol(Data)
@@ -28,8 +31,8 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
         if(save.file=="no") x11()
         
         Wstart <- (W-1)*plots.per.window + 1
-        if(W*plots.per.window > NbPlots) Wfinal <- NbPlots else Wfinal <- W*plots.per.window
-        DataW <- as.data.frame(Data[,Wstart:Wfinal])
+        if(W*plots.per.window > NbPlots) Wfinal <- NbPlots  else Wfinal <- W*plots.per.window
+        DataW <- as.data.frame(Data[ ,Wstart:Wfinal])
         colnames(DataW) <- colnames(Data)[Wstart:Wfinal]
         
         #determine the organisation of the plots on the window
@@ -56,7 +59,7 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
              pbox("grey98")
              text(x=0.5, y=0.8, pos=1, cex=1.6, labels=colnames(DataW)[i], col="#4c57eb")
              pbox("grey98")
-             level.plot(DataW[,i], XY=coor, color.gradien=color.gradient, cex=cex, multiple.plot=T, title="") 
+             level.plot(DataW[,i], XY=coor, color.gradien=color.gradient, cex=cex, title="") 
         }
         
         #fill gaps by grey boxes

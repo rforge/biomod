@@ -63,20 +63,21 @@ repetition.models=TRUE)
         if(Biomod.material$NbRepPA != 0) for(j in 1:NbPA) PAs <- c(PAs, paste("PA", j, sep="")) else PAs <- "no.PA"
 
         ARRAY <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
-        g <- gg <- ggg <- gggg <- k <- kk <- kkk    <-   ARRAY
+        g  <- gg <- ggg <- gggg <- k <- kk <- kkk   <-   ARRAY    
         
-        
+       
         #------- looping for PAs, reps, and models -------    
         for(jj in 1:NbPA){
+        
             if(Biomod.material$NbRepPA == 0) run.name <- "full"  else  run.name <- paste("PA", jj, sep="")
             
-            for(Nrep in 1:Nbrep){
-                for(a in Biomod.material$algo[algo.c]){
+            for(Nrep in 1:Nbrep){ 
+                for(a in Biomod.material$algo[algo.c]){ 
                     
                     run.name2 <- run.name
                     if(Nrep > 1) run.name2 <- paste(run.name2, "_rep", Nrep-1, sep="")
                     
-                    if(exists("object")) rm(object) 
+                    if(exists("object")) rm(object)
                     
                     if(a != 'SRE'){
                         if(file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))){  # if model exists on hardisk
@@ -84,6 +85,11 @@ repetition.models=TRUE)
                             if(!exists(paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))){    #no loading if already there in R 
                                 object <- eval(parse(text=load(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", run.name2, sep=""))))
                             } else  object <- eval(parse(text=paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep="")))
+                        
+                        #remove the model loaded and kept in memory under its real name
+                        ModelName <- paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep="")
+                        rm(list=ModelName)
+                        gc(reset=T)
                             
                         } else cat("WARNING: Could not find data for model", a, "evaluation repetition", Nrep, ". Probable cause : failure when running Models()", "\n")
                     } else object <- "SRE"
@@ -95,7 +101,7 @@ repetition.models=TRUE)
                             if(object$deviance == object$null.deviance) {  
                                 algo.cc["GLM"] <- F    #in this case, the projections need no binary or filtered transformation 
                                 if((sum(DataBIOMOD[,Biomod.material$NbVar+i])/nrow(DataBIOMOD)) < 0.5) g[,a,Nrep,jj] <- rep(0, nrow(Proj))
-                                else g[,a,Nrep,jj] <- gg[,a,Nrep,jj] <- ggg[,a,Nrep,jj] <- gggg[,a,Nrep,jj] <- k[,a,Nrep,jj] <- kk[,a,Nrep,jj] <- kkk[,a,Nrep,jj] <- rep(1000, nrow(Proj)) 
+                                else  g[,a,Nrep,jj] <- gg[,a,Nrep,jj] <- ggg[,a,Nrep,jj] <- gggg[,a,Nrep,jj] <- k[,a,Nrep,jj] <- kk[,a,Nrep,jj] <- kkk[,a,Nrep,jj] <- rep(1000, nrow(Proj)) 
                             } else g[,a,Nrep,jj] <- as.integer(as.numeric(predict(object, Proj, type="response")) *1000)
                         }
             
@@ -131,31 +137,51 @@ repetition.models=TRUE)
                 } #models       
             } #Nbrep -> coresponds to if repetition models were selected (==1 or ==NbRunEval+1)     
         } #NbPA 
-        
+
+
 
         #------- exportation of the objects created in the working directory -------#           
+        
+        #list storing the names of the projections arrays produced to delete them afterwards
+        ProjNameInList <- c()
+        
         assign(paste("Proj",Proj.name,Biomod.material$species.names[i], sep="_"), g)
         eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"')", sep="")))
         #write.table(g, file=paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material[["species.names"]][i],".txt", sep=""), row.names=F)
+        ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""))
         
         if(BinRoc){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"BinRoc", sep="_"), gg)
-                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinRoc')", sep="")))}  
+                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinRoc')", sep="")))
+                   ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinRoc", sep=""))
+        }  
                     
         if(FiltRoc){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"FiltRoc", sep="_"), ggg)
-                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltRoc')", sep="")))}   
+                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltRoc, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltRoc')", sep="")))
+                    ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltRoc", sep=""))
+        }   
                          
         if(BinKappa){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"BinKappa", sep="_"), gggg)
-                     eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinKappa')", sep="")))}
+                     eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinKappa')", sep="")))
+                     ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinKappa", sep=""))
+        }
                      
         if(FiltKappa){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"FiltKappa", sep="_"), k)
-                      eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_", Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa')", sep="")))}
+                      eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa, file='", getwd(),"/proj.", Proj.name, "/Proj_", Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa')", sep="")))
+                      ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltKappa", sep=""))
+        }
                       
         if(BinTSS){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"BinTSS", sep="_"), kk)
-                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS')", sep="")))}
+                   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS')", sep="")))
+                   ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i],"_BinTSS", sep=""))
+        }
     
         if(FiltTSS){assign(paste("Proj",Proj.name,Biomod.material$species.names[i],"FiltTSS", sep="_"), kkk)
-                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS')", sep="")))}
-                    
+                    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS')", sep="")))
+                    ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i],"_FiltTSS", sep=""))
+        }
+                             
+        rm(list=c("g", "gg", "ggg", "gggg", "k" ,"kk", "kkk", "ARRAY", "object", ProjNameInList))
+        gc(reset=T)
                
         i <- i+1
     }  #while

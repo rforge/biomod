@@ -231,7 +231,10 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     assign("Biomod.material", Biomod.material, pos=1)
     if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     
-    #save the workspace
-    save.image(file=if(Biomod.material[["NbSpecies"]]==1) paste(Biomod.material[["species.names"]], "_run.RData", sep="") else 'Biomod_run.RData')
-  
+    
+    #save the history and workspace
+    if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
+    save.image(paste(filename, ".RData", sep=""))
+    savehistory(paste(filename, ".Rhistory", sep=""))
+      
 }

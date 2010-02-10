@@ -151,7 +151,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE
                             #binary values
                             for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                                 thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][Biomod.material$algo[ens.choice],4])
-                                ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- BinaryTransformation(sp.data[,ens.choice,k,j], thresh)    
+                                ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- BinaryTransformation(sp.data[,ens.choice,k,j], thresh) * 1000    
                             
                                 #store thresholds
                                 if(Th[[jj]] == weight.method){

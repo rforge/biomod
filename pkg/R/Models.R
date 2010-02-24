@@ -14,10 +14,11 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     require(gam, quietly=T)	
     
     #checking possible mistakes in the argument selections
-    if(!exists("DataBIOMOD")) stop("Initial.State should be run first") 
-    if(!Roc && !TSS && !Kappa) stop("at least one evaluation technique (Roc, TSS or Kappa) must be selected \n") 
+    if(!exists("DataBIOMOD")) stop("Initial.State should be run first in order to procede")
+    if(!any(GAM,GBM,GLM,RF,MDA,MARS,SRE,ANN,CTA)) stop("No models were selected \n") 
+    if(!any(Roc,Kappa,TSS)) stop("At least one evaluation technique (Roc, TSS or Kappa) must be selected \n") 
     if(Roc != T && Optimized.Threshold.Roc != F) stop("Roc must be TRUE to derive optimized threshold value")
-    if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model \n Make sure you really wanted to do that. \n")
+    if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model (DataSplit<50) \n Make sure you really wanted to do that. \n") 
       
       
     #Check that the weight matrix was entered correctly with the pseudo.abs option
@@ -154,7 +155,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             }  
         }          
         
-        #defining the weights to be awarded for that species, considering the number of absences available
+        #defining the weights to be awarded for that species, considering the number of absences available.
         #we keep the same format as DataBIOMOD to make it easier to call the corresponding lines in Biomod.models. For that
         #reason, we award the same weight to all the absences even though it doesn't sum up to a 0.5 prevalence (but lower)
         #it will give 0.5 when considering the number of absences, hence the lines taken for calibration.
@@ -177,9 +178,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         assign("Array", ARRAY, pos=1)
         Ids <- data.frame(matrix(0, nrow=ceiling(ndata*(DataSplit/100)), ncol=NbRunEval))
         
+        
 
         for(pa in 1:NbRepPA.pos){
-
             assign("pa", pa, pos=1)
             if(NbRepPA != 0) cat("#####\t\t   pseudo-absence run", pa, "       \t\t#####\n")           
                 
@@ -236,5 +237,12 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
     save.image(paste(filename, ".RData", sep=""))
     savehistory(paste(filename, ".Rhistory", sep=""))
+    
+    #Final notice, runs are finished
+    cat(paste(
+    "\n\n----------------------------------- \n",
+    "completed \n",
+    sep=""))
+    
       
 }

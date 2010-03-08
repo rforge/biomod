@@ -240,8 +240,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     
     #Final notice, runs are finished
     cat(paste(
-    "\n\n----------------------------------- \n",
-    "completed \n",
+    "\n\n--------- \n",
+    "completed \n\n\n",
     sep=""))
     
       

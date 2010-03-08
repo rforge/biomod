@@ -83,7 +83,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
             }
             if(exists("model.sp")){
                 TempArray <- predict(model.sp, DataBIOMOD[PA.samp,], type="raw")
-                g.pred <- data.frame(as.integer(Rescaler2(as.numeric(TempArray), type="range") *1000))
+                g.pred <- data.frame(as.integer(Rescaler3(as.numeric(TempArray)) *1000))
             }
         }
         if(Model == 'CTA'){
@@ -132,7 +132,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
             }
             if(exists("model.sp")){
                 TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar])
-                g.pred <- data.frame(as.integer(Rescaler2(TempArray, type="range") *1000))
+                g.pred <- data.frame(as.integer(Rescaler3(TempArray) *1000))
             }
         }
         if(Model == 'MDA') {
@@ -140,7 +140,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                         else try(model.sp <- mda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "MDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars), silent=T)
             if(exists("model.sp")){
                 TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="post")[,2]
-                g.pred <- data.frame(as.integer(Rescaler2(TempArray, type="range") *1000))
+                g.pred <- data.frame(as.integer(Rescaler3(TempArray) *1000))
             }
         }
         if(Model == 'RF') {
@@ -148,7 +148,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                         else try(model.sp <- randomForest(x=DataBIOMOD[calib.lines, 1:NbVar], y=as.factor(DataBIOMOD[calib.lines, NbVar+i]), ntree=750, mtry=NbVar/2, importance=TRUE), silent=T)
             if(exists("model.sp")){
                 TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="prob")[,2]
-                g.pred <- data.frame(as.integer(Rescaler2(TempArray, type="range") *1000))
+                g.pred <- data.frame(as.integer(Rescaler3(TempArray) *1000))
             }
         }
         if(Model == 'SRE') g.pred <- data.frame(as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[calib.lines,]$",paste(SpNames[i]), collapse=""))), DataBIOMOD[calib.lines,1:NbVar],DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))
@@ -231,14 +231,14 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                 TempDS <- DataBIOMOD[PA.samp,1:Biomod.material$NbVar]
                 TempDS[,J] <- sample(TempDS[,J])
                  
-                if(Model == 'ANN') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler2(as.numeric(predict(model.sp, TempDS, type="raw")), type="range", OriMinMax=range(TempArray)) *1000))
+                if(Model == 'ANN') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(as.numeric(predict(model.sp, TempDS, type="raw")), OriMinMax=range(TempArray)) *1000))
                 if(Model == 'CTA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict(model.sp, TempDS, type="vector")) *1000))
                 if(Model == 'GLM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(testnull(model.sp, Prev, TempDS)) *1000))
                 if(Model == 'GAM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(testnull(model.sp, Prev, TempDS)) *1000))
                 if(Model == 'GBM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict.gbm(model.sp, TempDS, best.iter, type='response')) *1000))
-                if(Model == 'MARS') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler2(predict(model.sp, TempDS[,1:NbVar]), type="range", OriMinMax=range(TempArray)) *1000))
-                if(Model == 'MDA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler2(predict(model.sp, TempDS, type="post")[,2], type="range", OriMinMax=range(TempArray)) *1000))
-                if(Model == 'RF') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler2(predict(model.sp, TempDS, type="prob")[,2], type="range", OriMinMax=range(TempArray)) *1000))
+                if(Model == 'MARS') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(predict(model.sp, TempDS[,1:NbVar]), OriMinMax=range(TempArray)) *1000))
+                if(Model == 'MDA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(predict(model.sp, TempDS, type="post")[,2], OriMinMax=range(TempArray)) *1000))
+                if(Model == 'RF') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(predict(model.sp, TempDS, type="prob")[,2], OriMinMax=range(TempArray)) *1000))
                 if(Model == 'SRE') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[PA.samp,]$",paste(SpNames[i]), collapse=""))), TempDS,DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))    
            }
         }
@@ -251,12 +251,12 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     if(exists("DataEvalBIOMOD")){
         if(Model == 'GLM') predind <- as.integer(as.numeric(testnull(model.sp, Prev, DataEvalBIOMOD)) *1000)
         if(Model == 'GAM') predind <- as.integer(as.numeric(testnull(model.sp, Prev, DataEvalBIOMOD)) *1000)
-        if(Model == 'ANN') predind <- as.integer(Rescaler2(as.numeric(predict(model.sp, DataEvalBIOMOD, type="raw")), type="range", OriMinMax=range(TempArray)) *1000)
+        if(Model == 'ANN') predind <- as.integer(Rescaler3(as.numeric(predict(model.sp, DataEvalBIOMOD, type="raw")), OriMinMax=range(TempArray)) *1000)
         if(Model == 'CTA') predind <- as.integer(as.numeric(predict(model.sp, DataEvalBIOMOD, type="vector")) *1000)
         if(Model == 'GBM') predind <- as.integer(predict.gbm(model.sp, DataEvalBIOMOD, best.iter, type='response') *1000)        
-        if(Model == 'MARS') predind <- as.integer(Rescaler2(predict(model.sp, DataEvalBIOMOD[,1:NbVar]), type="range", OriMinMax=range(TempArray)) *1000)
-        if(Model == 'MDA') predind <- as.integer(Rescaler2(predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="post")[,2], type="range", OriMinMax=range(TempArray)) *1000)
-        if(Model == 'RF') predind <- as.integer(Rescaler2(predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="prob")[,2], type="range", OriMinMax=range(TempArray)) *1000)
+        if(Model == 'MARS') predind <- as.integer(Rescaler3(predict(model.sp, DataEvalBIOMOD[,1:NbVar]), OriMinMax=range(TempArray)) *1000)
+        if(Model == 'MDA') predind <- as.integer(Rescaler3(predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="post")[,2], OriMinMax=range(TempArray)) *1000)
+        if(Model == 'RF') predind <- as.integer(Rescaler3(predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="prob")[,2], OriMinMax=range(TempArray)) *1000)
         if(Model == 'SRE') predind <- as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD$", paste(SpNames[i]), collapse=""))), DataBIOMOD[1:NbVar], DataEvalBIOMOD, Perc025, Perc05)) *1000)
     }
 

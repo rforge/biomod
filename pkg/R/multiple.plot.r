@@ -1,5 +1,5 @@
 `multiple.plot` <-
-function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file="no", name="multiple plot"){
+function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file="no", name="multiple plot", ImageSize="small"){
 
     if(nrow(coor) != nrow(Data)) stop("Uncorrect mapping coordinates : coor and Data are not of the same length")
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n")
@@ -21,10 +21,12 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
     NbWindows <- ceiling(NbPlots/plots.per.window)
     if(NbWindows==1) plots.per.window <- NbPlots
 
+    #define image size for JPEG and TIFF
+    if(ImageSize=="small") {SizeInPix <- 480; FontSize=12} else if(ImageSize=="standard") {SizeInPix <- 1000; FontSize=22} else if(ImageSize=="large") {SizeInPix <- 2000; FontSize=44}
 
     if(save.file=="pdf") pdf(paste(name, ".pdf", sep=""))
-    if(save.file=="jpeg") jpeg(paste(name, ".jpeg", sep=""))
-    if(save.file=="tiff") tiff(paste(name, ".tiff", sep=""))
+    if(save.file=="jpeg") jpeg(paste(name, ".jpeg", sep=""), width=SizeInPix, height=SizeInPix, pointsize=FontSize, quality=85)
+    if(save.file=="tiff") tiff(paste(name, ".tiff", sep=""), width=SizeInPix, height=SizeInPix, pointsize=FontSize)
     if(save.file=="postscript") postscript(paste(name, ".eps", sep=""))    
     
     for(W in 1:NbWindows){

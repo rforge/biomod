@@ -18,6 +18,7 @@ multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.
   \item{cex}{ to change the point size : >1 will increase size, <1 will decrease it }
   \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
   \item{name}{ the name of the file produced if save.file is different to "no" (extensions are already included) }
+  \item{ImageSize}{ The image size for JPEG and TIFF files saved to disk. Available : 'small', 'standard' and 'large' }
 }
 
 \details{

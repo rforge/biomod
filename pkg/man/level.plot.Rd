@@ -19,6 +19,7 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
   \item{show.scale}{ a feature for just keeping the graph without the scale (if set to False) }
   \item{title}{ the title wanted for the graph }
   \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
+  \item{ImageSize}{ The image size for JPEG and TIFF files saved to disk. Available : 'small', 'standard' and 'large' }
 }
 
 \details{}

@@ -1,6 +1,6 @@
 `Projection` <-
 function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, Perc025=FALSE, Perc05=TRUE,
-MDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
+FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE)
 {
     require(nnet, quietly=T)
@@ -29,7 +29,7 @@ repetition.models=TRUE)
     dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=F) #showWarnings=F -> permits overwritting of an already existing directory without signaling (dangerous?)    
 
     #check and error messages for the models that are wanted but not available
-    algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
+    algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)
     w <- names(which(!Biomod.material$algo.choice[names(which(algo.c))]))
     ww <- ""
     for(i in 1:length(w)) ww <- paste(ww, w[i])
@@ -113,14 +113,14 @@ repetition.models=TRUE)
                         if(a == 'GBM') g[,a,Nrep,jj] <- predict.gbm(object, Proj, Models.information[[i]]$GBM[[paste("PA", jj, sep="")]][[1]]$best.iter[[run.name2]], type='response')
                         if(a == 'CTA') g[,a,Nrep,jj] <- predict(object, Proj, type="vector") 
                         if(a == 'ANN') g[,a,Nrep,jj] <- predict(object, Proj, type="raw")       
-                        if(a == 'MDA') g[,a,Nrep,jj] <- predict(object, Proj, type="post")[,2] 
+                        if(a == 'FDA') g[,a,Nrep,jj] <- predict(object, Proj, type="post")[,2] 
                         if(a == 'RF') g[,a,Nrep,jj] <- predict(object, Proj, type="prob")[,2] 
                         if(a == 'MARS') g[,a,Nrep,jj] <- predict(object, Proj)                   
                         if(a == 'SRE') g[,a,Nrep,jj] <- sre(DataBIOMOD[,Biomod.material$NbVar+i], DataBIOMOD[, 1:Biomod.material$NbVar], Proj, Perc025, Perc05)
                                              
                         g[,a,Nrep,jj] <- as.numeric(g[,a,Nrep,jj])  
                         #Rescale prediction for the models that need to
-                        if(any(c("ANN", "MDA", "MARS", "RF")==a)) g[,a,Nrep,jj] <- Rescaler3(g[,a,Nrep,jj], OriMinMax = Models.information[[i]][[a]][[paste("PA", jj, sep="")]][[1]]$RawPred[[run.name2]]) 
+                        if(any(c("ANN", "FDA", "MARS")==a)) g[,a,Nrep,jj] <- Rescaler4(g[,a,Nrep,jj], run=paste(Biomod.material$species.names[i], "_", a, "_", run.name, sep="")) 
                         #Store as integers
                         g[,a,Nrep,jj] <- as.integer(g[,a,Nrep,jj]*1000)
                         
@@ -155,8 +155,7 @@ repetition.models=TRUE)
         ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""))
         
         #the transformations
-        evals <- rep(c('Roc', 'Kappa', 'TSS'), 2)
-        trans <- c('BinRoc','BinKappa','BinTSS','FiltRoc','FiltKappa','FiltTSS')
+        trans <- c('BinRoc','FiltRoc','BinKappa','FiltKappa','BinTSS','FiltTSS')
         projs <- c('gg','ggg','gggg','k','kk','kkk')
         
         for(jj in 1:6){ if(eval(parse(text=trans[jj]))){    
@@ -166,8 +165,7 @@ repetition.models=TRUE)
             ProjNameInList <- c(ProjNameInList, nam)
         }}               
          
-         
-                          
+                           
         rm(g,gg,ggg,gggg,k,kk,kkk,ARRAY,object, list=ProjNameInList)
         gc(reset=T)       
         i <- i+1

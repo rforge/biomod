@@ -7,7 +7,7 @@
 
 
 \usage{
-CVnnet(formula, data, truth, size = c(round(0.75 * Biomod.material[["NbVar"]]), round(0.75 * Biomod.material[["NbVar"]]), round(0.75 * Biomod.material[["NbVar"]]), Biomod.material[["NbVar"]], Biomod.material[["NbVar"]], Biomod.material[["NbVar"]]), lambda = rep(c(0.01, 0.05, 0.1), 2), nreps = 1, nifold = 3, ...)
+CVnnet(Input, Target, size=c(2,4,6, 8), decay=c(0.001, 0.01, 0.05, 0.1))
 }
 
 \arguments{

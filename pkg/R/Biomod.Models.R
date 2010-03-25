@@ -17,15 +17,14 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
     if(Model == 'CTA') { cat("Model=Classification tree \n") ; cat("\t", CV.tree, "Fold Cross-Validation \n") }    
     if(Model == 'ANN') { cat("Model=Artificial Neural Network \n") ; cat("\t", CV.ann, "Fold Cross Validation + 3 Repetitions \n") ; cat("Calibration and evaluation phase: Nb of cross-validations: ", ncol(Ids), "\n") }
     if(Model == 'SRE') cat("Model=Surface Range Envelop \n")  
-    if(Model == 'MDA') { cat("Model=Mixture Discriminant Analysis \n") ; library(reshape) }
+    if(Model == 'FDA') { cat("Model=Mixture Discriminant Analysis \n") ; library(reshape) }
     if(Model == 'MARS') cat("Model=Multiple Adaptive Regression Splines \n")
     if(Model == 'RF') cat("Model=Breiman and Cutler's random forests for classification and regression \n")
     
     #setting some specific parameters
     if(Model == 'GLM' | Model == 'GAM') Prev <- sum(DataBIOMOD[,i])/nrow(DataBIOMOD)
     if(Model == 'CTA') set.seed(123)
-    if(Model == 'RF') set.seed(71)
-    if(Model == 'ANN'){ decay.final <- 0 ; size.final <- 0 }                     
+    if(Model == 'RF') set.seed(71)                    
     
     #objects for storing results of the evaluation runs
     if(Roc & Model != 'SRE') AUC.train <- 0
@@ -62,30 +61,15 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         assign("calib.lines", calib.lines, pos=1)
         
         #building each model and making the full prediction
+        #Using New Cvnnet
         if(Model == 'ANN'){
-            if(k==(ncol(Ids)+1) && ncol(Ids)!=0){ #final model with prior evaluation runs (NbRunEval!=0)
-                decay.final <- decay.final/ncol(Ids)
-                size.final <- size.final/ncol(Ids) 
-                model.sp <- nnet(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "NNET"),collapse="")))), 
-                             data=DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], size=size.final, linout=F, entropy=T, skip=F, decay=decay.final, maxit=100, trace=F)
-            } else { #evaluation runs, or final model if NbRunEval==0
-                truth <- DataBIOMOD[calib.lines, NbVar+i]
-                set.seed(200)
-                tr <- CVnnet(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "NNET"), collapse="")))), 
-                              data=DataBIOMOD[calib.lines,], truth=truth, linout= F, entropy=T, skip=F, maxit=100, nifold=CV.ann)
-                decay <- tr[tr[,3] == max(tr[,3]),2]
-                size <- tr[tr[,3] == max(tr[,3]),1]
-                
-                if(k==(ncol(Ids)+1)) model.sp <- nnet(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "NNET"), collapse="")))), data=DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], size=size, linout=F, entropy=T, skip=F, decay=decay, maxit=100,trace=F)
-                   else try(model.sp <- nnet(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "NNET"), collapse="")))), data=DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], size=size, linout=F, entropy=T, skip=F, decay=decay, maxit=100,trace=F), silent=T)
-                decay.final <- decay.final + decay
-                size.final <- size.final + size
-            }
-            if(exists("model.sp")){
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,], type="raw")
-                g.pred <- data.frame(as.integer(Rescaler3(as.numeric(TempArray)) *1000))
-            }
-        }
+            set.seed(555)
+            CV_nnet = CV.nnet(Input= DataBIOMOD[calib.lines, 1:NbVar], Target= DataBIOMOD[calib.lines, NbVar+i])             
+            if(k==(ncol(Ids)+1)) model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F)
+                        else try(model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F), silent=T) 
+  
+            if(exists("model.sp")) TempArray <- predict(model.sp, DataBIOMOD[PA.samp,], type="raw")
+        }####     
         if(Model == 'CTA'){
             temp <- rpart.control(xval=CV.tree, minbucket=5, minsplit=5,cp=0.001, maxdepth=25)
             if(k==(ncol(Ids)+1)) model.sp <- rpart(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "CTA"),collapse="")))),DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], control=temp)
@@ -99,7 +83,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                 else model.sp <- prune(model.sp, cp=Cp[2])
                 g.pred <- data.frame(as.integer(as.numeric(predict(model.sp, DataBIOMOD[PA.samp,], type="vector")) *1000))
             }
-        }
+        }####
         if(Model == 'GAM'){
             gamStart <- gam(eval(parse(text=paste(paste(SpNames[i]),"~1",collapse=""))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
             if(k==(ncol(Ids)+1)) model.sp <- step.gam(gamStart, scope(DataBIOMOD[1:10, 1:NbVar],"s", Spline), keep=functionkeep, direction="both", trace=F, control=gam.control(maxit=50, bf.maxit=50))
@@ -107,21 +91,22 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
             
             #New model.sp <- gam(eval(parse(text=paste(SpNames[i],paste(scopeGAM(DataBIOMOD[1:10,1:NbVar]),collapse="")))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
             if(exists("model.sp")) g.pred <- data.frame(as.integer(as.numeric(testnull(model.sp, Prev, DataBIOMOD[PA.samp,])) *1000))
-        }
+        }####   
         if(Model == 'GBM'){
-            if(k==(ncol(Ids)+1)) model.sp <- gbm.fit(x=DataBIOMOD[calib.lines,1:NbVar], y=DataBIOMOD[calib.lines,NbVar+i], distribution="bernoulli", w=Yweights[calib.lines,i], var.monotone=rep(0, length=NbVar), n.trees=No.trees, interaction.depth=3, shrinkage=0.01, bag.fraction=0.5, train.fraction=1, verbose=F,  var.names=colnames(DataBIOMOD[1:NbVar]), response.name = SpNames[i])
-                        else try(model.sp <- gbm.fit(x=DataBIOMOD[calib.lines,1:NbVar], y=DataBIOMOD[calib.lines,NbVar+i], distribution="bernoulli", w=Yweights[calib.lines,i], var.monotone=rep(0, length=NbVar), n.trees=No.trees, interaction.depth=3, shrinkage=0.01, bag.fraction=0.5, train.fraction=1, verbose=F,  var.names=colnames(DataBIOMOD[1:NbVar]), response.name = SpNames[i]), silent=T)
+            if(k==(ncol(Ids)+1)) model.sp <- gbm(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "GBM"),collapse="")))), data=DataBIOMOD[calib.lines,], distribution="bernoulli", var.monotone=rep(0, length=NbVar), w=Yweights[calib.lines,i], interaction.depth=7, shrinkage=0.001, bag.fraction=0.5, train.fraction=1, verbose=F, cv.folds=5)        
+                        else try(model.sp <- gbm(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "GBM"),collapse="")))), data=DataBIOMOD[calib.lines,], distribution="bernoulli", var.monotone=rep(0, length=NbVar), w=Yweights[calib.lines,i], interaction.depth=7, shrinkage=0.001, bag.fraction=0.5, train.fraction=1, verbose=F, cv.folds=5), silent=T)
+            
             if(exists("model.sp")){
-                best.iter <- gbm.perf(model.sp,method="OOB",plot.it=F)
+                best.iter <- gbm.perf(model.sp, method="cv", plot.it=F)
                 g.pred <- data.frame(as.integer(predict.gbm(model.sp, DataBIOMOD[PA.samp,], best.iter, type="response")*1000))
             }
-        }
+        }####        
         if(Model == 'GLM'){
             glmStart <- glm(eval(parse(text=paste(paste(SpNames[i]), "~1", collapse=""))), data=DataBIOMOD[calib.lines,], family=binomial, weights=Yweights[calib.lines,i])
             if(k==(ncol(Ids)+1)) model.sp <- stepAIC(glmStart, scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], Type), direction="both", trace=F, control=glm.control(maxit=100), k=criteria)
                         else try(model.sp <- stepAIC(glmStart, scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], Type), direction="both", trace=F, control=glm.control(maxit=100), k=criteria), silent=T)
             if(exists("model.sp")) g.pred <- data.frame(as.integer(testnull(model.sp, Prev, DataBIOMOD[PA.samp,]) *1000)) 
-        }                        
+        }####                     
         if(Model == 'MARS'){
             if(k==(ncol(Ids)+1)){
                 if(is.null(Yweights)) model.sp <- mars(x=DataBIOMOD[calib.lines, 1:NbVar], y=DataBIOMOD[calib.lines, NbVar+i], degree=2)
@@ -130,28 +115,23 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                  if(is.null(Yweights)) try(model.sp <- mars(x=DataBIOMOD[calib.lines, 1:NbVar], y=DataBIOMOD[calib.lines, NbVar+i], degree=2), silent=T)
                                  else try(model.sp <- mars(x=DataBIOMOD[calib.lines, 1:NbVar], y=DataBIOMOD[calib.lines, NbVar+i], degree=2, w=Yweights[calib.lines,i]), silent=T)
             }
-            if(exists("model.sp")){
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar])
-                g.pred <- data.frame(as.integer(Rescaler3(TempArray) *1000))
-            }
-        }
-        if(Model == 'MDA') {
-            if(k==(ncol(Ids)+1)) model.sp <- mda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "MDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars)
-                        else try(model.sp <- mda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "MDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars), silent=T)
-            if(exists("model.sp")){
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="post")[,2]
-                g.pred <- data.frame(as.integer(Rescaler3(TempArray) *1000))
-            }
-        }
+            if(exists("model.sp")) TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar])
+        }#### 
+        if(Model == 'FDA') {
+            if(k==(ncol(Ids)+1)) model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars)
+                        else try(model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars), silent=T)
+            if(exists("model.sp")) TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="post")[,2]
+        }#### 
         if(Model == 'RF') {
             if(k==(ncol(Ids)+1)) model.sp <- randomForest(x=DataBIOMOD[calib.lines, 1:NbVar], y=as.factor(DataBIOMOD[calib.lines, NbVar+i]), ntree=750, mtry=NbVar/2, importance=TRUE)
                         else try(model.sp <- randomForest(x=DataBIOMOD[calib.lines, 1:NbVar], y=as.factor(DataBIOMOD[calib.lines, NbVar+i]), ntree=750, mtry=NbVar/2, importance=TRUE), silent=T)
-            if(exists("model.sp")){
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="prob")[,2]
-                g.pred <- data.frame(as.integer(Rescaler3(TempArray) *1000))
-            }
+            if(exists("model.sp")) g.pred <- data.frame(as.integer(predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="prob")[,2] *1000))
         }
         if(Model == 'SRE') g.pred <- data.frame(as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[calib.lines,]$",paste(SpNames[i]), collapse=""))), DataBIOMOD[calib.lines,1:NbVar],DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))
+
+        
+        #Building a Rescaling glm
+        if(any(c("ANN", "FDA", "MARS")== Model)) g.pred <- data.frame(as.integer(Rescaler4(as.numeric(TempArray), ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_", Model ,"_", nam, sep=""), original=T) *1000))
         
         
         #compute the evaluation stats if a repetition run
@@ -201,8 +181,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
             if(Model != 'SRE') eval(parse(text=paste("save(",SpNames[i],"_", Model, "_", nam, ",file='", getwd(), "/models/", SpNames[i],"_", Model, "_", nam,"')", sep="")))
             
             # saving best.iter for GBM ; Save Minumum and Maxium of the calibration prediction range for rescaling steps:
-            if(Model == 'GBM')  eval(parse(text=paste("g.list$best.iter$", nam," <- best.iter", sep="")))
-            if(Model == 'ANN' | Model == 'MDA' | Model == 'MARS' | Model == 'RF') eval(parse(text=paste("g.list$RawPred$", nam," <- range(TempArray)", sep="")))       
+            if(Model == 'GBM')  eval(parse(text=paste("g.list$best.iter$", nam," <- best.iter", sep="")))     
         
         } #if model did not fail
     } #nbruns k loop
@@ -231,15 +210,16 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                 TempDS <- DataBIOMOD[PA.samp,1:Biomod.material$NbVar]
                 TempDS[,J] <- sample(TempDS[,J])
                  
-                if(Model == 'ANN') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(as.numeric(predict(model.sp, TempDS, type="raw")), OriMinMax=range(TempArray)) *1000))
+                if(Model == 'ANN') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler4(as.numeric(predict(model.sp, TempDS, type="raw")), ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_ANN_", nam, sep="")) *1000))
                 if(Model == 'CTA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict(model.sp, TempDS, type="vector")) *1000))
                 if(Model == 'GLM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(testnull(model.sp, Prev, TempDS)) *1000))
                 if(Model == 'GAM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(testnull(model.sp, Prev, TempDS)) *1000))
                 if(Model == 'GBM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict.gbm(model.sp, TempDS, best.iter, type='response')) *1000))
-                if(Model == 'MARS') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(predict(model.sp, TempDS[,1:NbVar]), OriMinMax=range(TempArray)) *1000))
-                if(Model == 'MDA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(predict(model.sp, TempDS, type="post")[,2], OriMinMax=range(TempArray)) *1000))
-                if(Model == 'RF') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler3(predict(model.sp, TempDS, type="prob")[,2], OriMinMax=range(TempArray)) *1000))
-                if(Model == 'SRE') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[PA.samp,]$",paste(SpNames[i]), collapse=""))), TempDS,DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))    
+                if(Model == 'MARS')TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler4(predict(model.sp, TempDS[,1:NbVar]),        ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_MARS_", nam, sep="")) *1000))
+                if(Model == 'FDA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler4(predict(model.sp, TempDS, type="post")[,2], ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_FDA_", nam, sep="")) *1000))
+                if(Model == 'RF')  TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict(model.sp, TempDS, type="prob")[,2]) *1000))
+                if(Model == 'SRE') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[PA.samp,]$",paste(SpNames[i]), collapse=""))), TempDS,DataBIOMOD[PA.samp,], Perc025, Perc05)) *1000))
+           
            }
         }
         VarImportance[[i]][Model,] <-  round(1 - (TempVarImp/VarImport), digits=3)
@@ -249,16 +229,21 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
 	 
     #Predictions on the independent data if any.
     if(exists("DataEvalBIOMOD")){
-        if(Model == 'GLM') predind <- as.integer(as.numeric(testnull(model.sp, Prev, DataEvalBIOMOD)) *1000)
-        if(Model == 'GAM') predind <- as.integer(as.numeric(testnull(model.sp, Prev, DataEvalBIOMOD)) *1000)
-        if(Model == 'ANN') predind <- as.integer(Rescaler3(as.numeric(predict(model.sp, DataEvalBIOMOD, type="raw")), OriMinMax=range(TempArray)) *1000)
-        if(Model == 'CTA') predind <- as.integer(as.numeric(predict(model.sp, DataEvalBIOMOD, type="vector")) *1000)
-        if(Model == 'GBM') predind <- as.integer(predict.gbm(model.sp, DataEvalBIOMOD, best.iter, type='response') *1000)        
-        if(Model == 'MARS') predind <- as.integer(Rescaler3(predict(model.sp, DataEvalBIOMOD[,1:NbVar]), OriMinMax=range(TempArray)) *1000)
-        if(Model == 'MDA') predind <- as.integer(Rescaler3(predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="post")[,2], OriMinMax=range(TempArray)) *1000)
-        if(Model == 'RF') predind <- as.integer(Rescaler3(predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="prob")[,2], OriMinMax=range(TempArray)) *1000)
+        if(Model == 'GLM') predind <- testnull(model.sp, Prev, DataEvalBIOMOD)
+        if(Model == 'GAM') predind <- testnull(model.sp, Prev, DataEvalBIOMOD)
+        if(Model == 'ANN') predind <- predict(model.sp, DataEvalBIOMOD, type="raw")
+        if(Model == 'CTA') predind <- predict(model.sp, DataEvalBIOMOD, type="vector")
+        if(Model == 'GBM') predind <- predict.gbm(model.sp, DataEvalBIOMOD, best.iter, type='response')        
+        if(Model == 'MARS') predind <- predict(model.sp, DataEvalBIOMOD[,1:NbVar])
+        if(Model == 'FDA') predind <- predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="post")[,2]
+        if(Model == 'RF') predind <- predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="prob")[,2]
         if(Model == 'SRE') predind <- as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD$", paste(SpNames[i]), collapse=""))), DataBIOMOD[1:NbVar], DataEvalBIOMOD, Perc025, Perc05)) *1000)
+    
+        if(any(c("ANN", "FDA", "MARS")== Model)) predind <- Rescaler4(predind, ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_",Model ,"_", nam, sep=""))
+        predind <- as.integer(as.numeric(predind) *1000)
     }
+
+
 
     #running the evaluation procedures
     if(Roc && Model != 'SRE'){

@@ -7,7 +7,7 @@ function(enviroTrain, mod)
         
 	      vname <- names(enviroTrain)[i]
 	      
-        if(mod=="NNET" | mod=="MDA" | mod=="GLMs" | mod=="CTA" | mod=="GBM") junk <- vname
+        if(mod=="NNET" | mod=="FDA" | mod=="GLMs" | mod=="CTA" | mod=="GBM") junk <- vname
         if(mod == "GLMq") {
             if(is.numeric(enviroTrain[,i]))      junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)", sep="")
             else if(is.factor(enviroTrain[,i]))  junk <- vname

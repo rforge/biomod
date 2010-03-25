@@ -7,7 +7,7 @@
   evaluated by Roc, Kappa or TSS.
 }
 \usage{
-PredictionBestModel(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, MDA = TRUE, RF = TRUE, SRE = TRUE, Bin.trans = TRUE, Filt.trans = TRUE, method = "all")
+PredictionBestModel(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, FDA = TRUE, RF = TRUE, SRE = TRUE, Bin.trans = TRUE, Filt.trans = TRUE, method = "all")
 }                                                                                                                   
 
 \arguments{
@@ -17,7 +17,7 @@ PredictionBestModel(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, 
   \item{GBM}{type True for that model to be taken into account for selecting the best model} 
   \item{GLM}{type True for that model to be taken into account for selecting the best model}
   \item{MARS}{type True for that model to be taken into account for selecting the best model} 
-  \item{MDA}{type True for that model to be taken into account for selecting the best model}
+  \item{FDA}{type True for that model to be taken into account for selecting the best model}
   \item{RF}{type True for that model to be taken into account for selecting the best model} 
   \item{SRE}{ type True for that model to be taken into account for selecting the best model }
   \item{Bin.trans}{ type True to have the predictions also converted into binary values}

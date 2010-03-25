@@ -11,7 +11,7 @@ response.plot(model, Data, save.file="no", name="response_curve")
 }
 
 \arguments{
-  \item{model}{ the model for which you want the response curves to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, MDA and MARS.}
+  \item{model}{ the model for which you want the response curves to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, FDA and MARS.}
   \item{Data}{ the variables for which you want the response curves to be plotted. A data frame is wanted with one column per vriable. They have to have the same names 
    as the ones used to calibrate the model.}
   \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
@@ -41,9 +41,9 @@ data(Sp.Env)
 Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#Let's run only a few models : GLM, MDA and RF. This will take a few moments to run.
+#Let's run only a few models : GLM, FDA and RF. This will take a few moments to run.
 #Do note that the response.plot() function works for all the models available. Feel free to switch them on or off.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", FDA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
    NbRunEval = 0, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=1000)
 
@@ -52,8 +52,8 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", MDA = TRUE, CV.tree = 50, RF 
 load("models/Sp290_GLM_full")
 response.plot(Sp290_GLM_full, Sp.Env[,4:10])
 
-load("models/Sp290_MDA_full")
-response.plot(Sp290_MDA_full, Sp.Env[,4:10])
+load("models/Sp290_FDA_full")
+response.plot(Sp290_FDA_full, Sp.Env[,4:10])
 
 load("models/Sp290_RF_full")
 response.plot(Sp290_RF_full, Sp.Env[,4:10])
@@ -64,8 +64,8 @@ response.plot(Sp290_RF_full, Sp.Env[,4:10])
 load("models/Sp277_GLM_full")
 response.plot(Sp277_GLM_full, Sp.Env[,4:10])
 
-load("models/Sp277_MDA_full")
-response.plot(Sp277_MDA_full, Sp.Env[,4:10])
+load("models/Sp277_FDA_full")
+response.plot(Sp277_FDA_full, Sp.Env[,4:10])
 
 load("models/Sp277_RF_full")
 response.plot(Sp277_RF_full, Sp.Env[,4:10])

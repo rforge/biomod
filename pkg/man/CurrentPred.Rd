@@ -7,7 +7,7 @@
   by the Models() function of Biomod for current data.
 }
 \usage{
-CurrentPred(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, MDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE)
+CurrentPred(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE)
 }
 
 \arguments{
@@ -16,7 +16,7 @@ CurrentPred(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, MDA=TRUE
   \item{GBM}{ type True or False to produce binary and/or filtered prediction data for that model }
   \item{CTA}{ type True or False to produce binary and/or filtered prediction data for that model }
   \item{RF}{ type True or False to produce binary and/or filtered prediction data for that model }
-  \item{MDA}{ type True or False to produce binary and/or filtered prediction data for that model }
+  \item{FDA}{ type True or False to produce binary and/or filtered prediction data for that model }
   \item{SRE}{ type True or False to produce binary and/or filtered prediction data for that model }
   \item{MARS}{ type True or False to produce binary and/or filtered prediction data for that model }
   \item{ANN}{  type True or False to produce binary and/or filtered prediction data for that model }

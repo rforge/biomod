@@ -1,5 +1,5 @@
 `Models` <-
-function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 2000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50, ANN=FALSE, CV.ann=5, SRE=FALSE, Perc025=FALSE, Perc05=FALSE, MDA=FALSE, MARS=FALSE, RF=FALSE,
+function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 5000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50, ANN=FALSE, CV.ann=5, SRE=FALSE, Perc025=FALSE, Perc05=FALSE, FDA=FALSE, MARS=FALSE, RF=FALSE,
 NbRunEval=1, DataSplit=100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
@@ -15,7 +15,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     
     #checking possible mistakes in the argument selections
     if(!exists("DataBIOMOD")) stop("Initial.State should be run first in order to procede")
-    if(!any(GAM,GBM,GLM,RF,MDA,MARS,SRE,ANN,CTA)) stop("No models were selected \n") 
+    if(!any(GAM,GBM,GLM,RF,FDA,MARS,SRE,ANN,CTA)) stop("No models were selected \n") 
     if(!any(Roc,Kappa,TSS)) stop("At least one evaluation technique (Roc, TSS or Kappa) must be selected \n") 
     if(Roc != T && Optimized.Threshold.Roc != F) stop("Roc must be TRUE to derive optimized threshold value")
     if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model (DataSplit<50) \n Make sure you really wanted to do that. \n") 
@@ -33,6 +33,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     #create the directories in which various objects will be stored (models, predictions and projection). The projection directories are created in the Projection() function.
     dir.create(paste(getwd(), "/models", sep=""), showWarnings=F)
     dir.create(paste(getwd(), "/pred", sep=""), showWarnings=F)
+    if(any(MARS, FDA, ANN, RF)) dir.create(paste(getwd(), "/models/rescaling_models", sep=""), showWarnings=F) 
   
   
     #switch SRE and MARS off if one of the variables is a non numeric
@@ -44,8 +45,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
      
   
     #create usefull vectors for condensing code   
-    Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","MDA","RF","SRE")
-    Biomod.material[["algo.choice"]] <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
+    Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","FDA","RF","SRE")
+    Biomod.material[["algo.choice"]] <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)
     Biomod.material[["evaluation.choice"]] <- c(Roc=Roc, Kappa=Kappa, TSS=TSS)
     Biomod.material[["NbRunEval"]] <- NbRunEval
     Biomod.material[["NbRepPA"]] <- NbRepPA
@@ -74,8 +75,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     }
     if(DataSplit==100) NbRunEval <- 0   
             
-    #create list to store results from some specific models   
-    if(GBM | ANN | RF | MARS | MDA) assign('Models.information', list(), pos=1)
+    #create list to store best.iter for GBM   
+    if(GBM) assign('Models.information', list(), pos=1)
     
     #create matrix to store variable importance results
     if(VarImport != 0){
@@ -203,7 +204,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
                             
                   if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,1,pa] <- predind
                   
-                  if(a=='ANN' | a=='GBM' | a=='RF' | a=='MARS' | a=='MDA'){
+                  if(a=='ANN' | a=='GBM' | a=='RF' | a=='MARS' | a=='FDA'){
                       Models.information[[Biomod.material$species.names[i]]][[a]][[paste("PA", pa, sep="")]] <- g         # Models.information[[Biomod.material$species.names[i]]][[paste(a, "_PA", pa, sep="")]]
                       assign('Models.information', Models.information, pos=1)
                   } 

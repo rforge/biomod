@@ -7,7 +7,7 @@
 species or land-use classes for other areas, other resolutions or other time scales.
 }
 \usage{
-Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, Perc025 = FALSE, Perc05 = TRUE, MDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
+Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, Perc025 = FALSE, Perc05 = TRUE, FDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
 }
 
 \arguments{
@@ -23,7 +23,7 @@ Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRU
   \item{SRE}{ if TRUE, the model will be used to render projections }
   \item{Perc025}{ if TRUE, the 0.025 extreme percentiles of the response data will not be used by the SRE for calibration}
   \item{Perc05}{ if TRUE, the 0.05 extreme percentiles of the response data will not be used by the SRE for calibration}
-  \item{MDA}{ if TRUE, the model will be used to render projections }
+  \item{FDA}{ if TRUE, the model will be used to render projections }
   \item{MARS}{ if TRUE, the model will be used to render projections }
   \item{RF}{ if TRUE, the model will be used to render projections } 
   \item{BinRoc}{ set it to TRUE if you want the results to be also produced in binary using the Roc curve threshold for all models }

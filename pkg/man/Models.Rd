@@ -8,7 +8,7 @@
   performance of the models produced. 
 }
 \usage{
-Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 2000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = FALSE, CV.ann = 5, SRE = FALSE, Perc025 = FALSE, Perc05 = FALSE, MDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights = NULL, VarImport = 0, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE)
+Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 2000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = FALSE, CV.ann = 5, SRE = FALSE, Perc025 = FALSE, Perc05 = FALSE, FDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights = NULL, VarImport = 0, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE)
 }
 
 \arguments{
@@ -26,7 +26,7 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 20
   \item{SRE}{ type True to run the Surface Range Envelope, or False to switch it off }
   \item{Perc025}{ if True, the 0.025 extreme percentiles of the response data will not be used by the SRE for calibration (see \code{\link{sre}} for further details)}
   \item{Perc05}{ if True, the 0.05 extreme percentiles of the response data will not be used by the SRE for calibration (see \code{\link{sre}} for further details)}
-  \item{MDA}{ type True to run the Mixture Discriminant Analysis, or False to switch it off  }
+  \item{FDA}{ type True to run the Mixture Discriminant Analysis, or False to switch it off  }
   \item{MARS}{ type True to run the Multiple Adaptive Regression Splines, or False to switch it off }
   \item{RF}{ type True to run the Random Forest, or False to switch it off }
   \item{NbRunEval}{ the number of evaluation runs to proceed before the final 100 percent data model is run (see the manual or the details section below for further explanations) }
@@ -120,7 +120,7 @@ IndependentResponse=NULL, IndependentExplanatory=NULL)
 #Here are done 2 PA runs and 2 repetitions for each run. Here we will have 36 runs per species. This will hence take several minutes.
 Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, GAM = TRUE, CTA = TRUE, CV.tree = 50, 
 
-   ANN = TRUE, CV.ann = 2, SRE = TRUE, Perc025=TRUE, Perc05=FALSE, MDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 2, DataSplit = 80,
+   ANN = TRUE, CV.ann = 2, SRE = TRUE, Perc025=TRUE, Perc05=FALSE, FDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 2, DataSplit = 80,
    Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5,
    NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 

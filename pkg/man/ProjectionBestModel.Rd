@@ -53,7 +53,7 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection( Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, MDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
+Projection( Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, FDA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
 
 #This function needs to be run before hand in order to produce the reference files for ProjectionBestModel

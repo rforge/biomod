@@ -8,7 +8,7 @@
   across the binary projections of the models. 
 }
 \usage{
-Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, MDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models=TRUE)
+Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, FDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models=TRUE)
 }
 
 \arguments{
@@ -18,7 +18,7 @@ Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE,
   \item{GBM}{ type TRUE if you want this model to be used for building the ensemble forecasts}
   \item{GLM}{ type TRUE if you want this model to be used for building the ensemble forecasts}
   \item{MARS}{ type TRUE if you want this model to be used for building the ensemble forecasts}
-  \item{MDA}{ type TRUE if you want this model to be used for building the ensemble forecasts}
+  \item{FDA}{ type TRUE if you want this model to be used for building the ensemble forecasts}
   \item{RF}{ type TRUE if you want this model to be used for building the ensemble forecasts}
   \item{SRE}{ type TRUE if you want this model to be used for building the ensemble forecasts  }
   \item{Proj.name}{ the same name used for rendering the projections with the Projection() function. It will be used for loading the projection result files. 

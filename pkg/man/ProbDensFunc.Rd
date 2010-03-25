@@ -51,13 +51,13 @@ data(Sp.Env)
 Initial.State(Response = Sp.Env[15], Explanatory = Sp.Env[,4:10], 
 IndependentResponse = NULL, IndependentExplanatory = NULL)
 
-Models(ANN=T, RF=T, CTA=T, MDA=T, GLM=T, NbRunEval=20, DataSplit=70, NbRepPA=0, 
+Models(ANN=T, RF=T, CTA=T, FDA=T, GLM=T, NbRunEval=20, DataSplit=70, NbRepPA=0, 
    Roc = T, Optimized.Threshold.Roc = T, Kappa = T, TSS=T)  
 
 data(Future1)
 
 Projection(Proj = Future1[,4:10], Proj.name="rep50_Future1", 
-   ANN=T, RF=T, CTA=T, MDA=T, GLM=T, BinRoc = T, BinKappa = T, BinTSS = T, repetition.models=T)              
+   ANN=T, RF=T, CTA=T, FDA=T, GLM=T, BinRoc = T, BinKappa = T, BinTSS = T, repetition.models=T)              
 
 
 #we will also compare with the consensus results.
@@ -78,7 +78,7 @@ Bin_consensus <- BinaryTransformation(Total_consensus_rep50_Future1[,1,1], mean(
 #Build the dataframes that will be used by the function.
 #One for the projections, one for the grouping information.
 
-models <- c("ANN", "CTA", "GLM", "MDA", "RF")
+models <- c("ANN", "CTA", "GLM", "FDA", "RF")
 evaluation <- c("Roc", "Kappa", "TSS")
 
 DataFrame <- matrix(NA, 2264, 2)

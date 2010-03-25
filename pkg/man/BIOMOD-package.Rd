@@ -22,8 +22,8 @@ not assessed.
 \tabular{ll}{
 Package: \tab BIOMOD\cr
 Type: \tab Package\cr
-Version: \tab 1.1-3\cr
-Date: \tab 2009-10-13\cr
+Version: \tab 1.1-4\cr
+Date: \tab 2010-03-25\cr
 License: \tab GPL-2 \cr
 }
 

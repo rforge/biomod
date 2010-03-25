@@ -1,10 +1,11 @@
 `Ensemble.Forecasting` <-
-function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,MDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE)
+function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE)
 {
     Th <- c('Roc', 'Kappa', 'TSS')  
 
     if(!any(Th == bin.method)) stop("\n bin.method should be one of 'Roc', 'Kappa' or 'TSS'  \n")
     if(!any(Th == weight.method)) stop("\n weight.method should be one of 'Roc', 'Kappa', or 'TSS' \n") 
+    if(sum(weight.method==names(Biomod.material$evaluation.choice))!=1) stop("\n the weight.method selected was not run in Models \n")
     if(is.null(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]])) stop("unknown Projection name \n")
     
 

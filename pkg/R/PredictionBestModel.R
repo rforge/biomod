@@ -1,19 +1,19 @@
 `PredictionBestModel` <-
-function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, RF=TRUE, SRE=TRUE, Bin.trans=TRUE, Filt.trans=TRUE, method='all')
+function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, FDA=TRUE, RF=TRUE, SRE=TRUE, Bin.trans=TRUE, Filt.trans=TRUE, method='all')
 {
     Th <- c('Kappa','TSS','Roc', 'all')
     if(sum(Th == method) == 0) stop("\n : uncorrect method name , should be one of 'Kappa' 'TSS' 'Roc'")
     
     
     #apply the function to the 3 possible transformation methods if all are selected
-    if(method == 'all') for(k in 1:3) PredictionBestModel(ANN, CTA, GAM, GBM, GLM, MARS, MDA, RF, SRE, Bin.trans, Filt.trans, method=Th[k])   #runs the function alternatively for each method
+    if(method == 'all') for(k in 1:3) PredictionBestModel(ANN, CTA, GAM, GBM, GLM, MARS, FDA, RF, SRE, Bin.trans, Filt.trans, method=Th[k])   #runs the function alternatively for each method
                  
     #run the function for one method at a time                  
     else { if(Biomod.material$evaluation.choice[method]){
     
         NbSp <- Biomod.material$NbSpecies
         SpNames <- Biomod.material$species.names
-        algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, MDA=MDA, RF=RF, SRE=SRE)
+        algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)
         algo.c[names(which(!Biomod.material$algo.choice))] <- F  #switch off the models that are wanted but have not been trained    
     
         gg <- list()
@@ -32,8 +32,8 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, MDA=TRUE, R
             sp.data <- eval(parse(text=paste("Pred_", SpNames[i], sep="")))
             
             
-            #define an order to select models if there are equals : GAM > GLM > GBM > RF > CTA > MDA > MARS > ANN > SRE
-            G <- matrix(0, ncol=9, nrow=Biomod.material$NbRun[i], dimnames=list(1:Biomod.material$NbRun[i], c("GAM", "GLM", "GBM", "RF", "CTA", "MDA", "MARS", "ANN", "SRE")))            
+            #define an order to select models if there are equals : GAM > GLM > GBM > RF > CTA > FDA > MARS > ANN > SRE
+            G <- matrix(0, ncol=9, nrow=Biomod.material$NbRun[i], dimnames=list(1:Biomod.material$NbRun[i], c("GAM", "GLM", "GBM", "RF", "CTA", "FDA", "MARS", "ANN", "SRE")))            
             #storing info on best model for each species
             g <- as.data.frame(matrix(0, nrow=Biomod.material$NbRun[i], ncol=7, dimnames=list(1:Biomod.material$NbRun[i], c("Best.Model", 'Cross.validation','indepdt.data','total.score','Cutoff','Sensitivity','Specificity'))))
                  

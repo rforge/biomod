@@ -35,8 +35,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
 
-    for(i in 1:NbVar){
-        if(sum(i==show.variables) > 0){
+    for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
     
             #consider if factorial variables :
             if(!is.factor(Data[,i])){  
@@ -57,15 +56,19 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             if(class(model)[1]=="mars") Xf <- as.numeric(predict(model, as.data.frame(Xp1)))
             if(class(model)[1]=="fda") Xf <- predict(model, as.data.frame(Xp1), type="post")[,2]
             if(class(model)[1]=="randomForest") Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
-    
-            if(class(model)[1]=="mars" | class(model)[1]=="nnet"  | class(model)[1]=="fda" | class(model)[1]=="randomForest" ){ 
+      
+      
+            #rescaling preds (not possible to use rescaling_GLM -> no info on calib data)
+            if(class(model)[1]=="mars" | class(model)[1]=="nnet"  | class(model)[1]=="fda" ){ 
+                OriMinMax <- range(Xf)	
+                Xf <- (Xf - min(OriMinMax)) / (max(OriMinMax)-min(OriMinMax))
                 Xf[Xf<0]<-0
-                Xf[Xf>1]<-1
+                Xf[Xf>1]<-1            
             }
-    
+
             plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])     
-        }
-    } 
+    }}# i loop for variables
+   
    
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
    

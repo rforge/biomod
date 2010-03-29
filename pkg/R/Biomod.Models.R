@@ -64,7 +64,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         #Using New Cvnnet
         if(Model == 'ANN'){
             set.seed(555)
-            CV_nnet = CV.nnet(Input= DataBIOMOD[calib.lines, 1:NbVar], Target= DataBIOMOD[calib.lines, NbVar+i])             
+            CV_nnet = CV.nnet(Input= DataBIOMOD[calib.lines, 1:NbVar], Target= DataBIOMOD[calib.lines, NbVar+i], nbCV=CV.ann, W=Yweights[calib.lines,i])             
             if(k==(ncol(Ids)+1)) model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F)
                         else try(model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F), silent=T) 
   
@@ -72,8 +72,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         }####     
         if(Model == 'CTA'){
             temp <- rpart.control(xval=CV.tree, minbucket=5, minsplit=5,cp=0.001, maxdepth=25)
-            if(k==(ncol(Ids)+1)) model.sp <- rpart(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "CTA"),collapse="")))),DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], control=temp)
-                        else try(model.sp <- rpart(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "CTA"),collapse="")))),DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], control=temp), silent=T)
+            if(k==(ncol(Ids)+1)) model.sp <- rpart(eval(parse(text=paste("as.factor(", SpNames[i], ")" ,paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "CTA"),collapse="")))),DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], control=temp)
+                        else try(model.sp <- rpart(eval(parse(text=paste("as.factor(", SpNames[i], ")", paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "CTA"),collapse="")))),DataBIOMOD[calib.lines,], weights=Yweights[calib.lines,i], control=temp), silent=T)
             if(exists("model.sp")){
                 tr <- as.data.frame(model.sp$cptable)
                 tr[,6] <- tr[,4] + tr[,5]
@@ -81,7 +81,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                 Cp <- tr[tr[,6] == min(tr[,6]), 1]
                 if(length(Cp) ==1) model.sp <- prune(model.sp, cp=Cp)
                 else model.sp <- prune(model.sp, cp=Cp[2])
-                g.pred <- data.frame(as.integer(as.numeric(predict(model.sp, DataBIOMOD[PA.samp,], type="vector")) *1000))
+                g.pred <- data.frame(as.integer(as.numeric(predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="prob")[,2]) *1000))
             }
         }####
         if(Model == 'GAM'){
@@ -211,7 +211,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
                 TempDS[,J] <- sample(TempDS[,J])
                  
                 if(Model == 'ANN') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(Rescaler4(as.numeric(predict(model.sp, TempDS, type="raw")), ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_ANN_", nam, sep="")) *1000))
-                if(Model == 'CTA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict(model.sp, TempDS, type="vector")) *1000))
+                if(Model == 'CTA') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict(model.sp, TempDS, type="prob")[,2]) *1000))
                 if(Model == 'GLM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(testnull(model.sp, Prev, TempDS)) *1000))
                 if(Model == 'GAM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(testnull(model.sp, Prev, TempDS)) *1000))
                 if(Model == 'GBM') TempVarImp[1,J] <- TempVarImp[1,J] + cor(g.pred[,], as.integer(as.numeric(predict.gbm(model.sp, TempDS, best.iter, type='response')) *1000))
@@ -232,7 +232,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025,
         if(Model == 'GLM') predind <- testnull(model.sp, Prev, DataEvalBIOMOD)
         if(Model == 'GAM') predind <- testnull(model.sp, Prev, DataEvalBIOMOD)
         if(Model == 'ANN') predind <- predict(model.sp, DataEvalBIOMOD, type="raw")
-        if(Model == 'CTA') predind <- predict(model.sp, DataEvalBIOMOD, type="vector")
+        if(Model == 'CTA') predind <- predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="prob")[,2]
         if(Model == 'GBM') predind <- predict.gbm(model.sp, DataEvalBIOMOD, best.iter, type='response')        
         if(Model == 'MARS') predind <- predict(model.sp, DataEvalBIOMOD[,1:NbVar])
         if(Model == 'FDA') predind <- predict(model.sp, DataEvalBIOMOD[,1:NbVar], type="post")[,2]

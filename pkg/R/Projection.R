@@ -111,7 +111,7 @@ repetition.models=TRUE)
                         }
                         
                         if(a == 'GBM') g[,a,Nrep,jj] <- predict.gbm(object, Proj, Models.information[[i]]$GBM[[paste("PA", jj, sep="")]][[1]]$best.iter[[run.name2]], type='response')
-                        if(a == 'CTA') g[,a,Nrep,jj] <- predict(object, Proj, type="vector") 
+                        if(a == 'CTA') g[,a,Nrep,jj] <- predict(object, Proj, type="prob")[,2]
                         if(a == 'ANN') g[,a,Nrep,jj] <- predict(object, Proj, type="raw")       
                         if(a == 'FDA') g[,a,Nrep,jj] <- predict(object, Proj, type="post")[,2] 
                         if(a == 'RF') g[,a,Nrep,jj] <- predict(object, Proj, type="prob")[,2] 

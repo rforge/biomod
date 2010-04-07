@@ -43,10 +43,6 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
 
         #create object for scaling the legend
         assign("legendcex", 0.64+1/exp(W.height), pos=1)
-
-
-        #if(same.scale) layout(mat, widths=c(rep(1, W.width),0.3), heights=c(0.2, rep(c(0.1,1), W.height)))
-        #nbCells <- W.width*W.height*2 + 2
         
         #matrix of indexes for ordering the layout
         mat <- c(1,2)
@@ -61,7 +57,7 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
              pbox("grey98")
              text(x=0.5, y=0.8, pos=1, cex=1.6, labels=colnames(DataW)[i], col="#4c57eb")
              pbox("grey98")
-             level.plot(DataW[,i], XY=coor, color.gradien=color.gradient, cex=cex, title="", AddPresAbs=AddPresAbs, PresAbsSymbol=PresAbsSymbol) 
+             level.plot(DataW[,i], XY=coor, color.gradient=color.gradient, cex=cex, title="", AddPresAbs=AddPresAbs, PresAbsSymbol=PresAbsSymbol) 
         }
         
         #fill gaps by grey boxes

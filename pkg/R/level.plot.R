@@ -1,5 +1,5 @@
 `level.plot` <-
-function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot", save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4)){
+function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot", SRC=FALSE, save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4)){
     
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n") 
     if(ncol(XY)!=2) stop("\n wrong coordinates given in 'XY' : there should be two columns \n")
@@ -7,58 +7,56 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
 
     if(exists("multiple")) multiple.plot <- TRUE  else multiple.plot <- FALSE
 
-    SRC <- F
-    SRCvalues <- c(-2,-1,0,1)
-    if(length(unique(data.in)) <= 4){
-        nb <- 0
-        for(i in 1:length(unique(data.in))) if(sum(unique(data.in)[i]==SRCvalues) == 1) nb <- nb+1
-        if(nb==length(unique(data.in))) SRC <- T
-        #if data made of 0s and 1s (binary)
-        if(length(unique(data.in))==2 && sum(match(unique(data.in), SRCvalues))==7) SRC=F
+
+    if(color.gradient=='grey') {
+        color.system <- c()
+        for(i in seq(93,10,length.out=100)) color.system <- c(color.system, gray(i/100))
+        color.system <- c(gray(0.93), color.system, gray(0))
+    }
+    if(color.gradient=='blue') {
+        color.system <- c('grey88',
+        rainbow(45, start=0.5, end=0.65),                       
+        rainbow(10, start=0.65, end=0.7),
+        rainbow(45, start=0.7, end=0.85),
+        'red')
+    }
+    if(color.gradient=='red') {    
+        color.system <- c(
+        'grey88',
+        c(rep(c(colors()[c(417,417,515)]), each=5),
+        rev(rainbow(55, start=0.13, end=0.23 )),
+        rev(rainbow(50, start=0.08, end=0.13 )[seq(1,50,length.out=15)]),
+        rev(rainbow(50, end=0.08)[seq(1,50,length.out=15)])), 
+        'brown2')
+    } 
+    
+    if(SRC){
+        if(unique(data.in)>4){
+            cat("\n not possible to render SRC plot -> more than four different values in data ")
+            SRC <- F
+        } else{    
+            SRCvalues <- sort(unique(data.in))
+            color.system <- c("red", "lightgreen", "grey", "darkgreen")
+            title <- paste("SRC plot ", title, sep="")
+        }
     }
 
-    if(SRC){
-        color.system <- c("red", "lightgreen", "grey", "darkgreen") 
-        gg <- data.in + 3
-        title <- paste("SRC plot ", title, sep="")
-    } else {
-        if(color.gradient=='grey') {
-            color.system <- c()
-            for(i in seq(93,10,length.out=100)) color.system <- c(color.system, gray(i/100))
-            color.system <- c(gray(0.93), color.system, gray(0))
-        }
-        if(color.gradient=='blue') {
-            color.system <- c('grey88',
-            rainbow(45, start=0.5, end=0.65),                       
-            rainbow(10, start=0.65, end=0.7),
-            rainbow(45, start=0.7, end=0.85),
-            'red')
-        }
-        if(color.gradient=='red') {    
-            color.system <- c(
-            'grey88',
-            c(rep(c(colors()[c(417,417,515)]), each=5),
-            rev(rainbow(55, start=0.13, end=0.23 )),
-            rev(rainbow(50, start=0.08, end=0.13 )[seq(1,50,length.out=15)]),
-            rev(rainbow(50, end=0.08)[seq(1,50,length.out=15)])), 
-            'brown2')
-        } 
-        
-        #if range wanted is broader than possible, set to actual range limits
-        if(level.range[1]<min(data.in)) level.range[1] <- min(data.in)  
-        if(level.range[2]>max(data.in)) level.range[2] <- max(data.in)  
-        
-        #determine the color code to assess to each value  
-        g <- gg <- data.in
-        gg[gg <= level.range[1]]  <- level.range[1]
-        gg[gg >= level.range[2]] <- level.range[2]
-        gg <- gg-min(g) 
-        gg <- gg/max(gg)*100 + 1
-       
-        #over and under-ranged values set to limits of color range
-        gg[g < level.range[1]] <- 1
-        gg[g > level.range[2]] <- 102
-    }    
+    
+    #if range wanted is broader than possible, set to actual range limits
+    if(level.range[1]<min(data.in)) level.range[1] <- min(data.in)  
+    if(level.range[2]>max(data.in)) level.range[2] <- max(data.in)  
+    
+    #determine the color code to assess to each value  
+    g <- gg <- data.in
+    gg[gg <= level.range[1]]  <- level.range[1]
+    gg[gg >= level.range[2]] <- level.range[2]
+    gg <- gg-min(g) 
+    gg <- gg/max(gg)*100 + 1
+   
+    #over and under-ranged values set to limits of color range
+    gg[g < level.range[1]] <- 1
+    gg[g > level.range[2]] <- 102
+   
     
     # define plotting symbols for presence and absences if required by user
     if(!is.null(AddPresAbs)){

@@ -8,7 +8,7 @@
   across the binary projections of the models. 
 }
 \usage{
-Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, FDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models=TRUE)
+Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, FDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models=TRUE, final.model.out=FALSE)
 }
 
 \arguments{
@@ -31,6 +31,7 @@ Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE,
   \item{bin.method}{ the method to convert the probabilities to binary values (if wanted) }
   \item{Test}{ set to True if you want the predictive performance of the ensemble method to be evaluated on current data }
   \item{repetition.models}{ set to True if you want the ensembles to be build with the repetition models taken into account }
+  \item{final.model.out}{ set to True if you want the total ensemble to be build with the final models taken into account }
 }
 \details{
  The decay is the ratio between a weight and the following or prior one. The formula is : W = W(-1) * decay. For example,

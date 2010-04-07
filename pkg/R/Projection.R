@@ -1,5 +1,5 @@
 `Projection` <-
-function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, Perc025=FALSE, Perc05=TRUE,
+function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant,
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE)
 {
@@ -110,13 +110,13 @@ repetition.models=TRUE)
                             } else g[,a,Nrep,jj] <- predict(object, Proj, type="response")
                         }
                         
-                        if(a == 'GBM') g[,a,Nrep,jj] <- predict.gbm(object, Proj, Models.information[[i]]$GBM[[paste("PA", jj, sep="")]][[1]]$best.iter[[run.name2]], type='response')
+                        if(a == 'GBM') g[,a,Nrep,jj] <- predict.gbm(object, Proj, GBM.perf[[i]][[run.name2]], type='response')
                         if(a == 'CTA') g[,a,Nrep,jj] <- predict(object, Proj, type="prob")[,2]
                         if(a == 'ANN') g[,a,Nrep,jj] <- predict(object, Proj, type="raw")       
                         if(a == 'FDA') g[,a,Nrep,jj] <- predict(object, Proj, type="post")[,2] 
                         if(a == 'RF') g[,a,Nrep,jj] <- predict(object, Proj, type="prob")[,2] 
                         if(a == 'MARS') g[,a,Nrep,jj] <- predict(object, Proj)                   
-                        if(a == 'SRE') g[,a,Nrep,jj] <- sre(DataBIOMOD[,Biomod.material$NbVar+i], DataBIOMOD[, 1:Biomod.material$NbVar], Proj, Perc025, Perc05)
+                        if(a == 'SRE') g[,a,Nrep,jj] <- sre(DataBIOMOD[,Biomod.material$NbVar+i], DataBIOMOD[, 1:Biomod.material$NbVar], Proj, quant)
                                              
                         g[,a,Nrep,jj] <- as.numeric(g[,a,Nrep,jj])  
                         #Rescale prediction for the models that need to

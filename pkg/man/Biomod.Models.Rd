@@ -5,7 +5,7 @@
 \description{ Inner function for the BIOMOD package, not for independent usage purposes
 }
 \usage{
-Biomod.Models(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, NbRunEval, Spline, DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
+Biomod.Models(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quants, NbRunEval, Spline, DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
 }
 
 \arguments{
@@ -17,8 +17,7 @@ Biomod.Models(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Per
   \item{No.trees}{  }
   \item{CV.tree}{  }
   \item{CV.ann}{  }
-  \item{Perc025}{  }
-  \item{Perc05}{  }
+  \item{quants}{ }
   \item{NbRunEval}{  }
   \item{Spline}{  }
   \item{DataSplit}{  }

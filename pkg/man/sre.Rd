@@ -3,22 +3,21 @@
 
 \title{ Surface Range Envelope }
 \description{
-  Run a rectilinear surface range envelop (equivalent to BIOCLIM) using the percentile 0.025 or 0.05 as recommended by Nix or Busby.
-  The SRE performs a simple analysis of within which range of each variable the data is recorded to render predictions.
+  Run a rectilinear surface range envelop (equivalent to BIOCLIM) using the extreme percentiles as recommended by Nix or Busby.
+  The SRE performs a simple analysis of within which range of each variable the data is recorded and renders predictions.
 }
 \usage{
-sre(Response = NULL, Explanatory = NULL, NewData = NULL, Perc025 = FALSE, Perc05 = FALSE)
+sre(Response = NULL, Explanatory = NULL, NewData = NULL, quants=0.05)
 }
 
 \arguments{
   \item{Response}{ a vector giving your species' presences and absences data }
   \item{Explanatory}{ a matrix containing the environmental variables for the sites given in Response. It must
-  have as many rows as there are elements in Response. }
+   have as many rows as there are elements in Response. }
   \item{NewData}{ The data for which you want to render predictions with the sre. It must be a matrix of the same type as
-  the one given in Explanatory and with precisely the same variable names. }
-  \item{Perc025}{ if True, the 2.5\% most extreme values for each variable will not be taken into account
-  for determining the tolerance boundaries for the considered species.  }
-  \item{Perc05}{ same as for Perc025 but the 5\% most extreme values will be avoided }
+   the one given in Explanatory and with precisely the same variable names. }
+  \item{quants}{ the value defines the most extreme values for each variable not to be taken into account
+   for determining the tolerance boundaries for the considered species.  }
 }
 \details{
 
@@ -30,6 +29,10 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Perc025 = FALSE, Perc05
   Note that, as a consequence of its functionning, the predictions are directly given in binary, a site being
   either potentially suitable for all the variables, either out of bounds for at least one variable and therefore
   considered unsuitable. 
+  
+  The quants argument determines the threshold at which the data will be taken into account for calibration : the default
+  of 0.05 induces that the 5\% most extreme values will be avoided for each variable on each side of its distribution along
+  the gradient. So it in fact takes 5\% away at each end of the variables distribution, giving a total of 10\% of data not considered.
 }
 \value{
   A vector of the same length as there are rows in NewData giving the prediction in binary (1=presence, 0=absence)
@@ -44,8 +47,8 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Perc025 = FALSE, Perc05
 data(Sp.Env)
 
 g <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8])
-gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc025=TRUE)
-ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Perc05=TRUE)
+gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], quants=0.025)
+ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], quants=0.05)
 
 
 par(mfrow=c(1,4))

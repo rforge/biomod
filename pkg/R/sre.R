@@ -1,80 +1,59 @@
-`sre` <-
-function(Response=NULL, Explanatory=NULL, NewData=NULL, Perc025=FALSE, Perc05=FALSE)
+`sre` <- function(Response=NULL, Explanatory=NULL, NewData=NULL, Quant=0.025)
 {
-    NbVar <- dim(Explanatory)[2]
-    #assign("NbVar", NbVar, where=1)
-    Var.Names <- colnames(Explanatory)
-
-  if(is.numeric(Response)) {
-    if(Perc025!=F | Perc05!=F){
-      temp <- cbind(Response, Explanatory)
-      temp <- temp[temp[,1]==1,]
-      temp2 <- temp
-      i <- 2
-      while(i<=ncol(temp)){
-        Q <- quantile(temp[,i],  probs=c(.025,.05,0.95, 0.975))
-        if(Perc025==T) temp2 <- temp2[temp2[,i]>=Q[1] & temp2[,i]<=Q[4],]
-        if(Perc05==T) temp2 <- temp2[temp2[,i]>=Q[2] & temp2[,i]<=Q[3],]
-        i <- i+1
-      }
-      Data <- temp2[,2:ncol(temp2)]
-    }
-    else Data <- Explanatory[Response == 1,  ]
-    if(Perc025!=F & Perc05!=F) stop("\n Select only percentile option at one time. Either Perc025=T & Perc05=F, OR Perc025=F & Perc05=T OR Perc025=F & Perc05=F \n")
-
-        prediction <- matrix(0, nrow=dim(NewData)[1], ncol=2*NbVar)
-        a <- 1
-        j <- 1
-        while(j <= NbVar) {
-            prediction[, a] <- eval(parse(text=paste("NewData$",paste(Var.Names[j]), collapse=""))) >= min(eval(parse(text=paste("Data$", paste(Var.Names[j]), collapse=""))))
-            prediction[, a + 1] <- eval(parse(text=paste("NewData$", paste(Var.Names[j]), collapse=""))) <= max(eval(parse(text=paste("Data$",paste(Var.Names[j]), collapse=""))))
-            j <- j + 1
-            a <- a + 2
-        }
-        Pred <- apply(prediction[, 1:(2 * NbVar)], 1, FUN = function(x)
-        { sum(x)/(2 * NbVar)
-        }
-        )
-        Pred <- trunc(Pred)
-        return(Pred)
-    }
-    else {
-        NbSp <- dim(Response)[2]
-        Pred <- as.data.frame(matrix(0, nrow=dim(NewData)[1], ncol=NbSp, dimnames=list(seq(dim(NewData)[1]), colnames(Response))))
-        z <- 1
-        while(z <= NbSp) {
-
-            if(Perc025==T | Perc05==T){
-        temp <- cbind(Response[,z], Explanatory)
-        temp <- temp[temp[,1]==1,]
-        temp2 <- temp
-        i <- 2
-        while(i<=ncol(temp)){
-          Q <- quantile(temp[,i], probs=c(.025,.05,0.95, 0.975))
-          if(Perc025==T) temp2 <- temp2[temp2[,i]>=Q[1] & temp2[,i]<=Q[4],]
-          if(Perc05==T) temp2 <- temp2[temp2[,i]>=Q[2] & temp2[,i]<=Q[3],]
-          i <- i+1
-        }
-        Data <- temp2[,2:ncol(temp2)]
-      }
-      else Data <- Explanatory[Response[,z] == 1,]
-            prediction <- matrix(0, nrow=dim(NewData)[1], ncol =2 * NbVar)
-            a <- 1
-            j <- 1
-            while(j <= NbVar) {
-                prediction[,a] <- eval(parse(text=paste("NewData$", paste(Var.Names[j]),collapse=""))) >= min(eval(parse(text=paste("Data$", paste(Var.Names[j]), collapse=""))))
-                prediction[,a+1] <- eval(parse(text=paste("NewData$", paste(Var.Names[j]),collapse=""))) <= max(eval(parse(text=paste("Data$", paste(Var.Names[j]), collapse=""))))
-                j <- j + 1
-                a <- a + 2
+    if(Quant>=0.5 | Quant<0) stop("\n settings in Quant should be a value between 0 and 0.5 ")
+    quants <- c(0+Quant, 1-Quant)
+    
+    
+    #Check the variables from calib to predict
+    #%%%%%%%%%%%
+    
+    
+    #Calibration on point data, projection on points or rasters
+    if(class(Explanatory)[1]!='RasterStack'){
+        Response <- as.data.frame(Response)                                                        #to get the colnames if only a vector is given
+        NbVar <- dim(Explanatory)[2]
+        #storing output
+        if(class(NewData)[1]!='RasterStack') Pred <- as.data.frame(matrix(0, nr=dim(NewData)[1], nc=dim(Response)[2], dimnames=list(seq(dim(NewData)[1]), colnames(Response))))
+        
+        #for multiple species(not active for rasters for now -> overwritting TF)
+        for(i in 1:dim(Response)[2]){
+            ref <- Explanatory[Response[,i]==1,]
+            
+            #object for storing the True/False values (now +1s)
+            if(class(NewData)[1]=='RasterStack') { TF <- NewData@layers[[1]] ; TF <- TF<TF@data@min }                 #set raster to FALSE for all values (exept NAs)
+            else TF <- rep(0, dim(NewData)[1])
+            
+            
+            for(j in 1:NbVar){
+                Q <- quantile(ref[,j], probs=quants)
+                
+                if(class(NewData)[1]!='RasterStack'){
+                    TF <- TF + (NewData[,names(ref)[j]]>=Q[1])                                          #add the T/F values to vector (+T = +1)
+                    TF <- TF + (NewData[,names(ref)[j]]<=Q[2])
+                } else{                                                                             #NewData = raster
+                    TFmin <- NewData@layers[[which(NewData@layernames==names(ref)[j])]]>=Q[1]       #produce T/F rasterlayers
+                    TFmax <- NewData@layers[[which(NewData@layernames==names(ref)[j])]]<=Q[2]       
+                    TFmin["TRUE"] <- 1                                                              #convert them to 0s and 1s
+                    TFmax["TRUE"] <- 1
+                    TF <- TF + TFmin + TFmax                                                        #add to TF for storage accross variables
+                }      
             }
-            Pred[,z] <- apply(prediction[,1:(2*NbVar)], 1,FUN = function(x)
-            { sum(x)/(2 * NbVar)
-            }
-            )
-            Pred[,z] <- trunc(Pred[,z])
-            z <- z + 1
+            TF[TF!=(NbVar*2)] <- 0                                                                  #convert to binary
+            TF[TF==(NbVar*2)] <- 1                                                                  #important to set to 0 first, then the 1s
+            if(class(TF)[1]!='RasterLayer') Pred[,i] <- TF else Pred <- TF                                          #store in matrix if point data
         }
-        return(Pred)
     }
+    
+    #Calibration on RasterStack, projection on rasters  
+    #else{ 
+        
+    #    Q <- quantile(belalp.stk@layers[[1]], na.rm=T, probs=quants)
+        
+    #}
+            
+            
+
+    
+    if(class(NewData)[1]!='RasterStack' & dim(Response)[2]==1) Pred <- Pred[[1]]   #return a vector, not a data frame
+    return(Pred)
 }
-

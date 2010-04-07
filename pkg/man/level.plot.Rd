@@ -6,7 +6,7 @@
   Enables to plot data with 2-dimensional geographical coordinates
 }
 \usage{
-level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot", save.file="no")
+level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot", SRC=FALSE, save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4))
 }
 
 \arguments{
@@ -18,8 +18,11 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
   of the graph especially if you have extreme values (see examples section) }
   \item{show.scale}{ a feature for just keeping the graph without the scale (if set to False) }
   \item{title}{ the title wanted for the graph }
+  \item{SRC}{ if TRUE, the function recognizes the values as being 'Species Range Change' values and associates the appropriate colors to them (see \code{\link{Biomod.RangeSize}})}
   \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
   \item{ImageSize}{ The image size for JPEG and TIFF files saved to disk. Available : 'small', 'standard' and 'large' }
+  \item{AddPresAbs}{ Option to add the presences and absences used for calibration on the plot }
+  \item{PresAbsSymbol}{ a vector giving the symbols to be used by the AddPresAbs argument for plotting }
 }
 
 \details{}

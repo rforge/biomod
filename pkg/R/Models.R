@@ -76,7 +76,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(DataSplit==100) NbRunEval <- 0   
             
     #create list to store best.iter for GBM   
-    if(GBM) assign('GBM.perf', list(), pos=1)
+    if(GBM){ GBM.perf <- list() ; GBMP <- c() }
     
     #create matrix to store variable importance results
     if(VarImport != 0){
@@ -176,7 +176,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         assign("Array", ARRAY, pos=1)
         Ids <- data.frame(matrix(0, nrow=ceiling(ndata*(DataSplit/100)), ncol=NbRunEval))
         
-        
+        if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- list()
 
         for(pa in 1:NbRepPA.pos){
             assign("pa", pa, pos=1)
@@ -201,7 +201,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
                             
                   if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,1,pa] <- predind
                    
-            }    
+            }
+            if(GBM) GBMP <- c(GBMP, GBM.list) 
+               
         }
         
         #save the prediction for that species
@@ -213,9 +215,10 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i], "_indpdt, file='",getwd(),"/pred/Pred_",Biomod.material$species.names[i], "_indpdt')", sep="")))
         }
         
-        if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- GBM.list
         #store the total number of models produced for that species. It will be used by Projection()
         if(NbRepPA!=0) Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]*dim(ARRAY)[4] else Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]
+  
+        if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- GBMP  
   
         i <- i + 1
     }
@@ -235,10 +238,5 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     savehistory(paste(filename, ".Rhistory", sep=""))
     
     #Final notice, runs are finished
-    cat(paste(
-    "\n\n--------- \n",
-    "completed \n\n\n",
-    sep=""))
-    
-      
+    cat("\n\n--------- \n completed \n\n\n")      
 }

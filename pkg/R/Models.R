@@ -1,5 +1,5 @@
 `Models` <-
-function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 5000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50, ANN=FALSE, CV.ann=5, SRE=FALSE, Perc025=FALSE, Perc05=FALSE, FDA=FALSE, MARS=FALSE, RF=FALSE,
+function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 5000, GAM=FALSE, Spline=3, CTA=FALSE, CV.tree=50, ANN=FALSE, CV.ann=5, SRE=FALSE, quant=0.025, FDA=FALSE, MARS=FALSE, RF=FALSE,
 NbRunEval=1, DataSplit=100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
@@ -19,7 +19,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(!any(Roc,Kappa,TSS)) stop("At least one evaluation technique (Roc, TSS or Kappa) must be selected \n") 
     if(Roc != T && Optimized.Threshold.Roc != F) stop("Roc must be TRUE to derive optimized threshold value")
     if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model (DataSplit<50) \n Make sure you really wanted to do that. \n") 
-      
+    if(quant>=0.5 | quant<0) stop("\n settings in 'quant' should be a value between 0 and 0.5 ")  
       
     #Check that the weight matrix was entered correctly with the pseudo.abs option
     if(NbRepPA==0){
@@ -33,7 +33,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     #create the directories in which various objects will be stored (models, predictions and projection). The projection directories are created in the Projection() function.
     dir.create(paste(getwd(), "/models", sep=""), showWarnings=F)
     dir.create(paste(getwd(), "/pred", sep=""), showWarnings=F)
-    if(any(MARS, FDA, ANN, RF)) dir.create(paste(getwd(), "/models/rescaling_models", sep=""), showWarnings=F) 
+    if(any(MARS, FDA, ANN)) dir.create(paste(getwd(), "/models/rescaling_models", sep=""), showWarnings=F) 
   
   
     #switch SRE and MARS off if one of the variables is a non numeric
@@ -76,7 +76,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(DataSplit==100) NbRunEval <- 0   
             
     #create list to store best.iter for GBM   
-    if(GBM) assign('Models.information', list(), pos=1)
+    if(GBM) assign('GBM.perf', list(), pos=1)
     
     #create matrix to store variable importance results
     if(VarImport != 0){
@@ -136,10 +136,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         cat("#####\t\t\t", Biomod.material$species.names[i], "\t\t\t#####\n")
         assign("i", i, pos= 1)
                
-        if(exists("Models.information")){
-           Models.information[[Biomod.material$species.names[i]]] <- list()
-           assign('Models.information', Models.information, pos=1) 
-        }  
+        if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- list()                #Store the best.iter per species
         
         #check the number of absences wanted compared to those available
         #for the case where the number of absences wanted is higher than those available -> set NbRepPA.pos to 1 and do a single PA run with all the absences available
@@ -199,15 +196,11 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
                    
             for(a in Biomod.material$algo[Biomod.material$algo.choice]){
                 
-                  g <- list(Biomod.Models(a, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, Perc025, Perc05, NbRunEval, Spline, DataSplit,
-                            Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport))
+                  Biomod.Models(a, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, NbRunEval, Spline, DataSplit,
+                            Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
                             
                   if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,1,pa] <- predind
-                  
-                  if(a=='ANN' | a=='GBM' | a=='RF' | a=='MARS' | a=='FDA'){
-                      Models.information[[Biomod.material$species.names[i]]][[a]][[paste("PA", pa, sep="")]] <- g         # Models.information[[Biomod.material$species.names[i]]][[paste(a, "_PA", pa, sep="")]]
-                      assign('Models.information', Models.information, pos=1)
-                  } 
+                   
             }    
         }
         
@@ -220,6 +213,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i], "_indpdt, file='",getwd(),"/pred/Pred_",Biomod.material$species.names[i], "_indpdt')", sep="")))
         }
         
+        if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- GBM.list
         #store the total number of models produced for that species. It will be used by Projection()
         if(NbRepPA!=0) Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]*dim(ARRAY)[4] else Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]
   
@@ -231,6 +225,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(exists("DataEvalBIOMOD") && KeepPredIndependent) rm(predind, pos=1)
 
     assign("Biomod.material", Biomod.material, pos=1)
+    if(GBM) assign("GBM.perf", GBM.perf, pos=1)
     if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     
     

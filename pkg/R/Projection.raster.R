@@ -1,5 +1,5 @@
 `Projection.raster` <-
-function(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, Perc025=FALSE, Perc05=TRUE,
+function(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE, stack.out=TRUE)
 {
@@ -42,10 +42,9 @@ repetition.models=TRUE, stack.out=TRUE)
     for(i in 1:length(w)) ww <- paste(ww, w[i])
     if(length(w) > 0) cat(paste("\n\n The following models can not be used to render projections : ", ww,"\n they have not been trained in Models() \n\n", sep=""))     
     algo.c[names(which(!Biomod.material$algo.choice))] <- F
-    algo.c["SRE"] <- F
-       
     
   
+   
    
     dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=F) #showWarnings=F -> permits overwritting of an already existing directory without signaling (dangerous?)
     
@@ -110,16 +109,13 @@ repetition.models=TRUE, stack.out=TRUE)
                         
                         if(a == 'GLM')  g <- predict(RasterProj, model=object, type='response')
                         if(a == 'GAM')  g <- predict(RasterProj, model=object, type='response')
-                        if(a == 'GBM')  g <- predict(RasterProj, object, n.trees=Models.information[[i]]$GBM[[paste("PA", jj, sep="")]][[1]]$best.iter[[run.name2]], type='response') 
+                        if(a == 'GBM')  g <- predict(RasterProj, object, n.trees=GBM.perf[[i]][[run.name2]], type='response') 
                         if(a == 'ANN')  g <- predict(RasterProj, object, type="raw")
                         if(a == 'FDA')  g <- predict(RasterProj, object, type="post", index=2)
                         if(a == 'MARS') g <- predict(RasterProj, object)  
                         if(a == 'RF')   g <- predict(RasterProj, model=object, type='prob', index=2)
                         if(a == 'CTA')  g <- predict(RasterProj, model=object, type='prob', index=2)
-                        
-                        #if(a == 'SRE')  g <- as.integer(as.numeric(sre(DataBIOMOD[,Biomod.material$NbVar+i], DataBIOMOD[, 1:Biomod.material$NbVar], RasterProj, Perc025, Perc05)) *1000)
-                     
-                                                                                                                                     
+                        if(a == 'SRE')  g <- sre(DataBIOMOD[,Biomod.material$NbVar+i], DataBIOMOD[, 1:Biomod.material$NbVar], RasterProj, quant)
                                              
                         g <- as.numeric(g)  
                         #Rescale prediction for the models that need to
@@ -143,7 +139,7 @@ repetition.models=TRUE, stack.out=TRUE)
                             if(a != 'SRE'){
                                 for(ET in 1:6){ if(eval(parse(text=trans[ET]))){
                                     Thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", evals[ET], "[[i]][a,4]", sep=""))))   #get the threshold for that proj (defined by 'trans')
-                                    gg <- g                                                                                                  #see that the order between 'evals' and 'trans' is important
+                                    gg <- g                                                                                                  #order between 'evals' and 'trans' is important
                                     gg[g<Thresh] <- 0
                                     if(ET<4) gg[g>Thresh] <- 1                                                                              #transforming values over threshold to 1 if we want binary data only
                                             
@@ -154,7 +150,7 @@ repetition.models=TRUE, stack.out=TRUE)
                             } 
                         } else{
                             #brick()?
-                            pile.proj <- stack(pile.proj, run.name2=g)                                                                      #store the projection for each value of the loop
+                            pile.proj <- stack(pile.proj, run.name2=g)                                                                      #store the projection (g) for each value of the loop to its name (run.name2)
                             pile.names <- c(pile.names, run.name2)                                                                          #store the names of the projection to assign later to the stack
                             if(Biomod.material$evaluation.choice[[1]]) pile.thR <- c(pile.thR, as.numeric(Evaluation.results.Roc[[i]][a,4]))      #store the thresholds for each eval technic 
                             if(Biomod.material$evaluation.choice[[2]]) pile.thK <- c(pile.thK, as.numeric(Evaluation.results.Kappa[[i]][a,4]))
@@ -162,6 +158,8 @@ repetition.models=TRUE, stack.out=TRUE)
                         
                             
                             if(jj*Nrep==FinalRun){                                                                                          #only run this if final run of the loop accroos reps -> all proj have been stacked in pile.proj
+                                assign("pile.proj", pile.proj, pos=1)                                                                          
+                                assign("pile.names", pile.names, pos=1) 
                                 layerNames(pile.proj) <- pile.names                                                                         #assign names of proj to layers of the stack
                                 assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""), pile.proj)
                                 eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster')", sep="")))
@@ -190,11 +188,19 @@ repetition.models=TRUE, stack.out=TRUE)
                             } #last run per model                        
                         } #stack.out
                         
+                        
+                        
+                        
+                        
                         #SRE
-                        #} else{
-                          #  assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_Bin.raster", sep=""), g/1000)
-                         #   eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_Bin.raster')", sep="")))                            
+                        #else{
+                        #    assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_Bin.raster", sep=""), g/1000)
+                        #    eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_Bin.raster')", sep="")))                            
                         # }                             
+                 
+                 
+                 
+                 
                  
                     } #if exists 'object'
                 } #models 'a' loop      

@@ -1,5 +1,5 @@
 `Projection` <-
-function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant,
+function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE)
 {
@@ -109,7 +109,7 @@ repetition.models=TRUE)
                                 else  g[,a,Nrep,jj] <- gg[,a,Nrep,jj] <- ggg[,a,Nrep,jj] <- gggg[,a,Nrep,jj] <- k[,a,Nrep,jj] <- kk[,a,Nrep,jj] <- kkk[,a,Nrep,jj] <- rep(1000, nrow(Proj)) 
                             } else g[,a,Nrep,jj] <- predict(object, Proj, type="response")
                         }
-                        
+
                         if(a == 'GBM') g[,a,Nrep,jj] <- predict.gbm(object, Proj, GBM.perf[[i]][[run.name2]], type='response')
                         if(a == 'CTA') g[,a,Nrep,jj] <- predict(object, Proj, type="prob")[,2]
                         if(a == 'ANN') g[,a,Nrep,jj] <- predict(object, Proj, type="raw")       

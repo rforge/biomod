@@ -1,5 +1,5 @@
 `LoadProj` <-
-function(Sp=1, Bin=T, Filt=F, which.pred="pred"){
+function(Sp=1, Bin=FALSE, Filt=FALSE, which.pred="pred"){
 
     #check the projection names wanted
     check.names <- c()

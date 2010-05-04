@@ -17,13 +17,15 @@ ecosystem...) in function of any explanatory variables.
 The 1.1-0 version (and on) enables to model your data using only a limited number 
 of zeros, namely pseudo-absences, when the data is incomplete or the absences are
 not assessed.
+Rasters can be directly projected on since version 1.1.4, the ensemble forecasts 
+follow in version 1.1.5
 }
 \details{
 \tabular{ll}{
 Package: \tab BIOMOD\cr
 Type: \tab Package\cr
-Version: \tab 1.1-4\cr
-Date: \tab 2010-03-25\cr
+Version: \tab 1.1-5\cr
+Date: \tab 2010-05-04\cr
 License: \tab GPL-2 \cr
 }
 

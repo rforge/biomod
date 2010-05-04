@@ -17,7 +17,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
     if(Model == 'CTA') { cat("Model=Classification tree \n") ; cat("\t", CV.tree, "Fold Cross-Validation \n") }    
     if(Model == 'ANN') { cat("Model=Artificial Neural Network \n") ; cat("\t", CV.ann, "Fold Cross Validation + 3 Repetitions \n") ; cat("Calibration and evaluation phase: Nb of cross-validations: ", ncol(Ids), "\n") }
     if(Model == 'SRE') cat("Model=Surface Range Envelop \n")  
-    if(Model == 'FDA') { cat("Model=Mixture Discriminant Analysis \n") ; library(reshape) }
+    if(Model == 'FDA') cat("Model=Mixture Discriminant Analysis \n")
     if(Model == 'MARS') cat("Model=Multiple Adaptive Regression Splines \n")
     if(Model == 'RF') cat("Model=Breiman and Cutler's random forests for classification and regression \n")
     
@@ -31,11 +31,10 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
     if(Kappa) Kappa.train <- 0
     if(TSS) TSS.train <- 0
 
-
 	  SpNames <- Biomod.material$species.names
 	  NbVar <- Biomod.material$NbVar
 	  ErrorCounter <- 0 # Variable counting the number of models that fail in the "repetitions loop"
-	  if(Model == 'GBM') GBM.list <- list()
+    if(Model == 'GBM') GBM.list <- list()	  
 	  
     #################################
 	  #model loop for repetitions + final model
@@ -129,12 +128,15 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
         if(Model == 'SRE') g.pred <- data.frame(as.integer(as.numeric(sre(eval(parse(text=paste("DataBIOMOD[calib.lines,]$",paste(SpNames[i]), collapse=""))), DataBIOMOD[calib.lines,1:NbVar],DataBIOMOD[PA.samp,], quant)) *1000))
 
         
+        
         #Building a Rescaling glm
         if(any(c("ANN", "FDA", "MARS")== Model)) g.pred <- data.frame(as.integer(Rescaler4(as.numeric(TempArray), ref=DataBIOMOD[PA.samp,NbVar+i], run=paste(SpNames[i], "_", Model ,"_", nam, sep=""), original=T) *1000))
         
-        
         #compute the evaluation stats if a repetition run
-        if(!exists("g.pred")) ErrorCounter <- ErrorCounter+1 # If the current evaluation run failed, we record this failure by increasing the counter by 1
+        if(!exists("g.pred")){
+            ErrorCounter <- ErrorCounter+1 # If the current evaluation run failed, we record this failure by increasing the counter by 1
+            BM[["calibration.failures"]] <- c(BM[["calibration.failures"]], paste(SpNames[i], "_", Model, "_", nam, sep=""))
+        }
         if(exists("g.pred")){  # The evaluation can only run if the current evaluation run did not fail 
         
             if(k != (ncol(Ids)+1)){
@@ -165,6 +167,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
                 }
             }
             
+            
             #saving the evaluation stats for the repetition models  
             if(k != (ncol(Ids)+1)){
                 if(Roc && Model != 'SRE') Evaluation.results.Roc[[paste(SpNames[i], "_", nam, sep="")]][Model,] <- c(round(auc.stat, digits=3), 'none', round(somers2(g.pred[,], DataBIOMOD[PA.samp, NbVar+i])["C"], digits=3), round(CutOff.Optimised(DataBIOMOD[PA.samp, NbVar+i], g.pred[,]), digits=3))  
@@ -184,13 +187,11 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
         
         } #if model did not fail
     } #nbruns k loop
-    
-    # If one or more of the evaluation runs failed, we report failure to user. This message is important.
-    if(ErrorCounter>0) cat("IMPORTANT WARNING: Model calibration for", Model, " Evaluation failed", ErrorCounter, "times out of", ncol(Ids), "repetitions. This might indicate serious problem in your data.", "\n")
-    
+        
     
     
     assign("Array", Array, pos=1)
+    assign("BM", BM, pos=1)
     if(Model == 'GBM') assign("GBM.list", GBM.list, pos=1)
     
     #mean evaluations from the calibration
@@ -263,4 +264,5 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
     }
     	
   	if(exists("DataEvalBIOMOD") && KeepPredIndependent) assign("predind", predind, pos=1)
+  	assign("Biomod.material", Biomod.material, pos=1)
 }

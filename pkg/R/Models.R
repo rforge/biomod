@@ -21,6 +21,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model (DataSplit<50) \n Make sure you really wanted to do that. \n") 
     if(quant>=0.5 | quant<0) stop("\n settings in 'quant' should be a value between 0 and 0.5 ")  
       
+      
     #Check that the weight matrix was entered correctly with the pseudo.abs option
     if(NbRepPA==0){
        if(!is.null(Yweights)){
@@ -50,6 +51,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     Biomod.material[["evaluation.choice"]] <- c(Roc=Roc, Kappa=Kappa, TSS=TSS)
     Biomod.material[["NbRunEval"]] <- NbRunEval
     Biomod.material[["NbRepPA"]] <- NbRepPA
+    Biomod.material[["calibration.failures"]] <- NA
+    assign("BM", Biomod.material, pos=1)
     assign("Biomod.material", Biomod.material, pos=1)
  
  
@@ -75,7 +78,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     }
     if(DataSplit==100) NbRunEval <- 0   
             
-    #create list to store best.iter for GBM   
+    #create list to store best.iter for GBM (needed for projection -> n.trees argument)  
     if(GBM){ GBM.perf <- list() ; GBMP <- c() }
     
     #create matrix to store variable importance results
@@ -103,15 +106,16 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     g <- vector('list',length(reps))
     gnames <- rep(NA, length(g))
     for(i in 1:length(g)) if(reps[i]!="") gnames[i] <- paste(sp[i],"_", PAs[i], "_", reps[i], sep="") else gnames[i] <- paste(sp[i],"_", PAs[i], sep="")
-                      
     for(i in 1:length(g)) g[[i]] <- data.frame(matrix(NA, nrow=sum(Biomod.material$algo.choice), ncol=6, dimnames=list(Biomod.material$algo[Biomod.material$algo.choice], c('Cross.validation','indepdt.data','total.score','Cutoff','Sensitivity','Specificity'))))
     names(g) <- gnames
     if(Roc) assign("Evaluation.results.Roc", g, pos=1) else assign("Evaluation.results.Roc", NA, pos=1)
     if(Kappa) assign("Evaluation.results.Kappa", g, pos=1) else assign("Evaluation.results.Kappa", NA, pos=1)
     if(TSS) assign("Evaluation.results.TSS", g, pos=1) else assign("Evaluation.results.TSS", NA, pos=1)
+    
 
 
-    if(NbRepPA==0) NbRepPA.pos <- 1 else NbRepPA.pos=NbRepPA
+    #modelling summary to be writen in console
+    if(NbRepPA==0) NbRepPA.pos <- 1 else NbRepPA.pos=NbRepPA  #need to be given for calculation of total number of runs (bottom)
     cat(paste(
     "\n----------------------------------- \n",
     "Modelling summary \n",
@@ -130,7 +134,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     sep=""))
 
 
-    #start species loop
+
+    #-----------------start species loop-------------------#
     i <- 1
     while(i <= Biomod.material$NbSpecies) {
         cat("#####\t\t\t", Biomod.material$species.names[i], "\t\t\t#####\n")
@@ -178,11 +183,16 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         
         if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- list()
 
+
+
+
+
         for(pa in 1:NbRepPA.pos){
             assign("pa", pa, pos=1)
-            if(NbRepPA != 0) cat("#####\t\t   pseudo-absence run", pa, "       \t\t#####\n")           
+            if(NbRepPA != 0) cat("#####\t\t   pseudo-absence run", pa, "       \t\t#####\n")               
                 
             #defining the data (as lines to take from DataBIOMOD) to be used for calibration
+            #to constitute the data for that PA run
             if(NbRepPA == 0) PA.samp <- 1:nrow(DataBIOMOD)
             else {
                 absamp <- sort(sample((nbpres+1):length(Biomod.PA.data[[i]]), nb.absences.pos))
@@ -194,17 +204,18 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             #defining the Ids to be selected for the evaluation runs
             if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- sort(SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration)
                    
+            #Run Biomod.models       
             for(a in Biomod.material$algo[Biomod.material$algo.choice]){
-                
                   Biomod.Models(a, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, NbRunEval, Spline, DataSplit,
                             Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
-                            
                   if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,1,pa] <- predind
                    
             }
-            if(GBM) GBMP <- c(GBMP, GBM.list) 
-               
+            if(GBM) GBMP <- c(GBMP, GBM.list)  #add info from each PA to preexisting list (total=one species)
         }
+        
+        
+        
         
         #save the prediction for that species
         assign(paste("Pred_", Biomod.material$species.names[i], sep=""), Array)
@@ -216,9 +227,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         }
         
         #store the total number of models produced for that species. It will be used by Projection()
-        if(NbRepPA!=0) Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]*dim(ARRAY)[4] else Biomod.material[["NbRun"]][i] <- dim(ARRAY)[3]
+        if(NbRepPA!=0) BM[["NbRun"]][i] <- dim(ARRAY)[3]*dim(ARRAY)[4] else BM[["NbRun"]][i] <- dim(ARRAY)[3]
   
-        if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- GBMP  
+        if(GBM) GBM.perf[[BM$species.names[i]]] <- GBMP  
   
         i <- i + 1
     }
@@ -227,7 +238,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     rm(i, pa, Array, calib.lines, pos=1)
     if(exists("DataEvalBIOMOD") && KeepPredIndependent) rm(predind, pos=1)
 
-    assign("Biomod.material", Biomod.material, pos=1)
+    if(length(BM[["calibration.failures"]]) > 1) BM[["calibration.failures"]] <- BM[["calibration.failures"]][-1] 
+    assign("Biomod.material", BM, pos=1)
     if(GBM) assign("GBM.perf", GBM.perf, pos=1)
     if(NbRepPA != 0) assign('Biomod.PA.sample', Biomod.PA.sample, pos=1)
     
@@ -238,5 +250,10 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     savehistory(paste(filename, ".Rhistory", sep=""))
     
     #Final notice, runs are finished
-    cat("\n\n--------- \n completed \n\n\n")      
+    cat("\n\n--------- \n completed \n\n\n")  
+    
+    # If one or more of the evaluation runs failed, we report failure to user. This message is important.
+    if(!is.na(BM$calibration.failures[1])) cat(paste("WARNING: the following repetition models failed : \n", BM$calibration.failures, "\n This might indicate serious problem in your data. \n\n", sep=""))
+    rm(BM)
+        
 }

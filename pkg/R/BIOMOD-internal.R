@@ -1,3 +1,3 @@
 `.required` <-
-c("gam", "reshape", "randomForest", "mda", "gbm", "MASS", "Design", 
-"Hmisc", "rpart", "nnet")
+c("gam", "randomForest", "mda", "gbm", "MASS", "Design", 
+"Hmisc", "rpart", "nnet", "foreign","sp","rgdal","raster","maptools" )

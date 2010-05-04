@@ -38,10 +38,13 @@ Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE,
  with the default value of 1.6 and 4 weights wanted, the relative importance of the weights will be 1 /1.6/2.56(=1.6*1.6)/4.096(=2.56*1.6)
  from the weakest to the strongest, and gives 0.11/0.17/0.275/0.445  considering that the sum of the weights is equal to one. The lowest the decay, the smoother the differences
  between the weights enhancing a weak discrimination between models (please read the BIOMOD manual for some examples).
- If the decay value is set to 'proportional' then the weights for each method as proportional to the chosen weight.method. If the weight method is 'TSS' or 'Kappa', the weights are simply the respective TSS and Kappa values obtained from the evaluation of each method. If the weight.method is 'Roc', then the weights are equal to the Roc value (i.e. AUC) but rescaled in the interval [0:1] rather than the original [0.5:1]
+ 
+ The value 'proportional' is also possible for the decay : the weights are awarded for each method proportionaly to their evaluation scores. The advantage
+ is that the discrimination is more fair than with the decay. In the latter case, close scores can strongly diverge in the weights they are awarded, when the
+ proportional method will consider them as being fairly similar in prediction quality and award them a similar weight. 
+
 }
 \value{ 
-
   Some objects are stored directly on the hard disk in the same directory as for the projections.
 
   A list is returned, named after the Proj.name argument (see examples). It contains the details of the ensemble forecast process for every species modelled and
@@ -52,8 +55,7 @@ Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE,
   (using the Roc evaluation method). If binary=T, the second column gives the threshold obtained by each method for converting the probabilities into presence-absence predictions
   (see the manual for more details).}
   \item{weights}{ contains the weights awarded to each model selected for the ensemble forecasts (only concerns the weighted.mean).}
-  \item{PCA.median} defines the model selected by the median PCA consensus approach. Note that nothing else is produced in regards to this method.
-
+  \item{PCA.median}{ defines the model selected by the median PCA consensus approach. Note that nothing else is produced in regards to this method.}
 }
 
 \references{ 

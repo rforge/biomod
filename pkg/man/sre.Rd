@@ -7,7 +7,7 @@
   The SRE performs a simple analysis of within which range of each variable the data is recorded and renders predictions.
 }
 \usage{
-sre(Response = NULL, Explanatory = NULL, NewData = NULL, quants=0.05)
+sre(Response = NULL, Explanatory = NULL, NewData = NULL, Quant=0.025)
 }
 
 \arguments{
@@ -16,7 +16,7 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, quants=0.05)
    have as many rows as there are elements in Response. }
   \item{NewData}{ The data for which you want to render predictions with the sre. It must be a matrix of the same type as
    the one given in Explanatory and with precisely the same variable names. }
-  \item{quants}{ the value defines the most extreme values for each variable not to be taken into account
+  \item{Quant}{ the value defines the most extreme values for each variable not to be taken into account
    for determining the tolerance boundaries for the considered species.  }
 }
 \details{
@@ -47,8 +47,8 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, quants=0.05)
 data(Sp.Env)
 
 g <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8])
-gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], quants=0.025)
-ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], quants=0.05)
+gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Quant=0.025)
+ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Quant=0.05)
 
 
 par(mfrow=c(1,4))

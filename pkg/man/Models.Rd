@@ -8,7 +8,7 @@
   performance of the models produced. 
 }
 \usage{
-Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 2000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = FALSE, CV.ann = 5, SRE = FALSE, quants=0.05, FDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights = NULL, VarImport = 0, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE)
+Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 5000, GAM = FALSE, Spline = 3, CTA = FALSE, CV.tree = 50, ANN = FALSE, CV.ann = 5, SRE = FALSE, quant=0.025, FDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 1, DataSplit = 100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights = NULL, VarImport = 0, Roc = FALSE, Optimized.Threshold.Roc = FALSE, Kappa = FALSE, TSS = FALSE, KeepPredIndependent = FALSE)
 }
 
 \arguments{
@@ -24,7 +24,7 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 20
   \item{ANN}{ type True to run the Artificial Neural Network, or False to switch it off }
   \item{CV.ann}{ number of cross validation for the ANN }
   \item{SRE}{ type True to run the Surface Range Envelope, or False to switch it off }
-  \item{quants}{ the value defines the extreme percentiles of the response data not to be used by the SRE for calibration (see \code{\link{SRE}} for more details) }
+  \item{quant}{ the value defines the extreme percentiles of the response data not to be used by the SRE for calibration (see \code{\link{sre}} for more details) }
   \item{FDA}{ type True to run the Mixture Discriminant Analysis, or False to switch it off  }
   \item{MARS}{ type True to run the Multiple Adaptive Regression Splines, or False to switch it off }
   \item{RF}{ type True to run the Random Forest, or False to switch it off }

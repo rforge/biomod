@@ -7,7 +7,7 @@
 species or land-use classes for other areas, other resolutions or other time scales.
 }
 \usage{
-Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, quants=0.05, FDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
+Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, quant=0.025, FDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
 }
 
 \arguments{
@@ -21,7 +21,7 @@ Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRU
   \item{CTA}{ if TRUE, the model will be used to render projections }
   \item{ANN}{ if TRUE, the model will be used to render projections }
   \item{SRE}{ if TRUE, the model will be used to render projections }
-  \item{quants}{ the value defines the extreme percentiles of the response data not to be used by the SRE for calibration (see \code{\link{SRE}} for more details) }
+  \item{quant}{ the value defines the extreme percentiles of the response data not to be used by the SRE for calibration (see \code{\link{sre}} for more details) }
   \item{FDA}{ if TRUE, the model will be used to render projections }
   \item{MARS}{ if TRUE, the model will be used to render projections }
   \item{RF}{ if TRUE, the model will be used to render projections } 

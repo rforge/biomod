@@ -11,7 +11,7 @@ Rescaler4(dataToRescale, ref=NULL, run, original=FALSE)
 }
 
 \arguments{
-  \item{DataToRescale}{ }
+  \item{dataToRescale}{ }
   \item{ref}{ }
   \item{run}{ }
   \item{original}{ }

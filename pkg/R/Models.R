@@ -247,7 +247,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     #save the history and workspace
     if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
     save.image(paste(filename, ".RData", sep=""))
-    savehistory(paste(filename, ".Rhistory", sep=""))
+   # savehistory(paste(filename, ".Rhistory", sep=""))
     
     #Final notice, runs are finished
     cat("\n\n--------- \n completed \n\n\n")  

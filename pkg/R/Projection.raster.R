@@ -143,7 +143,7 @@ repetition.models=TRUE, stack.out=TRUE)
                                 Thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", evals[ET], "[[i]][a,4]", sep=""))))   #get the threshold for that proj (defined by 'trans')
                                 gg <- g                                                                                                  #order between 'evals' and 'trans' is important
                                 gg[g<Thresh] <- 0
-                                if(ET<4) gg[g>Thresh] <- 1                                                                              #transforming values over threshold to 1 if we want binary data only
+                                if(ET<4) gg[g>=Thresh] <- 1                                                                              #transforming values over threshold to 1 if we want binary data only
                                         
                                 nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", run.name2, "_", a, ".raster", sep="")
                                 assign(nam, gg)                                                                                         #assign the data to the name wanted
@@ -177,7 +177,7 @@ repetition.models=TRUE, stack.out=TRUE)
                                     
                                     for(NB in 1:(jj*Nrep)){    
                                         gg@layers[[NB]][pile.proj@layers[[NB]] < Thresh[NB]] <- 0                                       #set values lower than threshold to 0
-                                        if(ET<4) gg@layers[[NB]][pile.proj@layers[[NB]] > Thresh[NB]] <- 1                              #transforming values over threshold to 1 if we want binary
+                                        if(ET<4) gg@layers[[NB]][pile.proj@layers[[NB]] >= Thresh[NB]] <- 1                              #transforming values over threshold to 1 if we want binary
                                     }
                                             
                                     nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", a, ".raster", sep="")
@@ -209,5 +209,10 @@ repetition.models=TRUE, stack.out=TRUE)
         
         i <- i+1
     }  #while species 'i' loop
+    
+    #save the history and workspace
+    if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
+    save.image(paste(filename, ".RData", sep=""))
+
 }
                        

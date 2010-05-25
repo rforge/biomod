@@ -1,5 +1,5 @@
 `Ensemble.Forecasting` <-
-function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE)
+function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0)
 {
     #Verify user input is correct
     Th <- c('Roc', 'Kappa', 'TSS')
@@ -57,7 +57,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             out[["weights"]]    <- matrix(NA, nr=nbrep*NbPA, nc=9, dimnames=list(rep("rep", nbrep*NbPA), Biomod.material$algo))
             out[["PCA.median"]] <- matrix(NA, nr=nbrep*NbPA, nc=1, dimnames=list(rep("rep", nbrep*NbPA), "model.selected"))
             out[["thresholds"]] <- matrix(NA, nr=6, nc=nbrep*NbPA, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'), rep("rep", nbrep*NbPA)))
-            
                       
             
             
@@ -78,116 +77,130 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     #adding species name after check of model fails for convenience
                     nam <- paste(Biomod.material$species.names[i], nam, sep="_")
 
+                    #set models to false if under the quality threshold
+                    if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
+                    for(a in Biomod.material$algo) if(RUNens.choice[a]) if(as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) < qual.th) RUNens.choice[a] <- F  #Weights are based on the Cross-validated evaluation values.                       
+        
 
-                    if(sum(RUNens.choice)>1){                                                              #if more than 1 model is wanted for ensemble forecating
 
-                        #defining the data to use as a 2d matrix
-                        cons.data <- sp.data[,RUNens.choice,k,j]
-
-                        #-------- Mean and Median ensemble forecasting ---------#
-                        ARRAY[, (j-1)*nbrep+k, 'prob.mean'] <- apply(cons.data, 1, mean)
-                        ARRAY[, (j-1)*nbrep+k, 'median']    <- apply(cons.data, 1, median)
-
-                        #-------- binary results means ensemble forecating ---------#                   #mean of the binary projections accross all selected techniques
-                        for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
-                            #create a vector to accumulate the binary prediction for each model successively 
-                            kdata <- rep(0, dim(sp.data)[1])
-                            for(kk in Biomod.material$algo[RUNens.choice]) if(kk!='SRE') kdata <- kdata + BinaryTransformation(cons.data[,kk], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4]))
+ 
+                 
+                    #If all models are set to false, skip to next rep
+                    if(sum(RUNens.choice)!=0){   
     
-                            if(RUNens.choice['SRE']) kdata <- kdata + cons.data[,'SRE']/1000  #because SRE already in binary
-                            ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- kdata / sum(RUNens.choice) *1000   
-                        }}
-                        
-                        
-                        #---------- Weighted Average Ensemble Forecasting --------# 
-                        #This is like a mean accross all selected methods but with a weight associated to each technique depending on its score during evaluation
-                        #Recover the weights (depending on the chosen "weight.method" from the "Evaluation.results.weightMethod" object)
-                        wk <- p.choice
-                        if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
-                        for(a in Biomod.material$algo) if(RUNens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) else wk[a] <- NA  # Weights are based on the Cross-validated evaluation values.
-                        if(weight.method=='Roc') wk['SRE'] <- 0
-                        #deal with cases where scores only=0, or rep model failed
-                        if(sum(wk!=0, na.rm=T)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value >0  -> those models will be used and not set to NA by next line
-                        wk[wk==0] <- NA
-
-                        # Calculate and attribute Weights to each modelling techniques
-                        if(decay=="proportional"){                                                            # proportional: the weights are proportional to the chosen evaluation value
-                            wk[is.na(wk)] <- 0
-                            if(weight.method=='Roc') wk[wk!=0] <- (wk[wk!=0]-0.5)*2
-                            W <- wk/sum(wk)
-                        }
-                        if(is.numeric(decay)){                                                            # weights are "decay" times decreased for each subsequent model in model quality order.                            
-                            if(sum(is.na(wk))<8){
-                                z <-rep(1,sum(!is.na(wk)))
-                                for(wj in 2:sum(!is.na(wk))) z[wj] <- z[wj-1]*decay
-                                z <- c(rep(0,(length(wk)-sum(!is.na(wk)))), z/sum(z))
-                                
-                                #determine which weight for which model
-                                wk[is.na(wk)] <- 0
-                                W <- rep(0,9)
-                                for(m in 1:9) {
-                                  	if(sum(wk[m]==wk)!=1){ #if 2 or more score are identical -> make a mean weight between the ones concerned
-                                  		  if(!is.na(wk[m])){
-                                  		      for(nbm in 1:sum(wk[m]==wk)) W[m] <- W[m] + z[sum(wk[m]>wk)+nbm]
-                                  		    	W[m] <- W[m] / sum(wk[m]==wk) 
-                                  		  }
-                                  	} else W[m] <- z[sum(wk[m]>wk)+1]
-                                }
-                            } else if(sum(is.na(wk))==8) { wk <- is.na(wk) ; wk[T] <- 1 }
-                        }                        
-                        
-                        
-                        #applying weights to projections
-                        ARRAY[, (j-1)*nbrep+k, 'prob.mean.weighted'] <- apply((cons.data*rep(W[RUNens.choice], each=dim(sp.data)[1])), 1, sum)
-                        
-                        #calculating the weighted threshold to convert the weighted probabilities to binary and/or filtered values     
-                        thmi <- thpondi <- c()
-                        for(a in Biomod.material$algo[RUNens.choice]) {
-                            thmi    <- c(thmi,    eval(parse(text=paste("Evaluation.results.", bin.method, sep="")))[[nam]][a,4])
-                            thpondi <- c(thpondi, eval(parse(text=paste("Evaluation.results.", weight.method, sep="")))[[nam]][a,4])
-                        }
-                        ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=T))
-                        thpondi[is.na(thpondi)] <- 0
-                        ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[RUNens.choice]))   
-                        #-----------------------end weights------------------------#
-                            
-                        #determine the model selected by the PCA consensus approach
-                        if(PCA.median){
-                            if(sum(search()=="package:ade4")==0) library(ade4)  
-                              
-                            cons <- dudi.pca(cons.data, scale=T, scannf = F, nf=2)
-                            pca.select <- colnames(cons.data)[which.min(abs(cons$co[,2]))]
-                            #x11() #plotting the pca 
-                            #s.corcircle(cons$co, lab = colnames(sp.data[,RUNens.choice]), full = FALSE, box = F, sub=Biomod.material$species.names[i])
-                        }    
-                    
-                        #store the information for each run
-                        out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=T), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
-                        out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)
-                        if(PCA.median) out[["PCA.median"]][(j-1)*nbrep+k, ] <- pca.select
-                                              
-                        
-                        
-                    } else {                                                                              #only one model is available
-                        if(Biomod.material$algo[RUNens.choice] != 'SRE'){
-                            ARRAY[, (j-1)*nbrep+k, 1:3]  <- sp.data[,RUNens.choice,k,j]   
-                            
-                            #binary values
+                        if(sum(RUNens.choice)>1){                                                              #if more than 1 model is wanted for ensemble forecating
+    
+                            #defining the data to use as a 2d matrix
+                            cons.data <- sp.data[,RUNens.choice,k,j]
+    
+                            #-------- Mean and Median ensemble forecasting ---------#
+                            ARRAY[, (j-1)*nbrep+k, 'prob.mean'] <- apply(cons.data, 1, mean)
+                            ARRAY[, (j-1)*nbrep+k, 'median']    <- apply(cons.data, 1, median)
+    
+                            #-------- binary results means ensemble forecating ---------#                   #mean of the binary projections accross all selected techniques
                             for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
-                                thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][Biomod.material$algo[RUNens.choice],4])
-                                ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- BinaryTransformation(sp.data[,RUNens.choice,k,j], thresh) * 1000    
-                            
-                                #store thresholds
-                                if(Th[[jj]] == weight.method){
-                                    ths[[1]] <- c(ths[[1]], thresh)
-                                    ths[[2]] <- c(ths[[2]], thresh)
-                                }
+                                #create a vector to accumulate the binary prediction for each model successively 
+                                kdata <- rep(0, dim(sp.data)[1])
+                                for(kk in Biomod.material$algo[RUNens.choice]) if(kk!='SRE') kdata <- kdata + BinaryTransformation(cons.data[,kk], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4]))
+        
+                                if(RUNens.choice['SRE']) kdata <- kdata + cons.data[,'SRE']/1000  #because SRE already in binary
+                                ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- kdata / sum(RUNens.choice) *1000   
                             }}
-                        } else  ARRAY[, (j-1)*nbrep+k, 1:6]  <- sp.data[,RUNens.choice,k,j]
+                            
+                            
+                            #---------- Weighted Average Ensemble Forecasting --------# 
+                            #This is like a mean accross all selected methods but with a weight associated to each technique depending on its score during evaluation
+                            #Recover the weights (depending on the chosen "weight.method" from the "Evaluation.results.weightMethod" object)
+                            wk <- ens.choice
+                            if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
+                            for(a in Biomod.material$algo) if(RUNens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) else wk[a] <- NA  # Weights are based on the Cross-validated evaluation values.
+                            if(weight.method=='Roc') wk['SRE'] <- NA
+                            #deal with cases where scores only=0, or rep model failed
+                            if(sum(wk!=0, na.rm=T)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value > 0  -> those models will be used and not set to NA by next line
+                            wk[wk==0] <- NA
+    
+                            # Calculate and attribute Weights to each modelling techniques
+                            if(decay=="proportional"){                                                            # proportional: the weights are proportional to the chosen evaluation value
+                                wk[is.na(wk)] <- 0
+                                if(weight.method=='Roc') wk[wk!=0] <- (wk[wk!=0]-0.5)*2
+                                W <- wk/sum(wk)
+                            }
+                            if(is.numeric(decay)){                                                            # weights are "decay" times decreased for each subsequent model in model quality order.                            
+                                if(sum(is.na(wk))<8){
+                                    z <-rep(1,sum(!is.na(wk)))
+                                    for(wj in 2:sum(!is.na(wk))) z[wj] <- z[wj-1]*decay
+                                    z <- c(rep(0,(length(wk)-sum(!is.na(wk)))), z/sum(z))
+                                    
+                                    #determine which weight for which model
+                                    wk[is.na(wk)] <- 0
+                                    W <- rep(0,9)
+                                    for(m in 1:9) {
+                                      	if(sum(wk[m]==wk)!=1){ #if 2 or more score are identical -> make a mean weight between the ones concerned
+                                      		  if(!is.na(wk[m])){
+                                      		      for(nbm in 1:sum(wk[m]==wk)) W[m] <- W[m] + z[sum(wk[m]>wk)+nbm]
+                                      		    	W[m] <- W[m] / sum(wk[m]==wk) 
+                                      		  }
+                                      	} else W[m] <- z[sum(wk[m]>wk)+1]
+                                    }
+                                } else if(sum(is.na(wk))==8) { wk <- is.na(wk) ; wk[T] <- 1 }
+                            }                        
+                            
+                            
+                            #applying weights to projections
+                            ARRAY[, (j-1)*nbrep+k, 'prob.mean.weighted'] <- apply((cons.data*rep(W[RUNens.choice], each=dim(sp.data)[1])), 1, sum)
+                            
+                            #calculating the weighted threshold to convert the weighted probabilities to binary and/or filtered values     
+                            thmi <- thpondi <- c()
+                            for(a in Biomod.material$algo[RUNens.choice]) {
+                                thmi    <- c(thmi,    eval(parse(text=paste("Evaluation.results.", bin.method, sep="")))[[nam]][a,4])
+                                thpondi <- c(thpondi, eval(parse(text=paste("Evaluation.results.", weight.method, sep="")))[[nam]][a,4])
+                            }
+                            ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=T))
+                            thpondi[is.na(thpondi)] <- 0
+                            ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[RUNens.choice]))   
+                            #-----------------------end weights------------------------#
+                                
+                            #determine the model selected by the PCA consensus approach
+                            if(PCA.median){
+                                if(sum(search()=="package:ade4")==0) library(ade4)  
+                                  
+                                cons <- dudi.pca(cons.data, scale=T, scannf = F, nf=2)
+                                pca.select <- colnames(cons.data)[which.min(abs(cons$co[,2]))]
+                                #x11() #plotting the pca 
+                                #s.corcircle(cons$co, lab = colnames(sp.data[,RUNens.choice]), full = FALSE, box = F, sub=Biomod.material$species.names[i])
+                            }    
                         
-                        out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][(j-1)*nbrep+k], ths[[1]][(j-1)*nbrep+k],NA,500,500,500)
-                    }
+                            #store the information for each run
+                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=T), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
+                            out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)
+                            if(PCA.median) out[["PCA.median"]][(j-1)*nbrep+k, ] <- pca.select
+                                                  
+                            
+                            
+                        } else {                                                                              #only one model is available
+                            if(Biomod.material$algo[RUNens.choice] != 'SRE'){
+                                ARRAY[, (j-1)*nbrep+k, 1:3]  <- sp.data[,RUNens.choice,k,j]   
+                                
+                                #binary values
+                                for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
+                                    thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][Biomod.material$algo[RUNens.choice],4])
+                                    ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- BinaryTransformation(sp.data[,RUNens.choice,k,j], thresh) * 1000    
+                                
+                                    #store thresholds
+                                    if(Th[[jj]] == weight.method){
+                                        ths[[1]] <- c(ths[[1]], thresh)
+                                        ths[[2]] <- c(ths[[2]], thresh)
+                                    }
+                                }}
+                            } else  ARRAY[, (j-1)*nbrep+k, 1:6]  <- sp.data[,RUNens.choice,k,j]
+                            
+                            out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][(j-1)*nbrep+k], ths[[1]][(j-1)*nbrep+k],NA,500,500,500)
+                            out[["weights"]][(j-1)*nbrep+k, ] <- rep(0,9) ; out[["weights"]][(j-1)*nbrep+k, RUNens.choice] <- 1
+                        }
                     
+                    } else{                                                                                   #if RUNens.choice==0 -> count it for no bin conversion (else bin conv = fail)                                                                    
+                        ths[[1]] <- c(ths[[1]], NA) ; ths[[2]] <- c(ths[[2]], NA) }
+                                                            
                 } #Evaluation replicates k loop        
             } #PAs replicates j loop
             
@@ -196,13 +209,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             ths[[4]] <- ths[[5]] <- ths[[6]] <- rep(500, nbrep*NbPA) 
 
             rownames(out[["weights"]]) <- colnames(out[["thresholds"]]) <- rownames(out[["PCA.median"]]) <-dimnames(ARRAY)[[2]]
-            if(sum(RUNens.choice) <= 1) out[["weights"]] <- out[["PCA.median"]] <- NA
             list.out[[i]] <- out 
 
+            EnsRun <- !is.na(ths[[1]])
 
-
-
-
+            assign("ARRAY", ARRAY, pos=1)
+            assign("ths", ths, pos=1)
 
             #----------------------If normal ensFor run or Test run-------------------------#
             if(ii==1){ #normal ensFor run --> saving on disk, transform in binary, total consensus
@@ -212,14 +224,15 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 
                 # if binary=T, then we transform the ensemble forecasting values into binary ones
                 if(binary){
-                    for(j in c(1,2,4,5,6)){                                                                                                   #no conversuion for 3 -> median = no associated threshold
-                        if(j<4){ARRAY.bin[,,j] <- BinaryTransformation(ARRAY[,,j], ths[[j]]) 
-                        } else if(Biomod.material$evaluation.choice[Th[j-3]]) ARRAY.bin[,,j] <- BinaryTransformation(ARRAY[,,j], ths[[j]])    #to check if method was chosen
+                    for(j in c(1,2,4,5,6)){                                                                                                               #no conversuion for 3 -> median = no associated threshold
+                        if(j<4){ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun]) 
+                        } else if(Biomod.material$evaluation.choice[Th[j-3]]) ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun])    #to check if method was chosen
                     }
                     assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin", sep=""), ARRAY.bin) 
                     eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin')", sep="")))
                 }
 
+                
                 #Final consensus on all data available (average across all Evaluation Replicates and All PAs replicates)
                 if(dim(ARRAY)[2] != 1){                                                                                                       
                     
@@ -232,11 +245,15 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             TotalModels[FinMod] <- F
                         }
                     }                            
+                    TotalModels[!EnsRun] <- F
+
                     
+                    #calculate total consensus for first 3 methods
                     ARRAY.tot[, i, 'prob.mean'] <-          apply(ARRAY[,TotalModels,1], 1, mean)
                     ARRAY.tot[, i, 'prob.mean.weighted'] <- apply(ARRAY[,TotalModels,2], 1, mean)
                     ARRAY.tot[, i, 'median'] <-             apply(ARRAY[,TotalModels,3], 1, median)
 
+                    #convert those first 3 methods final consensus in binary
                     ARRAY.tot.bin[, i, 'prob.mean'] <-          BinaryTransformation(ARRAY.tot[, i, 'prob.mean'], mean(ths[[1]][TotalModels]))
                     ARRAY.tot.bin[, i, 'prob.mean.weighted'] <- BinaryTransformation(ARRAY.tot[, i, 'prob.mean.weighted'], mean(ths[[2]][TotalModels]))
                     ARRAY.tot.bin[, i, 'median'] <-             BinaryTransformation(ARRAY.tot[, i, 'median'], mean(ths[[1]][TotalModels]))
@@ -254,7 +271,6 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                         ARRAY.tot[, i, 'TSS.mean'] <- apply(ARRAY[,TotalModels,6], 1, mean) 
                         ARRAY.tot.bin[, i, 'TSS.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'TSS.mean'], 500)
                     }
-                 
                 } else { #if only one run was done there is no further calculation possible
                  
                     ARRAY.tot[,i,] <- ARRAY[,1,]
@@ -266,12 +282,10 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             }#if ii==1             
             
             
-            
-            
             if(ii==2){ # Test run : consensus methods done on current data
                 #test the methods with AUC
                 test <- matrix(nc=nbrep*NbPA, nr=6, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'),dimnames(ARRAY)[[2]]))
-
+                
                 for(j in 1:NbPA){
                     if(Biomod.material$NbRepPA != 0) lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
                     else lin <- 1:dim(ARRAY.tot)[1]

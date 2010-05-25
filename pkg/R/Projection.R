@@ -170,4 +170,9 @@ repetition.models=TRUE)
         gc(reset=T)       
         i <- i+1
     }  #while species 'i' loop
+    
+    #save the history and workspace
+    if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
+    save.image(paste(filename, ".RData", sep=""))
+    
 }

@@ -1,5 +1,5 @@
 \name{Biomod.Turnover}
-\alias{Biomod.Turnover}
+\alias{Biomod.Turnover, Biomod.Turnover.raster}
 
 \title{ Estimation of the Turnover for a given location and resolution}
 \description{
@@ -8,19 +8,20 @@
 }
 \usage{
 Biomod.Turnover(CurrentPred = NULL, FutureProj = NULL, Turnover.Save = NULL)
+Biomod.Turnover.raster(CurrentPred = NULL, FutureProj = NULL, Turnover.Save = NULL)
 }
 
 \arguments{
-  \item{CurrentPred}{ a matrix of n (number of species) columns giving the current state of the species in binary  }
-  \item{FutureProj}{ a matrix of n (number of species) columns giving the future predictions of the species in binary }
+  \item{CurrentPred}{ a matrix of n (number of species) columns OR a rasterstack giving the current state of the species in binary  }
+  \item{FutureProj}{ a matrix of n (number of species) columns OR a rasterstack giving the future predictions of the species in binary }
   \item{Turnover.Save}{ the name given to the new object storing the results }
 }
 \details{
   
 }
 \value{
-  A 10 columns database is created (and saved under the name you gave it).
-The first four columns are relative numbers: 
+  A 10 columns database or a 10 layers rasterstack is created (and saved under the name you gave it).
+The first four are relative numbers: 
 - Disa represents the number of species predicted to disappear from the given pixel. 
 - Stable0 is the number of species which are currently not in the given pixel and not predicted to migrate into it. 
 - Stable1 represents the number of species currently occurring in the given pixel, and predicted to remains into the future. 

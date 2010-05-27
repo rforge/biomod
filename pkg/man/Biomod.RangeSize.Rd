@@ -1,5 +1,5 @@
 \name{Biomod.RangeSize}
-\alias{Biomod.RangeSize}
+\alias{Biomod.RangeSize, Biomod.RangeSize.raster}
 
 \title{ Analysis of the range size changes }
 \description{
@@ -8,11 +8,12 @@ and stable for the time slice considered in species-climate modelling under futu
 }
 \usage{
 Biomod.RangeSize(CurrentPred = NULL, FutureProj = NULL, SpChange.Save = NULL)
+Biomod.RangeSize.raster(CurrentPred = NULL, FutureProj = NULL, SpChange.Save = NULL)
 }
 
 \arguments{
-  \item{CurrentPred}{ a matrix of n (number of species) columns giving the current state of the species in binary  }
-  \item{FutureProj}{ a matrix of n (number of species) columns giving the future projections of the species in binary according to a future scenario}
+  \item{CurrentPred}{ a matrix of n (number of species) columns OR a rasterstack giving the current state of the species in binary  }
+  \item{FutureProj}{ a matrix of n (number of species) columns OR a rasterstack giving the future projections of the species in binary according to a future scenario}
   \item{SpChange.Save}{ the name given to the new object storing the results }
 }
 \details{
@@ -20,7 +21,7 @@ Biomod.RangeSize(CurrentPred = NULL, FutureProj = NULL, SpChange.Save = NULL)
   for a different time slice (past or future) than for the current data.
 }
 \value{
-  A list of two datasets is created: Compt.By.Species and Diff.By.Pixel
+  A list of two datasets is created: Compt.By.Species and Diff.By.Pixel ; Diff.By.Pixel is in the form of a rasterstack in the raster version.
 
   \item{Compt.By.Species}{ stores the summary of range change for each species (sorted by rows).
   The first four columns are absolute values whereas the next 3 ones are relative values: 

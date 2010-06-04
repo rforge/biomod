@@ -35,7 +35,9 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
 	  NbVar <- Biomod.material$NbVar
 	  ErrorCounter <- 0 # Variable counting the number of models that fail in the "repetitions loop"
     if(Model == 'GBM') GBM.list <- list()	  
-	  
+    RunWeights <- Yweights[,i]                                                   #for weights recalculation setting prevalence to 0.5
+
+
     #################################
 	  #model loop for repetitions + final model
 	  
@@ -54,6 +56,17 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
               pred.lines <- PA.samp[-Ids[,k]]
         }
         
+    
+        #recalculating weights to set prevalence of 0.5 ONLY if Yweights was given by user -> multiply absences weights by ratio
+        #Has to be done after Ids is set because it defines which data is used for calibration
+        #if Yweights NULL  ->  Yweights[whatever.lines, i] = NULL  too
+        if(isnullYweights & Biomod.material$NbRepPA==0){} else{
+            PW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==1]])  ;  assign("PW", PW, pos=1)
+            AW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]])  ;  assign("AW", AW, pos=1)
+            RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] <- RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] * (PW/AW)     #PW/AW = ratio between presWeights and absWeights
+        }
+        
+      
         
         #necessary for the GAM, or else it doesn't read DataBIOMOD[calib.lines,] (not in the same environments)
         assign("calib.lines", calib.lines, pos=1)

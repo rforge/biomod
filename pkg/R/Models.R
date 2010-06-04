@@ -22,17 +22,18 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(quant>=0.5 | quant<0) stop("\n settings in 'quant' should be a value between 0 and 0.5 ")  
       
       
-    #Check that the weight matrix was entered correctly with the pseudo.abs option
-    if(NbRepPA==0){
-       if(!is.null(Yweights)){
-           if(is.null(dim(Yweights))) Yweights <- as.data.frame(Yweights)
-           if(ncol(Yweights) != Biomod.material$NbSpecies) stop("The number of 'Weight' columns does not match the number of species. Simulation cannot proceed.")
-           if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
-       }
-    } else Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
+    #Check that the weight matrix was entered correctly with the pseudo.abs options    
+    if(!is.null(Yweights)){
+       if(is.null(dim(Yweights))) Yweights <- as.data.frame(Yweights)
+       if(ncol(Yweights) != Biomod.material$NbSpecies) cat("\n Warning : Yweights and input data differ in length (nb columns). Check if this is wanted.")
+       if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
+    }
+    assign("isnullYweights", is.null(Yweights), pos=1)                                                                  #To keep track of Yweights state at origin (user's input)
+    if(NbRepPA!=0 && is.null(Yweights)) Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
+   
     
     #create the directories in which various objects will be stored (models, predictions and projection). The projection directories are created in the Projection() function.
-    dir.create(paste(getwd(), "/models", sep=""), showWarnings=F)
+    dir.create(paste(getwd(), "/models", sep=""), showWarnings=F)                   
     dir.create(paste(getwd(), "/pred", sep=""), showWarnings=F)
     if(any(MARS, FDA, ANN)) dir.create(paste(getwd(), "/models/rescaling_models", sep=""), showWarnings=F) 
   
@@ -135,6 +136,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
 
 
 
+
     #-----------------start species loop-------------------#
     i <- 1
     while(i <= Biomod.material$NbSpecies) {
@@ -157,17 +159,19 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
                 nb.absences.pos <- length(Biomod.PA.data[[i]]) - nbpres
             }  
         }          
-        
+              
+
         #defining the weights to be awarded for that species, considering the number of absences available.
         #we keep the same format as DataBIOMOD to make it easier to call the corresponding lines in Biomod.models. For that
         #reason, we award the same weight to all the absences even though it doesn't sum up to a 0.5 prevalence (but lower)
-        #it will give 0.5 when considering the number of absences, hence the lines taken for calibration.
-        if(NbRepPA != 0){
+        #it will give 0.5 when considering the number of absences, hence the lines taken for calibration. 
+        if(NbRepPA!=0 && isnullYweights){   
             Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==1),i] <- 1
-            Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==0),i] <- nbpres/nb.absences.pos
-        }            
+            Yweights[which(DataBIOMOD[,Biomod.material$NbVar+i]==0),i] <- nbpres/nb.absences.pos    
+        }    
+                
             
-        #constructing the storing array for the species considering NbRepPA.pos, NbRunEval, nb.absences.pos
+        #constructing the storing array for the species considering NbRepPA.pos(dim4), NbRunEval(dim3), nb.absences.pos(dim2)
         reps <- c()
         if(NbRunEval != 0) for(j in 1:NbRunEval) reps <- c(reps, paste("rep", j, sep="")) 
         PAs <- c()
@@ -180,29 +184,26 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
 
         assign("Array", ARRAY, pos=1)
         Ids <- data.frame(matrix(0, nrow=ceiling(ndata*(DataSplit/100)), ncol=NbRunEval))
-        
         if(GBM) GBM.perf[[Biomod.material$species.names[i]]] <- list()
-
-
-
-
+        
+        
 
         for(pa in 1:NbRepPA.pos){
             assign("pa", pa, pos=1)
             if(NbRepPA != 0) cat("#####\t\t   pseudo-absence run", pa, "       \t\t#####\n")               
+        
                 
             #defining the data (as lines to take from DataBIOMOD) to be used for calibration
             #to constitute the data for that PA run
-            if(NbRepPA == 0) PA.samp <- 1:nrow(DataBIOMOD)
-            else {
+            if(NbRepPA != 0){ 
                 absamp <- sort(sample((nbpres+1):length(Biomod.PA.data[[i]]), nb.absences.pos))
                 PA.samp <- sort(Biomod.PA.data[[i]][c(1:nbpres,absamp)])
-                
-                Biomod.PA.sample[[i]][[paste("PA", pa, sep="")]] <- PA.samp  #storing the lines selected for each PA run 
-            }        
+                Biomod.PA.sample[[i]][[paste("PA", pa, sep="")]] <- PA.samp  #storing the lines selected for each PA run   
+            } else PA.samp <- 1:nrow(DataBIOMOD) 
                 
             #defining the Ids to be selected for the evaluation runs
-            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- sort(SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration)
+            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- sort(SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration)      
+                   
                    
             #Run Biomod.models       
             for(a in Biomod.material$algo[Biomod.material$algo.choice]){
@@ -213,9 +214,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             }
             if(GBM) GBMP <- c(GBMP, GBM.list)  #add info from each PA to preexisting list (total=one species)
         }
-        
-        
-        
+    
         
         #save the prediction for that species
         assign(paste("Pred_", Biomod.material$species.names[i], sep=""), Array)
@@ -247,7 +246,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     #save the history and workspace
     if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
     save.image(paste(filename, ".RData", sep=""))
-   # savehistory(paste(filename, ".Rhistory", sep=""))
+    #savehistory(paste(filename, ".Rhistory", sep=""))
     
     #Final notice, runs are finished
     cat("\n\n--------- \n completed \n\n\n")  
@@ -257,3 +256,4 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     rm(BM)
         
 }
+

@@ -2,6 +2,12 @@
 function(CurrentPred=NULL, FutureProj=NULL, Turnover.Save=NULL)
 {
     #Function to estimate number of species loss, gain and stable per pixel
+    
+    if(class(CurrentPred)=="RasterLayer") CurrentPred <- stack(CurrentPred) 
+    if(class(FutureProj)=="RasterLayer") FutureProj <- stack(FutureProj)
+    if(length(FutureProj@layers) != length(CurrentPred@layers)) stop("\n The two inputs (CurrentPred and FutureProj) are of different length")
+
+    
     #Create blank raster
     BLANK.ras <- CurrentPred@layers[[1]]
     BLANK.ras[!is.na(BLANK.ras)] <- 0
@@ -36,6 +42,7 @@ function(CurrentPred=NULL, FutureProj=NULL, Turnover.Save=NULL)
     StacK <- stack(Loss, Stable0, Stable1, Gain, PercLoss, PercGain, Turnover, CurrentSR, FutureSR.NoDisp, FutureSR.FullDisp)
     layerNames(StacK) <- c("Loss", "Stable0", "Stable1", "Gain", "PercLoss", "PercGain", "Turnover", "CurrentSR", "FutureSR.NoDisp", "FutureSR.FullDisp")
     
+    if(is.null(Turnover.Save)) Turnover.Save <- "NoName_Turnover"
     assign(Turnover.Save, StacK, pos=1)
 }
 

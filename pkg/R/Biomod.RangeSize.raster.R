@@ -3,9 +3,12 @@ function(CurrentPred=NULL, FutureProj=NULL, SpChange.Save=NULL)
 {
     #Function to estimate number of species loss, gain and stable per pixel
 
+    if(class(CurrentPred)=="RasterLayer") CurrentPred <- stack(CurrentPred) 
+    if(class(FutureProj)=="RasterLayer") FutureProj <- stack(FutureProj)
+    if(length(FutureProj@layers) != length(CurrentPred@layers)) stop("\n The two inputs (CurrentPred and FutureProj) are of different length")
+
     CBS <- matrix(ncol=10, nrow=length(CurrentPred@layers), dimnames=list(layerNames(CurrentPred), 
       c("Loss","Stable0", "Stable1", "Gain", "PercLoss", "PercGain", "SpeciesRangeChange", "CurrentRangeSize", "FutureRangeSize.NoDisp", "FutureRangeSize.FullDisp")))
-
 
     
     sp.stack <- stack()  
@@ -31,7 +34,7 @@ function(CurrentPred=NULL, FutureProj=NULL, SpChange.Save=NULL)
         CBS[i, 10] <- CBS[i,3]+CBS[i,4]                                       
     }
 
-
+    if(is.null(SpChange.Save)) SpChange.Save <- "NoName"
     assign(paste(SpChange.Save, "_Compt.By.Species", sep=""), CBS, pos=1)
     #layerNames(sp.stack) <- Biomod.material$species.names
     assign(paste(SpChange.Save, "_Diff.By.Pixel", sep=""), sp.stack, pos=1)

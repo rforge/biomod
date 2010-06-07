@@ -60,7 +60,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
         #recalculating weights to set prevalence of 0.5 ONLY if Yweights was given by user -> multiply absences weights by ratio
         #Has to be done after Ids is set because it defines which data is used for calibration
         #if Yweights NULL  ->  Yweights[whatever.lines, i] = NULL  too
-        if(isnullYweights & Biomod.material$NbRepPA==0){} else{
+        if(is.null(Yweights) & Biomod.material$NbRepPA==0){} else{
             PW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==1]])  ;  assign("PW", PW, pos=1)
             AW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]])  ;  assign("AW", AW, pos=1)
             RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] <- RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] * (PW/AW)     #PW/AW = ratio between presWeights and absWeights

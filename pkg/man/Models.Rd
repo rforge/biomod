@@ -25,7 +25,7 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 50
   \item{CV.ann}{ number of cross validation for the ANN }
   \item{SRE}{ type True to run the Surface Range Envelope, or False to switch it off }
   \item{quant}{ the value defines the extreme percentiles of the response data not to be used by the SRE for calibration (see \code{\link{sre}} for more details) }
-  \item{FDA}{ type True to run the Mixture Discriminant Analysis, or False to switch it off  }
+  \item{FDA}{ type True to run the Flexible Discriminant Analysis, or False to switch it off  }
   \item{MARS}{ type True to run the Multiple Adaptive Regression Splines, or False to switch it off }
   \item{RF}{ type True to run the Random Forest, or False to switch it off }
   \item{NbRunEval}{ the number of evaluation runs to proceed before the final 100 percent data model is run (see the manual or the details section below for further explanations) }

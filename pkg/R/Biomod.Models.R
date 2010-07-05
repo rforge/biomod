@@ -17,7 +17,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
     if(Model == 'CTA') { cat("Model=Classification tree \n") ; cat("\t", CV.tree, "Fold Cross-Validation \n") }    
     if(Model == 'ANN') { cat("Model=Artificial Neural Network \n") ; cat("\t", CV.ann, "Fold Cross Validation + 3 Repetitions \n") ; cat("Calibration and evaluation phase: Nb of cross-validations: ", ncol(Ids), "\n") }
     if(Model == 'SRE') cat("Model=Surface Range Envelop \n")  
-    if(Model == 'FDA') cat("Model=Mixture Discriminant Analysis \n")
+    if(Model == 'FDA') cat("Model=Flexible Discriminant Analysis \n")
     if(Model == 'MARS') cat("Model=Multiple Adaptive Regression Splines \n")
     if(Model == 'RF') cat("Model=Breiman and Cutler's random forests for classification and regression \n")
     
@@ -60,7 +60,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
         #recalculating weights to set prevalence of 0.5 ONLY if Yweights was given by user -> multiply absences weights by ratio
         #Has to be done after Ids is set because it defines which data is used for calibration
         #if Yweights NULL  ->  Yweights[whatever.lines, i] = NULL  too
-        if(is.null(Yweights) & Biomod.material$NbRepPA==0){} else{
+        if(isnullYweights & Biomod.material$NbRepPA==0){} else{
             PW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==1]])  ;  assign("PW", PW, pos=1)
             AW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]])  ;  assign("AW", AW, pos=1)
             RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] <- RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] * (PW/AW)     #PW/AW = ratio between presWeights and absWeights
@@ -104,8 +104,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
             if(exists("model.sp")) g.pred <- data.frame(as.integer(as.numeric(testnull(model.sp, Prev, DataBIOMOD[PA.samp,])) *1000))
         }####   
         if(Model == 'GBM'){
-            if(k==(ncol(Ids)+1)) model.sp <- gbm(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "GBM"),collapse="")))), data=DataBIOMOD[calib.lines,], distribution="bernoulli", var.monotone=rep(0, length=NbVar), w=Yweights[calib.lines,i], interaction.depth=7, shrinkage=0.001, bag.fraction=0.5, train.fraction=1, verbose=F, cv.folds=5)        
-                        else try(model.sp <- gbm(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "GBM"),collapse="")))), data=DataBIOMOD[calib.lines,], distribution="bernoulli", var.monotone=rep(0, length=NbVar), w=Yweights[calib.lines,i], interaction.depth=7, shrinkage=0.001, bag.fraction=0.5, train.fraction=1, verbose=F, cv.folds=5), silent=T)
+            if(k==(ncol(Ids)+1)) model.sp <- gbm(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "GBM"),collapse="")))), data=DataBIOMOD[calib.lines,], distribution="bernoulli", var.monotone=rep(0, length=NbVar), w=Yweights[calib.lines,i], interaction.depth=7, shrinkage=0.001, bag.fraction=0.5, train.fraction=1, n.trees=No.trees, verbose=F, cv.folds=5)        
+                        else try(model.sp <- gbm(eval(parse(text=paste(SpNames[i],paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar], "GBM"),collapse="")))), data=DataBIOMOD[calib.lines,], distribution="bernoulli", var.monotone=rep(0, length=NbVar), w=Yweights[calib.lines,i], interaction.depth=7, shrinkage=0.001, bag.fraction=0.5, train.fraction=1, n.trees=No.trees, verbose=F, cv.folds=5), silent=T)
             
             if(exists("model.sp")){
                 best.iter <- gbm.perf(model.sp, method="cv", plot.it=F)

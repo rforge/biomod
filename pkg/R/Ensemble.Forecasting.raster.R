@@ -68,7 +68,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             if(nbrep != 1) for(j in 1:(nbrep-1)) reps <- c(reps, paste("rep", j, sep=""))
             if(Biomod.material$NbRepPA != 0) reps <- rep(reps, NbPA)
             gnames <- rep(NA, length(reps))
-            for(j in 1:length(reps)) if(reps[j]!="") gnames[j] <- paste(PAs[j], reps[j], sep="_") else gnames[j] <- PAs[j]
+            for(j in 1:length(reps)){ if(reps[j]!="") gnames[j] <- paste(PAs[j], reps[j], sep="_") else gnames[j] <- PAs[j] }
 
             #Storing rasters for the 6 methods ( mean, median, etc.)
             STACK.m <- STACK.med <- STACK.w <- STACK.R <- STACK.K <- STACK.T <- stack()
@@ -87,6 +87,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                         for(Rep in 1:(nbrep*NbPA)){                                                                                                           #load rasters saved individualy
                             load(paste(getwd(), "/proj.", Proj.name, "/Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster", sep=""))
                             STK <- stack(STK, eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster", sep=""))))
+                            #remove the raster piled into the stack
+                            eval(parse(text = paste("rm(Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster)", sep = "")))
                         }
                     }
                 }
@@ -158,7 +160,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 ras.bin <- BLANK.ras
                                 
                                 for(kk in Biomod.material$algo[RUNens.choice]){ if(kk!='SRE'){
-                                    BIN <- STKcons@layers[[which(Biomod.material$algo[RUNens.choice]==kk)]] > as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4])
+                                    BIN <- STKcons@layers[[which(Biomod.material$algo[RUNens.choice]==kk)]] >= as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4])
                                     BIN["TRUE"] <- 1
                                     ras.bin <- ras.bin + BIN
                                 }}
@@ -174,15 +176,15 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             #This is like a mean accross all selected methods but with a weight associated to each technique depending on its score during evaluation
                             #Recover the weights (depending on the chosen "weight.method" from the "Evaluation.results.weightMethod" object)
                             wk <- p.choice
-                            if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
-                            for(a in Biomod.material$algo) if(RUNens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) else wk[a] <- NA  # Weights are based on the Cross-validated evaluation values.
+                            if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3                   # Weights are based on the Cross-validated evaluation values.
+                            for(a in Biomod.material$algo) if(RUNens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) else wk[a] <- NA  
                             if(weight.method=='Roc') wk['SRE'] <- 0
-                            #deal with cases where scores only=0, or rep model failed
+                            #deal with cases where there are no scores >0, or rep model failed
                             if(sum(wk!=0, na.rm=T)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value >0  -> those models will be used and not set to NA by next line
                             wk[wk==0] <- NA
     
                             # Calculate and attribute Weights to each modelling techniques
-                            if(decay=="proportional"){                                                            # proportional: the weights are proportional to the chosen evaluation value
+                            if(decay=="proportional"){                                                            # proportional: the weights are proportional to the chosen evaluation value (also relatively to the other scores)
                                 wk[is.na(wk)] <- 0
                                 if(weight.method=='Roc') wk[wk!=0] <- (wk[wk!=0]-0.5)*2
                                 W <- wk/sum(wk)
@@ -247,9 +249,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                                     thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][Biomod.material$algo[RUNens.choice],4])
                                     assign("thresh", thresh, pos=1)
-                                    if(Th[jj]=='Roc'){   ST <- STKcons@layers[[1]] > thresh ;  STACK.R <- stack(STACK.R, ST*1000) }   
-                                    if(Th[jj]=='Kappa'){ ST <- STKcons@layers[[1]] > thresh ;  STACK.K <- stack(STACK.K, ST*1000) } 
-                                    if(Th[jj]=='TSS'){   ST <- STKcons@layers[[1]] > thresh ;  STACK.T <- stack(STACK.T, ST*1000) }
+                                    if(Th[jj]=='Roc'){   ST <- STKcons@layers[[1]] >= thresh ;  STACK.R <- stack(STACK.R, ST*1000) }   
+                                    if(Th[jj]=='Kappa'){ ST <- STKcons@layers[[1]] >= thresh ;  STACK.K <- stack(STACK.K, ST*1000) } 
+                                    if(Th[jj]=='TSS'){   ST <- STKcons@layers[[1]] >= thresh ;  STACK.T <- stack(STACK.T, ST*1000) }
                                 
                                     #store thresholds
                                     if(Th[jj] == weight.method){
@@ -308,7 +310,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 
                 #convert the total consensus for the first 3 methods into binary
                 if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack()
-                if((nbrep*NbPA) != 1) for(j in 1:3) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] > mean(thsC[[j]], na.rm=T))
+                if((nbrep*NbPA) != 1) for(j in 1:3) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=T))
                 
                 
                 
@@ -318,7 +320,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     STACK.all <- stack(STACK.all, STACK.R)
                     if(final.model.out) STACK.R <- dropLayer(STACK.R, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     if((nbrep*NbPA) != 1) STACK.consTot <- stack(STACK.consTot, round(mean(STACK.R)))
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.R) > 500)
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.R) >= 500)
                     LNa <- c(LNa, paste("meanRoc_", gnames, sep="")) 
                     LNaTot <- c(LNaTot, "meanRoc")               
                 }
@@ -326,7 +328,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     STACK.all <- stack(STACK.all, STACK.K)
                     if(final.model.out) STACK.K <- dropLayer(STACK.K, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     if((nbrep*NbPA) != 1) STACK.consTot <- stack(STACK.consTot, round(mean(STACK.K)))
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.K) > 500)
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.K) >= 500)
                     LNa <- c(LNa, paste("meanKappa_", gnames, sep=""))
                     LNaTot <- c(LNaTot, "meanKappa")
                 }
@@ -334,7 +336,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     STACK.all <- stack(STACK.all, STACK.T) 
                     if(final.model.out) STACK.T <- dropLayer(STACK.T, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     if((nbrep*NbPA) != 1) STACK.consTot <- stack(STACK.consTot, round(mean(STACK.T))) 
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.T) > 500)        
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.T) >= 500)        
                     LNa <- c(LNa, paste("meanTSS_", gnames, sep=""))
                     LNaTot <- c(LNaTot, "meanTSS")
                 }                                                             
@@ -355,7 +357,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     }
                     STACK.all.bin <- stack()
                     for(j in 1:length(layerNames(STACK.all))){                                                                                        #loop of binary conversion
-                        J.bin <- STACK.all@layers[[j]] > ths.lin[j]
+                        J.bin <- STACK.all@layers[[j]] >= ths.lin[j]
                         STACK.all.bin <- stack(STACK.all.bin, J.bin)                        
                     }      
                 }

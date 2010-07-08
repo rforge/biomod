@@ -257,3 +257,15 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         
 }
 
+
+
+
+        #models -> Yweights[calib.lines, i]
+            
+        #calib.lines <- PA.samp[Ids[,k]]
+        #pred.lines <- PA.samp[-Ids[,k]]    
+            
+ 
+ 
+ 
+ 

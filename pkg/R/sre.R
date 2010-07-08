@@ -1,4 +1,4 @@
-`sre` <- function(Response=NULL, Explanatory=NULL, NewData=NULL, Quant=0.025)
+`sre` <- function(Response=NULL, Explanatory=NULL, NewData=NULL, Quant=0.025, na.rm=TRUE)
 {
     if(Quant>=0.5 | Quant<0) stop("\n settings in Quant should be a value between 0 and 0.5 ")
     quants <- c(0+Quant, 1-Quant)
@@ -25,7 +25,7 @@
             
             
             for(j in 1:NbVar){
-                Q <- quantile(ref[,j], probs=quants)
+                Q <- quantile(ref[,j], probs=quants, na.rm=na.rm)
                 
                 if(class(NewData)[1]!='RasterStack'){
                     TF <- TF + (NewData[,names(ref)[j]]>=Q[1])                                          #add the T/F values to vector (+T = +1)

@@ -7,7 +7,7 @@
   The SRE performs a simple analysis of within which range of each variable the data is recorded and renders predictions.
 }
 \usage{
-sre(Response = NULL, Explanatory = NULL, NewData = NULL, Quant=0.025)
+sre(Response = NULL, Explanatory = NULL, NewData = NULL, Quant=0.025, na.rm=TRUE)
 }
 
 \arguments{
@@ -18,6 +18,7 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Quant=0.025)
    the one given in Explanatory and with precisely the same variable names. }
   \item{Quant}{ the value defines the most extreme values for each variable not to be taken into account
    for determining the tolerance boundaries for the considered species.  }
+  \item{na.rm}{ option to skip NA values if any. } 
 }
 \details{
 

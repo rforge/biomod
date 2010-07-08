@@ -54,13 +54,12 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 	}
 	
   #creating the final output
-	if(add.pres) out.set <- c(pres, abs.set)
+  if(add.pres) out.set <- c(pres, abs.set) else out.set <- abs.set
 	if(create.dataset) 
       if(is.null(coor)) { assign(paste("Dataset",nam,sep="."), status[out.set], pos=1) 
       } else assign(paste("Dataset",nam,sep="."), cbind(coor[out.set,],status[out.set]), pos=1)
       
 	#assign(nam, out.set, pos=1)
 	return(out.set)
-
 }
 

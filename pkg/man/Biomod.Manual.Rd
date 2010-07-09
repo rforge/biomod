@@ -6,10 +6,11 @@
 }
 
 \usage{
-Biomod.Manual()
+Biomod.Manual(manual="Biomod Manual"))
 }
 
 \arguments{
+\item{manual}{ The name (minus the .pdf extension) of the file you want to open }
 }
 
 \details{
@@ -28,6 +29,7 @@ Biomod.Manual()
 \examples{
 
 Biomod.Manual()
+Biomod.Manual("Biomod_Presentation_Manual")
 }
 
 \keyword{ models }

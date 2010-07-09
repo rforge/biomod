@@ -1,11 +1,11 @@
-Biomod.Manual<-function(){
+Biomod.Manual<-function(manual="Biomod Manual"){
 
     paths <- .find.package("BIOMOD")
     paths <- paths[file_test("-d", file.path(paths, "doc"))]
     vignettes <- lapply(paths, function(dir) {
         tools::list_files_with_exts(file.path(dir, "doc"), exts=c("pdf"))
     })
-    topic <- "Biomod Manual"
+    topic <- manual
     vignettes <- as.character(unlist(vignettes))
         vidx <- (tools::file_path_sans_ext(basename(vignettes)) ==
             topic)

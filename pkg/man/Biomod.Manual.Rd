@@ -30,6 +30,7 @@ Biomod.Manual(manual="Biomod Manual"))
 
 Biomod.Manual()
 Biomod.Manual("Biomod_Presentation_Manual")
+Biomod.Manual("Biomod_Practical_Building_Models")
 }
 
 \keyword{ models }

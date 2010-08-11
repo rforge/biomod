@@ -20,12 +20,8 @@ function(dataToRescale, ref=NULL, run, original=FALSE)
 	 	
     #make the rescaling prediction
     if(!class(dataToRescale)[1]=='RasterLayer') RescaledData <- predict(Rescaling_GLM, DataF, type="response") 
-	  if(class(dataToRescale)[1]=='RasterLayer')  RescaledData <- predict(model=Rescaling_GLM, DataF, type="response")    #rasters
+	if(class(dataToRescale)[1]=='RasterLayer')  RescaledData <- predict(model=Rescaling_GLM, DataF, type="response")    #rasters
 	   
-    
-    #Just in case
-    RescaledData[which(RescaledData>1)] <- 1
-	  RescaledData[which(RescaledData<0)] <- 0
-       
+   
     return(RescaledData)
 }

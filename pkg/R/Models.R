@@ -253,19 +253,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     
     # If one or more of the evaluation runs failed, we report failure to user. This message is important.
     if(!is.na(BM$calibration.failures[1])) cat(paste("WARNING: the following repetition models failed : \n", BM$calibration.failures, "\n This might indicate serious problem in your data. \n\n", sep=""))
-    rm(BM)
+    rm(BM, pos=1)
         
-}
-
-
-
-
-        #models -> Yweights[calib.lines, i]
-            
-        #calib.lines <- PA.samp[Ids[,k]]
-        #pred.lines <- PA.samp[-Ids[,k]]    
-            
- 
+} 
  
  
  

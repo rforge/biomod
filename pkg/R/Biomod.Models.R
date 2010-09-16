@@ -64,6 +64,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
             PW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==1]])  ;  assign("PW", PW, pos=1)
             AW <- sum(RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]])  ;  assign("AW", AW, pos=1)
             RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] <- RunWeights[calib.lines[DataBIOMOD[calib.lines, NbVar+i]==0]] * (PW/AW)     #PW/AW = ratio between presWeights and absWeights
+            rm(AW, PW, pos=1)
         }
         
       

@@ -6,7 +6,7 @@
 }
 
 \usage{
-LoadProj(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred")
+LoadProj(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred", raster=FALSE)
 }
 
 \arguments{
@@ -15,7 +15,7 @@ LoadProj(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred")
   \item{Filt}{ Logical. If they exist, the filtered datasets will be loaded in R.  }
   \item{which.pred}{ a vector giving the names of the prediction/projection used in Projection() for which you want the data to be loaded. 
   Names are wanted. Type "pred" for the predictions on the original data.}
-  
+  \item{raster}{ Logical. Define if the projection wanted has been done with rasters. }
 }
 
 \details{

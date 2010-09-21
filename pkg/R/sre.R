@@ -5,7 +5,6 @@
     
     
     #Check the variables from calib to predict
-    #%%%%%%%%%%%
     
     
     #Calibration on point data, projection on points or rasters
@@ -20,7 +19,7 @@
             ref <- Explanatory[Response[,i]==1,]
             
             #object for storing the True/False values (now +1s)
-            if(class(NewData)[1]=='RasterStack') { TF <- NewData@layers[[1]] ; TF <- TF<TF@data@min }                 #set raster to FALSE for all values (exept NAs)
+            if(class(NewData)[1]=='RasterStack') { TF <- NewData@layers[[1]] ; TF <- TF<TF@data@min[[1]] }                 #set raster to FALSE for all values (exept NAs)
             else TF <- rep(0, dim(NewData)[1])
             
             
@@ -50,8 +49,6 @@
     #    Q <- quantile(belalp.stk@layers[[1]], na.rm=T, probs=quants)
         
     #}
-            
-            
 
     
     if(class(NewData)[1]!='RasterStack' & dim(Response)[2]==1) Pred <- Pred[[1]]   #return a vector, not a data frame

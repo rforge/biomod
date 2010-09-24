@@ -25,7 +25,7 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, FDA=TRUE, R
         i <- 1
         while(i <= NbSp) {
             
-            jj <- 3 #if(exists("DataEvalBIOMOD"))   jj <- 2   else    jj <- 3
+            jj <- 1 #selecting according to the cross validation values     #if(exists("DataEvalBIOMOD"))   jj <- 2   else    jj <- 1
    
             #load prob data from the pred directory
             eval(parse(text=paste("load('", getwd(), "/pred/Pred_", SpNames[i],"')", sep="")))

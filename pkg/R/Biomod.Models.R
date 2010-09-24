@@ -237,7 +237,7 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
            
            }
         }
-        VarImportance[[i]][Model,] <-  round(1 - (TempVarImp/VarImport), digits=3)
+        VarImportance[[i]][Model,] <-  round(as.numeric(1 - (TempVarImp/VarImport)), digits=3)
     }
 	  assign("VarImportance", VarImportance, pos=1)
 	  

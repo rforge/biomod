@@ -77,8 +77,8 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
         if(Model == 'ANN'){
             set.seed(555)
             CV_nnet = CV.nnet(Input= DataBIOMOD[calib.lines, 1:NbVar], Target= DataBIOMOD[calib.lines, NbVar+i], nbCV=CV.ann, W=Yweights[calib.lines,i])             
-            if(k==(ncol(Ids)+1)) model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F)
-                        else try(model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F), silent=T) 
+            if(k==(ncol(Ids)+1)) model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F, W=Yweights[calib.lines,i])
+                        else try(model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], DataBIOMOD[calib.lines, NbVar+i], size=CV_nnet[1,1], rang=0.1, decay=CV_nnet[1,2], maxit=200, trace=F, W=Yweights[calib.lines,i]), silent=T) 
   
             if(exists("model.sp")) TempArray <- predict(model.sp, DataBIOMOD[PA.samp,], type="raw")
         }####     
@@ -130,8 +130,13 @@ function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, N
             if(exists("model.sp")) TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar])
         }#### 
         if(Model == 'FDA') {
-            if(k==(ncol(Ids)+1)) model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars)
-                        else try(model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars), silent=T)
+            if(k==(ncol(Ids)+1)) {
+            	if(is.null(Yweights)) model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars)
+            		else model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars, weights=Yweights[calib.lines,i])
+            } else {
+            	if(is.null(Yweights)) try(model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars), silent=T)
+            		else try(model.sp <- fda(eval(parse(text=paste(SpNames[i], paste(scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], "FDA"), collapse="")))), data=DataBIOMOD[calib.lines,], method=mars, weights=Yweights[calib.lines,i]), silent=T)
+            }	
             if(exists("model.sp")) TempArray <- predict(model.sp, DataBIOMOD[PA.samp,1:NbVar], type="post")[,2]
         }#### 
         if(Model == 'RF') {

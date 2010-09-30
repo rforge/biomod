@@ -45,6 +45,13 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     if(sum(Nbcat) > 0 && MARS){ MARS <- F ; cat(paste("MARS model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==T], collapse=" "), "\n", sep="")) }
     if(sum(Nbcat) > 0 && SRE){ SRE <- F ; cat(paste("SRE model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==T], collapse=" "), "\n", sep="")) }
      
+    #defining evaluation runs
+    if(NbRunEval==0){
+        DataSplit <- 100
+        if(!exists("DataEvalBIOMOD")) cat("\n\n Warning : The models will be evaluated on the calibration data only (NbRunEval=0 and no independent data) \n\t it could lead to over-optimistic predictive performances. \n\n")
+    }
+    if(DataSplit==100) NbRunEval <- 0 
+            
   
     #create usefull vectors for condensing code   
     Biomod.material[["algo"]] <- c("ANN","CTA","GAM","GBM","GLM","MARS","FDA","RF","SRE")
@@ -72,14 +79,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     }
  
  
-    #defining evaluation runs
-    if(NbRunEval==0){
-        DataSplit <- 100
-        if(!exists("DataEvalBIOMOD")) cat("\n\n Warning : The models will be evaluated on the calibration data only (NbRunEval=0 and no independent data) \n\t it could lead to over-optimistic predictive performances. \n\n")
-    }
-    if(DataSplit==100) NbRunEval <- 0   
-            
-    #create list to store best.iter for GBM (needed for projection -> n.trees argument)  
+      #create list to store best.iter for GBM (needed for projection -> n.trees argument)  
     if(GBM){ GBM.perf <- list() ; GBMP <- c() }
     
     #create matrix to store variable importance results

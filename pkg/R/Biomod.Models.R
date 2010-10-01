@@ -2,7 +2,7 @@
 function(Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, NbRunEval, Spline, 
          DataSplit, Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)    
 {
-
+        
     #models messages in R's console
     if(Model == 'GLM') {
         if(TypeGLM == "poly"){Type <- "GLMp" ; cat("Model=GLM polynomial + quadratic")}

@@ -111,7 +111,10 @@ repetition.models=TRUE, stack.out=TRUE)
                         if(a == 'GLM')  g <- predict(RasterProj, model=object, type='response')
                         if(a == 'GAM')  g <- predict(RasterProj, model=object, type='response')
                         if(a == 'GBM')  g <- predict(RasterProj, object, n.trees=GBM.perf[[i]][[run.name2]], type='response') 
-                        if(a == 'ANN')  g <- predict(RasterProj, object, type="raw")
+                        if(a == 'ANN')  {
+                        	set.seed(555)
+                        	g <- predict(RasterProj, object, type="raw")
+                        }	
                         if(a == 'FDA')  g <- predict(RasterProj, object, type="post", index=2)
                         if(a == 'MARS') g <- predict(RasterProj, object)  
                         if(a == 'RF')   g <- predict(RasterProj, model=object, type='prob', index=2)

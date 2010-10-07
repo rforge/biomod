@@ -33,6 +33,7 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
         }
         DataEvalBIOMOD <- cbind(IndependentExplanatory, IndependentResponse)
         assign("DataEvalBIOMOD", DataEvalBIOMOD, pos=1)
+        if(dim(na.omit(DataEvalBIOMOD))[1] != dim(DataEvalBIOMOD)[1]) warning("Evaluation data contain NA, some models may not work")
     }
 
     assign("DataBIOMOD", cbind(Explanatory, Response), pos=1)
@@ -43,6 +44,7 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
     Biomod.material[["species.names"]] <- colnames(Response)   
     assign("Biomod.material", Biomod.material, pos=1)
     
+    if(dim(na.omit(DataBIOMOD))[1] != dim(DataBIOMOD)[1]) warning("Data contain NA, some models may not work")
     if(Biomod.material[["NbVar"]] <= 2) warning("Only two explanatory variables are selected") 
 }
 

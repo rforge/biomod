@@ -122,8 +122,7 @@ Biomod.Models <- function (Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree
 
 			}  
             if (exists("model.sp")) 
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp, 
-                  ], type = "raw")
+                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,], type = "raw")
         }
         if (Model == "CTA") {
             temp <- rpart.control(xval = CV.tree, minbucket = 5, 
@@ -230,7 +229,7 @@ Biomod.Models <- function (Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree
                   silent = T)
             }
             if (exists("model.sp")) 
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp, 
+                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,
                   1:NbVar])
         }
         if (Model == "FDA") {
@@ -257,7 +256,7 @@ Biomod.Models <- function (Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree
                   ], method = mars, weights = RunWeights[calib.lines]), silent = T)
             }
             if (exists("model.sp")) 
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp, 
+                TempArray <- predict(model.sp, DataBIOMOD[PA.samp,
                   1:NbVar], type = "post")[, 2]
         }
         if (Model == "RF") {
@@ -279,7 +278,7 @@ Biomod.Models <- function (Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree
                 paste(SpNames[i]), collapse = ""))), DataBIOMOD[calib.lines, 
                 1:NbVar], DataBIOMOD[PA.samp, ], quant)) * 1000))
         if (any(c("ANN", "FDA", "MARS") == Model)) 
-            g.pred <- data.frame(as.integer(Rescaler4(as.numeric(TempArray), 
+            g.pred <- data.frame(as.integer(Rescaler4(as.numeric(TempArray),
                 ref = DataBIOMOD[PA.samp, NbVar + i], run = paste(SpNames[i], 
                   "_", Model, "_", nam, sep = ""), original = T) * 
                 1000))

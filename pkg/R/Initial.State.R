@@ -33,8 +33,16 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
         }
         DataEvalBIOMOD <- cbind(IndependentExplanatory, IndependentResponse)
         assign("DataEvalBIOMOD", DataEvalBIOMOD, pos=1)
-        if(dim(na.omit(DataEvalBIOMOD))[1] != dim(DataEvalBIOMOD)[1]) warning("Evaluation data contain NA, some models may not work")
+        if(dim(na.omit(DataEvalBIOMOD))[1] != dim(DataEvalBIOMOD)[1]) stop("Evaluation data contain NA, some models may not work")
     }
+    
+    #convert "characters" into "factor"
+    for (i in 1:dim(Explanatory)[2]){
+      if (class(Explanatory[,i]) == "character"){
+        Explanatory[,i] = as.factor(Explanatory[,i])
+        warning(paste(colnames(Explanatory)[i]," was converted to factor"))
+        }
+      }
 
     assign("DataBIOMOD", cbind(Explanatory, Response), pos=1)
     Biomod.material <- list()
@@ -44,7 +52,7 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
     Biomod.material[["species.names"]] <- colnames(Response)   
     assign("Biomod.material", Biomod.material, pos=1)
     
-    if(dim(na.omit(DataBIOMOD))[1] != dim(DataBIOMOD)[1]) warning("Data contain NA, some models may not work")
+    if(dim(na.omit(DataBIOMOD))[1] != dim(DataBIOMOD)[1]) stop("Data contain NA, some models may not work")
     if(Biomod.material[["NbVar"]] <= 2) warning("Only two explanatory variables are selected") 
 }
 

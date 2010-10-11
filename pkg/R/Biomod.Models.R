@@ -94,29 +94,29 @@ Biomod.Models <- function (Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree
         assign("calib.lines", calib.lines, pos = 1)
         if (Model == "ANN") {
             set.seed(555)
-            CV_nnet = CV.nnet(Input = DataBIOMOD[calib.lines, 
-                1:NbVar], Target = DataBIOMOD[calib.lines, NbVar + 
+            CV_nnet = CV.nnet(Input = DataBIOMOD[calib.lines,
+                1:NbVar], Target = DataBIOMOD[calib.lines, NbVar +
                 i], nbCV = CV.ann, W = RunWeights[calib.lines])
             if (k == (ncol(Ids) + 1)) {
                 if (is.null(Yweights)) 
-                	model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], 
-                  DataBIOMOD[calib.lines, NbVar + i], size = CV_nnet[1, 
+                	model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                data = DataBIOMOD[calib.lines,], size = CV_nnet[1,
                     1], rang = 0.1, decay = CV_nnet[1, 2], maxit = 200, 
                   trace = F)
-                else model.sp <- nnet(DataBIOMOD[calib.lines, 1:NbVar], 
-                  DataBIOMOD[calib.lines, NbVar + i], size = CV_nnet[1, 
+                else model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                data = DataBIOMOD[calib.lines,], size = CV_nnet[1,
                     1], rang = 0.1, decay = CV_nnet[1, 2], weights=RunWeights[calib.lines], maxit = 200, 
                   trace = F)
             }        
             else {
                 if (is.null(Yweights)) 
-            		try(model.sp <- nnet(DataBIOMOD[calib.lines, 
-                1:NbVar], DataBIOMOD[calib.lines, NbVar + i], 
+            		try(model.sp <- nnet(eval(parse(text=paste("DataBIOMOD[calib.lines, NbVar +",i,"]",paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                data = DataBIOMOD[calib.lines,],
                 size = CV_nnet[1, 1], rang = 0.1, decay = CV_nnet[1, 
                   2], maxit = 200, trace = F, weights=RunWeights[calib.lines]), silent = T)
                   
-                else  try(model.sp <- nnet(DataBIOMOD[calib.lines, 
-                1:NbVar], DataBIOMOD[calib.lines, NbVar + i], 
+                else  try(model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                data = DataBIOMOD[calib.lines,],
                 size = CV_nnet[1, 1], rang = 0.1, decay = CV_nnet[1, 
                   2], maxit = 200, trace = F, weights=RunWeights[calib.lines]), silent = T)
 

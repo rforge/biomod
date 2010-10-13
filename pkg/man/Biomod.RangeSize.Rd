@@ -1,5 +1,6 @@
 \name{Biomod.RangeSize}
-\alias{Biomod.RangeSize, Biomod.RangeSize.raster}
+\alias{Biomod.RangeSize}
+\alias{Biomod.RangeSize.raster}
 
 \title{ Analysis of the range size changes }
 \description{

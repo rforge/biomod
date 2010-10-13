@@ -1,5 +1,6 @@
 \name{Projection}
 \alias{Projection}
+\alias{Projection.raster}
 
 \title{ Making projection with BIOMOD }
 \description{
@@ -8,10 +9,12 @@ species or land-use classes for other areas, other resolutions or other time sca
 }
 \usage{
 Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, quant=0.025, FDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
+Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025, FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE, repetition.models=TRUE, stack.out=TRUE}
+
 }
 
 \arguments{
-  \item{Proj}{ a matrix containing the same variables than for calibrating the models (using the Models function) (the column names are case-sensitive !) 
+  \item{Proj (or RasterProj)}{ a matrix (or an object of class 'RasterStack') containing the same variables than for calibrating the models (using the Models function) (the column names are case-sensitive !)
    but on another geographical space, resolution, or time scale. }
   \item{Proj.name}{ The name of your projection dataset (or any name you want to give to it) which will be used for storing the outputs of the function and
   also used by other functions to automatically restore the outputs in R from the hard disk}
@@ -34,10 +37,6 @@ Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRU
   \item{repetition.models}{ type TRUE to render projections on the 100 percent calibrated model and also on the repetition models. }
 }
 
-\Warning{
-  From one R session to another and as a general reminder, do think about reloading the objects stored in the .RData file produced by the Models() function.
-  They contain vital information for the models to work properly when called by other functions such as Projection().
-}
 
 \details{
   Note that the models set to TRUE need to have been run in the Models function to be able to run with Projection(). 
@@ -58,7 +57,11 @@ Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRU
 
 \references{ }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
+\note{
+  WARNING :
+  From one R session to another and as a general reminder, do think about reloading the objects stored in the .RData file produced by the Models() function.
+  They contain vital information for the models to work properly when called by other functions such as Projection().
+}
 \seealso{ \code{\link{Models}}, \code{\link{ProjectionBestModel}}, \code{\link{Ensemble.Forecasting}}, \code{\link{ProbDensFunc}} }
 \examples{
 

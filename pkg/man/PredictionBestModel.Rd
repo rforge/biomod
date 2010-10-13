@@ -30,10 +30,12 @@ PredictionBestModel(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, 
 }
 \value{
   No values are returned but objects are produced in the "pred" folder (see \code{\link{Models}}).
-  Example of PredBestModelByKappa\_Species4 (but all follow the same logic) : a matrix with a column per run
-  containing the predictions in probabilities using the Kappa scores to select the best model for Species4. 
-  The results are stored individually for each species for format conflicts reasons. The predictions can also 
-  be obtained in binary and filtered values (additionnal matrices are thus produced).  
+  Example of PredBestModelByKappa.txt (but all follow the same logic) : a matrix with a column per run and per species
+  containing the predictions in probabilities using the Kappa scores to select the best model each spieces.
+  Example of PredBestModelByKappa : a 3 dimension array where the first dimention correspond to observations selected
+  for each run (nb of selected observations), the second dimention refers to run and repetitions. The third coresponds
+  to the spieces inice.
+  The predictions can also be obtained in binary and filtered values (additionnal matrices are thus produced).
 }
 \references{
 Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and projecting potential future shifts under global change. Global Change Biology 9, 1353-1362.
@@ -48,11 +50,11 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 data(Sp.Env)
 data(CoorXY)
 
-Initial.State(Response=Sp.Env[,14:15], Explanatory=Sp.Env[,4:10], 
+Initial.State(Response=Sp.Env[,14:15], Explanatory=Sp.Env[,4:10],
 		IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #This line will only run a few models. Here we will have 12 runs per species.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2,
    NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
@@ -71,11 +73,13 @@ BestModelByRoc
 #The prediction data is stored individually for each species
 #each evaluation method and each format produced (in contrary to the
 #outputs of ProjectionBestModel).
-load("pred/PredBestModelByRoc_Sp164_Filt")
-PredBestModelByRoc_Sp164_Filt[50:100,]
+load("pred/PredBestModelByRoc_Filt")
+str(PredBestModelByRoc_Filt)
+PredBestModelByRoc_Filt[50:100,,1] #for the first spiece
 
-load("pred/PredBestModelByKappa_Sp163_Filt")
-PredBestModelByKappa_Sp163_Filt[50:100,]
+load("pred/PredBestModelByKappa_Filt")
+str(PredBestModelByKappa_Filt)
+PredBestModelByKappa_Filt[50:100,,2] #for the first spiece
 
 }
 

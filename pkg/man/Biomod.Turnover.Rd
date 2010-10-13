@@ -1,5 +1,6 @@
 \name{Biomod.Turnover}
-\alias{Biomod.Turnover, Biomod.Turnover.raster}
+\alias{Biomod.Turnover}
+\alias{Biomod.Turnover.raster}
 
 \title{ Estimation of the Turnover for a given location and resolution}
 \description{

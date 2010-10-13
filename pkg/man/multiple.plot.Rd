@@ -34,6 +34,8 @@ multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.
 \seealso{ \code{\link{level.plot}} }
 \examples{
 
+data(Sp.Env)
+data(CoorXY)
 
 multiple.plot(Sp.Env[,4:18], CoorXY, plots.per.window=16, cex=0.8)
 

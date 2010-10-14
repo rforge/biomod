@@ -29,7 +29,7 @@ pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.
   \item{nb.points}{ an option for selecting only a limited number of absences at random from the already strategy-selected pseudo-absences (see examples). 
   The default (nb.points=NULL) keeps all the possible absences according to the strategy selected }
   \item{add.pres}{ if True, the output will be an object also containing the presence information (see the value section below)}
-  \item{create.dataset} {type True to create a new dataset in your workspace for direct usage. If set to False, only
+  \item{create.dataset}{ type True to create a new dataset in your workspace for direct usage. If set to False, only
    an object is returned containing the row indices to take from the original dataset to render a new one where absences
    have been selected according to the settings of the pseudo.abs() function. See sections details and examples for further explanations}
   \item{species.name}{ The dataset will be stored under the name given by this argument, plus the strategy chosen separated by a dot.

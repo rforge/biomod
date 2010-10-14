@@ -9,8 +9,7 @@ species or land-use classes for other areas, other resolutions or other time sca
 }
 \usage{
 Projection(Proj = NULL, Proj.name, GLM = TRUE, GBM = TRUE, GAM = TRUE, CTA = TRUE, ANN = TRUE, SRE = TRUE, quant=0.025, FDA = TRUE, MARS = TRUE, RF = TRUE, BinRoc = FALSE, BinKappa = FALSE, BinTSS = FALSE, FiltRoc = FALSE, FiltKappa = FALSE, FiltTSS = FALSE, repetition.models=TRUE)
-Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025, FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE, repetition.models=TRUE, stack.out=TRUE}
-
+Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025, FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE, repetition.models=TRUE, stack.out=TRUE)
 }
 
 \arguments{

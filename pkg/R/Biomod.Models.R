@@ -52,7 +52,7 @@ Biomod.Models <- function (Model, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree
     if (Model == "RF") 
         cat("Model=Breiman and Cutler's random forests for classification and regression \n")
     if (Model == "GLM" | Model == "GAM") 
-        Prev <- sum(DataBIOMOD[, i])/nrow(DataBIOMOD)
+        Prev <- sum(DataBIOMOD[, i + Biomod.material$NbVar])/nrow(DataBIOMOD)
     if (Model == "CTA") 
         set.seed(123)
     if (Model == "RF") 

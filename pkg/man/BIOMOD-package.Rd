@@ -34,14 +34,5 @@ License: \tab GPL-2 \cr
 Wilfried Thuiller, with participation of Bruno Lafourcade and Robin Engler
 <wilfried.thuiller@ujf-grenoble.fr>
 }
-\references{
-
-}
 
 \keyword{ package }
-\seealso{
-
-}
-\examples{
- 
-}

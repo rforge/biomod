@@ -1,21 +1,21 @@
 `Projection` <-
-function(Proj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
+function(Proj=NULL, Proj.name=NULL, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE)
 {
-    require(nnet, quietly=T)
-    require(rpart, quietly=T)
-    require(Hmisc, quietly=T)
-    require(Design, quietly=T)
-    require(MASS, quietly=T)
-    require(gbm, quietly=T)
-    require(mda, quietly=T)
-    require(randomForest, quietly=T)
-    require(gam, quietly=T)
+    require(nnet, quietly=TRUE)
+    require(rpart, quietly=TRUE)
+    require(Hmisc, quietly=TRUE)
+    require(Design, quietly=TRUE)
+    require(MASS, quietly=TRUE)
+    require(gbm, quietly=TRUE)
+    require(mda, quietly=TRUE)
+    require(randomForest, quietly=TRUE)
+    require(gam, quietly=TRUE)
         
-    if(BinRoc && !Biomod.material$evaluation.choice["Roc"] | FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc <- FiltRoc <- F ; cat("Roc cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
-    if(BinKappa && !Biomod.material$evaluation.choice["Kappa"] | FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa <- FiltKappa <- F ; cat("Kappa cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
-    if(BinTSS && !Biomod.material$evaluation.choice["TSS"] | FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS <- FiltTSS <- F ; cat("TSS cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
+    if(BinRoc && !Biomod.material$evaluation.choice["Roc"] | FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc <- FiltRoc <- FALSE ; cat("Roc cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
+    if(BinKappa && !Biomod.material$evaluation.choice["Kappa"] | FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa <- FiltKappa <- FALSE ; cat("Kappa cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
+    if(BinTSS && !Biomod.material$evaluation.choice["TSS"] | FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS <- FiltTSS <- FALSE ; cat("TSS cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
     
     #checking for the variable name compatibility with initial data
     nb <- 0
@@ -26,7 +26,7 @@ repetition.models=TRUE)
     Proj <- Proj[match(Biomod.material$VarNames, colnames(Proj))]
 
     
-    dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=F) #showWarnings=F -> permits overwritting of an already existing directory without signaling (dangerous?)    
+    dir.create(paste(getwd(), "/proj.", Proj.name, sep=""), showWarnings=FALSE) #showWarnings=FALSE -> permits overwritting of an already existing directory without signaling (dangerous?)    
 
     #check and error messages for the models that are wanted but not available
     algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)
@@ -34,7 +34,7 @@ repetition.models=TRUE)
     ww <- ""
     for(i in 1:length(w)) ww <- paste(ww, w[i])
     if(length(w) > 0) cat(paste("\n\n The following models can not be used to render projections : ", ww,"\n they have not been trained in Models() \n\n", sep=""))     
-    algo.c[names(which(!Biomod.material$algo.choice))] <- F
+    algo.c[names(which(!Biomod.material$algo.choice))] <- FALSE
 
     #save information on the projection
     Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]] <- nrow(Proj)
@@ -44,7 +44,7 @@ repetition.models=TRUE)
 
     #the proj will be transformed for the models set to true in algo.cc. The point of this is for the GAM and GLM which will variably need or not transformations.
     algo.cc <- algo.c
-    algo.cc['SRE'] <- F
+    algo.cc['SRE'] <- FALSE
     
     
     
@@ -91,7 +91,7 @@ repetition.models=TRUE)
                             #remove the model loaded and kept in memory under its real name
                             ModelName <- paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep="")
                             rm(list=ModelName)
-                            gc(reset=T)
+                            gc(reset=TRUE)
                                 
                         } else cat("WARNING: Could not find data for model", a, "evaluation repetition", Nrep, ". Probable cause : failure when running Models()", "\n")
                     } else object <- "SRE"
@@ -104,7 +104,7 @@ repetition.models=TRUE)
                         
                         if(a=='GLM' | a=='GAM') {
                             if(object$deviance == object$null.deviance) {  
-                                if(a=='GLM') algo.cc['GLM'] <- F else algo.cc['GAM'] <- F     #in this case, the projections need no binary or filtered transformation 
+                                if(a=='GLM') algo.cc['GLM'] <- FALSE else algo.cc['GAM'] <- FALSE     #in this case, the projections need no binary or filtered transformation 
                                 if((sum(DataBIOMOD[,Biomod.material$NbVar+i])/nrow(DataBIOMOD)) < 0.5) g[,a,Nrep,jj] <- rep(0, nrow(Proj))
                                 else  g[,a,Nrep,jj] <- gg[,a,Nrep,jj] <- ggg[,a,Nrep,jj] <- gggg[,a,Nrep,jj] <- k[,a,Nrep,jj] <- kk[,a,Nrep,jj] <- kkk[,a,Nrep,jj] <- rep(1000, nrow(Proj)) 
                             } else g[,a,Nrep,jj] <- predict(object, Proj, type="response")
@@ -123,7 +123,7 @@ repetition.models=TRUE)
                                              
                         g[,a,Nrep,jj] <- as.numeric(g[,a,Nrep,jj])  
                         #Rescale prediction for the models that need to
-                        if(any(c("ANN", "FDA", "MARS")==a)) g[,a,Nrep,jj] <- Rescaler4(g[,a,Nrep,jj], run=paste(Biomod.material$species.names[i], "_", a, "_", run.name, sep="")) 
+                        if(any(c("ANN", "FDA", "MARS")==a)) g[,a,Nrep,jj] <- .Rescaler4(g[,a,Nrep,jj], run=paste(Biomod.material$species.names[i], "_", a, "_", run.name, sep="")) 
                         #Store as integers
                         g[,a,Nrep,jj] <- as.integer(g[,a,Nrep,jj]*1000)
                         
@@ -170,7 +170,7 @@ repetition.models=TRUE)
          
                            
         rm(g,gg,ggg,gggg,k,kk,kkk,ARRAY,object, list=ProjNameInList)
-        gc(reset=T)       
+        gc(reset=TRUE)       
         i <- i+1
     }  #while species 'i' loop
     

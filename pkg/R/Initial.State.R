@@ -2,7 +2,7 @@
 function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentExplanatory=NULL, sp.name=NULL)
 {
 
-  if(exists("DataEvalBIOMOD")) rm(DataEvalBIOMOD, inherits=T)
+  if(exists("DataEvalBIOMOD")) rm(DataEvalBIOMOD, inherits=TRUE)
   if(is.null(sp.name) && is.vector(Response)) stop("you need to give a 'sp.name' if only one species is selected in 'Response'")
 
   if((!is.null(IndependentResponse) && is.null(IndependentExplanatory)) ||

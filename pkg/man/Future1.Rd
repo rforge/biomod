@@ -22,18 +22,13 @@
     \item{\code{Var7}}{a climate variable}
   }
 }
-\details{
-  
-}
-\source{
-  
-}
-\references{
-  
-}
+
 \examples{
 data(Future1)
-fix(Future1)
+
+### Not run###
+## fix(Future1)
+##
  
 }
 \keyword{datasets}

@@ -17,14 +17,9 @@
 \details{
   This data correspond to a 50x50 km grid for Europe 
 }
-\source{
-  
-}
-\references{
-  
-}
+
 \examples{
 data(CoorXY)
-plot(CoorXY[,1]~CoorXY[,2])
+plot(CoorXY[,1],CoorXY[,2])
 }
 \keyword{datasets}

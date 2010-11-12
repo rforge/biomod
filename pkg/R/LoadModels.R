@@ -5,14 +5,14 @@ function(Sp=1, PA='all', rep='all', models='all'){
     #check and info messages for the models 
     if(models!='all'){
         algo.c  <- c()  
-        for(i in 1:9) if(sum(Biomod.material$algo[i]==models)>1) algo.c <- c(algo.c, Biomod.material$algo[i]==T) else algo.c <- c(algo.c, Biomod.material$algo[i]==F)  
-        algo.c[names(which(!Biomod.material$algo.choice))] <- F  #shut off the ones not available  
+        for(i in 1:9) if(sum(Biomod.material$algo[i]==models)>1) algo.c <- c(algo.c, Biomod.material$algo[i]==TRUE) else algo.c <- c(algo.c, Biomod.material$algo[i]==FALSE)  
+        algo.c[names(which(!Biomod.material$algo.choice))] <- FALSE  #shut off the ones not available  
     
         w <- names(which(!Biomod.material$algo.choice[names(which(algo.c))]))
         ww <- ""
         for(i in 1:length(w)) ww <- paste(ww, w[i])
         if(length(w) > 0) cat(paste("\n\n The following models can not be used to render projections : ", ww,"\n they have not been trained in Models() \n\n", sep=""))     
-        algo.c[names(which(!Biomod.material$algo.choice))] <- F
+        algo.c[names(which(!Biomod.material$algo.choice))] <- FALSE
         
     } else  algo.c <- Biomod.material$algo.choice 
     algo.c['SRE'] <- FALSE

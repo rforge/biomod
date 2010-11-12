@@ -14,7 +14,7 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, FDA=TRUE, R
         NbSp <- Biomod.material$NbSpecies
         SpNames <- Biomod.material$species.names
         algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)
-        algo.c[names(which(!Biomod.material$algo.choice))] <- F  #switch off the models that are wanted but have not been trained    
+        algo.c[names(which(!Biomod.material$algo.choice))] <- FALSE  #switch off the models that are wanted but have not been trained    
     
         gg <- list()
  
@@ -89,18 +89,18 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, FDA=TRUE, R
         #objects assignations and storage on hard disk           
         assign(paste("PredBestModelBy",method,sep=""), ARRAY)
         eval(parse(text=paste("save(PredBestModelBy",method,", file='", getwd(), "/pred/PredBestModelBy",method, "')", sep="")))
-        write.table(ARRAY, file=paste(getwd(),"/pred/PredBestModelBy",method, ".txt", sep=""), row.names=F) 
+        write.table(ARRAY, file=paste(getwd(),"/pred/PredBestModelBy",method, ".txt", sep=""), row.names=FALSE) 
         
         if(Bin.trans) {
         assign(paste("PredBestModelBy",method, "_Bin",sep=""), ARRAY.bin)
         eval(parse(text=paste("save(PredBestModelBy",method, "_Bin, file='", getwd(), "/pred/PredBestModelBy",method, "_Bin')", sep="")))
-        write.table(ARRAY.bin, file=paste(getwd(),"/pred/PredBestModelBy",method, "_Bin.txt", sep=""), row.names=F)
+        write.table(ARRAY.bin, file=paste(getwd(),"/pred/PredBestModelBy",method, "_Bin.txt", sep=""), row.names=FALSE)
         }
         
         if(Filt.trans) {
         assign(paste("PredBestModelBy",method, "_Filt",sep=""), ARRAY.filt)
         eval(parse(text=paste("save(PredBestModelBy",method, "_Filt, file='", getwd(), "/pred/PredBestModelBy",method, "_Filt')", sep="")))
-        write.table(ARRAY.filt, file=paste(getwd(),"/pred/PredBestModelBy",method, "_Filt.txt", sep=""), row.names=F)
+        write.table(ARRAY.filt, file=paste(getwd(),"/pred/PredBestModelBy",method, "_Filt.txt", sep=""), row.names=FALSE)
         }
     
         #saving the list of best models per method

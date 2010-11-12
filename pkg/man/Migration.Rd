@@ -30,15 +30,10 @@ Migration(CurrentPred = NULL, FutureProj = NULL, X = NULL, Y = NULL, MaxMigr = N
  For projection in 2080 : Rate = 1 x 0.16667 x 8.
  For a maximum rate of 3 minutes per decade (4.8km) in 2080: Rate = 3 x 0.16667 x 8
 }
-\value{ 
 
 
-
-
-}
-\references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
+
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{Biomod.RangeSize}}, \code{\link{Biomod.Turnover}} }
 \examples{
 
@@ -56,17 +51,17 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
-Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
-Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
-Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
 load("proj.Future1/Total_consensus_Future1_Bin")
 load("proj.Current/Total_consensus_Current_Bin")

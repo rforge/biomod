@@ -2,7 +2,7 @@
 
     #check for models that are wanted but not available
     algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)    
-    algo.c[names(which(!Biomod.material$algo.choice))] <- F
+    algo.c[names(which(!Biomod.material$algo.choice))] <- FALSE
     Format <- c('Probs','Bin','Filt')
     Th <- c('Roc','Kappa','TSS')
 
@@ -28,7 +28,7 @@
             if(PBF != "Probs"){
                 Groups2 <- Groups
                 for(Thi in 1:(sum(Biomod.material$evaluation.choice)-1)) Groups2 <- cbind(Groups2, Groups)
-                Groups2 <- rbind(rep(names(Biomod.material$evaluation.choice[Biomod.material$evaluation.choice==T]), each=ncol(Groups)), Groups2)
+                Groups2 <- rbind(rep(names(Biomod.material$evaluation.choice[Biomod.material$evaluation.choice==TRUE]), each=ncol(Groups)), Groups2)
             }
                
                

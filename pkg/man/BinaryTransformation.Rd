@@ -14,19 +14,14 @@ BinaryTransformation(ProbData, CutOffdata)
   \item{CutOffdata}{ a numeric value containing the threshold to be used for converting ProbData.}
 }
 
-\details{
-  
-}
+
 \value{
 A binary (0 or 1) vector.   
 }
 
-\references{  }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{  
 
-
-}
 \seealso{ \code{\link{help}}}
 \examples{
 

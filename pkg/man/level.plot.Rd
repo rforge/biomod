@@ -25,10 +25,6 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
   \item{PresAbsSymbol}{ Optional: a 3 element vector giving the symbols to be used by the AddPresAbs argument for plotting. The elements of the vector must be in this order: size of presence/absence symbols given as a multiplication factor of the 'cex' value entered in the function (e.g. a value of 0.5 means that the symbols will be drawn at a size = 0.5*cex value entered in the function), symbol (in PCH code) to be used for presences, symbol (in PCH code) to be used for absences. An example of input vector for this parameter is 'c(0.4,16,4)' }
 }
 
-\details{}
-
-\value{}
-
 \author{ Bruno Lafourcade }
 
 \seealso{ \code{\link{multiple.plot}} }

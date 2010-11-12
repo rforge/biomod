@@ -10,7 +10,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
 
     #store the models wanted and shut down the models that cannot run (not trained)
     ens.choice <- p.choice <- Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]]
-    for(j in Biomod.material$algo) if(!eval(parse(text=j))) ens.choice[j] <- F
+    for(j in Biomod.material$algo) if(!eval(parse(text=j))) ens.choice[j] <- FALSE
     
     #create storing list of outputs
     list.out <- vector('list', Biomod.material$NbSpecies)
@@ -21,8 +21,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     dimnames=list(1:Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]], Biomod.material$species.names, c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'))) 
     
     #turn repetition models off if were not used for projections
-    if(Biomod.material[[paste("proj.", Proj.name, ".repetition.models", sep="")]]==F){
-        repetition.models <- F 
+    if(Biomod.material[[paste("proj.", Proj.name, ".repetition.models", sep="")]]==FALSE){
+        repetition.models <- FALSE 
         cat("repetition models cannot be used for consensus : they have not been used to render projections \n")
     }       
     
@@ -72,14 +72,14 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     #Check if there was model fails in Models() -> turn this model off for that run
                     RUNens.choice <- ens.choice
                     for(a in Biomod.material$algo) if(ens.choice[a]) 
-                        if(!file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", nam, sep=""))) RUNens.choice[a] <- F
+                        if(!file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", nam, sep=""))) RUNens.choice[a] <- FALSE
 
                     #adding species name after check of model fails for convenience
                     nam <- paste(Biomod.material$species.names[i], nam, sep="_")
 
                     #set models to false if under the quality threshold
                     if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
-                    for(a in Biomod.material$algo) if(RUNens.choice[a]) if(as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) < qual.th) RUNens.choice[a] <- F  #Weights are based on the Cross-validated evaluation values.                       
+                    for(a in Biomod.material$algo) if(RUNens.choice[a]) if(as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) < qual.th) RUNens.choice[a] <- FALSE  #Weights are based on the Cross-validated evaluation values.                       
         
 
 
@@ -116,7 +116,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             for(a in Biomod.material$algo) if(RUNens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) else wk[a] <- NA  # Weights are based on the Cross-validated evaluation values.
                             if(weight.method=='Roc') wk['SRE'] <- NA
                             #deal with cases where scores only=0, or rep model failed
-                            if(sum(wk!=0, na.rm=T)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value > 0  -> those models will be used and not set to NA by next line
+                            if(sum(wk!=0, na.rm=TRUE)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value > 0  -> those models will be used and not set to NA by next line
                             wk[wk==0] <- NA
     
                             # Calculate and attribute Weights to each modelling techniques
@@ -142,7 +142,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                       		  }
                                       	} else W[m] <- z[sum(wk[m]>wk)+1]
                                     }
-                                } else if(sum(is.na(wk))==8) { wk <- is.na(wk) ; wk[T] <- 1 }
+                                } else if(sum(is.na(wk))==8) { wk <- is.na(wk) ; wk[TRUE] <- 1 }
                             }                        
                             
                             
@@ -155,7 +155,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 thmi    <- c(thmi,    eval(parse(text=paste("Evaluation.results.", bin.method, sep="")))[[nam]][a,4])
                                 thpondi <- c(thpondi, eval(parse(text=paste("Evaluation.results.", weight.method, sep="")))[[nam]][a,4])
                             }
-                            ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=T))
+                            ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=TRUE))
                             thpondi[is.na(thpondi)] <- 0
                             ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[RUNens.choice]))   
                             #-----------------------end weights------------------------#
@@ -164,14 +164,14 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             if(PCA.median){
                                 if(sum(search()=="package:ade4")==0) library(ade4)  
                                   
-                                cons <- dudi.pca(cons.data, scale=T, scannf = F, nf=2)
+                                cons <- dudi.pca(cons.data, scale=TRUE, scannf = FALSE, nf=2)
                                 pca.select <- colnames(cons.data)[which.min(abs(cons$co[,2]))]
                                 #x11() #plotting the pca 
-                                #s.corcircle(cons$co, lab = colnames(sp.data[,RUNens.choice]), full = FALSE, box = F, sub=Biomod.material$species.names[i])
+                                #s.corcircle(cons$co, lab = colnames(sp.data[,RUNens.choice]), full = FALSE, box = FALSE, sub=Biomod.material$species.names[i])
                             }    
                         
                             #store the information for each run
-                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=T), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
+                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=TRUE), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)
                             if(PCA.median) out[["PCA.median"]][(j-1)*nbrep+k, ] <- pca.select
                                                   
@@ -222,7 +222,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, sep=""), ARRAY) 
                 eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"')", sep="")))
                 
-                # if binary=T, then we transform the ensemble forecasting values into binary ones
+                # if binary=TRUE, then we transform the ensemble forecasting values into binary ones
                 if(binary){
                     for(j in c(1,2,4,5,6)){                                                                                                               #no conversuion for 3 -> median = no associated threshold
                         if(j<4){ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun]) 
@@ -236,16 +236,16 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 #Final consensus on all data available (average across all Evaluation Replicates and All PAs replicates)
                 if(dim(ARRAY)[2] != 1){                                                                                                       
                     
-                    #define which models to take into account i.e. if final.model.out=F
-                    TotalModels <- rep(T, dim(ARRAY)[2])
+                    #define which models to take into account i.e. if final.model.out=FALSE
+                    TotalModels <- rep(TRUE, dim(ARRAY)[2])
                     if(final.model.out){
                         if(nbrep!=1){                                                                     #if ==1 -> no repetitions are wanted, full models (ony ones available) are left as True
                             FinMod <- c()
                             for(i in 1:NbPA) FinMod <- c(FinMod, ((i-1)*nbrep)+1)
-                            TotalModels[FinMod] <- F
+                            TotalModels[FinMod] <- FALSE
                         }
                     }                            
-                    TotalModels[!EnsRun] <- F
+                    TotalModels[!EnsRun] <- FALSE
 
                     
                     #calculate total consensus for first 3 methods
@@ -292,8 +292,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     
                     for(k in 1:nbrep){                                                                    # Loop through Model Evaluation replicates
                         for(m in 1:6){                                                                    # Loop through ensemble forecasting methods
-                            if(m<4) {test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]   #to check if method was chosen
-                            } else if(Biomod.material$evaluation.choice[Th[m-3]]) test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]    
+                            if(m<4) {test[m,(j-1)*nbrep+k] <- .somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]   #to check if method was chosen
+                            } else if(Biomod.material$evaluation.choice[Th[m-3]]) test[m,(j-1)*nbrep+k] <- .somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]    
                         }
                     }
                 }

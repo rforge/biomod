@@ -29,20 +29,15 @@
     \item{\code{Sp191}}{binary record of a species geographical localisation}
   }
 }
-\details{
-  
-}
-\source{
-  
-}
-\references{
-  
-}
+
 \examples{
 data(Sp.Env)
-fix(Sp.Env)
+
+### not run
+## fix(Sp.Env)
+###
 
 data(CoorXY)
-levelplot(Sp.Env[,4], CoorXY[,1:2])
+level.plot(Sp.Env[,4], CoorXY[,1:2])
 }
 \keyword{datasets}

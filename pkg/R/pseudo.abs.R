@@ -12,7 +12,7 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 	pres <- which(status==1)
 	abs <- (1:length(status))[-pres]
 
-	out <- rep(F, length(abs))
+	out <- rep(FALSE, length(abs))
 
   #running the different strategies
 	if(strategy=='random') abs.set <- abs
@@ -50,7 +50,7 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
   #plotting
   if(plot){
 		plot(coor[abs.set,2]~coor[abs.set,1], xlim=c(min(coor[,1]), max(coor[,1])), ylim=c(min(coor[,2]), max(coor[,2])), col=acol, xlab="", ylab="", main=nam, xaxt='n', yaxt='n', pch=20)
-		par(new=T);plot(coor[pres,2]~coor[pres,1], col=pcol, ylim=c(min(coor[,2]), max(coor[,2])), xlim=c(min(coor[,1]), max(coor[,1])), xlab="", ylab="", xaxt='n', yaxt='n', pch=20)
+		par(new=TRUE);plot(coor[pres,2]~coor[pres,1], col=pcol, ylim=c(min(coor[,2]), max(coor[,2])), xlim=c(min(coor[,1]), max(coor[,1])), xlab="", ylab="", xaxt='n', yaxt='n', pch=20)
 	}
 	
   #creating the final output

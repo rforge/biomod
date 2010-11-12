@@ -3,21 +3,21 @@ function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 5000, GAM
 NbRunEval=1, DataSplit=100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
-    require(nnet, quietly=T)
-    require(rpart, quietly=T)
-    require(Hmisc, quietly=T)
-    require(Design, quietly=T)
-    require(MASS, quietly=T)
-    require(gbm, quietly=T)
-    require(mda, quietly=T)
-    require(randomForest, quietly=T)
-    require(gam, quietly=T)	
+    require(nnet, quietly=TRUE)
+    require(rpart, quietly=TRUE)
+    require(Hmisc, quietly=TRUE)
+    require(Design, quietly=TRUE)
+    require(MASS, quietly=TRUE)
+    require(gbm, quietly=TRUE)
+    require(mda, quietly=TRUE)
+    require(randomForest, quietly=TRUE)
+    require(gam, quietly=TRUE)	
     
     #checking possible mistakes in the argument selections
     if(!exists("DataBIOMOD")) stop("Initial.State should be run first in order to procede")
     if(!any(GAM,GBM,GLM,RF,FDA,MARS,SRE,ANN,CTA)) stop("No models were selected \n") 
     if(!any(Roc,Kappa,TSS)) stop("At least one evaluation technique (Roc, TSS or Kappa) must be selected \n") 
-    if(Roc != T && Optimized.Threshold.Roc != F) stop("Roc must be TRUE to derive optimized threshold value")
+    if(Roc != TRUE && Optimized.Threshold.Roc != FALSE) stop("Roc must be TRUE to derive optimized threshold value")
     if(DataSplit < 50) cat("Warning : You choose to allocate more data to evaluation than to calibration of your model (DataSplit<50) \n Make sure you really wanted to do that. \n") 
     if(quant>=0.5 | quant<0) stop("\n settings in 'quant' should be a value between 0 and 0.5 ")  
       
@@ -33,17 +33,17 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
    
     
     #create the directories in which various objects will be stored (models, predictions and projection). The projection directories are created in the Projection() function.
-    dir.create(paste(getwd(), "/models", sep=""), showWarnings=F)                   
-    dir.create(paste(getwd(), "/pred", sep=""), showWarnings=F)
-    if(any(MARS, FDA, ANN)) dir.create(paste(getwd(), "/models/rescaling_models", sep=""), showWarnings=F) 
+    dir.create(paste(getwd(), "/models", sep=""), showWarnings=FALSE)                   
+    dir.create(paste(getwd(), "/pred", sep=""), showWarnings=FALSE)
+    if(any(MARS, FDA, ANN)) dir.create(paste(getwd(), "/models/rescaling_models", sep=""), showWarnings=FALSE) 
   
   
     #switch SRE and MARS off if one of the variables is a non numeric
     Nbcat <- rep(0, Biomod.material$NbVar)
     for(i in 1:Biomod.material$NbVar) Nbcat[i] <- is.factor(DataBIOMOD[,i]) 
        
-    if(sum(Nbcat) > 0 && MARS){ MARS <- F ; cat(paste("MARS model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==T], collapse=" "), "\n", sep="")) }
-    if(sum(Nbcat) > 0 && SRE){ SRE <- F ; cat(paste("SRE model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==T], collapse=" "), "\n", sep="")) }
+    if(sum(Nbcat) > 0 && MARS){ MARS <- FALSE ; cat(paste("MARS model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==TRUE], collapse=" "), "\n", sep="")) }
+    if(sum(Nbcat) > 0 && SRE){ SRE <- FALSE ; cat(paste("SRE model was shut down, it cannot run on factorial variables : ", paste(Biomod.material$VarNames[Nbcat==TRUE], collapse=" "), "\n", sep="")) }
      
     #defining evaluation runs
     if(NbRunEval==0){
@@ -124,8 +124,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     "Number of species modelled : \t\t" , Biomod.material$NbSpecies, "\n",
     paste(Biomod.material$species.names, collapse=", "), "\n\n",
     
-    "numerical variables : \t\t\t" , paste(Biomod.material$VarNames[Nbcat==F], collapse=", "), "\n",  
-    if(sum(Nbcat) > 0) "factorial variables : \t\t\t" , paste(Biomod.material$VarNames[Nbcat==T], collapse=", "), "\n\n",
+    "numerical variables : \t\t\t" , paste(Biomod.material$VarNames[Nbcat==FALSE], collapse=", "), "\n",  
+    if(sum(Nbcat) > 0) "factorial variables : \t\t\t" , paste(Biomod.material$VarNames[Nbcat==TRUE], collapse=", "), "\n\n",
     
     "number of evaluation repetitions : \t" , NbRunEval, "\n",
     "number of pseudo-absences runs : \t" , NbRepPA, "\n",  
@@ -202,12 +202,12 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
             } else PA.samp <- 1:nrow(DataBIOMOD) 
                 
             #defining the Ids to be selected for the evaluation runs
-            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- sort(SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration)      
+            if(NbRunEval != 0) for(j in 1:NbRunEval) Ids[,j] <- sort(.SampleMat2(DataBIOMOD[PA.samp,(Biomod.material$NbVar+i)], DataSplit/100)$calibration)      
                    
                    
             #Run Biomod.models       
             for(a in Biomod.material$algo[Biomod.material$algo.choice]){
-                  Biomod.Models(a, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, NbRunEval, Spline, DataSplit,
+                  .Biomod.Models(a, Ids, PA.samp, TypeGLM, Test, No.trees, CV.tree, CV.ann, quant, NbRunEval, Spline, DataSplit,
                             Yweights, Roc, Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, VarImport)
                   if(exists("DataEvalBIOMOD") && KeepPredIndependent) ARRAY.ind[,a,1,pa] <- predind
                    

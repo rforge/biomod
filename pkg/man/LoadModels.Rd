@@ -25,15 +25,9 @@ rep : '1' is the 100\% model and '2' the first repetitions
   back a lot of models will tend towards saturation, and an exceeding number will crash R, or make it unable to run properly.
    
 }
-\value{
 
-
-  
-}
-\references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{  
-}
+
 \seealso{ \code{\link{Models}}, \code{\link{help}} }
 
 \examples{

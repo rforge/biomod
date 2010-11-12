@@ -11,7 +11,7 @@
 \usage{
 Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, FDA = TRUE,
     RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE,
-    bin.method = "Roc", Test = FALSE, repetition.models=TRUE, final.model.out=FALSE)
+    bin.method = "Roc", Test = FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0)
 
 Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE,
    FDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE,
@@ -58,9 +58,9 @@ Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM 
   A list is returned, named after the Proj.name argument (see examples). It contains the details of the ensemble forecast process for every species modelled and
   for every run. For each species, the information is as follows :
 
-  \item{stats}{ contains a 2-columns matrix : if Test=T, the first one gives the assumed predictive performance for each consensus method. These scores are
+  \item{stats}{ contains a 2-columns matrix : if Test=TRUE, the first one gives the assumed predictive performance for each consensus method. These scores are
   obtained by applying the same ensemble computation on the current predictions as on the future forecasts, and compared with the data input for that species 
-  (using the Roc evaluation method). If binary=T, the second column gives the threshold obtained by each method for converting the probabilities into presence-absence predictions
+  (using the Roc evaluation method). If binary=TRUE, the second column gives the threshold obtained by each method for converting the probabilities into presence-absence predictions
   (see the manual for more details).}
   \item{weights}{ contains the weights awarded to each model selected for the ensemble forecasts (only concerns the weighted.mean).}
   \item{PCA.median}{ defines the model selected by the median PCA consensus approach. Note that nothing else is produced in regards to this method.}
@@ -73,9 +73,7 @@ Marmion, M., Parviainen, M., Luoto, M., Heikkinen, R. K. & Thuiller, W. 2009 Eva
 Thuiller, W. 2004 Patterns and uncertainties of species' range shifts under climate change. Global Change Biology 10, 2020-2027.
 }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ 
 
-}
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{ProjectionBestModel}} }
 \examples{
 
@@ -98,21 +96,21 @@ data <- Total_consensus_Future1
 
 par(mfrow=c(2,7))
 par(mar=c(0.6,0.6,2,0.6))
-level.plot(DataBIOMOD[,8], CoorXY, show.scale=F, title='sp277_original_data', cex=0.5)
-level.plot(data[,1,1], CoorXY, show.scale=F, title='sp277_mean', cex=0.5)
-level.plot(data[,1,2], CoorXY, show.scale=F, title='sp277_weighted_mean', cex=0.5)
-level.plot(data[,1,3], CoorXY, show.scale=F, title='sp277_median', cex=0.5)
-level.plot(data[,1,4], CoorXY, show.scale=F, title='sp277_Roc_mean', cex=0.5)
-level.plot(data[,1,5], CoorXY, show.scale=F, title='sp277_Kappa_mean', cex=0.5)
-level.plot(data[,1,6], CoorXY, show.scale=F, title='sp277_Roc_mean', cex=0.5)
+level.plot(DataBIOMOD[,8], CoorXY, show.scale=FALSE, title='sp277_original_data', cex=0.5)
+level.plot(data[,1,1], CoorXY, show.scale=FALSE, title='sp277_mean', cex=0.5)
+level.plot(data[,1,2], CoorXY, show.scale=FALSE, title='sp277_weighted_mean', cex=0.5)
+level.plot(data[,1,3], CoorXY, show.scale=FALSE, title='sp277_median', cex=0.5)
+level.plot(data[,1,4], CoorXY, show.scale=FALSE, title='sp277_Roc_mean', cex=0.5)
+level.plot(data[,1,5], CoorXY, show.scale=FALSE, title='sp277_Kappa_mean', cex=0.5)
+level.plot(data[,1,6], CoorXY, show.scale=FALSE, title='sp277_Roc_mean', cex=0.5)
 
-level.plot(DataBIOMOD[,9], CoorXY, show.scale=F, title='sp164_original_data', cex=0.5)
-level.plot(data[,2,1], CoorXY, show.scale=F, title='sp164_mean', cex=0.5)
-level.plot(data[,2,2], CoorXY, show.scale=F, title='sp164_weighted_mean', cex=0.5)
-level.plot(data[,2,3], CoorXY, show.scale=F, title='sp164_median', cex=0.5)
-level.plot(data[,2,4], CoorXY, show.scale=F, title='sp164_Roc_mean', cex=0.5)
-level.plot(data[,2,5], CoorXY, show.scale=F, title='sp164_Kappa_mean', cex=0.5)
-level.plot(data[,2,6], CoorXY, show.scale=F, title='sp164_TSS_mean', cex=0.5)
+level.plot(DataBIOMOD[,9], CoorXY, show.scale=FALSE, title='sp164_original_data', cex=0.5)
+level.plot(data[,2,1], CoorXY, show.scale=FALSE, title='sp164_mean', cex=0.5)
+level.plot(data[,2,2], CoorXY, show.scale=FALSE, title='sp164_weighted_mean', cex=0.5)
+level.plot(data[,2,3], CoorXY, show.scale=FALSE, title='sp164_median', cex=0.5)
+level.plot(data[,2,4], CoorXY, show.scale=FALSE, title='sp164_Roc_mean', cex=0.5)
+level.plot(data[,2,5], CoorXY, show.scale=FALSE, title='sp164_Kappa_mean', cex=0.5)
+level.plot(data[,2,6], CoorXY, show.scale=FALSE, title='sp164_TSS_mean', cex=0.5)
 
 
 }

@@ -16,7 +16,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(class(model)[1]=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
     if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
     if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=F)
+    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
     
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
     if(save.file=="jpeg") jpeg(paste(name, "jpeg", sep="."))
@@ -26,7 +26,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     #plotting window
     W.width <- ceiling(sqrt(NbVarShow))
     W.height <- ceiling(NbVarShow/W.width)
-    mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), nc=W.width, byrow=T) 
+    mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), nc=W.width, byrow=TRUE) 
     layout(mat, widths=rep(1,W.width), heights=c(0.3,rep(1,W.height)))
     
     par(mar = c(0.1, 0.1, 0.1, 0.1))
@@ -72,9 +72,9 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
    
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
    
-    if(class(model)[1]=="nnet" )  detach(package:nnet)
-    if(class(model)[1]=="rpart") detach(package:rpart)
-    if(class(model)[1]=="mars" | class(model)[1]=="fda") detach(package:mda)
-    if(class(model)[1]=="randomForest") detach(package:randomForest)            
+  #  if(class(model)[1]=="nnet" )  detach(package:nnet)
+   # if(class(model)[1]=="rpart") detach(package:rpart)
+   # if(class(model)[1]=="mars" | class(model)[1]=="fda") detach(package:mda)
+   # if(class(model)[1]=="randomForest") detach(package:randomForest)            
 }    
  

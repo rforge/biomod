@@ -15,7 +15,7 @@ function(CurrentPred=NULL, FutureProj=NULL, X=NULL, Y=NULL, MaxMigr=NULL, Pred.S
     
         for(j in 1:ncol(CurrentPred)){
             if(sum(FutureProj[CurrentPred[, j] == 0, j]) != 0) 
-            PredMigr[, j] <- Dispersal.Limit(CurrentPred[, j], FutureProj[, j], X, Y, MaxMigr[j])
+            PredMigr[, j] <- .Dispersal.Limit(CurrentPred[, j], FutureProj[, j], X, Y, MaxMigr[j])
             else PredMigr[, j] <- FutureProj[, j]
         }    
     } else stop("\n Incorrect values in MaxMigr, does not match the number of columns of data input")

@@ -13,8 +13,10 @@ Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=
 }
 
 \arguments{
-  \item{Proj (or RasterProj)}{ a matrix (or an object of class 'RasterStack') containing the same variables than for calibrating the models (using the Models function) (the column names are case-sensitive !)
+  \item{Proj}{ a matrix containing the same variables than for calibrating the models (using the Models function) (the column names are case-sensitive !)
    but on another geographical space, resolution, or time scale. }
+   \item{RasterProj}{ an object of class 'RasterStack' containing the same variables than for calibrating the models (using the Models function) (the names are case-sensitive !)
+   but on another geographical space, resolution, or time scale. } 
   \item{Proj.name}{ The name of your projection dataset (or any name you want to give to it) which will be used for storing the outputs of the function and
   also used by other functions to automatically restore the outputs in R from the hard disk}
   \item{GLM}{ if TRUE, the model will be used to render projections }
@@ -34,6 +36,7 @@ Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=
   \item{FiltKappa}{ set it to TRUE if you want the results to be also produced as filtered value using Kappa threshold for all models }
   \item{FiltTSS}{ set it to TRUE if you want the results to be also produced as filtered value using TSS threshold for all models }
   \item{repetition.models}{ type TRUE to render projections on the 100 percent calibrated model and also on the repetition models. }
+  \item{stack.out}{ When working with rasters, set it to TRUE to stack all projections on a singl raster stack. Not recommended when having very large datasets with several repetitions and pseudo-absences.}
 }
 
 
@@ -54,7 +57,6 @@ Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=
   selected and for the repetitions if wanted. See the structure in the examples below.
 }
 
-\references{ }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \note{
   WARNING :

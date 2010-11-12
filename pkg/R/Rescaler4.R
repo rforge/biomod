@@ -1,4 +1,4 @@
-`Rescaler4` <-
+`.Rescaler4` <-
 function(dataToRescale, ref=NULL, run, original=FALSE)
 {
     #preparing data

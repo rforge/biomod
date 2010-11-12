@@ -35,7 +35,6 @@ ProjectionBestModel(Proj.name, Bin.trans = TRUE, Filt.trans = TRUE, method='all'
 Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and projecting potential future shifts under global change. Global Change Biology 9, 1353-1362.
 }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{PredictionBestModel}}}
 \examples{
 

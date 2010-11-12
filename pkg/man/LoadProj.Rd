@@ -6,7 +6,7 @@
 }
 
 \usage{
-LoadProj(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred", raster=FALSE)
+LoadProj(Sp=1, Bin=FALSE, Filt=FALSE, which.pred="pred", raster=FALSE)
 }
 
 \arguments{
@@ -18,19 +18,9 @@ LoadProj(Sp=1, Bin=TRUE, Filt=FALSE, which.pred="pred", raster=FALSE)
   \item{raster}{ Logical. Define if the projection wanted has been done with rasters. }
 }
 
-\details{
-  
 
-}
-\value{
-
-
-  
-}
-\references{  }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{  
-}
+
 \seealso{ \code{\link{Models}}, \code{\link{help}} }
 
 \examples{
@@ -49,11 +39,11 @@ Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, AN
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
-Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 ls()
 

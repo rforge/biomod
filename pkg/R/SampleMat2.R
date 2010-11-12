@@ -1,4 +1,4 @@
-`SampleMat2` <-
+`.SampleMat2` <-
 function(ref, ratio)
 {
     ntot <- length(ref)

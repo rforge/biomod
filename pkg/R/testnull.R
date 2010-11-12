@@ -1,4 +1,4 @@
-`testnull` <-
+.testnull <-
 function(object, Prev, dat){
 
     if(object$deviance == object$null.deviance){

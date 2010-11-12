@@ -27,7 +27,7 @@
                 Q <- quantile(ref[,j], probs=quants, na.rm=na.rm)
                 
                 if(class(NewData)[1]!='RasterStack'){
-                    TF <- TF + (NewData[,names(ref)[j]]>=Q[1])                                          #add the T/F values to vector (+T = +1)
+                    TF <- TF + (NewData[,names(ref)[j]]>=Q[1])                                          #add the TRUE/FALSE values to vector (+T = +1)
                     TF <- TF + (NewData[,names(ref)[j]]<=Q[2])
                 } else{                                                                             #NewData = raster
                     TFmin <- NewData@layers[[which(NewData@layernames==names(ref)[j])]]>=Q[1]       #produce T/F rasterlayers
@@ -46,7 +46,7 @@
     #Calibration on RasterStack, projection on rasters  
     #else{ 
         
-    #    Q <- quantile(belalp.stk@layers[[1]], na.rm=T, probs=quants)
+    #    Q <- quantile(belalp.stk@layers[[1]], na.rm=TRUE, probs=quants)
         
     #}
 

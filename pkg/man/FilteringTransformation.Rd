@@ -24,12 +24,9 @@ lower than the threshold are transformed into a zero.
 A vector of zeros and original values of ProbData.
  
 }
-\references{  }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{  
 
-
-}
 \seealso{ \code{\link{help}}}
 \examples{
 

@@ -39,10 +39,9 @@ Initial.State(Response = NULL, Explanatory = NULL, IndependentResponse = NULL, I
 
 }
 
-\references{ }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{
-}
+
 \seealso{ \code{\link{Models}}}
 \examples{
 

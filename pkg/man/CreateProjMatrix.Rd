@@ -42,9 +42,9 @@ CreateProjMatrix(ANN=TRUE, CTA=TRUE, GLM=TRUE, GBM=TRUE, GAM=TRUE, SRE=TRUE, FDA
   keep track of where the projections come from.
 }
 
-\references{ }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
+
 \seealso{ \code{\link{Projection}}, \code{\link{ProbDensFunc}} }
 \examples{
 

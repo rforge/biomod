@@ -1,4 +1,4 @@
-`Dispersal.Limit` <-
+`.Dispersal.Limit` <-
 function(CurrentPred=NULL, FutureProj=NULL, X=NULL, Y=NULL, MaxMigr=NULL)
 {
     Data <- FutureProj - 2 * CurrentPred
@@ -16,7 +16,7 @@ function(CurrentPred=NULL, FutureProj=NULL, X=NULL, Y=NULL, MaxMigr=NULL)
     }
     , subY=subY))
     Cs1 <- apply(Cs, 2, min) <= MaxMigr
-    Data[Data == 1][Cs1 != T] <- 0
+    Data[Data == 1][Cs1 != TRUE] <- 0
     Data[Data == -1] <- 1
     Data[Data == -2] <- 0
     cat(".")

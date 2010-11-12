@@ -39,21 +39,21 @@ sre(Response = NULL, Explanatory = NULL, NewData = NULL, Quant=0.025, na.rm=TRUE
   A vector of the same length as there are rows in NewData giving the prediction in binary (1=presence, 0=absence)
 }
 
-\references{  }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
 \seealso{ \code{\link{Models}} }
 \examples{
 
 data(Sp.Env)
+data(CoorXY)
 
-g <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8])
-gg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Quant=0.025)
-ggg <- sre(Sp.Env[,10], Sp.Env[,2:8], NewData=Sp.Env[,2:8], Quant=0.05)
+g <- sre(Sp.Env[,11], Sp.Env[,4:10], NewData=Sp.Env[,4:10])
+gg <- sre(Sp.Env[,11], Sp.Env[,4:10], NewData=Sp.Env[,4:10], Quant=0.025)
+ggg <- sre(Sp.Env[,11], Sp.Env[,4:10], NewData=Sp.Env[,4:10], Quant=0.05)
 
 
 par(mfrow=c(1,4))
-level.plot(Sp.Env[,10], XY=CoorXY[,1:2], show.scale=FALSE, title="original data")
+level.plot(Sp.Env[,11], XY=CoorXY[,1:2], show.scale=FALSE, title="original data")
 level.plot(g, XY=CoorXY[,1:2], show.scale=FALSE, title="full data calibration")
 level.plot(gg, XY=CoorXY[,1:2], show.scale=FALSE, title="Perc025=TRUE")
 level.plot(ggg, XY=CoorXY[,1:2], show.scale=FALSE, title="Perc05=TRUE")

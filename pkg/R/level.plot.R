@@ -33,7 +33,7 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
     if(SRC){
         if(unique(data.in)>4){
             cat("\n not possible to render SRC plot -> more than four different values in data ")
-            SRC <- F
+            SRC <- FALSE
         } else{    
             SRCvalues <- sort(unique(data.in))
             color.system <- c("red", "lightgreen", "grey", "darkgreen")

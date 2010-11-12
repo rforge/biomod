@@ -23,13 +23,11 @@ response.plot(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", nam
   of interest is varying accross its whole range. The variations observed and the curve thus obtained shows
   the sensibility of the model to that specific variable. This method does therefore not account for interactions between variables.
 }
-\value{
-}
 
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
 \references{ 
-Elith, J., Ferrier, S., Huettmann, F. & Leathwick, J. R. 2005 The evaluation strip: A new and robust method for plotting 
+Elith, J., Ferrier, S., Huettmann, FALSE. & Leathwick, J. R. 2005 The evaluation strip: A new and robust method for plotting 
 predicted responses from species distribution models. Ecological Modelling 186, 280-289.
 }
 

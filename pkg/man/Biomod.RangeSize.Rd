@@ -50,9 +50,9 @@ Biomod.RangeSize.raster(CurrentPred = NULL, FutureProj = NULL, SpChange.Save = N
 
 }
 
-\references{ }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
+
 \seealso{ \code{\link{Biomod.Turnover}}, \code{\link{Migration}}}
 \examples{
 
@@ -70,17 +70,17 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
-Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
-Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
-Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
 load("proj.Future1/Total_consensus_Future1_Bin")
 load("proj.Current/Total_consensus_Current_Bin")
@@ -95,9 +95,9 @@ Future1.SpChange.consensus$Diff.By.Pixel[50:100,]
 
 #You can use the level.plot function to directly visualise the SpChange values
 
-level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp277"], CoorXY, show.scale=T, title="Sp277")
+level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp277"], CoorXY, show.scale=TRUE, title="Sp277")
 x11()
-level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp164"], CoorXY, show.scale=T, title="Sp164")
+level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp164"], CoorXY, show.scale=TRUE, title="Sp164")
 
 }
 

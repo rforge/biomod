@@ -17,9 +17,7 @@ Biomod.Turnover.raster(CurrentPred = NULL, FutureProj = NULL, Turnover.Save = NU
   \item{FutureProj}{ a matrix of n (number of species) columns OR a rasterstack giving the future predictions of the species in binary }
   \item{Turnover.Save}{ the name given to the new object storing the results }
 }
-\details{
-  
-}
+
 \value{
   A 10 columns database or a 10 layers rasterstack is created (and saved under the name you gave it).
 The first four are relative numbers: 
@@ -41,9 +39,9 @@ Where SR is the current species richness, L the number of species lost and G tho
   the datasets given in input, if \code{\link{Migration}} has been used or not).
 
 }
-\references{ }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
+
 \seealso{ \code{\link{Biomod.RangeSize}}, \code{\link{Migration}} }
 \examples{
 
@@ -61,17 +59,17 @@ Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, AN
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
-Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=T)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
-Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
-Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
 load("proj.Future1/Total_consensus_Future1_Bin")
 load("proj.Current/Total_consensus_Current_Bin")

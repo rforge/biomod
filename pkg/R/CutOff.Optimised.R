@@ -31,6 +31,7 @@ function(Obs, Fit){
         Cut[2] <- 100*sum((Fit>=b)[Obs==1])/SumObs
         Cut[3] <- 100*sum((Fit<b)[Obs==0])/(LengObs-SumObs)
         Cut <- t(Cut)
+        dimnames(Cut)=list(NULL, c("CutOff", "se", "sp"))
     }
     return(Cut)
 }

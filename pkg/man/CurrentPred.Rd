@@ -39,7 +39,7 @@ CurrentPred(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, FDA=TRUE
   filtered predictions data. See the structure in the examples below.
  
 }
-\references{ }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
 \seealso{ \code{\link{Models}}, \code{\link{PredictionBestModel}}}
@@ -81,7 +81,13 @@ load("pred/Pred_Sp277")
 data(CoorXY)
 nrow(Pred_Sp277)
 nrow(CoorXY)
-level.plot(Pred_Sp277[,"GLM",1,1], CoorXY, show.scale=FALSE)
+
+### Not run. Give an error because the number of rows are different
+### level.plot(Pred_Sp277[,"GLM",1,1], CoorXY, show.scale=FALSE)
+###
+### The lines used for calibrating the models with pseudo-abences are here:Biomod.PA.sample
+nrow(CoorXY[Biomod.PA.sample$Sp277$PA1,])
+level.plot(Pred_Sp277[,"GLM",1,1], CoorXY[Biomod.PA.sample$Sp277$PA1,], show.scale=FALSE)
 
 #Make full calibrations
 Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 

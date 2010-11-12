@@ -59,7 +59,7 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 50
   to constitute the runs PA1, PA2, and so forth. 
   
   NbRunEval : as already explained in the \code{\link{Initial.State}} help file, the common trend is to split the original dataset into two subsets for the calibration 
-  and evaluation steps of the models' construction. Here we provide the possibility to do multiple runs with this standard procedure (NbRunEval times) to have an 
+  and evaluation steps of the models construction. Here we provide the possibility to do multiple runs with this standard procedure (NbRunEval times) to have an 
   evaluation on independent-like data, whilst building the final model on 100 percent of the given data. Since march 2009, all the models produced by BIOMOD and their 
   related informations are saved on the hard disk. This is to enable the possibility of assessing the stochastic effect of the splitting procedure of the calibration step
   by being able to render projections with those models.
@@ -98,12 +98,8 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 50
   
 }
 
-\references{ }
 
 \author{ Wilfried Thuiller, Bruno Lafourcade, Robin Engler }
-\note{
-
-}
 \seealso{ \code{\link{Initial.State}}, \code{\link{Projection}}, \code{\link{CurrentPred}}, \code{\link{PredictionBestModel}}, \code{\link{response.plot}}, \code{\link{level.plot}} }
 \examples{
 

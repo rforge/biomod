@@ -13,18 +13,9 @@ Biomod.Manual(manual="Biomod Manual"))
 \item{manual}{ The name (minus the .pdf extension) of the file you want to open }
 }
 
-\details{
-  
-}
-\value{
-  
-}
-\references{  }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{  
 
-
-}
 \seealso{ \code{\link{help}}}
 \examples{
 

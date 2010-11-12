@@ -1,4 +1,4 @@
-somers2 = function (x, y, weights = NULL, normwt = FALSE, na.rm = TRUE)
+.somers2 = function (x, y, weights = NULL, normwt = FALSE, na.rm = TRUE)
 {
     if (length(y) != length(x))
         stop("y must have same length as x")

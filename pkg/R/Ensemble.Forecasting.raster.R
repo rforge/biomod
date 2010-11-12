@@ -10,22 +10,22 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
 
     #store the models wanted and shut down the models that cannot run (not trained)
     ens.choice <- p.choice <- Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]]
-    for(j in Biomod.material$algo) if(!eval(parse(text=j))) ens.choice[j] <- F
+    for(j in Biomod.material$algo) if(!eval(parse(text=j))) ens.choice[j] <- FALSE
     
     #create storing list of outputs
     list.out <- vector('list', Biomod.material$NbSpecies)
     names(list.out) <- Biomod.material$species.names
     
     #turn repetition models off if were not used for projections
-    if(Biomod.material[[paste("proj.", Proj.name, ".repetition.models", sep="")]]==F){
-        repetition.models <- F
+    if(Biomod.material[[paste("proj.", Proj.name, ".repetition.models", sep="")]]==FALSE){
+        repetition.models <- FALSE
         ProjRunEval <- 1     
         cat("repetition models cannot be used for consensus : they have not been used to render projections \n")
     } else ProjRunEval <- Biomod.material$NbRunEval + 1                                                                             #ProjRunEval is an object only used for constituting the stack to do
                                                                                                                                      #consensus on considering if rep.models were run or not in Proj().
     if(!repetition.models & final.model.out){                                                                                        #incident of rep.models in Proj() -> data storage format which 
         cat("only PA models are available for total consensus, they cannot be taken out \n ")                                        #obliges to build a stack with reps even if not wanted  
-        final.model.out <- F                                                                                                         
+        final.model.out <- FALSE                                                                                                         
     }                                                                                                                                
 
                                                                                                                                      
@@ -51,12 +51,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             out[["thresholds"]] <- matrix(NA, nr=6, nc=nbrep*NbPA, dimnames=list(c('prob.mean','prob.mean.weighted','median','Roc.mean','Kappa.mean','TSS.mean'), rep("rep", nbrep*NbPA)))
           
             #define which models correspond to each run -> will be used to drop layers from full stack of raster projections
-            if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==T){ RunXModels <- rep(F, ProjRunEval*NbPA)                                     #difference if stack or not -> later : STK not containing same info, hence not same indices to select from
-            } else RunXModels <- rep(F, nbrep*NbPA)    
-            RunXModels[1] <- T
+            if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==TRUE){ RunXModels <- rep(FALSE, ProjRunEval*NbPA)                                     #difference if stack or not -> later : STK not containing same info, hence not same indices to select from
+            } else RunXModels <- rep(FALSE, nbrep*NbPA)    
+            RunXModels[1] <- TRUE
             RunXModels <- rep(RunXModels, sum(ens.choice))                             
             
-            #goal : 'gnames' containing the names for loading the projections for the case when stack.out=F when running projection.raster()
+            #goal : 'gnames' containing the names for loading the projections for the case when stack.out=FALSE when running projection.raster()
             #and assigning the layer names for the storing stacks per species 
             if(Biomod.material$NbRepPA == 0) { PAs <- rep("full", nbrep)
             } else{ 
@@ -80,7 +80,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 STK <- stack()                                                                                                                                #Load Rasters
                 for(m in Biomod.material$algo[ens.choice]){
             
-                    if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==T){                                                                    #if rasters were saved in stacks
+                    if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==TRUE){                                                                    #if rasters were saved in stacks
                         load(paste(getwd(), "/proj.", Proj.name, "/Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", m, ".raster", sep=""))
                         STK <- stack(STK, eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", m, ".raster", sep=""))))
                     } else{
@@ -112,14 +112,14 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     #Check if there was model fails in Models() -> turn this model off for that run
                     RUNens.choice <- ens.choice
                     for(a in Biomod.material$algo) if(ens.choice[a]) 
-                        if(!file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", nam, sep=""))) RUNens.choice[a] <- F
+                        if(!file.exists(paste(getwd(), "/models/", Biomod.material$species.names[i], "_", a, "_", nam, sep=""))) RUNens.choice[a] <- FALSE
 
                     #adding species name after check of model fails for convenience
                     nam <- paste(Biomod.material$species.names[i], nam, sep="_")
 
                     #set models to false if under the quality threshold
                     if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
-                    for(a in Biomod.material$algo) if(RUNens.choice[a]) if(as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) < qual.th) RUNens.choice[a] <- F  #Weights are based on the Cross-validated evaluation values.                       
+                    for(a in Biomod.material$algo) if(RUNens.choice[a]) if(as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) < qual.th) RUNens.choice[a] <- FALSE  #Weights are based on the Cross-validated evaluation values.                       
 
                     
                     
@@ -128,7 +128,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     if(sum(RUNens.choice)!=0){  
 
                         #drop layers of the original full stack and constitute one with just this runs' (PA/rep) projections
-                        if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==T){
+                        if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==TRUE){
                             if(!repetition.models){ LayersToDrop <- c(1:length(RunXModels))[-c(which(RunXModels) + ((j-1)*(ProjRunEval)))]                              #layers to drop to create the stack to use for consensus for this run
                             } else LayersToDrop <- c(1:length(RunXModels))[-c(which(RunXModels)+((j-1)*(ProjRunEval)+k-1))]                                             #what is inside the -c() is in fact the layers we want to get             
                         } else                                                                                            #no stack.out in Proj() -> no extra layers than wanted in STACK
@@ -180,7 +180,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             for(a in Biomod.material$algo) if(RUNens.choice[a]) wk[a] <- as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) else wk[a] <- NA  
                             if(weight.method=='Roc') wk['SRE'] <- 0
                             #deal with cases where there are no scores >0, or rep model failed
-                            if(sum(wk!=0, na.rm=T)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value >0  -> those models will be used and not set to NA by next line
+                            if(sum(wk!=0, na.rm=TRUE)==0) wk[wk==0] <- 0.1                                           # 0.1 = arbitrary value >0  -> those models will be used and not set to NA by next line
                             wk[wk==0] <- NA
     
                             # Calculate and attribute Weights to each modelling techniques
@@ -206,7 +206,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                       		  }
                                       	} else W[m] <- z[sum(wk[m]>wk)+1]
                                     }
-                                } else if(sum(is.na(wk))==8) { wk <- is.na(wk) ; wk[T] <- 1 }
+                                } else if(sum(is.na(wk))==8) { wk <- is.na(wk) ; wk[TRUE] <- 1 }
                             }                        
                             
 
@@ -221,7 +221,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 thmi    <- c(thmi,    eval(parse(text=paste("Evaluation.results.", bin.method, sep="")))[[nam]][a,4])
                                 thpondi <- c(thpondi, eval(parse(text=paste("Evaluation.results.", weight.method, sep="")))[[nam]][a,4])
                             }
-                            ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=T))
+                            ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=TRUE))
                             thpondi[is.na(thpondi)] <- 0
                             ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[RUNens.choice]))   
                             #-----------------------end weights------------------------#
@@ -231,7 +231,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             #DISABLED  
                         
                             #store the information for each run
-                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=T), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
+                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=TRUE), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)              
                           
                           
@@ -295,7 +295,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 STACK.all <- stack(STACK.m, STACK.w, STACK.med)                                                             #the full stack takes all data even if PAs not wanted in total consensus
                 thsC <- ths                                                                                                 #only used for line 315 : take PAs out if necessary
                 if(final.model.out){
-                    PaLayers <- rep(c(T, rep(F, nbrep-1)), NbPA) 
+                    PaLayers <- rep(c(TRUE, rep(FALSE, nbrep-1)), NbPA) 
                     STACK.m <- dropLayer(STACK.m, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     STACK.w <- dropLayer(STACK.w, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     STACK.med <- dropLayer(STACK.med, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
@@ -310,7 +310,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 
                 #convert the total consensus for the first 3 methods into binary
                 if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack()
-                if((nbrep*NbPA) != 1) for(j in 1:3) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=T))
+                if((nbrep*NbPA) != 1) for(j in 1:3) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=TRUE))
                 
                 
                 
@@ -347,7 +347,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                  
                                  
                                   
-                #if binary=T, we transform the ensemble forecasting values into binary ones using the thresholds stored in ths (already done for final consensus)
+                #if binary=TRUE, we transform the ensemble forecasting values into binary ones using the thresholds stored in ths (already done for final consensus)
                 #first step (ths.lin) -> constitute a vector with all thresholds associated to the stack in the same order (for looping the binary conversion)
                 if(binary){ 
                     ths.lin <- c()
@@ -402,8 +402,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     
                     for(k in 1:nbrep){                                                                    # Loop through Model Evaluation replicates
                         for(m in 1:6){                                                                    # Loop through ensemble forecasting methods
-                            if(m<4) {test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]   #to check if method was chosen
-                            } else if(Biomod.material$evaluation.choice[Th[m-3]]) test[m,(j-1)*nbrep+k] <- somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]    
+                            if(m<4) {test[m,(j-1)*nbrep+k] <- .somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]   #to check if method was chosen
+                            } else if(Biomod.material$evaluation.choice[Th[m-3]]) test[m,(j-1)*nbrep+k] <- .somers2(ARRAY[,(j-1)*nbrep+k,m], DataBIOMOD[lin, Biomod.material$NbVar+i])["C"]    
                         }
                     }
                 }

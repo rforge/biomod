@@ -36,7 +36,7 @@ ProbDensFunc(initial, projections, plothist = TRUE, cvsn = TRUE, groups = NULL, 
 \value{
   This is a plotting function, no objects are returned or created.
 }
-\references{  }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 
 \seealso{ \code{\link{Projection}}, \code{\link{Ensemble.Forecasting}} }
@@ -51,18 +51,18 @@ data(Sp.Env)
 Initial.State(Response = Sp.Env[15], Explanatory = Sp.Env[,4:10], 
 IndependentResponse = NULL, IndependentExplanatory = NULL)
 
-Models(ANN=T, RF=T, CTA=T, FDA=T, GLM=T, NbRunEval=20, DataSplit=70, NbRepPA=0, 
-   Roc = T, Optimized.Threshold.Roc = T, Kappa = T, TSS=T)  
+Models(ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, NbRunEval=20, DataSplit=70, NbRepPA=0, 
+   Roc = TRUE, Optimized.Threshold.Roc = TRUE, Kappa = TRUE, TSS=TRUE)  
 
 data(Future1)
 
 Projection(Proj = Future1[,4:10], Proj.name="rep50_Future1", 
-   ANN=T, RF=T, CTA=T, FDA=T, GLM=T, BinRoc = T, BinKappa = T, BinTSS = T, repetition.models=T)              
+   ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, BinRoc = TRUE, BinKappa = TRUE, BinTSS = TRUE, repetition.models=TRUE)              
 
 
 #we will also compare with the consensus results.
-Ensemble.Forecasting(Proj.name= "rep50_Future1", weight.method='Roc', PCA.median=T, 
-binary=T, bin.method='Roc', Test=F, decay=1.6, repetition.models=T)
+Ensemble.Forecasting(Proj.name= "rep50_Future1", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
 
 #constitute the dataframe that will be used by the ProbDensFunc 
@@ -99,7 +99,7 @@ DataFrame <- cbind(DataFrame, Bin_consensus)
 DataFrame <- DataFrame[,-1][,-1]
 
 
-ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, cvsn=T, 
+ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, cvsn=TRUE, 
 groups=Groups, resolution=5)
 
 }

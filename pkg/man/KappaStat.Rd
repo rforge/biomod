@@ -1,31 +1,20 @@
 \name{KappaStat}
 \alias{KappaStat}
 
-\title{ Inner Function }
-\description{ Inner function for the BIOMOD package, not for independent usage purposes
+\title{  Kappa Statistic for predictive accuracy evaluation }
+\description{ Calculate the True Skill Statistic to evaluate the predictive accuracy of a given species distribution model
 }
 \usage{
 KappaStat(Misc)
 }
 
 \arguments{
-  \item{Misc}{  }
+  \item{Misc}{ A misclassification table, counting the number of true and false positive and true and false negative  }
 }
 
-\details{
-  
-}
-\value{
-  
-}
-\references{  }
+
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{  
 
-
-}
 \seealso{ \code{\link{help}}}
-\examples{
-}
 
 \keyword{ models }

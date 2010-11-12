@@ -35,8 +35,8 @@ pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.
   \item{species.name}{ The dataset will be stored under the name given by this argument, plus the strategy chosen separated by a dot.
    For example, if you give "larix" in this argument and choose the sre strategy, then the output is stored in the new object Dataset.larix.sre } 
   \item{plot}{ an option for plotting the outup dataset of presences and absences obtained }
-  \item{acol}{ if plot=T, the colours wanted to plot the absences }
-  \item{pcol}{ if plot=T, the colours wanted to plot the presences }
+  \item{acol}{ if plot=TRUE, the colours wanted to plot the absences }
+  \item{pcol}{ if plot=TRUE, the colours wanted to plot the presences }
 }
 \details{
     The pseudo-absences are created by considering any point where the species was not recorded
@@ -55,9 +55,7 @@ pseudo.abs(coor=NULL, status, env = NULL, strategy = "random", distance = 0, nb.
   can also be created if wanted containing the presences and only the absences desired from the original dataset. 
   The advantage of only the vector being returned is that it is a very light object compared to the production of a whole new dataframe. 
 }
-\references{ }
 \author{ Wilfried Thuiller, Bruno Lafourcade }
-\note{ }
 \seealso{ \code{\link{sre}} }
 \examples{
 
@@ -72,13 +70,13 @@ par(new=TRUE)
 plot(presences[,1], presences[,2], col='red', xlim=c(1,100), ylim=c(1,100), pch=19)
 
 
-pseudo.data <- pseudo.abs(plot=T, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
+pseudo.data <- pseudo.abs(plot=TRUE, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 #view what is in the dataset produced : absences, and presences (only if add.pres=TRUE)
 Dataset.SpNoName.circles.8[1:20,]
 
 
 #you can plot it yourself (or set plot=TRUE in the function call)
-pseudo.data <- pseudo.abs(plot=T, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
+pseudo.data <- pseudo.abs(plot=TRUE, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
 x11()
 plot(Dataset.SpNoName.circles.8[,1],Dataset.SpNoName.circles.8[,2]) 
 

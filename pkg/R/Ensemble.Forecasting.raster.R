@@ -371,16 +371,16 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     
                 #STACK.all
                 assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.all) 
-                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster')", sep="")))
+                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster', compress='xz')", sep="")))
                 #STACK.all.bin
                 assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.all.bin) 
-                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster')", sep="")))
+                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
                 #STACK.consTot
                 assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.consTot) 
-                eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster')", sep="")))
+                eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster', compress='xz')", sep="")))
                 #STACK.consTot.bin
                 assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.consTot.bin) 
-                eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster')", sep="")))
+                eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
                 
             }#if ii==1 
             

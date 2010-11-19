@@ -51,13 +51,13 @@ function(Proj.name, Bin.trans=TRUE, Filt.trans=TRUE, method='all')
         
         #objects assignations and storage     
         assign(paste("Proj_",Proj.name,"_BestModelBy",method,sep=""), ARRAY)
-        eval(parse(text=paste("save(Proj_",Proj.name,"_BestModelBy",method,", file='", getwd(), "/proj.", Proj.name, "/Proj_",Proj.name,"_BestModelBy",method,"')", sep="")))
+        eval(parse(text=paste("save(Proj_",Proj.name,"_BestModelBy",method,", file='", getwd(), "/proj.", Proj.name, "/Proj_",Proj.name,"_BestModelBy",method,"', compress='xz')", sep="")))
             
         if(Bin.trans) {assign(paste("Proj_",Proj.name,"_BestModelBy",method,"_Bin",sep=""), ARRAY.bin)
-        eval(parse(text=paste("save(Proj_",Proj.name,"_BestModelBy",method,"_Bin, file='", getwd(), "/proj.", Proj.name, "/Proj_",Proj.name,"_BestModelBy",method,"_Bin')", sep="")))}
+        eval(parse(text=paste("save(Proj_",Proj.name,"_BestModelBy",method,"_Bin, file='", getwd(), "/proj.", Proj.name, "/Proj_",Proj.name,"_BestModelBy",method,"_Bin', compress='xz')", sep="")))}
         
         if(Filt.trans) {assign(paste("Proj_",Proj.name,"_BestModelBy",method,"_Filt",sep=""), ARRAY.filt)
-        eval(parse(text=paste("save(Proj_",Proj.name,"_BestModelBy",method,"_Filt, file='", getwd(), "/proj.", Proj.name, "/Proj_",Proj.name,"_BestModelBy",method,"_Filt')", sep="")))}
+        eval(parse(text=paste("save(Proj_",Proj.name,"_BestModelBy",method,"_Filt, file='", getwd(), "/proj.", Proj.name, "/Proj_",Proj.name,"_BestModelBy",method,"_Filt', compress='xz')", sep="")))}
         
     }}
 }

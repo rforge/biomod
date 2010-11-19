@@ -139,7 +139,7 @@ repetition.models=TRUE, stack.out=TRUE)
                     if(!stack.out){ 
                     
                         assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster", sep=""), g)
-                        eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster')", sep="")))
+                        eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='xz')", sep="")))
  
                         if(a != 'SRE'){
                             for(ET in 1:6){ if(eval(parse(text=trans[ET]))){
@@ -150,7 +150,7 @@ repetition.models=TRUE, stack.out=TRUE)
                                         
                                 nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", run.name2, "_", a, ".raster", sep="")
                                 assign(nam, gg)                                                                                         #assign the data to the name wanted
-                                eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "')", sep="")))   #and save it on disk
+                                eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep="")))   #and save it on disk
                             }}   
                         } 
                     } else{
@@ -167,7 +167,7 @@ repetition.models=TRUE, stack.out=TRUE)
                             assign("pile.names", pile.names, pos=1) 
                             layerNames(pile.proj) <- pile.names                                                                         #assign names of proj to layers of the stack
                             assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""), pile.proj)
-                            eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster')", sep="")))
+                            eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster', compress='xz')", sep="")))
                             rm(list=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""))        #delete the proj created with correct name just for storage
                             
                             if(a != 'SRE'){ 
@@ -185,7 +185,7 @@ repetition.models=TRUE, stack.out=TRUE)
                                             
                                     nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", a, ".raster", sep="")
                                     assign(nam, gg)
-                                    eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "')", sep=""))) 
+                                    eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep=""))) 
                                     rm(gg, list=nam)
                                 }}   
                             } 

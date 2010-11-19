@@ -51,7 +51,7 @@ data(Sp.Env)
 Initial.State(Response = Sp.Env[15], Explanatory = Sp.Env[,4:10], 
 IndependentResponse = NULL, IndependentExplanatory = NULL)
 
-Models(ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, NbRunEval=20, DataSplit=70, NbRepPA=0, 
+Models(ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, NbRunEval=20, DataSplit=60, NbRepPA=0, 
    Roc = TRUE, Optimized.Threshold.Roc = TRUE, Kappa = TRUE, TSS=TRUE)  
 
 data(Future1)

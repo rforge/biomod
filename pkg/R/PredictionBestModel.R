@@ -88,24 +88,24 @@ function(ANN=TRUE, CTA=TRUE, GAM=TRUE, GBM=TRUE,GLM=TRUE, MARS=TRUE, FDA=TRUE, R
 
         #objects assignations and storage on hard disk           
         assign(paste("PredBestModelBy",method,sep=""), ARRAY)
-        eval(parse(text=paste("save(PredBestModelBy",method,", file='", getwd(), "/pred/PredBestModelBy",method, "')", sep="")))
+        eval(parse(text=paste("save(PredBestModelBy",method,", file='", getwd(), "/pred/PredBestModelBy",method, "', compress='xz')", sep="")))
         write.table(ARRAY, file=paste(getwd(),"/pred/PredBestModelBy",method, ".txt", sep=""), row.names=FALSE) 
         
         if(Bin.trans) {
         assign(paste("PredBestModelBy",method, "_Bin",sep=""), ARRAY.bin)
-        eval(parse(text=paste("save(PredBestModelBy",method, "_Bin, file='", getwd(), "/pred/PredBestModelBy",method, "_Bin')", sep="")))
+        eval(parse(text=paste("save(PredBestModelBy",method, "_Bin, file='", getwd(), "/pred/PredBestModelBy",method, "_Bin', compress='xz')", sep="")))
         write.table(ARRAY.bin, file=paste(getwd(),"/pred/PredBestModelBy",method, "_Bin.txt", sep=""), row.names=FALSE)
         }
         
         if(Filt.trans) {
         assign(paste("PredBestModelBy",method, "_Filt",sep=""), ARRAY.filt)
-        eval(parse(text=paste("save(PredBestModelBy",method, "_Filt, file='", getwd(), "/pred/PredBestModelBy",method, "_Filt')", sep="")))
+        eval(parse(text=paste("save(PredBestModelBy",method, "_Filt, file='", getwd(), "/pred/PredBestModelBy",method, "_Filt', compress='xz')", sep="")))
         write.table(ARRAY.filt, file=paste(getwd(),"/pred/PredBestModelBy",method, "_Filt.txt", sep=""), row.names=FALSE)
         }
     
         #saving the list of best models per method
         assign(paste("BestModelBy", method, sep=""), gg)
-        eval(parse(text=paste("save(BestModelBy",method,", file='", getwd(), "/pred/BestModelBy",method,"')", sep="")))
+        eval(parse(text=paste("save(BestModelBy",method,", file='", getwd(), "/pred/BestModelBy",method,"', compress='xz')", sep="")))
     
     }}
 }

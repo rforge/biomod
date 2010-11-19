@@ -42,7 +42,7 @@ function(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, FDA=TRUE, M
             }
 
             assign(paste("Pred",Biomod.material$species.names[i], transfo, sep="_"), sp.data.new)
-            eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i],"_", transfo, ", file='", getwd(), "/pred/Pred_", Biomod.material$species.names[i],"_", transfo,"')", sep="")))
+            eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i],"_", transfo, ", file='", getwd(), "/pred/Pred_", Biomod.material$species.names[i],"_", transfo,"', compress='xz')", sep="")))
 
         }}  #transfo loop        
     } #species loop

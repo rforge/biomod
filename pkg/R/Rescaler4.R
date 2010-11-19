@@ -14,7 +14,7 @@ function(dataToRescale, ref=NULL, run, original=FALSE)
     #Creating or loading the rescaling model
     if(original){ 
         Rescaling_GLM = glm(ref~DataF, data=DataF, family="binomial")
-        eval(parse(text=paste("save(Rescaling_GLM, file='", getwd(), "/models/rescaling_models/Rmod_", run, "')", sep=""))) 
+        eval(parse(text=paste("save(Rescaling_GLM, file='", getwd(), "/models/rescaling_models/Rmod_", run, "', compress='xz')", sep=""))) 
     } else
         eval(parse(text=paste("load('", getwd(), "/models/rescaling_models/Rmod_", run, "')", sep="")))
 	 	

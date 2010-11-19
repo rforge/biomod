@@ -112,9 +112,16 @@ data(CoorXY)
 Initial.State(Response=Sp.Env[,12:14], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
+
 #Here are done 2 PA runs and 2 repetitions for each run. Here we will have 36 runs per species. This will hence take several minutes.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, GAM = TRUE, CTA = TRUE, CV.tree = 50, 
-   ANN = TRUE, CV.ann = 2, SRE = TRUE, quant=0.05, FDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 2, DataSplit = 80,
+## NOT RUN ON ALL MODELS
+#Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = TRUE, No.trees = 3000, GAM = TRUE, CTA = TRUE, CV.tree = 50, 
+#   ANN = TRUE, CV.ann = 2, SRE = TRUE, quant=0.05, FDA = TRUE, MARS = TRUE, RF = TRUE, NbRunEval = 2, DataSplit = 80,
+#   Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5,
+#   NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
+
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = FALSE, No.trees = 3000, GAM = FALSE, CTA = FALSE, CV.tree = 50, 
+   ANN = TRUE, CV.ann = 2, SRE = FALSE, quant=0.05, FDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 2, DataSplit = 80,
    Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5,
    NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
@@ -129,7 +136,10 @@ dimnames(Pred_Sp290)[-1]
 
 Pred_Sp290[1:20,,,1]
 #please check the UserGuide for a full explanation of the structure of the array.
-
+## NOT RUN
+## Biomod.Manual()
+## Biomod.Manual("Biomod_Presentation_Manual")
+## Biomod.Manual("Biomod_Practical_Building_Models")
 
 #You can load back a model and visualise it with the load() function :
 load("models/Sp290_ANN_PA1")

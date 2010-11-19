@@ -218,11 +218,11 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
         
         #save the prediction for that species
         assign(paste("Pred_", Biomod.material$species.names[i], sep=""), Array)
-        eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i],", file='", getwd(),"/pred/Pred_",Biomod.material$species.names[i], "')", sep="")))     
+        eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i],", file='", getwd(),"/pred/Pred_",Biomod.material$species.names[i], "', compress='xz')", sep="")))     
   
         if(exists("DataEvalBIOMOD") && KeepPredIndependent) {
             assign(paste("Pred_",Biomod.material$species.names[i], "_indpdt", sep=""), ARRAY.ind)
-            eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i], "_indpdt, file='",getwd(),"/pred/Pred_",Biomod.material$species.names[i], "_indpdt')", sep="")))
+            eval(parse(text=paste("save(Pred_",Biomod.material$species.names[i], "_indpdt, file='",getwd(),"/pred/Pred_",Biomod.material$species.names[i], "_indpdt', compress='xz')", sep="")))
         }
         
         #store the total number of models produced for that species. It will be used by Projection()

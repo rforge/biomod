@@ -154,7 +154,7 @@ repetition.models=TRUE)
         
         #the original projection
         assign(paste("Proj",Proj.name,Biomod.material$species.names[i], sep="_"), g)
-        eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"')", sep="")))
+        eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"', compress='xz')", sep="")))
         ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""))
         
         #the transformations
@@ -164,7 +164,7 @@ repetition.models=TRUE)
         for(jj in 1:6){ if(eval(parse(text=trans[jj]))){    
             nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[jj], sep="")
             assign(nam, eval(parse(text=projs[jj])))
-            eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "')", sep=""))) 
+            eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep=""))) 
             ProjNameInList <- c(ProjNameInList, nam)
         }}               
          

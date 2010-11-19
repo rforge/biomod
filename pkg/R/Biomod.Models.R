@@ -3,6 +3,8 @@
     Optimized.Threshold.Roc, Kappa, TSS, KeepPredIndependent, 
     VarImport) 
 {
+	
+	
     if (Model == "GLM") {
         if (TypeGLM == "poly") {
             Type <- "GLMp"
@@ -72,7 +74,7 @@
     RunWeights <- Yweights[, i]
     for (k in 1:(ncol(Ids) + 1)) {
         if (exists("model.sp")) 
-            rm(model.sp)
+            rm(model.sp, pos=1, inherits=FALSE)
         if (exists("g.pred")) 
             rm(g.pred)
         if (k == (ncol(Ids) + 1)) {
@@ -369,13 +371,21 @@
             if (k == (ncol(Ids) + 1)) 
                 Array[, Model, 1, pa] <- g.pred[, ]
             else Array[, Model, (k + 1), pa] <- g.pred[, ]
-            if (Model != "SRE") 
-                eval(parse(text = paste("assign('", SpNames[i], 
-                  "_", Model, "_", nam, "', model.sp)", sep = "")))
+           # if (Model != "SRE") 
+           #    eval(parse(text = paste("assign('", SpNames[i], 
+           #      "_", Model, "_", nam, "', model.sp, pos=1)", sep = "")))
+          #  if (Model != "SRE") 
+           #     eval(parse(text = paste("save(", SpNames[i], 
+            #      "_", Model, "_", nam, ",file='", getwd(), "/models/", 
+             #     SpNames[i], "_", Model, "_", nam, "', compress='xz')", sep = "")))
+            
+            eval(parse(text = paste(SpNames[i], "_", Model, "_", nam, "= model.sp", sep = "")))      
             if (Model != "SRE") 
                 eval(parse(text = paste("save(", SpNames[i], 
                   "_", Model, "_", nam, ",file='", getwd(), "/models/", 
-                  SpNames[i], "_", Model, "_", nam, "')", sep = "")))
+                  SpNames[i], "_", Model, "_", nam, "', compress='xz')", sep = "")))
+           eval(parse(text = paste("rm(", SpNames[i], "_", Model, "_", nam, ")", sep = "")))       
+                 
         }
     }
     assign("Array", Array, pos = 1)
@@ -523,4 +533,5 @@
     if (exists("DataEvalBIOMOD") && KeepPredIndependent) 
         assign("predind", predind, pos = 1)
     assign("Biomod.material", Biomod.material, pos = 1)
+    #rm(model.sp, pos=1, inherits = TRUE)
 }

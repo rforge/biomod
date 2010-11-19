@@ -74,7 +74,7 @@ Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10],
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = TRUE, CV.ann = 2, 
+Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = FALSE, CV.ann = 2, 
    NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
@@ -82,7 +82,7 @@ Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN
 #Render Future projections under climate change scenario
 data(Future1)
 head(Future1) #the head() function enables to visualise the 5 firts lines of a dataframe
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
 
 #view the results produced, example with the projections in probabilities :

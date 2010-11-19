@@ -46,61 +46,59 @@ ProbDensFunc(initial, projections, plothist = TRUE, cvsn = TRUE, groups = NULL, 
 #in prediction making when the calibration of the model is done on partial data. Only Species7
 #will be done.
 
-data(Sp.Env)
+#data(Sp.Env)
 
-Initial.State(Response = Sp.Env[15], Explanatory = Sp.Env[,4:10], 
-IndependentResponse = NULL, IndependentExplanatory = NULL)
 
-Models(ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, NbRunEval=20, DataSplit=60, NbRepPA=0, 
-   Roc = TRUE, Optimized.Threshold.Roc = TRUE, Kappa = TRUE, TSS=TRUE)  
+#### NOT RUN #####
+#Initial.State(Response = Sp.Env[15], Explanatory = Sp.Env[,4:10], 
+#IndependentResponse = NULL, IndependentExplanatory = NULL)
 
-data(Future1)
+#Models(ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, NbRunEval=20, DataSplit=60, NbRepPA=0, 
+#   Roc = TRUE, Optimized.Threshold.Roc = TRUE, Kappa = TRUE, TSS=TRUE)  
 
-Projection(Proj = Future1[,4:10], Proj.name="rep50_Future1", 
-   ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, BinRoc = TRUE, BinKappa = TRUE, BinTSS = TRUE, repetition.models=TRUE)              
+#data(Future1)
+
+#Projection(Proj = Future1[,4:10], Proj.name="rep50_Future1", 
+#   ANN=TRUE, RF=TRUE, CTA=TRUE, FDA=TRUE, GLM=TRUE, BinRoc = TRUE, BinKappa = TRUE, BinTSS = TRUE, repetition.models=TRUE)              
 
 
 #we will also compare with the consensus results.
-Ensemble.Forecasting(Proj.name= "rep50_Future1", weight.method='Roc', PCA.median=TRUE, 
-binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
+#Ensemble.Forecasting(Proj.name= "rep50_Future1", weight.method='Roc', PCA.median=TRUE, 
+#binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
 
 #constitute the dataframe that will be used by the ProbDensFunc 
-load("proj.rep50_Future1/Proj_rep50_Future1_Sp163_BinRoc")                                                                     
-load("proj.rep50_Future1/Proj_rep50_Future1_Sp163_BinKappa")
-load("proj.rep50_Future1/Proj_rep50_Future1_Sp163_BinTSS")
+#load("proj.rep50_Future1/Proj_rep50_Future1_Sp163_BinRoc")                                                                     
+#load("proj.rep50_Future1/Proj_rep50_Future1_Sp163_BinKappa")
+#load("proj.rep50_Future1/Proj_rep50_Future1_Sp163_BinTSS")
 
-load("proj.rep50_Future1/Total_consensus_rep50_Future1")
+#load("proj.rep50_Future1/Total_consensus_rep50_Future1")
 #But we need binary data
-Bin_consensus <- BinaryTransformation(Total_consensus_rep50_Future1[,1,1], mean(consensus_rep50_Future1_results[["Sp163"]][["thresholds"]][1,]))
+#Bin_consensus <- BinaryTransformation(Total_consensus_rep50_Future1[,1,1], mean(consensus_rep50_Future1_results[["Sp163"]][["thresholds"]][1,]))
 
 
 #Build the dataframes that will be used by the function.
 #One for the projections, one for the grouping information.
 
-models <- c("ANN", "CTA", "GLM", "FDA", "RF")
-evaluation <- c("Roc", "Kappa", "TSS")
+#models <- c("ANN", "CTA", "GLM", "FDA", "RF")
+#evaluation <- c("Roc", "Kappa", "TSS")
 
-DataFrame <- matrix(NA, 2264, 2)
-Groups <- matrix(NA, 2, 316)
+#DataFrame <- matrix(NA, 2264, 2)
+#Groups <- matrix(NA, 2, 316)
+#Groups[1,] <- c(rep(rep(models, each=21), 3), "consensus")
+#Groups[2,] <- c(rep(evaluation, each=105), "consensus")
 
-
-Groups[1,] <- c(rep(rep(models, each=21), 3), "consensus")
-Groups[2,] <- c(rep(evaluation, each=105), "consensus")
-
-
-for(ev in evaluation){
-   for(m in models){
-      add.data <- eval(parse(text=paste("Proj_rep50_Future1_Sp163_Bin", ev, sep="")))
-      DataFrame <- cbind(DataFrame, add.data[, m,, 1])
-   }
-}
-DataFrame <- cbind(DataFrame, Bin_consensus)
-DataFrame <- DataFrame[,-1][,-1]
+#for(ev in evaluation){
+#   for(m in models){
+#      add.data <- eval(parse(text=paste("Proj_rep50_Future1_Sp163_Bin", ev, sep="")))
+#      DataFrame <- cbind(DataFrame, add.data[, m,, 1])
+#   }
+#}
+#DataFrame <- cbind(DataFrame, Bin_consensus)
+#DataFrame <- DataFrame[,-1][,-1]
 
 
-ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, cvsn=TRUE, 
-groups=Groups, resolution=5)
+#ProbDensFunc(initial=Sp.Env[,15], projections=DataFrame, cvsn=TRUE, groups=Groups, resolution=5)
 
 }
 

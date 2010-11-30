@@ -378,13 +378,13 @@
            #     eval(parse(text = paste("save(", SpNames[i], 
             #      "_", Model, "_", nam, ",file='", getwd(), "/models/", 
              #     SpNames[i], "_", Model, "_", nam, "', compress='xz')", sep = "")))
-            
-            eval(parse(text = paste(SpNames[i], "_", Model, "_", nam, "= model.sp", sep = "")))      
-            if (Model != "SRE") 
+           if (Model != "SRE"){ 
+            	eval(parse(text = paste(SpNames[i], "_", Model, "_", nam, "= model.sp", sep = "")))       
                 eval(parse(text = paste("save(", SpNames[i], 
                   "_", Model, "_", nam, ",file='", getwd(), "/models/", 
                   SpNames[i], "_", Model, "_", nam, "', compress='xz')", sep = "")))
-           eval(parse(text = paste("rm(", SpNames[i], "_", Model, "_", nam, ")", sep = "")))       
+           		eval(parse(text = paste("rm(", SpNames[i], "_", Model, "_", nam, ")", sep = "")))
+           }       
                  
         }
     }

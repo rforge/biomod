@@ -121,7 +121,7 @@ repetition.models=TRUE, stack.out=TRUE)
                         if(a == 'CTA')  g <- predict(RasterProj, model=object, type='prob', index=2)
                         if(a == 'SRE')  g <- sre(DataBIOMOD[,Biomod.material$NbVar+i], DataBIOMOD[, 1:Biomod.material$NbVar], RasterProj, quant)
                                              
-                        g <- as.numeric(g)  
+                        #g <- as.numeric(g)  
                         #Rescale prediction for the models that need to
                         if(any(c("ANN", "FDA", "MARS")==a)) g <- .Rescaler4(g, run=paste(Biomod.material$species.names[i], "_", a, "_", run.name2, sep="")) 
                         #Transform into integer values
@@ -138,18 +138,24 @@ repetition.models=TRUE, stack.out=TRUE)
                     
                     if(!stack.out){ 
                     
-                        assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster", sep=""), g)
+                        #assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster", sep=""), g)
+                        eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster <- g", sep="")))
                         eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='xz')", sep="")))
  
                         if(a != 'SRE'){
                             for(ET in 1:6){ if(eval(parse(text=trans[ET]))){
                                 Thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", evals[ET], "[[i]][a,4]", sep=""))))   #get the threshold for that proj (defined by 'trans')
-                                gg <- g                                                                                                  #order between 'evals' and 'trans' is important
-                                gg[g<Thresh] <- 0
-                                if(ET<4) gg[g>=Thresh] <- 1                                                                              #transforming values over threshold to 1 if we want binary data only
+                              #  gg <- g                                                                                                  #order between 'evals' and 'trans' is important
+                                gg <- (g >= Thresh)
+                                if(ET>3) gg <- (gg * g)
+                               
+                             
+                               # gg[g<Thresh] <- 0
+                                #if(ET<4) gg[g>=Thresh] <- 1                                                                              #transforming values over threshold to 1 if we want binary data only
                                         
                                 nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", run.name2, "_", a, ".raster", sep="")
-                                assign(nam, gg)                                                                                         #assign the data to the name wanted
+                                #assign(nam, gg)                                                                                         #assign the data to the name wanted
+                                eval(parse(text=paste(nam, "<-gg", sep="")))
                                 eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep="")))   #and save it on disk
                             }}   
                         } 
@@ -166,25 +172,27 @@ repetition.models=TRUE, stack.out=TRUE)
                             assign("pile.proj", pile.proj, pos=1)                                                                          
                             assign("pile.names", pile.names, pos=1) 
                             layerNames(pile.proj) <- pile.names                                                                         #assign names of proj to layers of the stack
-                            assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""), pile.proj)
+                           # assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""), pile.proj)
+                            eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster <- pile.proj", sep="")))
                             eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster', compress='xz')", sep="")))
                             rm(list=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""))        #delete the proj created with correct name just for storage
                             
                             if(a != 'SRE'){ 
-                                for(ET in 1:6){ if(eval(parse(text=trans[ET]))){                                                        #proceed to transform in bin and filt
+                                for(ET in 1:6){ if(eval(parse(text=trans[ET]))){  #proceed to transform in bin and filt
                                     
-                                    gg <- pile.proj
+                                    gg <- stack()  ### create a stack to store projection for each repetiition
                                     if(ET==1 | ET==4) Thresh <- pile.thR                                                                #set thresh to Roc, Kappa or TSS considering the run in loop
                                     if(ET==2 | ET==5) Thresh <- pile.thK
                                     if(ET==3 | ET==6) Thresh <- pile.thT
                                     
                                     for(NB in 1:(jj*Nrep)){    
-                                        gg@layers[[NB]][pile.proj@layers[[NB]] < Thresh[NB]] <- 0                                       #set values lower than threshold to 0
-                                        if(ET<4) gg@layers[[NB]][pile.proj@layers[[NB]] >= Thresh[NB]] <- 1                              #transforming values over threshold to 1 if we want binary
+                                       temp <- (pile.proj[[NB]] >= Thresh[NB]) #transforming values over threshold to 1, and 0 else
+                                        if(ET>3) temp <- (pile.proj[[NB]] * temp) # for filtering => actual values above the threshold. 
+                                    	gg <- addLayer(gg, temp)
                                     }
-                                            
+                                    layerNames(gg) <- pile.names        
                                     nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", a, ".raster", sep="")
-                                    assign(nam, gg)
+                                   eval(parse(text=paste(nam, "<-  gg", sep="")))
                                     eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep=""))) 
                                     rm(gg, list=nam)
                                 }}   

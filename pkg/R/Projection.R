@@ -64,8 +64,18 @@ repetition.models=TRUE)
         if(Biomod.material$NbRunEval != 0) for(j in 1:Biomod.material$NbRunEval) reps <- c(reps, paste("rep", j, sep="")) 
         if(Biomod.material$NbRepPA != 0) for(j in 1:NbPA) PAs <- c(PAs, paste("PA", j, sep="")) else PAs <- "no.PA"
 
-        ARRAY <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
-        g  <- gg <- ggg <- gggg <- k <- kk <- kkk   <-   ARRAY    
+       # ARRAY <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+        #g  <- gg <- ggg <- gggg <- k <- kk <- kkk   <-   ARRAY    
+        
+        g <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+ 
+		if(BinRoc)  gg <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+		if(FiltRoc) ggg <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+		if(BinKappa) gggg <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+		if(FiltKappa) k <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+		if(BinTSS) kk <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+		if(FiltTSS) kkk <- array(NA, c(nrow(Proj), 9, Biomod.material$NbRunEval+1, NbPA), dimnames=list(1:nrow(Proj), Biomod.material$algo, c("total.data", reps), PAs))
+    
         
        
         #------- looping for PAs, reps, and models -------    
@@ -138,8 +148,14 @@ repetition.models=TRUE)
                             if(BinTSS) kk[,a,Nrep,jj] <- as.numeric(BinaryTransformation(g[,a,Nrep,jj], Evaluation.results.TSS[[i]][a,4]))
                             if(FiltTSS) kkk[,a,Nrep,jj] <- as.numeric(FilteringTransformation(g[,a,Nrep,jj], Evaluation.results.TSS[[i]][a,4]))
                         }
-                         ggg[,'SRE',Nrep,jj] <- k[,'SRE',Nrep,jj] <- kkk[,'SRE',Nrep,jj] <-  g[,'SRE',Nrep,jj]   #filtered values for SRE = projections by SRE
-                         gg[,'SRE',Nrep,jj] <- gggg[,'SRE',Nrep,jj] <- kk[,'SRE',Nrep,jj] <-  g[,'SRE',Nrep,jj]/1000   #binary values for SRE = projections by SRE /1000
+                        else {
+                        	if(BinRoc) gg[,'SRE',Nrep,jj] <- g[,'SRE',Nrep,jj]/1000
+                        	if(FiltRoc) ggg[,'SRE',Nrep,jj] <- g[,'SRE',Nrep,jj]
+                        	if(BinKappa) gggg[,'SRE',Nrep,jj] <- g[,'SRE',Nrep,jj]/1000
+                        	if(FiltKappa) k[,'SRE',Nrep,jj] <- g[,'SRE',Nrep,jj]
+                        	if(BinTSS) kk[,'SRE',Nrep,jj] <- g[,'SRE',Nrep,jj]/1000
+                        	if(FiltTSS) kkk[,'SRE',Nrep,jj] <- g[,'SRE',Nrep,jj]  
+                        }
                     }
                 } #models       
             } #Nbrep -> coresponds to if repetition models were selected (==1 or ==NbRunEval+1)     
@@ -150,12 +166,18 @@ repetition.models=TRUE)
 
         #------- exportation of the objects created in the working directory -------#           
         #list storing the names of the projections arrays produced to delete them afterwards
-        ProjNameInList <- c()
+      #  ProjNameInList <- c()
         
         #the original projection
-        assign(paste("Proj",Proj.name,Biomod.material$species.names[i], sep="_"), g)
+       # assign(paste("Proj",Proj.name,Biomod.material$species.names[i], sep="_"), g)
+        
+        eval(parse(text=paste("Proj_",Proj.name,"_", Biomod.material$species.names[i], " <- g", sep="")))
+       # save(g, file= paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""),compress='xz')
+        rm(g)
         eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"', compress='xz')", sep="")))
-        ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""))
+        eval(parse(text=paste("rm(Proj_",Proj.name,"_", Biomod.material$species.names[i], ")", sep="")))
+       
+       # ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""))
         
         #the transformations
         trans <- c('BinRoc','FiltRoc','BinKappa','FiltKappa','BinTSS','FiltTSS')
@@ -163,13 +185,15 @@ repetition.models=TRUE)
         
         for(jj in 1:6){ if(eval(parse(text=trans[jj]))){    
             nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[jj], sep="")
-            assign(nam, eval(parse(text=projs[jj])))
-            eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep=""))) 
-            ProjNameInList <- c(ProjNameInList, nam)
+            eval(parse(text=paste(nam, " <- ", projs[jj], sep="")))
+         #   assign(nam, eval(parse(text=projs[jj])))
+            eval(parse(text=paste("save(", nam,", file= '", getwd(),"/proj.", Proj.name, "/", nam,"', compress='xz')", sep=""))) 
+            #ProjNameInList <- c(ProjNameInList, nam)
+            eval(parse(text=paste("rm(", projs[jj],",", nam, ")", sep="")))
         }}               
          
                            
-        rm(g,gg,ggg,gggg,k,kk,kkk,ARRAY,object, list=ProjNameInList)
+       # rm(g,gg,ggg,gggg,k,kk,kkk,ARRAY,object, list=ProjNameInList)
         gc(reset=TRUE)       
         i <- i+1
     }  #while species 'i' loop

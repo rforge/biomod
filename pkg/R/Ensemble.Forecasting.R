@@ -219,8 +219,13 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             #----------------------If normal ensFor run or Test run-------------------------#
             if(ii==1){ #normal ensFor run --> saving on disk, transform in binary, total consensus
                 #save results on hard disk per species    
-                assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, sep=""), ARRAY) 
+               # assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, sep=""), ARRAY) 
+                
+                eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, " <- ARRAY", sep="")))
+                
                 eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"', compress='xz')", sep="")))
+                
+                eval(parse(text=paste("rm(consensus_", Biomod.material$species.names[i], "_", Proj.name,")", sep="")))  
                 
                 # if binary=TRUE, then we transform the ensemble forecasting values into binary ones
                 if(binary){
@@ -228,8 +233,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                         if(j<4){ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun]) 
                         } else if(Biomod.material$evaluation.choice[Th[j-3]]) ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun])    #to check if method was chosen
                     }
-                    assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin", sep=""), ARRAY.bin) 
+                   # assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin", sep=""), ARRAY.bin) 
+                    
+                    eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin <- ARRAY.bin", sep="")))
+                    
                     eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin', compress='xz')", sep="")))
+                    eval(parse(text=paste("rm(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin)", sep=""))) 
                 }
 
                 
@@ -288,7 +297,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 
                 for(j in 1:NbPA){
                     if(Biomod.material$NbRepPA != 0) lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
-                    else lin <- 1:dim(ARRAY.tot)[1]
+                    else lin <- 1:dim(ARRAY)[1]
                     
                     for(k in 1:nbrep){                                                                    # Loop through Model Evaluation replicates
                         for(m in 1:6){                                                                    # Loop through ensemble forecasting methods
@@ -305,16 +314,19 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     } #end of species i loop 
     
     #assign objects to the name they should have and store them on disk
-    assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.tot) 
+    #assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.tot) 
+    eval(parse(text=paste("Total_consensus_", Proj.name,"<- ARRAY.tot", sep="")))
     eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"', compress='xz')", sep="")))
 
-    assign(paste("Total_consensus_", Proj.name, "_Bin", sep=""), ARRAY.tot.bin) 
+    #assign(paste("Total_consensus_", Proj.name, "_Bin", sep=""), ARRAY.tot.bin) 
+    eval(parse(text=paste("Total_consensus_", Proj.name, "_Bin <- ARRAY.tot.bin", sep="")))
     eval(parse(text=paste("save(Total_consensus_", Proj.name, "_Bin , file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name, "_Bin', compress='xz')", sep="")))
 
-    assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
+    #assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
+    eval(parse(text=paste("consensus_", Proj.name,"_results <- list.out", sep="")))
     eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results', compress='xz')", sep="")))
     
-    
+    rm(ARRAY, ths, pos=1)
     cat(paste("\n consensus_", Proj.name,"_results \n", sep=""))
     return(list.out)
 }

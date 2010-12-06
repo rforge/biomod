@@ -74,7 +74,7 @@
     RunWeights <- Yweights[, i]
     for (k in 1:(ncol(Ids) + 1)) {
         if (exists("model.sp")) 
-            rm(model.sp, pos=1, inherits=FALSE)
+            rm(model.sp)
         if (exists("g.pred")) 
             rm(g.pred)
         if (k == (ncol(Ids) + 1)) {
@@ -287,8 +287,8 @@
                   ref = DataBIOMOD[PA.samp, NbVar + i], run = paste(SpNames[i],
                   "_", Model, "_", nam, sep = ""), original = TRUE) *
                   1000))
-              }
             }
+        }
         if (!exists("g.pred")) {
             ErrorCounter <- ErrorCounter + 1
             BM[["calibration.failures"]] <- c(BM[["calibration.failures"]], 
@@ -533,5 +533,5 @@
     if (exists("DataEvalBIOMOD") && KeepPredIndependent) 
         assign("predind", predind, pos = 1)
     assign("Biomod.material", Biomod.material, pos = 1)
-    #rm(model.sp, pos=1, inherits = TRUE)
+ 
 }

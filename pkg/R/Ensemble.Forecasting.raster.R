@@ -82,11 +82,11 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             
                     if(Biomod.material[[paste("proj.", Proj.name, ".stack", sep="")]]==TRUE){                                                                    #if rasters were saved in stacks
                         load(paste(getwd(), "/proj.", Proj.name, "/Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", m, ".raster", sep=""))
-                        STK <- stack(STK, eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", m, ".raster", sep=""))))
+                        STK <- addLayer(STK, eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", m, ".raster", sep=""))))
                     } else{
                         for(Rep in 1:(nbrep*NbPA)){                                                                                                           #load rasters saved individualy
                             load(paste(getwd(), "/proj.", Proj.name, "/Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster", sep=""))
-                            STK <- stack(STK, eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster", sep=""))))
+                            STK <- addLayer(STK, eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster", sep=""))))
                             #remove the raster piled into the stack
                             eval(parse(text = paste("rm(Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", gnames[Rep], "_", m, ".raster)", sep = "")))
                         }
@@ -147,28 +147,27 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                                                        
                             #Mean and Median ensemble forecasting
                             #Take out models that failed (still in STKcons)
-                            STACK.m <- stack(STACK.m, round(mean(STKcons)))
-                            STACK.med <- stack(STACK.med, round(mean(STKcons)))                                           #median not functioning
+                            STACK.m <- addLayer(STACK.m, round(mean(STKcons)))
+                            STACK.med <- addLayer(STACK.med, round(calc(STKcons, median)))        
     
 
                             #-------- binary results means ensemble forecating ---------#                                 #mean of the binary projections accross all selected techniques
                             for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                             
                                 #create a raster to accumulate the binary prediction for each model successively 
-                                BLANK.ras <- STK@layers[[1]]
-                                BLANK.ras[!is.na(BLANK.ras)] <- 0
-                                ras.bin <- BLANK.ras
+                                BLANK.ras <- (STK@layers[[1]] < 0)
+                              	ras.bin <- BLANK.ras
                                 
                                 for(kk in Biomod.material$algo[RUNens.choice]){ if(kk!='SRE'){
                                     BIN <- STKcons@layers[[which(Biomod.material$algo[RUNens.choice]==kk)]] >= as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4])
-                                    BIN["TRUE"] <- 1
+                                    #BIN["TRUE"] <- 1
                                     ras.bin <- ras.bin + BIN
                                 }}
                                 if(RUNens.choice['SRE']) ras.bin <- ras.bin + STKcons@layers[[sum(RUNens.choice)]]/1000            #SRE already in binary (sum(ens) -> gives position of SRE (because last))
                                 
-                                if(Th[jj]=='Roc') STACK.R <- stack(STACK.R, round(ras.bin/sum(RUNens.choice)*1000))  
-                                if(Th[jj]=='Kappa') STACK.K <- stack(STACK.K, round(ras.bin/sum(RUNens.choice)*1000)) 
-                                if(Th[jj]=='TSS') STACK.T <- stack(STACK.T, round(ras.bin/sum(RUNens.choice)*1000))  
+                                if(Th[jj]=='Roc') STACK.R <- addLayer(STACK.R, round(ras.bin/sum(RUNens.choice)*1000))  
+                                if(Th[jj]=='Kappa') STACK.K <- addLayer(STACK.K, round(ras.bin/sum(RUNens.choice)*1000)) 
+                                if(Th[jj]=='TSS') STACK.T <- addLayer(STACK.T, round(ras.bin/sum(RUNens.choice)*1000))  
                             }}
     
 
@@ -213,7 +212,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             #applying weights to projections
                             ras.mean.w <- BLANK.ras 
                             for(m in 1:9) if(RUNens.choice[m]) ras.mean.w <- ras.mean.w + STKcons@layers[[which(Biomod.material$algo[RUNens.choice]==Biomod.material$algo[m])]] * W[m]
-                            STACK.w <- stack(STACK.w, round(ras.mean.w))                  
+                            STACK.w <- addLayer(STACK.w, round(ras.mean.w))                  
                             
                             #calculating the weighted threshold to convert the weighted probabilities to binary and/or filtered values     
                             thmi <- thpondi <- c()
@@ -370,16 +369,20 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 layerNames(STACK.consTot) <- layerNames(STACK.consTot.bin) <- LNaTot 
                     
                 #STACK.all
-                assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.all) 
+                #assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.all) 
+                eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster <- STACK.all", sep="")))
                 eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster', compress='xz')", sep="")))
                 #STACK.all.bin
-                assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.all.bin) 
+               # assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.all.bin) 
+                eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster <- STACK.all.bin", sep="")))
                 eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
                 #STACK.consTot
-                assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.consTot) 
+                #assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.consTot) 
+                eval(parse(text=paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster <- STACK.consTot", sep="")))
                 eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster', compress='xz')", sep="")))
                 #STACK.consTot.bin
-                assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.consTot.bin) 
+                #assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.consTot.bin) 
+                eval(parse(text=paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster <- STACK.consTot.bin", sep="")))
                 eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
                 
             }#if ii==1 
@@ -398,7 +401,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
 
                 for(j in 1:NbPA){
                     if(Biomod.material$NbRepPA != 0) lin <- Biomod.PA.sample[[Biomod.material$species.names[i]]][[j]]
-                    else lin <- 1:dim(ARRAY.tot)[1]
+                    else lin <- 1:dim(ARRAY)[1]
                     
                     for(k in 1:nbrep){                                                                    # Loop through Model Evaluation replicates
                         for(m in 1:6){                                                                    # Loop through ensemble forecasting methods
@@ -418,7 +421,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     } #end of species i loop 
     
     #save list of info
-    assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
+    #assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
+    eval(parse(text=paste("consensus_", Proj.name,"_results <- list.out", sep="")))
     eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results')", sep="")))
     
     

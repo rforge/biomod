@@ -1,5 +1,5 @@
 `response.plot` <-
-function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve"){
+function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480){
 
     if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
 
@@ -13,14 +13,14 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         } else Xp[,i] <- as.factor(rep(names(which.max(summary(Data[,i]))), nrow(Data)))
     }   
       
-    if(class(model)[1]=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
+    if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
     if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
     if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
     if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
     
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
-    if(save.file=="jpeg") jpeg(paste(name, "jpeg", sep="."))
-    if(save.file=="tiff") tiff(paste(name, "tiff", sep="."))
+    if(save.file=="jpeg") jpeg(paste(name, "jpeg", sep="."), width=ImageSize, height=ImageSize)
+    if(save.file=="tiff") tiff(paste(name, "tiff", sep="."), width=ImageSize, height=ImageSize)
     if(save.file=="postscript") postscript(paste(name, "eps", sep="."))
     
     #plotting window
@@ -52,14 +52,14 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             if(class(model)[1]=="glm" | class(model)[1]=="gam") Xf <- predict(model, as.data.frame(Xp1), type="response")
             if(class(model)[1]=="gbm") Xf <-  predict.gbm(model, as.data.frame(Xp1), model$n.trees, type="response") 
             if(class(model)[1]=="rpart") Xf <- as.numeric(predict(model, Xp1, type="vector"))
-            if(class(model)[1]=="nnet" ) Xf <- as.numeric(predict(model, as.data.frame(Xp1), type="raw"))
+            if(substr(class(model)[1],1,4)=="nnet" ) Xf <- as.numeric(predict(model, as.data.frame(Xp1), type="raw"))
             if(class(model)[1]=="mars") Xf <- as.numeric(predict(model, as.data.frame(Xp1)))
             if(class(model)[1]=="fda") Xf <- predict(model, as.data.frame(Xp1), type="post")[,2]
             if(class(model)[1]=="randomForest") Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
       
       
             #rescaling preds (not possible to use rescaling_GLM -> no info on calib data)
-            if(class(model)[1]=="mars" | class(model)[1]=="nnet"  | class(model)[1]=="fda" ){ 
+            if(class(model)[1]=="mars" | substr(class(model)[1],1,4)=="nnet"  | class(model)[1]=="fda" ){ 
                 OriMinMax <- range(Xf)	
                 Xf <- (Xf - min(OriMinMax)) / (max(OriMinMax)-min(OriMinMax))
                 Xf[Xf<0]<-0
@@ -72,7 +72,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
    
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
    
-  #  if(class(model)[1]=="nnet" )  detach(package:nnet)
+  #  if(substr(class(model)[1],1,4)=="nnet" )  detach(package:nnet)
    # if(class(model)[1]=="rpart") detach(package:rpart)
    # if(class(model)[1]=="mars" | class(model)[1]=="fda") detach(package:mda)
    # if(class(model)[1]=="randomForest") detach(package:randomForest)            

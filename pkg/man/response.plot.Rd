@@ -7,7 +7,7 @@ building the model. It therefore permits a direct comparisons of models built us
   
 }
 \usage{
-response.plot(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve")
+response.plot(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480)
 }
 
 \arguments{
@@ -17,6 +17,7 @@ response.plot(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", nam
   \item{show.variables}{ give in the column numbers of 'Data' for selecting the variables that are wanted for plotting }
   \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
   \item{name}{ the name of the file produced if save.file is different to "no" (extensions are already included) }
+  \item{ImageSize}{ the size of the image in pixels if save.file is different to "no". Affects "jpeg" and "tiff" outputs only. Default if 480 pixels which is the R default. }
 }
 \details{
   For building such response curves, n-1 variables are set to their median value and only the one

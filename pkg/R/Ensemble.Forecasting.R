@@ -157,7 +157,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             }
                             ths[[1]] <- c(ths[[1]], mean(as.numeric(thmi), na.rm=TRUE))
                             thpondi[is.na(thpondi)] <- 0
-                            ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[RUNens.choice]))   
+                            ths[[2]] <- c(ths[[2]], sum(as.numeric(thpondi)*W[RUNens.choice]))
+                            ths[[3]] <- c(ths[[3]], median(as.numeric(thmi), na.rm=TRUE))   
                             #-----------------------end weights------------------------#
                                 
                             #determine the model selected by the PCA consensus approach
@@ -171,7 +172,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             }    
                         
                             #store the information for each run
-                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=TRUE), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
+                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=TRUE), sum(as.numeric(thpondi)*W[RUNens.choice]) ,median(as.numeric(thmi), na.rm=TRUE),500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)
                             if(PCA.median) out[["PCA.median"]][(j-1)*nbrep+k, ] <- pca.select
                                                   
@@ -194,12 +195,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 }}
                             } else  ARRAY[, (j-1)*nbrep+k, 1:6]  <- sp.data[,RUNens.choice,k,j]
                             
-                            out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][(j-1)*nbrep+k], ths[[1]][(j-1)*nbrep+k],NA,500,500,500)
+                            out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][(j-1)*nbrep+k], ths[[1]][(j-1)*nbrep+k],ths[[1]][(j-1)*nbrep+k],500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- rep(0,9) ; out[["weights"]][(j-1)*nbrep+k, RUNens.choice] <- 1
                         }
                     
                     } else{                                                                                   #if RUNens.choice==0 -> count it for no bin conversion (else bin conv = fail)                                                                    
-                        ths[[1]] <- c(ths[[1]], NA) ; ths[[2]] <- c(ths[[2]], NA) }
+                        ths[[1]] <- c(ths[[1]], NA) ; ths[[2]] <- c(ths[[2]], NA); ths[[3]] <- c(ths[[3]], NA)  }
                                                             
                 } #Evaluation replicates k loop        
             } #PAs replicates j loop
@@ -250,13 +251,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     if(final.model.out){
                         if(nbrep!=1){                                                                     #if ==1 -> no repetitions are wanted, full models (ony ones available) are left as True
                             FinMod <- c()
-                            for(i in 1:NbPA) FinMod <- c(FinMod, ((i-1)*nbrep)+1)
+                            for(dbc in 1:NbPA) FinMod <- c(FinMod, ((dbc-1)*nbrep)+1)
                             TotalModels[FinMod] <- FALSE
                         }
                     }                            
                     TotalModels[!EnsRun] <- FALSE
 
-                    
                     #calculate total consensus for first 3 methods
                     ARRAY.tot[, i, 'prob.mean'] <-          apply(ARRAY[,TotalModels,1], 1, mean)
                     ARRAY.tot[, i, 'prob.mean.weighted'] <- apply(ARRAY[,TotalModels,2], 1, mean)
@@ -265,8 +265,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     #convert those first 3 methods final consensus in binary
                     ARRAY.tot.bin[, i, 'prob.mean'] <-          BinaryTransformation(ARRAY.tot[, i, 'prob.mean'], mean(ths[[1]][TotalModels]))
                     ARRAY.tot.bin[, i, 'prob.mean.weighted'] <- BinaryTransformation(ARRAY.tot[, i, 'prob.mean.weighted'], mean(ths[[2]][TotalModels]))
-                    ARRAY.tot.bin[, i, 'median'] <-             BinaryTransformation(ARRAY.tot[, i, 'median'], mean(ths[[1]][TotalModels]))
-                    
+                    ARRAY.tot.bin[, i, 'median'] <-             BinaryTransformation(ARRAY.tot[, i, 'median'], median(ths[[3]][TotalModels]))
                     
                     if(Biomod.material$evaluation.choice[["Roc"]]){ 
                         ARRAY.tot[, i, 'Roc.mean'] <- apply(ARRAY[,TotalModels,4], 1, mean)
@@ -326,7 +325,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     eval(parse(text=paste("consensus_", Proj.name,"_results <- list.out", sep="")))
     eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results', compress='xz')", sep="")))
     
-    rm(ARRAY, ths, pos=1)
+  	rm(ARRAY, ths, pos=1)
+ 
+
     cat(paste("\n consensus_", Proj.name,"_results \n", sep=""))
     return(list.out)
 }

@@ -230,7 +230,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             #DISABLED  
                         
                             #store the information for each run
-                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=TRUE), sum(as.numeric(thpondi)*W[RUNens.choice]) ,NA,500,500,500)
+                            out[["thresholds"]][,(j-1)*nbrep+k] <-  c(mean(as.numeric(thmi), na.rm=TRUE), sum(as.numeric(thpondi)*W[RUNens.choice]) ,median(as.numeric(thmi), na.rm=TRUE),500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- round(W,digits=4)              
                           
                           
@@ -263,12 +263,13 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 STACK.K <- stack(STACK.K, STKcons)
                                 STACK.T <- stack(STACK.T, STKcons)                        
                             }   
-                            out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][length(ths[[1]])], ths[[2]][length(ths[[2]])],NA,500,500,500)
+                            out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][length(ths[[1]])], ths[[2]][length(ths[[2]])],ths[[3]][length(ths[[3]])],500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- rep(0,9) ; out[["weights"]][(j-1)*nbrep+k, RUNens.choice] <- 1
                         }                                  
                     } else{ #if RUNens.choice!=0
                      ths[[1]] <- c(ths[[1]], NA)
                      ths[[2]] <- c(ths[[2]], NA)
+                     ths[[3]] <- c(ths[[3]], NA)
                     }
                     
                     
@@ -277,7 +278,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
             
                         
             ths[[4]] <- ths[[5]] <- ths[[6]] <- rep(500, nbrep*NbPA) 
-            ths[[3]] <- ths[[1]]                                                                          #attribute the mean thresholds to median data (median th not relevant)
+            
             rownames(out[["weights"]]) <- colnames(out[["thresholds"]]) <- gnames
             list.out[[i]] <- out 
             
@@ -309,7 +310,11 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 
                 #convert the total consensus for the first 3 methods into binary
                 if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack()
-                if((nbrep*NbPA) != 1) for(j in 1:3) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=TRUE))
+                if((nbrep*NbPA) != 1) {
+                	for(j in 1:2) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=TRUE))
+                	STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[3]] >= median(thsC[[j]], na.rm=TRUE))
+                	
+                	}
                 
                 
                 

@@ -61,7 +61,7 @@ repetition.models=TRUE, stack.out=TRUE)
     BLANK.ras <- RasterProj@layers[[1]]
     BLANK.ras[!is.na(BLANK.ras)] <- 0
      
-     
+      
     #------- projection loop per species -------   
     i <- 1
     while(i <= Biomod.material$NbSpecies){ 
@@ -104,7 +104,6 @@ repetition.models=TRUE, stack.out=TRUE)
                     
                     
                     
-                    
                     #------- making the projections with the model loaded -------# 
                     if(exists("object")){   
                         
@@ -129,16 +128,14 @@ repetition.models=TRUE, stack.out=TRUE)
                                                                                                                                            
                      } else g <- BLANK.ras                                                                                                       #assign blank raster -> no model = no prediction
                         
-                        
                     
                     #------ making the binary and filtered transformations if wanted ------#
                     #------ exportation of the objects created in the working directory -----#                      
                     evals <- rep(c('Roc', 'Kappa', 'TSS'), 2)
                     trans <- c('BinRoc','BinKappa','BinTSS','FiltRoc','FiltKappa','FiltTSS')
                     
-                    if(!stack.out){ 
+                    if(stack.out!=FALSE){ 
                     
-                        #assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster", sep=""), g)
                         eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster <- g", sep="")))
                         eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='xz')", sep="")))
  
@@ -146,7 +143,8 @@ repetition.models=TRUE, stack.out=TRUE)
                             for(ET in 1:6){ if(eval(parse(text=trans[ET]))){
                                 Thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", evals[ET], "[[i]][a,4]", sep=""))))   #get the threshold for that proj (defined by 'trans')
                               #  gg <- g                                                                                                  #order between 'evals' and 'trans' is important
-                                gg <- (g >= Thresh)
+                              
+						        gg <- (g >= Thresh)
                                 if(ET>3) gg <- (gg * g)
                                
                              

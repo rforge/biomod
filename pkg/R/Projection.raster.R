@@ -134,7 +134,7 @@ repetition.models=TRUE, stack.out=TRUE)
                     evals <- rep(c('Roc', 'Kappa', 'TSS'), 2)
                     trans <- c('BinRoc','BinKappa','BinTSS','FiltRoc','FiltKappa','FiltTSS')
                     
-                    if(stack.out!=FALSE){ 
+                    if(stack.out!=TRUE){ 
                     
                         eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster <- g", sep="")))
                         eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='xz')", sep="")))
@@ -158,8 +158,7 @@ repetition.models=TRUE, stack.out=TRUE)
                             }}   
                         } 
                     } else{
-                        #brick()?
-                        pile.proj <- stack(pile.proj, run.name2=g)                                                                      #store the projection (g) for each value of the loop to its name (run.name2)
+                    	pile.proj <- stack(pile.proj, run.name2=g)                                                                      #store the projection (g) for each value of the loop to its name (run.name2)
                         pile.names <- c(pile.names, run.name2)                                                                          #store the names of the projection to assign later to the stack
                         if(Biomod.material$evaluation.choice[[1]]) pile.thR <- c(pile.thR, as.numeric(Evaluation.results.Roc[[i]][a,4]))      #store the thresholds for each eval technic 
                         if(Biomod.material$evaluation.choice[[2]]) pile.thK <- c(pile.thK, as.numeric(Evaluation.results.Kappa[[i]][a,4]))
@@ -175,17 +174,18 @@ repetition.models=TRUE, stack.out=TRUE)
                             eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster', compress='xz')", sep="")))
                             rm(list=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""))        #delete the proj created with correct name just for storage
                             
+                            
                             if(a != 'SRE'){ 
                                 for(ET in 1:6){ if(eval(parse(text=trans[ET]))){  #proceed to transform in bin and filt
                                     
-                                    gg <- stack()  ### create a stack to store projection for each repetiition
+                                    gg <- stack()  ### create a stack to store projection for each repetition
                                     if(ET==1 | ET==4) Thresh <- pile.thR                                                                #set thresh to Roc, Kappa or TSS considering the run in loop
                                     if(ET==2 | ET==5) Thresh <- pile.thK
                                     if(ET==3 | ET==6) Thresh <- pile.thT
                                     
                                     for(NB in 1:(jj*Nrep)){    
-                                       temp <- (pile.proj[[NB]] >= Thresh[NB]) #transforming values over threshold to 1, and 0 else
-                                        if(ET>3) temp <- (pile.proj[[NB]] * temp) # for filtering => actual values above the threshold. 
+                                       temp <- (pile.proj@layers[[NB]] >= Thresh[NB]) #transforming values over threshold to 1, and 0 else
+                                        if(ET>3) temp <- (pile.proj@layers[[NB]] * temp) # for filtering => actual values above the threshold. 
                                     	gg <- addLayer(gg, temp)
                                     }
                                     layerNames(gg) <- pile.names        

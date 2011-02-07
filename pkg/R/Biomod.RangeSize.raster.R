@@ -17,7 +17,7 @@ function(CurrentPred=NULL, FutureProj=NULL, SpChange.Save=NULL)
         Cur <- CurrentPred@layers[[i]]
         Fut <- FutureProj@layers[[i]]
         Ras <- Fut - 2 * Cur
-        sp.stack <- stack(sp.stack, Ras)
+        sp.stack <- addLayer(sp.stack, Ras)
         
         #ComptBySpecies
         CBS[i, 1] <- length(which(Ras[]==-2))

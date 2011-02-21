@@ -1,7 +1,7 @@
 `Projection.raster` <-
 function(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
-repetition.models=TRUE, stack.out=TRUE)
+repetition.models=TRUE, stack.out=TRUE, compress="xz")
 {
     require(nnet, quietly=TRUE)
     require(rpart, quietly=TRUE)
@@ -137,7 +137,15 @@ repetition.models=TRUE, stack.out=TRUE)
                     if(stack.out!=TRUE){ 
                     
                         eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster <- g", sep="")))
-                        eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='xz')", sep="")))
+                        if(compress=="xz"){
+                        	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='xz')", sep="")))
+                        	}
+                        if(compress=="gzip")	{
+                        	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster', compress='gzip')", sep="")))
+                        	}
+                        if(compress==FALSE){
+                        	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", run.name2, "_", a, ".raster')", sep="")))                        							}	
+                        	
  
                         if(a != 'SRE'){
                             for(ET in 1:6){ if(eval(parse(text=trans[ET]))){
@@ -154,11 +162,19 @@ repetition.models=TRUE, stack.out=TRUE)
                                 nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", run.name2, "_", a, ".raster", sep="")
                                 #assign(nam, gg)                                                                                         #assign the data to the name wanted
                                 eval(parse(text=paste(nam, "<-gg", sep="")))
-                                eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep="")))   #and save it on disk
+                                if(compress=="xz"){
+                                	eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep="")))   #and save it on disk
+                                	}
+                                if(compress=="gzip"){									eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='gzip')", sep="")))   #and save it on disk
+                                	}
+                                if(compress==FALSE){
+                                eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "')", sep="")))   #and save it on disk	
+                                }	
+                                		
                             }}   
                         } 
                     } else{
-                    	pile.proj <- stack(pile.proj, run.name2=g)                                                                      #store the projection (g) for each value of the loop to its name (run.name2)
+                    	pile.proj <- addLayer(pile.proj, run.name2=g)                                                                      #store the projection (g) for each value of the loop to its name (run.name2)
                         pile.names <- c(pile.names, run.name2)                                                                          #store the names of the projection to assign later to the stack
                         if(Biomod.material$evaluation.choice[[1]]) pile.thR <- c(pile.thR, as.numeric(Evaluation.results.Roc[[i]][a,4]))      #store the thresholds for each eval technic 
                         if(Biomod.material$evaluation.choice[[2]]) pile.thK <- c(pile.thK, as.numeric(Evaluation.results.Kappa[[i]][a,4]))
@@ -171,7 +187,15 @@ repetition.models=TRUE, stack.out=TRUE)
                             layerNames(pile.proj) <- pile.names                                                                         #assign names of proj to layers of the stack
                            # assign(paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""), pile.proj)
                             eval(parse(text=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster <- pile.proj", sep="")))
-                            eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster', compress='xz')", sep="")))
+                            if(compress=="xz"){
+                            	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster', compress='xz')", sep="")))
+                            }
+                            if(compress=="gzip"){
+                            	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster', compress='gzip')", sep="")))
+                            }
+                            if(compress==FALSE){
+                            	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i], "_", a, ".raster, file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"_", a, ".raster')", sep="")))
+                            }	
                             rm(list=paste("Proj_", Proj.name, "_", Biomod.material$species.names[i], "_", a, ".raster", sep=""))        #delete the proj created with correct name just for storage
                             
                             
@@ -191,8 +215,15 @@ repetition.models=TRUE, stack.out=TRUE)
                                     layerNames(gg) <- pile.names        
                                     nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[ET], "_", a, ".raster", sep="")
                                    eval(parse(text=paste(nam, "<-  gg", sep="")))
-                                    eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep=""))) 
-                                    rm(gg, list=nam)
+                                   if(compress=="xz"){ 
+                                   		eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='xz')", sep=""))) 
+                                   	}
+                                   if(compress=="gzip"){
+                                   		eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "', compress='gzip')", sep=""))) 
+                                   	}
+                                   if(compress==FALSE){										eval(parse(text=paste("save(" ,nam, ", file='", getwd(),"/proj.", Proj.name, "/", nam, "')", sep=""))) 
+                                   	}
+                                   rm(gg, list=nam)
                                 }}   
                             } 
                             rm(pile.proj, g)

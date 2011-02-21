@@ -1,7 +1,7 @@
 `Projection` <-
 function(Proj=NULL, Proj.name=NULL, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
-repetition.models=TRUE)
+repetition.models=TRUE, compress="xz")
 {
     require(nnet, quietly=TRUE)
     require(rpart, quietly=TRUE)
@@ -165,16 +165,16 @@ repetition.models=TRUE)
 
 
         #------- exportation of the objects created in the working directory -------#           
-        #list storing the names of the projections arrays produced to delete them afterwards
-      #  ProjNameInList <- c()
-        
-        #the original projection
-       # assign(paste("Proj",Proj.name,Biomod.material$species.names[i], sep="_"), g)
-        
+         
         eval(parse(text=paste("Proj_",Proj.name,"_", Biomod.material$species.names[i], " <- g", sep="")))
        # save(g, file= paste(getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""),compress='xz')
         rm(g)
-        eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"', compress='xz')", sep="")))
+        if(compress=="xz"){
+        	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"', compress='xz')", sep="")))}
+        if(compress=="gzip"){
+        	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"', compress='gzip')", sep="")))}
+        if(compress==FALSE){
+        	eval(parse(text=paste("save(Proj_",Proj.name,"_",Biomod.material$species.names[i],", file='", getwd(),"/proj.", Proj.name, "/Proj_",Proj.name,"_",Biomod.material$species.names[i],"')", sep="")))}	
         eval(parse(text=paste("rm(Proj_",Proj.name,"_", Biomod.material$species.names[i], ")", sep="")))
        
        # ProjNameInList <- c(ProjNameInList, paste("Proj_",Proj.name,"_",Biomod.material$species.names[i], sep=""))
@@ -187,13 +187,17 @@ repetition.models=TRUE)
             nam <- paste("Proj_", Proj.name,"_", Biomod.material$species.names[i],"_", trans[jj], sep="")
             eval(parse(text=paste(nam, " <- ", projs[jj], sep="")))
          #   assign(nam, eval(parse(text=projs[jj])))
-            eval(parse(text=paste("save(", nam,", file= '", getwd(),"/proj.", Proj.name, "/", nam,"', compress='xz')", sep=""))) 
-            #ProjNameInList <- c(ProjNameInList, nam)
+            if(compress=="xz"){
+            	eval(parse(text=paste("save(", nam,", file= '", getwd(),"/proj.", Proj.name, "/", nam,"', compress='xz')", sep=""))) }
+            if(compress=="gzip"){
+            	eval(parse(text=paste("save(", nam,", file= '", getwd(),"/proj.", Proj.name, "/", nam,"', compress='gzip')", sep="")))}
+            if(compress==FALSE){
+            	eval(parse(text=paste("save(", nam,", file= '", getwd(),"/proj.", Proj.name, "/", nam,"')", sep="")))}
+ 
             eval(parse(text=paste("rm(", projs[jj],",", nam, ")", sep="")))
         }}               
          
                            
-       # rm(g,gg,ggg,gggg,k,kk,kkk,ARRAY,object, list=ProjNameInList)
         gc(reset=TRUE)       
         i <- i+1
     }  #while species 'i' loop

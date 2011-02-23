@@ -34,7 +34,10 @@ repetition.models=TRUE, stack.out=TRUE, compress="xz")
     if(BinRoc && !Biomod.material$evaluation.choice["Roc"] | FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc <- FiltRoc <- FALSE ; cat("Roc cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
     if(BinKappa && !Biomod.material$evaluation.choice["Kappa"] | FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa <- FiltKappa <- FALSE ; cat("Kappa cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
     if(BinTSS && !Biomod.material$evaluation.choice["TSS"] | FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS <- FiltTSS <- FALSE ; cat("TSS cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
- 
+ 	
+ 	Comp <- c(FALSE, 'gzip', 'xz')
+    if(!any(Comp == compress)) stop("\n compress should be one of FALSE, 'gzip' or 'xz'  \n")
+ 	
     #check and error messages for the models that are wanted but not available
     algo.c <- c(ANN=ANN, CTA=CTA, GAM=GAM, GBM=GBM, GLM=GLM, MARS=MARS, FDA=FDA, RF=RF, SRE=SRE)
     w <- names(which(!Biomod.material$algo.choice[names(which(algo.c))]))

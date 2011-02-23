@@ -11,11 +11,11 @@
 \usage{
 Ensemble.Forecasting(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE, FDA = TRUE,
     RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE, binary = TRUE,
-    bin.method = "Roc", Test = FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0)
+    bin.method = "Roc", Test = FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0, compress="xz")
 
 Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM = TRUE, MARS = TRUE,
    FDA = TRUE, RF = TRUE, SRE = TRUE, Proj.name, weight.method, decay = 1.6, PCA.median = TRUE,
-   binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models = TRUE, final.model.out = FALSE, qual.th=0)
+   binary = TRUE, bin.method = "Roc", Test = FALSE, repetition.models = TRUE, final.model.out = FALSE, qual.th=0, compress="xz")
 }
 
 \arguments{
@@ -40,6 +40,7 @@ Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM 
   \item{repetition.models}{ set to True if you want the ensembles to be build with the repetition models taken into account }
   \item{final.model.out}{ set to True if you want the total ensemble to be build with the final models taken into account }
   \item{qual.th}{ enables to switch off the models under a certain evaluation score. This will be applied to all models on all species. }
+   \item{compress}{logical or character string specifying whether saving to a named file is to use compression. FALSE corresponds to no compression, and character strings "gzip", or "xz" specify the type of compression. See ?save for more details. Default is "xz"}
 }
 \details{
  The decay is the ratio between a weight and the following or prior one. The formula is : W = W(-1) * decay. For example,
@@ -50,6 +51,10 @@ Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM 
  The value 'proportional' is also possible for the decay : the weights are awarded for each method proportionaly to their evaluation scores. The advantage
  is that the discrimination is more fair than with the decay. In the latter case, close scores can strongly diverge in the weights they are awarded, when the
  proportional method will consider them as being fairly similar in prediction quality and award them a similar weight. 
+
+}
+\compression{
+See help for the save function for more detailed explanation about compression options. Only gzip and xz are available here. 
 
 }
 \value{ 

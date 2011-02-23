@@ -37,7 +37,7 @@ Projection.raster(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=
   \item{FiltTSS}{ set it to TRUE if you want the results to be also produced as filtered value using TSS threshold for all models }
   \item{repetition.models}{ type TRUE to render projections on the 100 percent calibrated model and also on the repetition models. }
   \item{stack.out}{ When working with rasters, set it to TRUE to stack all projections on a singl raster stack. Not recommended when having very large datasets with several repetitions and pseudo-absences.}
-  \item{compress}{logical or character string specifying whether saving to a named file is to use compression. FALSE corresponds to no compression, and character strings "gzip", or "xz" specify the type of compression. Default is "xz"}
+  \item{compress}{logical or character string specifying whether saving to a named file is to use compression. FALSE corresponds to no compression, and character strings "gzip", or "xz" specify the type of compression. See ?save for more details. Default is "xz"}
 }
 
 

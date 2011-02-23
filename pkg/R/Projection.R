@@ -17,6 +17,10 @@ repetition.models=TRUE, compress="xz")
     if(BinKappa && !Biomod.material$evaluation.choice["Kappa"] | FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa <- FiltKappa <- FALSE ; cat("Kappa cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
     if(BinTSS && !Biomod.material$evaluation.choice["TSS"] | FiltTSS && !Biomod.material$evaluation.choice["TSS"]) { BinTSS <- FiltTSS <- FALSE ; cat("TSS cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
     
+    Comp <- c(FALSE, 'gzip', 'xz')
+    if(!any(Comp == compress)) stop("\n compress should be one of FALSE, 'gzip' or 'xz'  \n")
+ 	
+    
     #checking for the variable name compatibility with initial data
     nb <- 0
     for(i in 1:ncol(Proj)) if(sum(colnames(Proj)[i]==Biomod.material$VarNames) == 1) nb <- nb+1

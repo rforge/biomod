@@ -1,5 +1,5 @@
 `Ensemble.Forecasting` <-
-function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0)
+function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0, compress="xz")
 {
     #Verify user input is correct
     Th <- c('Roc', 'Kappa', 'TSS')
@@ -7,6 +7,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     if(!any(Th == weight.method)) stop("\n weight.method should be one of 'Roc', 'Kappa', or 'TSS' \n") 
     if(sum(weight.method==names(Biomod.material$evaluation.choice))!=1) stop("\n the weight.method selected was not run in Models \n")
     if(is.null(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]])) stop("unknown Projection name \n")
+
+	Comp <- c(FALSE, 'gzip', 'xz')
+    if(!any(Comp == compress)) stop("\n compress should be one of FALSE, 'gzip' or 'xz'  \n")
 
     #store the models wanted and shut down the models that cannot run (not trained)
     ens.choice <- p.choice <- Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]]
@@ -224,7 +227,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 
                 eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, " <- ARRAY", sep="")))
                 
-                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"', compress='xz')", sep="")))
+                if(compress=="xz")
+                	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"', compress='xz')", sep="")))
+                if(compress=="gzip")
+                	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"', compress='gzip')", sep="")))
+                if(compress==FALSE)
+					eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"')", sep="")))
                 
                 eval(parse(text=paste("rm(consensus_", Biomod.material$species.names[i], "_", Proj.name,")", sep="")))  
                 
@@ -238,7 +246,12 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     
                     eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin <- ARRAY.bin", sep="")))
                     
-                    eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin', compress='xz')", sep="")))
+                    if(compress=="xz")
+                    	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin', compress='xz')", sep="")))
+                    if(compress=="gzip")
+                    	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin', compress='gzip')", sep="")))
+                    if(compress==FALSE)
+                    	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin')", sep="")))	
                     eval(parse(text=paste("rm(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin)", sep=""))) 
                 }
 
@@ -315,15 +328,31 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     #assign objects to the name they should have and store them on disk
     #assign(paste("Total_consensus_", Proj.name, sep=""), ARRAY.tot) 
     eval(parse(text=paste("Total_consensus_", Proj.name,"<- ARRAY.tot", sep="")))
-    eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"', compress='xz')", sep="")))
+    
 
     #assign(paste("Total_consensus_", Proj.name, "_Bin", sep=""), ARRAY.tot.bin) 
     eval(parse(text=paste("Total_consensus_", Proj.name, "_Bin <- ARRAY.tot.bin", sep="")))
-    eval(parse(text=paste("save(Total_consensus_", Proj.name, "_Bin , file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name, "_Bin', compress='xz')", sep="")))
+   
 
     #assign(paste("consensus_", Proj.name,"_results", sep=""), list.out, pos=1)
     eval(parse(text=paste("consensus_", Proj.name,"_results <- list.out", sep="")))
-    eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results', compress='xz')", sep="")))
+    
+    
+    if(compress=="xz"){
+    	eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"', compress='xz')", sep="")))
+    	eval(parse(text=paste("save(Total_consensus_", Proj.name, "_Bin , file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name, "_Bin', compress='xz')", sep="")))
+    	eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results', compress='xz')", sep="")))
+    }
+    if(compress=="gzip"){
+    	eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"', compress='gzip')", sep="")))
+    	eval(parse(text=paste("save(Total_consensus_", Proj.name, "_Bin , file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name, "_Bin', compress='gzip')", sep="")))
+    	eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results', compress='gzip')", sep="")))
+    }
+    if(compress==FALSE){
+    	eval(parse(text=paste("save(Total_consensus_", Proj.name, ", file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name,"')", sep="")))
+    	eval(parse(text=paste("save(Total_consensus_", Proj.name, "_Bin , file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Proj.name, "_Bin')", sep="")))
+    	eval(parse(text=paste("save(consensus_", Proj.name,"_results, file='", getwd(),"/proj.", Proj.name, "/consensus_", Proj.name,"_results')", sep="")))
+    }
     
   	rm(ARRAY, ths, pos=1)
  

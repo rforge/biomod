@@ -1,5 +1,5 @@
 `Ensemble.Forecasting.raster` <-
-function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0)
+function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0, compress="xz")
 {
     #Verify if user input is correct
     Th <- c('Roc', 'Kappa', 'TSS')
@@ -7,6 +7,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     if(!any(Th == weight.method)) stop("\n weight.method should be one of 'Roc', 'Kappa', or 'TSS' \n") 
     if(sum(weight.method==names(Biomod.material$evaluation.choice))!=1) stop("\n the weight.method selected was not run in Models \n")
     if(is.null(Biomod.material[[paste("proj.", Proj.name, ".length", sep="")]])) stop("unknown Projection name \n")
+
+	Comp <- c(FALSE, 'gzip', 'xz')
+    if(!any(Comp == compress)) stop("\n compress should be one of FALSE, 'gzip' or 'xz'  \n")
 
     #store the models wanted and shut down the models that cannot run (not trained)
     ens.choice <- p.choice <- Biomod.material[[paste("proj.", Proj.name, ".choice", sep="")]]
@@ -239,9 +242,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                         } else {                                                                                #only one model is available/wanted  
                                                                                                                                                                                   
                             #STKcons contains only the proj wanted
-                            STACK.m <- stack(STACK.m, STKcons)
-                            STACK.w <- stack(STACK.w, STKcons)
-                            STACK.med <- stack(STACK.med, STKcons)
+                            STACK.m <- addLayer(STACK.m, STKcons)
+                            STACK.w <- adLayer(STACK.w, STKcons)
+                            STACK.med <- addLayer(STACK.med, STKcons)
                           
                             if(Biomod.material$algo[RUNens.choice] != 'SRE'){  
                                 #binary values
@@ -259,9 +262,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                     }
                                 }}
                             } else {
-                                STACK.R <- stack(STACK.R, STKcons)
-                                STACK.K <- stack(STACK.K, STKcons)
-                                STACK.T <- stack(STACK.T, STKcons)                        
+                                STACK.R <- addLayer(STACK.R, STKcons)
+                                STACK.K <- addLayer(STACK.K, STKcons)
+                                STACK.T <- addLayer(STACK.T, STKcons)                        
                             }   
                             out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][length(ths[[1]])], ths[[2]][length(ths[[2]])],ths[[3]][length(ths[[3]])],500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- rep(0,9) ; out[["weights"]][(j-1)*nbrep+k, RUNens.choice] <- 1
@@ -311,8 +314,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 #convert the total consensus for the first 3 methods into binary
                 if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack()
                 if((nbrep*NbPA) != 1) {
-                	for(j in 1:2) STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=TRUE))
-                	STACK.consTot.bin <- stack(STACK.consTot.bin, STACK.consTot@layers[[3]] >= median(thsC[[j]], na.rm=TRUE))
+                	for(j in 1:2) STACK.consTot.bin <- addLayer(STACK.consTot.bin, STACK.consTot@layers[[j]] >= mean(thsC[[j]], na.rm=TRUE))
+                	STACK.consTot.bin <- addLayer(STACK.consTot.bin, STACK.consTot@layers[[3]] >= median(thsC[[j]], na.rm=TRUE))
                 	
                 	}
                 
@@ -323,24 +326,24 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 if(Biomod.material$evaluation.choice['Roc']){                
                     STACK.all <- stack(STACK.all, STACK.R)
                     if(final.model.out) STACK.R <- dropLayer(STACK.R, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
-                    if((nbrep*NbPA) != 1) STACK.consTot <- stack(STACK.consTot, round(mean(STACK.R)))
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.R) >= 500)
+                    if((nbrep*NbPA) != 1) STACK.consTot <- addLayer(STACK.consTot, round(mean(STACK.R)))
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- addLayer(STACK.consTot.bin, mean(STACK.R) >= 500)
                     LNa <- c(LNa, paste("meanRoc_", gnames, sep="")) 
                     LNaTot <- c(LNaTot, "meanRoc")               
                 }
                 if(Biomod.material$evaluation.choice['Kappa']){
                     STACK.all <- stack(STACK.all, STACK.K)
                     if(final.model.out) STACK.K <- dropLayer(STACK.K, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
-                    if((nbrep*NbPA) != 1) STACK.consTot <- stack(STACK.consTot, round(mean(STACK.K)))
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.K) >= 500)
+                    if((nbrep*NbPA) != 1) STACK.consTot <- addLayer(STACK.consTot, round(mean(STACK.K)))
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- adLayer(STACK.consTot.bin, mean(STACK.K) >= 500)
                     LNa <- c(LNa, paste("meanKappa_", gnames, sep=""))
                     LNaTot <- c(LNaTot, "meanKappa")
                 }
                 if(Biomod.material$evaluation.choice['TSS']){
                     STACK.all <- stack(STACK.all, STACK.T) 
                     if(final.model.out) STACK.T <- dropLayer(STACK.T, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
-                    if((nbrep*NbPA) != 1) STACK.consTot <- stack(STACK.consTot, round(mean(STACK.T))) 
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- stack(STACK.consTot.bin, mean(STACK.T) >= 500)        
+                    if((nbrep*NbPA) != 1) STACK.consTot <- addLayer(STACK.consTot, round(mean(STACK.T))) 
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- addLayer(STACK.consTot.bin, mean(STACK.T) >= 500)        
                     LNa <- c(LNa, paste("meanTSS_", gnames, sep=""))
                     LNaTot <- c(LNaTot, "meanTSS")
                 }                                                             
@@ -362,7 +365,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     STACK.all.bin <- stack()
                     for(j in 1:length(layerNames(STACK.all))){                                                                                        #loop of binary conversion
                         J.bin <- STACK.all@layers[[j]] >= ths.lin[j]
-                        STACK.all.bin <- stack(STACK.all.bin, J.bin)                        
+                        STACK.all.bin <- addLayer(STACK.all.bin, J.bin)                        
                     }      
                 }
                
@@ -376,20 +379,38 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 #STACK.all
                 #assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.all) 
                 eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster <- STACK.all", sep="")))
-                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster', compress='xz')", sep="")))
                 #STACK.all.bin
                # assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.all.bin) 
                 eval(parse(text=paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster <- STACK.all.bin", sep="")))
-                eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
+             
                 #STACK.consTot
                 #assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster", sep=""), STACK.consTot) 
                 eval(parse(text=paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster <- STACK.consTot", sep="")))
-                eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster', compress='xz')", sep="")))
+                
                 #STACK.consTot.bin
                 #assign(paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster", sep=""), STACK.consTot.bin) 
                 eval(parse(text=paste("Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster <- STACK.consTot.bin", sep="")))
-                eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
+               
                 
+                if(compress=="xz"){
+                	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster', compress='xz')", sep="")))
+                	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
+                	eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster', compress='xz')", sep="")))
+                	eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='xz')", sep="")))
+                 }
+                 if(compress=="gzip"){
+                 	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster', compress='gzip')", sep="")))
+                	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='gzip')", sep="")))
+                	eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster', compress='gzip')", sep="")))
+                	eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster', compress='gzip')", sep="")))
+                 }
+                 if(compress==FALSE){
+                 	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster')", sep="")))
+                	eval(parse(text=paste("save(consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster')", sep="")))
+                	eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, ".raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,".raster')", sep="")))
+                	eval(parse(text=paste("save(Total_consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin.raster, file='", getwd(),"/proj.", Proj.name, "/Total_consensus_", Biomod.material$species.names[i], "_", Proj.name,"_Bin.raster')", sep="")))
+                 }
+                 
             }#if ii==1 
             
             

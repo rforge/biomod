@@ -243,7 +243,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                                                                                                                                                                   
                             #STKcons contains only the proj wanted
                             STACK.m <- addLayer(STACK.m, STKcons)
-                            STACK.w <- adLayer(STACK.w, STKcons)
+                            STACK.w <- addLayer(STACK.w, STKcons)
                             STACK.med <- addLayer(STACK.med, STKcons)
                           
                             if(Biomod.material$algo[RUNens.choice] != 'SRE'){  
@@ -335,7 +335,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     STACK.all <- stack(STACK.all, STACK.K)
                     if(final.model.out) STACK.K <- dropLayer(STACK.K, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     if((nbrep*NbPA) != 1) STACK.consTot <- addLayer(STACK.consTot, round(mean(STACK.K)))
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- adLayer(STACK.consTot.bin, mean(STACK.K) >= 500)
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- addMayer(STACK.consTot.bin, mean(STACK.K) >= 500)
                     LNa <- c(LNa, paste("meanKappa_", gnames, sep=""))
                     LNaTot <- c(LNaTot, "meanKappa")
                 }

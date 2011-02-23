@@ -12,7 +12,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
             else TF <- rep(1, nrow(NewData))
             
             for (j in 1:NbVar) {
-                capQ <- quantile(ref[, j], probs = quants)
+                capQ <- quantile(ref[, j], probs = quants, na.rm = TRUE)
                 if (class(NewData)[1] != "RasterStack") {
                   TF <- TF * (NewData[, names(ref)[j]] >= capQ[1])
                   TF <- TF * (NewData[, names(ref)[j]] <= capQ[2])

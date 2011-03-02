@@ -335,7 +335,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     STACK.all <- stack(STACK.all, STACK.K)
                     if(final.model.out) STACK.K <- dropLayer(STACK.K, c(which(PaLayers[!is.na(out[["weights"]][,1])])))
                     if((nbrep*NbPA) != 1) STACK.consTot <- addLayer(STACK.consTot, round(mean(STACK.K)))
-                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- addMayer(STACK.consTot.bin, mean(STACK.K) >= 500)
+                    if((nbrep*NbPA) != 1) STACK.consTot.bin <- addLayer(STACK.consTot.bin, mean(STACK.K) >= 500)
                     LNa <- c(LNa, paste("meanKappa_", gnames, sep=""))
                     LNaTot <- c(LNaTot, "meanKappa")
                 }

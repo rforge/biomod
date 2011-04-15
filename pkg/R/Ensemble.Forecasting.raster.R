@@ -251,9 +251,9 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                                     thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][Biomod.material$algo[RUNens.choice],4])
                                     assign("thresh", thresh, pos=1)
-                                    if(Th[jj]=='Roc'){   ST <- STKcons@layers[[1]] >= thresh ;  STACK.R <- stack(STACK.R, ST*1000) }   
-                                    if(Th[jj]=='Kappa'){ ST <- STKcons@layers[[1]] >= thresh ;  STACK.K <- stack(STACK.K, ST*1000) } 
-                                    if(Th[jj]=='TSS'){   ST <- STKcons@layers[[1]] >= thresh ;  STACK.T <- stack(STACK.T, ST*1000) }
+                                    if(Th[jj]=='Roc'){   ST <- STKcons@layers[[1]] >= thresh ;  STACK.R <- addLayer(STACK.R, ST*1000) }   
+                                    if(Th[jj]=='Kappa'){ ST <- STKcons@layers[[1]] >= thresh ;  STACK.K <- addLayer(STACK.K, ST*1000) } 
+                                    if(Th[jj]=='TSS'){   ST <- STKcons@layers[[1]] >= thresh ;  STACK.T <- addLayer(STACK.T, ST*1000) }
                                 
                                     #store thresholds
                                     if(Th[jj] == weight.method){

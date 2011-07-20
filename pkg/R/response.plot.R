@@ -10,7 +10,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     Xp  <- as.data.frame(matrix(NA, nc=NbVar, nr=nrow(Data), dimnames=list(NULL, colnames(Data))))
     for(i in 1:NbVar){
         if(is.numeric(Data[,i])) { Xp[,i] <- mean(Data[,i])
-        } else Xp[,i] <- as.factor(rep(names(which.max(summary(Data[,i]))), nrow(Data)))
+        } 
+        else { 
+        	Xp[, i] <- as.factor(rep(names(which.max(summary(Data[, i]))), nrow(Data)))
+        	levels(Xp[,i]) <- levels(Data[, i])	 	
+        }
     }   
       
     if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)

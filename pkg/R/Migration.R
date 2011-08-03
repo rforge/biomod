@@ -6,8 +6,8 @@ function(CurrentPred=NULL, FutureProj=NULL, X=NULL, Y=NULL, MaxMigr=NULL, Pred.S
     #if(dim(CurrentPred)[2] != dim(FutureProj)[2])
     #stop("\n\n Species number should be the same in CurrentPred and FutureProj")
     
-    if(sum(CurrentPred[,1] >1) >=1 | sum(FutureProj[,1] >1) >=1) stop("\n Data inputs should be binary")
-    
+    CurrentPred <- as.data.frame(CurrentPred)
+    FutureProj <- as.data.frame(FutureProj)
     PredMigr <- as.data.frame(matrix(0, nrow=nrow(CurrentPred)))    
     
     if(length(MaxMigr) == 1 | length(MaxMigr) == ncol(CurrentPred)){

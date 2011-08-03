@@ -8,55 +8,55 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
     if(exists("multiple")) multiple.plot <- TRUE  else multiple.plot <- FALSE
 
 
-    if(color.gradient=='grey') {
-        color.system <- c()
-        for(i in seq(93,10,length.out=100)) color.system <- c(color.system, gray(i/100))
-        color.system <- c(gray(0.93), color.system, gray(0))
-    }
-    if(color.gradient=='blue') {
-        color.system <- c('grey88',
-        rainbow(45, start=0.5, end=0.65),                       
-        rainbow(10, start=0.65, end=0.7),
-        rainbow(45, start=0.7, end=0.85),
-        'red')
-    }
-    if(color.gradient=='red') {    
-        color.system <- c(
-        'grey88',
-        c(rep(c(colors()[c(417,417,515)]), each=5),
-        rev(rainbow(55, start=0.13, end=0.23 )),
-        rev(rainbow(50, start=0.08, end=0.13 )[seq(1,50,length.out=15)]),
-        rev(rainbow(50, end=0.08)[seq(1,50,length.out=15)])), 
-        'brown2')
-    } 
-    
     if(SRC){
-        if(unique(data.in)>4){
+        if(length(unique(data.in))>4){
             cat("\n not possible to render SRC plot -> more than four different values in data ")
-            SRC <- FALSE
-        } else{    
+            SRC <- F
+        } else {    
             SRCvalues <- sort(unique(data.in))
+			gg <- data.in + 3
             color.system <- c("red", "lightgreen", "grey", "darkgreen")
             title <- paste("SRC plot ", title, sep="")
         }
+    } else
+	{    if(color.gradient=='grey') {
+          color.system <- c()
+          for(i in seq(93,10,length.out=100)) color.system <- c(color.system, gray(i/100))
+          color.system <- c(gray(0.93), color.system, gray(0))
+        }
+        if(color.gradient=='blue') {
+          color.system <- c('grey88',
+          rainbow(45, start=0.5, end=0.65),                       
+          rainbow(10, start=0.65, end=0.7),
+          rainbow(45, start=0.7, end=0.85),
+          'red')
+        }
+        if(color.gradient=='red') {    
+          color.system <- c(
+          'grey88',
+          c(rep(c(colors()[c(417,417,515)]), each=5),
+          rev(rainbow(55, start=0.13, end=0.23 )),
+          rev(rainbow(50, start=0.08, end=0.13 )[seq(1,50,length.out=15)]),
+          rev(rainbow(50, end=0.08)[seq(1,50,length.out=15)])), 
+          'brown2')
+        } 
+    
+	
+      #if range wanted is broader than possible, set to actual range limits
+      #if(level.range[1]<min(data.in)) level.range[1] <- min(data.in)  
+      #if(level.range[2]>max(data.in)) level.range[2] <- max(data.in)  
+    
+      #determine the color code to assess to each value  
+      g <- gg <- data.in
+      gg[gg <= level.range[1]]  <- level.range[1]
+      gg[gg >= level.range[2]] <- level.range[2]
+      gg <- gg-min(g) 
+      gg <- gg/max(gg)*100 + 1
+   
+      #over and under-ranged values set to limits of color range
+      gg[g < level.range[1]] <- 1
+      gg[g > level.range[2]] <- 102
     }
-
-    
-    #if range wanted is broader than possible, set to actual range limits
-    if(level.range[1]<min(data.in)) level.range[1] <- min(data.in)  
-    if(level.range[2]>max(data.in)) level.range[2] <- max(data.in)  
-    
-    #determine the color code to assess to each value  
-    g <- gg <- data.in
-    gg[gg <= level.range[1]]  <- level.range[1]
-    gg[gg >= level.range[2]] <- level.range[2]
-    gg <- gg-min(g) 
-    gg <- gg/max(gg)*100 + 1
-   
-    #over and under-ranged values set to limits of color range
-    gg[g < level.range[1]] <- 1
-    gg[g > level.range[2]] <- 102
-   
     
     # define plotting symbols for presence and absences if required by user
     if(!is.null(AddPresAbs)){
@@ -108,4 +108,3 @@ function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),ma
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
      
 }
-

@@ -52,11 +52,10 @@ Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM 
  is that the discrimination is more fair than with the decay. In the latter case, close scores can strongly diverge in the weights they are awarded, when the
  proportional method will consider them as being fairly similar in prediction quality and award them a similar weight. 
 
+Compression :
+See help for the save function for more detailed explanation about compression options. Only gzip and xz are available here.
 }
-\compression{
-See help for the save function for more detailed explanation about compression options. Only gzip and xz are available here. 
 
-}
 \value{ 
   Some objects are stored directly on the hard disk in the same directory as for the projections.
 

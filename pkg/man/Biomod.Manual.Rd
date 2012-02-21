@@ -14,10 +14,11 @@ Biomod.Manual(manual="Biomod Manual"))
 }
 
 \details{
-The updated (and advised) version is \textit{BiomodTutorial.pdf}. Following this file, you will be
-able to make your own simulations and use all the BIOMOD tools.\\
-The \textit{Biomod Manual.pdf} file containes all informations about models used in BIOMOD.\\
-\textbf{NOTE:} it's possible that some examples not run because of old version of BIOMOD functions.\\
+The updated (and advised) version is BiomodTutorial.pdf. Following this file, you will be
+able to make your own simulations and use all the BIOMOD tools.
+The Biomod Manual.pdf file containes all informations about models used in BIOMOD.
+
+NOTE: it's possible that some examples not run because of old version of BIOMOD functions.
 }
 
 \author{ Wilfried Thuiller, Bruno Lafourcade, Damien Georges }

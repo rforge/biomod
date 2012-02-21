@@ -133,10 +133,10 @@
             temp <- rpart.control(xval = CV.tree, minbucket = 5, 
                 minsplit = 5, cp = 0.001, maxdepth = 25)
             if (k == (ncol(Ids) + 1)) 
-                model.sp <- rpart(eval(parse(text = paste("as.factor(", 
+                try(model.sp <- rpart(eval(parse(text = paste("as.factor(", 
                   SpNames[i], ")", paste(.scopeExpSyst(DataBIOMOD[1:10, 
                     1:NbVar], "CTA"), collapse = "")))), DataBIOMOD[calib.lines, 
-                  ], weights = RunWeights[calib.lines], control = temp)
+                  ], weights = RunWeights[calib.lines], control = temp))
             else try(model.sp <- rpart(eval(parse(text = paste("as.factor(", 
                 SpNames[i], ")", paste(.scopeExpSyst(DataBIOMOD[1:10, 
                   1:NbVar], "CTA"), collapse = "")))), DataBIOMOD[calib.lines, 

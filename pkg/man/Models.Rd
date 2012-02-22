@@ -120,8 +120,8 @@ IndependentResponse=NULL, IndependentExplanatory=NULL)
 #   Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5,
 #   NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", GBM = FALSE, No.trees = 3000, GAM = FALSE, CTA = FALSE, CV.tree = 50, 
-   ANN = TRUE, CV.ann = 2, SRE = FALSE, quant=0.05, FDA = FALSE, MARS = FALSE, RF = FALSE, NbRunEval = 2, DataSplit = 80,
+Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", GBM = FALSE, No.trees = 3000, GAM = FALSE, CTA = TRUE, CV.tree = 50, 
+   ANN = FALSE, CV.ann = 2, SRE = FALSE, quant=0.05, FDA = TRUE, MARS = FALSE, RF = FALSE, NbRunEval = 2, DataSplit = 80,
    Yweights=NULL, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, KeepPredIndependent = FALSE, VarImport=5,
    NbRepPA=2, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
@@ -142,12 +142,12 @@ Pred_Sp290[1:20,,,1]
 ## Biomod.Manual("Biomod_Practical_Building_Models")
 
 #You can load back a model and visualise it with the load() function :
-load("models/Sp290_ANN_PA1")
-Sp290_ANN_PA1
+load("models/Sp290_FDA_PA1")
+Sp290_FDA_PA1
 
-load("models/Sp290_ANN_PA1")
-Sp290_ANN_PA1
-str(Sp290_ANN_PA1)
+load("models/Sp290_FDA_PA1")
+Sp290_FDA_PA1
+str(Sp290_FDA_PA1)
 
 #to see the results of the evaluation procedures
 Evaluation.results.Kappa
@@ -158,8 +158,8 @@ VarImportance
 
 
 #This next function enables to plot the response curves of the model
-load("models/Sp290_GLM_PA1")
-response.plot(Sp290_GLM_PA1, Sp.Env[4:10])
+load("models/Sp290_CTA_PA1")
+response.plot(Sp290_CTA_PA1, Sp.Env[4:10])
 
 
 #Another series of functions enable to perform further steps, see ?CurrentPred and ?PredictionBestModel.

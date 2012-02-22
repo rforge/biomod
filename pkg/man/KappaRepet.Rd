@@ -32,18 +32,20 @@ data(Sp.Env)
 data(CoorXY)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,4:10], 
+Initial.State(Response=Sp.Env$Sp281, Explanatory=Sp.Env[,4:10], sp.name='Sp281',
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#Here are done 2 PA runs and 2 repetitions for each run. Here we will have 12 runs per species. This will hence take several minutes.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", NbRunEval = 0, DataSplit = 100, TSS=TRUE)
+#Here are done a lone full run. This will hence take several minutes.
+Models(RF=TRUE, SRE=TRUE, GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = FALSE, CV.tree = 50, ANN = FALSE, CV.ann = 2,
+   NbRunEval = 1, DataSplit = 100, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 #Load the predictions
-load("pred/Pred_Sp277")	
+load("pred/Pred_Sp281")	
 	
 ## TSS estimation
 
-MyTSS <- KappaRepet(Sp.Env$Sp277, Pred_Sp277[,"GLM",1,1], TSS = TRUE)
+MyTSS <- KappaRepet(Sp.Env$Sp281, Pred_Sp281[,"RF",1,1], TSS = TRUE)
 MyTSS
 
 ls()

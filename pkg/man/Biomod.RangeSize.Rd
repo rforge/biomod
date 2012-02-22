@@ -61,20 +61,20 @@ data(Sp.Env)
 data(CoorXY)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10], 
+Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10],
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
-   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=0,
-   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
+#Here are done 1 PA runs and 1 repetitions for each run. This will hence take several minutes.
+Models(RF=TRUE, SRE=TRUE, GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = FALSE, CV.ann = 2,
+   NbRunEval = 1, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=1, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
-Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", RF=TRUE, SRE = TRUE, CTA=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
+Projection(Proj = Future1[,4:10], Proj.name="Future1",, RF=TRUE, SRE = TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=TRUE, 
 binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
@@ -95,9 +95,7 @@ Future1.SpChange.consensus$Diff.By.Pixel[50:100,]
 
 #You can use the level.plot function to directly visualise the SpChange values
 
-level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp277"], CoorXY, show.scale=TRUE, title="Sp277")
-x11()
-level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp164"], CoorXY, show.scale=TRUE, title="Sp164")
+level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp277"], CoorXY, show.scale=TRUE, title="Sp777")
 
 }
 

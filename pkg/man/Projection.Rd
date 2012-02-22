@@ -73,20 +73,22 @@ See help for the save function for more detailed explanation about compression o
 data(Sp.Env)
 data(CoorXY)
 
+data(Sp.Env)
+data(CoorXY)
+
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10], 
+Initial.State(Response=Sp.Env[,13:14], Explanatory=Sp.Env[,4:10],
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = FALSE, CV.ann = 2, 
-   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
-   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
-
-
+#Here are done 1 PA runs and 1 repetitions for each run. This will hence take several minutes.
+Models(RF=TRUE, SRE=TRUE, GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, ANN = FALSE, CV.ann = 2,
+   NbRunEval = 1, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+   NbRepPA=1, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
+   
 #Render Future projections under climate change scenario
 data(Future1)
 head(Future1) #the head() function enables to visualise the 5 firts lines of a dataframe
-Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", RF=TRUE, SRE=TRUE, CTA=TRUE, BinKappa=TRUE, FiltKappa=TRUE)
 
 
 #view the results produced, example with the projections in probabilities :
@@ -101,9 +103,9 @@ load("proj.Future1/Proj_Future1_Sp277_FiltKappa")
 
 par(mfrow=c(1,4))
 level.plot(Sp.Env[,13], CoorXY, show.scale=FALSE, title="original data")
-level.plot(Proj_Future1_Sp277[,"GLM",2,1], CoorXY, show.scale=FALSE, title="probabilities by GLM")
-level.plot(Proj_Future1_Sp277_BinKappa[,"GLM",2,1], CoorXY, show.scale=FALSE, title="binary by Kappa")
-level.plot(Proj_Future1_Sp277_FiltKappa[,"GLM",2,1], CoorXY, show.scale=FALSE, title="filtered by Kappa")
+level.plot(Proj_Future1_Sp277[,"CTA",2,1], CoorXY, show.scale=FALSE, title="probabilities by CTA")
+level.plot(Proj_Future1_Sp277_BinKappa[,"CTA",2,1], CoorXY, show.scale=FALSE, title="binary by Kappa")
+level.plot(Proj_Future1_Sp277_FiltKappa[,"CTA",2,1], CoorXY, show.scale=FALSE, title="filtered by Kappa")
 
 
 }

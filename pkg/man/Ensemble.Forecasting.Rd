@@ -38,7 +38,7 @@ Ensemble.Forecasting.raster(ANN = TRUE, CTA = TRUE, GAM = TRUE, GBM = TRUE, GLM 
   \item{bin.method}{ the method to convert the probabilities to binary values (if wanted) }
   \item{Test}{ set to True if you want the predictive performance of the ensemble method to be evaluated on current data }
   \item{repetition.models}{ set to True if you want the ensembles to be build with the repetition models taken into account }
-  \item{final.model.out}{ set to True if you want the total ensemble to be build with the final models taken into account }
+  \item{final.model.out}{ set to True if you want the total ensemble to be build without the final models taken into account }
   \item{qual.th}{ enables to switch off the models under a certain evaluation score. This will be applied to all models on all species. }
    \item{compress}{logical or character string specifying whether saving to a named file is to use compression. FALSE corresponds to no compression, and character strings "gzip", or "xz" specify the type of compression. See ?save for more details. Default is "xz"}
 }

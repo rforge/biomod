@@ -37,12 +37,12 @@ data(Sp.Env)
 data(CoorXY)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,11:18], Explanatory=Sp.Env[,4:10], 
+Initial.State(Response=Sp.Env[,11:12], Explanatory=Sp.Env[,4:10], 
 IndependentResponse=NULL, IndependentExplanatory=NULL)
 
-#Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
-   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
+#Here are done 0 PA runs and 1 repetitions for each run. This will hence take several minutes.
+Models(CTA = TRUE, CV.tree = 5, RF = TRUE, CV.ann = 2, 
+   NbRunEval = 1, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
 
@@ -50,7 +50,7 @@ ls()
 
 LoadModels(Sp=1)
 ls()
-LoadModels(Sp=3, models=c("GLM", "RF"))
+LoadModels(Sp=2, models=c("CTA", "RF"))
 ls()
 LoadModels(Sp='all')
 ls()

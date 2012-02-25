@@ -1,25 +1,11 @@
 `BinaryTransformation` <-
 function(ProbData, CutOffdata)
 {
-    if(is.data.frame(ProbData)) {
-        N <- dim(ProbData)[2]
-        i <- 1
-        while(i <= N) {
-            if(sum(ProbData[,i]) != 0) {
-                ProbData[ProbData<0,i] <- 0
-                ProbData[ProbData[,i] < CutOffdata[i,1],i] <- 0
-                ProbData[ProbData[,i] >= CutOffdata[i,1],i] <- 1
-            }
-            i <- i + 1
-        }
-    }
-    else {
-        if(sum(ProbData) != 0) {
-            ProbData[ProbData<0] <- 0
-            ProbData[ProbData < CutOffdata] <- 0
-            ProbData[ProbData >= CutOffdata] <- 1
-        }
-    }
-    return(ProbData)
+	FUN2 <- function(x,y){
+		moa <- apply((x>y),2,as.integer)
+		if(ncol(moa)==1) return(moa[,1])
+		else return(moa)
+	}
+	return(sweep(data.matrix(ProbData), 2, CutOffdata, FUN2))
 }
 

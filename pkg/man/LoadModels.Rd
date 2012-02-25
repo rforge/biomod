@@ -32,7 +32,7 @@ rep : '1' is the 100\% model and '2' the first repetitions
 
 \examples{
 
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -45,16 +45,12 @@ Models(CTA = TRUE, CV.tree = 5, RF = TRUE, CV.ann = 2,
    NbRunEval = 1, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
-
-ls()
-
 LoadModels(Sp=1)
-ls()
-LoadModels(Sp=2, models=c("CTA", "RF"))
-ls()
-LoadModels(Sp='all')
-ls()
 
+LoadModels(Sp=2, models=c("CTA", "RF"))
+
+LoadModels(Sp='all')
+}
 }
 
 \keyword{ models }

@@ -37,7 +37,7 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 \author{ Wilfried Thuiller, Bruno Lafourcade }
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{PredictionBestModel}}}
 \examples{
-
+\dontrun{
 data(Sp.Env)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
@@ -75,7 +75,7 @@ Proj_Future1_BestModelByTSS_Bin[1:10,,]
 
 load("proj.Future1/Proj_Future1_BestModelByTSS_Filt")
 Proj_Future1_BestModelByTSS_Filt[1:10,,]
-
+}
 }
 
 \keyword{ models }

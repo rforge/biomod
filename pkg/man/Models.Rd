@@ -103,7 +103,7 @@ Models(GLM = FALSE, TypeGLM = "simple", Test = "AIC", GBM = FALSE, No.trees = 50
 \seealso{ \code{\link{Initial.State}}, \code{\link{Projection}}, \code{\link{CurrentPred}}, \code{\link{PredictionBestModel}}, \code{\link{response.plot}}, \code{\link{level.plot}} }
 \examples{
 
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 #use fix(Sp.Env) to visualise the dataset
@@ -136,10 +136,9 @@ dimnames(Pred_Sp290)[-1]
 
 Pred_Sp290[1:20,,,1]
 #please check the UserGuide for a full explanation of the structure of the array.
-## NOT RUN
-## Biomod.Manual()
-## Biomod.Manual("Biomod_Presentation_Manual")
-## Biomod.Manual("Biomod_Practical_Building_Models")
+Biomod.Manual("BiomodTutorial")
+Biomod.Manual("Biomod_Presentation_Manual")
+Biomod.Manual("Biomod_Practical_Building_Models")
 
 #You can load back a model and visualise it with the load() function :
 load("models/Sp290_FDA_PA1")
@@ -164,6 +163,7 @@ response.plot(Sp290_CTA_PA1, Sp.Env[4:10])
 
 #Another series of functions enable to perform further steps, see ?CurrentPred and ?PredictionBestModel.
 
+}
 }
 
 \keyword{ models }

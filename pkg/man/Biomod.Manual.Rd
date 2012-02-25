@@ -6,7 +6,7 @@
 }
 
 \usage{
-Biomod.Manual(manual="Biomod Manual"))
+Biomod.Manual(manual="Biomod_Manual"))
 }
 
 \arguments{
@@ -16,7 +16,7 @@ Biomod.Manual(manual="Biomod Manual"))
 \details{
 The updated (and advised) version is BiomodTutorial.pdf. Following this file, you will be
 able to make your own simulations and use all the BIOMOD tools.
-The Biomod Manual.pdf file containes all informations about models used in BIOMOD.
+The Biomod_Manual.pdf file containes all informations about models used in BIOMOD.
 
 NOTE: it's possible that some examples not run because of old version of BIOMOD functions.
 }
@@ -26,7 +26,6 @@ NOTE: it's possible that some examples not run because of old version of BIOMOD 
 \seealso{ \code{\link{help}}}
 \examples{
 
-Biomod.Manual()
 Biomod.Manual("BiomodTutorial")
 }
 

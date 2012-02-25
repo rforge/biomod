@@ -24,8 +24,7 @@ LoadProj(Sp=1, Bin=FALSE, Filt=FALSE, which.pred="pred", raster=FALSE)
 \seealso{ \code{\link{Models}}, \code{\link{help}} }
 
 \examples{
-
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -38,18 +37,14 @@ Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, AN
    NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
-
 Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
 data(Future1)
 Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, ANN=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
-ls()
-
 LoadProj(Sp='all', which.pred=c("pred", "Current", "Future1")) 
-ls()
-
+}
 
 }
 

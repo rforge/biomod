@@ -37,7 +37,7 @@ Migration(CurrentPred = NULL, FutureProj = NULL, X = NULL, Y = NULL, MaxMigr = N
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{Biomod.RangeSize}}, \code{\link{Biomod.Turnover}} }
 \examples{
 
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -49,7 +49,6 @@ IndependentResponse=NULL, IndependentExplanatory=NULL)
 Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, RF = TRUE, 
    NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
    NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
-
 
 Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=FALSE, CTA=TRUE, RF = TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
@@ -66,17 +65,14 @@ binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 load("proj.Future1/Total_consensus_Future1_Bin")
 load("proj.Current/Total_consensus_Current_Bin")
 
-
-
 Migration(CurrentPred = Total_consensus_Current_Bin[,,1], FutureProj = Total_consensus_Future1_Bin[,,1],
 X=CoorXY[,1], Y=CoorXY[,2], MaxMigr=1, Pred.Save="Future1.Migration")
   
-
 par(mfrow=c(1,3))
 level.plot(Sp.Env[,13], XY=CoorXY, show.scale=FALSE, title="current distribution", cex=0.8)
 level.plot(Future1.Migration[,1], XY=CoorXY, show.scale=FALSE, title="limited migration", cex=0.8)
 level.plot(Total_consensus_Future1_Bin[,1,1], XY=CoorXY, show.scale=FALSE, title="unlimited migration", cex=0.8)
-
+}
 }
 
 \keyword{ models }

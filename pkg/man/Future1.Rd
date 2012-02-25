@@ -25,10 +25,7 @@
 
 \examples{
 data(Future1)
-
-### Not run###
-## fix(Future1)
-##
+head(Future1)
  
 }
 \keyword{datasets}

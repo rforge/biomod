@@ -31,7 +31,7 @@ License: \tab GPL-2 \cr
 
 }
 \author{
-Wilfried Thuiller, with participation of Bruno Lafourcade and Robin Engler
+Wilfried Thuiller, Damien Georges and Robin Engler
 <wilfried.thuiller@ujf-grenoble.fr>
 }
 

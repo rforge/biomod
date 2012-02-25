@@ -81,6 +81,7 @@ Thuiller, W. 2004 Patterns and uncertainties of species' range shifts under clim
 \seealso{ \code{\link{Models}}, \code{\link{Projection}}, \code{\link{ProjectionBestModel}} }
 \examples{
 
+\dontrun{
 example(Projection)
 
 #Run the ensemble forecasting function on this scenario
@@ -116,7 +117,7 @@ level.plot(data[,2,4], CoorXY, show.scale=FALSE, title='sp164_Roc_mean', cex=0.5
 level.plot(data[,2,5], CoorXY, show.scale=FALSE, title='sp164_Kappa_mean', cex=0.5)
 level.plot(data[,2,6], CoorXY, show.scale=FALSE, title='sp164_TSS_mean', cex=0.5)
 
-
+}
 }
 
 \keyword{ models }

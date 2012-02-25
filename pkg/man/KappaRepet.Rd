@@ -27,7 +27,7 @@ KappaRepet(Obs, Fit, TSS = FALSE)
 
 \seealso{ \code{\link{help}}}
 \examples{
-	
+\dontrun{	
 data(Sp.Env)
 data(CoorXY)
 
@@ -51,7 +51,7 @@ MyTSS
 ls()
 # TSS estimated inside the Models function
 Evaluation.results.TSS	
-	
+}	
 }
 
 \keyword{ models }

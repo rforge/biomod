@@ -28,7 +28,7 @@ A vector with three values: threshold (Cutoff), sensitivity (se) and specificity
 
 \seealso{ \code{\link{help}}}
 \examples{
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -50,7 +50,7 @@ CutOff.Optimised(Sp.Env$Sp281, Pred_Sp281[,"RF",1,1])
 
 # TSS estimated inside the Models function
 Evaluation.results.Roc	
-
+}
 
 }
 

@@ -47,7 +47,7 @@ CreateProjMatrix(ANN=TRUE, CTA=TRUE, GLM=TRUE, GBM=TRUE, GAM=TRUE, SRE=TRUE, FDA
 
 \seealso{ \code{\link{Projection}}, \code{\link{ProbDensFunc}} }
 \examples{
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -78,7 +78,7 @@ CreateProjMatrix(ANN=TRUE, CTA=TRUE, GLM=TRUE, GBM=TRUE, GAM=TRUE, SRE=TRUE,
 #objects created
 head(Sp281_ProjMat)
 Sp281_ProjMat_Groups
-
+}
 
 }
 \keyword{ models }

@@ -56,7 +56,7 @@ Biomod.RangeSize.raster(CurrentPred = NULL, FutureProj = NULL, SpChange.Save = N
 \seealso{ \code{\link{Biomod.Turnover}}, \code{\link{Migration}}}
 \examples{
 
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -96,7 +96,7 @@ Future1.SpChange.consensus$Diff.By.Pixel[50:100,]
 #You can use the level.plot function to directly visualise the SpChange values
 
 level.plot(Future1.SpChange.consensus$Diff.By.Pixel[,"Sp277"], CoorXY, show.scale=TRUE, title="Sp777")
-
+}
 }
 
 \keyword{ IO }

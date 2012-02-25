@@ -44,7 +44,7 @@ CurrentPred(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, FDA=TRUE
 
 \seealso{ \code{\link{Models}}, \code{\link{PredictionBestModel}}}
 \examples{
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -74,7 +74,7 @@ load("pred/Pred_Sp277_FiltTSS")
 Pred_Sp277_FiltTSS[120:140,,1,1]
 
 level.plot(Pred_Sp277_FiltTSS[,"RF",1,1], CoorXY, show.scale=FALSE)
-
+}
 }
 \keyword{ models }
 \keyword{ optimize }

@@ -46,7 +46,7 @@ Thuiller, W. 2003 BIOMOD: Optimising predictions of species distributions and pr
 
 \seealso{ \code{\link{Models}}, \code{\link{CurrentPred}} , \code{\link{ProjectionBestModel}}}
 \examples{
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -80,7 +80,7 @@ PredBestModelByRoc_Filt[50:100,,1] #for the first spiece
 load("pred/PredBestModelByKappa_Filt")
 str(PredBestModelByKappa_Filt)
 PredBestModelByKappa_Filt[50:100,,2] #for the first spiece
-
+}
 }
 
 \keyword{ models }

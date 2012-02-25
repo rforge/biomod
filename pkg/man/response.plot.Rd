@@ -34,7 +34,7 @@ predicted responses from species distribution models. Ecological Modelling 186, 
 
 \seealso{ \code{\link{Models}}  }
 \examples{
-
+\dontrun{
 data(Sp.Env)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
@@ -69,7 +69,7 @@ response.plot(Sp277_FDA_full, Sp.Env[,4:10])
 
 load("models/Sp277_RF_full")
 response.plot(Sp277_RF_full, Sp.Env[,4:10])
-
+}
 }
 
 \keyword{ dplot }

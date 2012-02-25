@@ -70,9 +70,7 @@ See help for the save function for more detailed explanation about compression o
 \seealso{ \code{\link{Models}}, \code{\link{ProjectionBestModel}}, \code{\link{Ensemble.Forecasting}}, \code{\link{ProbDensFunc}} }
 \examples{
 
-data(Sp.Env)
-data(CoorXY)
-
+\dontrun{
 data(Sp.Env)
 data(CoorXY)
 
@@ -107,7 +105,7 @@ level.plot(Proj_Future1_Sp277[,"CTA",2,1], CoorXY, show.scale=FALSE, title="prob
 level.plot(Proj_Future1_Sp277_BinKappa[,"CTA",2,1], CoorXY, show.scale=FALSE, title="binary by Kappa")
 level.plot(Proj_Future1_Sp277_FiltKappa[,"CTA",2,1], CoorXY, show.scale=FALSE, title="filtered by Kappa")
 
-
+}
 }
 \keyword{ models }
 \keyword{ regression }

@@ -45,46 +45,40 @@ Where SR is the current species richness, L the number of species lost and G tho
 \seealso{ \code{\link{Biomod.RangeSize}}, \code{\link{Migration}} }
 \examples{
 
- 
-### NOT RUN ###
- 
-#data(Sp.Env)
-#data(CoorXY)
+\dontrun{ 
+data(Sp.Env)
+data(CoorXY)
 
 #This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-#Initial.State(Response=Sp.Env[,11:18], Explanatory=Sp.Env[,4:10], 
-#IndependentResponse=NULL, IndependentExplanatory=NULL)
+Initial.State(Response=Sp.Env[,11:18], Explanatory=Sp.Env[,4:10], 
+IndependentResponse=NULL, IndependentExplanatory=NULL)
 
 #Here are done 2 PA runs and 2 repetitions for each run. This will hence take several minutes.
-#Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
-#   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=0,
-#   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
+Models(GLM = FALSE, TypeGLM = "quad", Test = "AIC", CTA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
+   NbRunEval = 2, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=0,
+   NbRepPA=0, strategy="circles", coor=CoorXY, distance=2, nb.absences=1000)
 
-
-#Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
+Projection(Proj = Sp.Env[, 4:10], Proj.name="Current", GLM=TRUE, CTA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
 #Render Future projections under climate change scenario
+data(Future1)
+Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
 
-#data(Future1)
-#Projection(Proj = Future1[,4:10], Proj.name="Future1", GLM=TRUE, CTA=TRUE, RF=TRUE, BinKappa=TRUE, FiltKappa=TRUE, repetition.models=TRUE)
+Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
-#Ensemble.Forecasting(Proj.name= "Current", weight.method='Roc', PCA.median=TRUE, 
-#binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
+Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, 
+binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
 
-#Ensemble.Forecasting(Proj.name= "Future1", weight.method='Roc', PCA.median=TRUE, 
-#binary=TRUE, bin.method='Roc', Test=FALSE, decay=1.6, repetition.models=TRUE)
+load("proj.Future1/Total_consensus_Future1_Bin")
+load("proj.Current/Total_consensus_Current_Bin")
 
-#load("proj.Future1/Total_consensus_Future1_Bin")
-#load("proj.Current/Total_consensus_Current_Bin")
-
-
-#Biomod.Turnover(CurrentPred = Total_consensus_Current_Bin[,,1], FutureProj = Total_consensus_Future1_Bin[,,1], Turnover.Save="Future1.Turnover.consensus")
-
+Biomod.Turnover(CurrentPred = Total_consensus_Current_Bin[,,1], FutureProj = Total_consensus_Future1_Bin[,,1], Turnover.Save="Future1.Turnover.consensus")
 
 #Visualise the results
-#Future1.Turnover.consensus[1150:1200,]
+Future1.Turnover.consensus[1150:1200,]
 
-
+}
 }
 
 \keyword{ IO }

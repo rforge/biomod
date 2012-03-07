@@ -48,8 +48,10 @@
     }
     if (Model == "SRE") 
         cat("Model=Surface Range Envelop \n")
-    if (Model == "FDA") 
-        cat("Model=Flexible Discriminant Analysis \n")
+    if (Model == "FDA"){
+      cat("Model=Flexible Discriminant Analysis \n")
+    } 
+
     if (Model == "MARS") 
         cat("Model=Multiple Adaptive Regression Splines \n")
     if (Model == "RF") 
@@ -238,6 +240,10 @@
                   1:NbVar])
         }
         if (Model == "FDA") {
+#           counter <- 1
+#           g.pred <- NA
+#           while(counter < 5 | sum(is.na(g.pred)) > 0 ){
+#             if(counter > 1) {cat('\n*** last modeling failed, re-runing the model')}
             if (k == (ncol(Ids) + 1)) {
                 if (is.null(Yweights)) 
                   model.sp <- fda(eval(parse(text = paste(SpNames[i], 
@@ -263,6 +269,8 @@
             if (exists("model.sp")) 
                 TempArray <- predict(model.sp, DataBIOMOD[PA.samp, 
                   1:NbVar], type = "post")[, 2]
+#             counter <- counter + 1
+#           }
         }
         if (Model == "RF") {
             if (k == (ncol(Ids) + 1)) 
@@ -290,6 +298,33 @@
                   1000))
             }
         }
+            
+        ### checking for NA in g.pred #########################
+        if(exists("g.pred")){
+          if(sum(is.na(g.pred[,])) > 0){ # some NA detected
+            if(sum(is.na(g.pred[,])) == ncol(g.pred) * nrow(g.pred)){ # only NA 
+              rm('g.pred') # model failed
+            } else { # only few NAs
+              na.detected <- which(is.na(g.pred))
+              # remove Na's pred lines of all data
+              if (k == (ncol(Ids) + 1)) {
+                calib.lines <- pred.lines <- PA.samp[-na.detected]
+              } else {
+                if(sum( as.vector(Ids[, k]) %in% na.detected ) > 0){
+                  # remove from Ids
+                  Ids <- data.frame(Ids[Ids[,k] %in% na.detected,])
+                }
+                PA.samp <- PA.samp[-na.detected]
+                calib.lines <- PA.samp[Ids[, k]]
+                pred.lines <- PA.samp[-Ids[, k]]
+                g.pred.with.na <- g.pred
+                g.pred <- na.omit(g.pred)
+              }
+            }
+          }
+        }
+
+            
         if (!exists("g.pred")) {
             ErrorCounter <- ErrorCounter + 1
             BM[["calibration.failures"]] <- c(BM[["calibration.failures"]], 
@@ -369,9 +404,22 @@
             if (Model == "GBM") 
                 eval(parse(text = paste("GBM.list$", nam, " <- best.iter", 
                   sep = "")))
-            if (k == (ncol(Ids) + 1)) 
+                
+            # save g.pred
+            if (k == (ncol(Ids) + 1)){
+              if(exists('g.pred.with.na')){ # na in g.pred
+                Array[, Model, 1, pa] <- g.pred.with.na[,]
+              } else{
                 Array[, Model, 1, pa] <- g.pred[, ]
-            else Array[, Model, (k + 1), pa] <- g.pred[, ]
+              }
+            } else {
+              if(exists('g.pred.with.na')){ # na in g.pred
+                Array[, Model, (k + 1), pa] <- g.pred.with.na[,]
+              } else {
+                Array[, Model, (k + 1), pa] <- g.pred[, ]
+              }
+            }
+
            # if (Model != "SRE") 
            #    eval(parse(text = paste("assign('", SpNames[i], 
            #      "_", Model, "_", nam, "', model.sp, pos=1)", sep = "")))

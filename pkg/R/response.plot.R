@@ -1,10 +1,13 @@
 `response.plot` <-
-function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480){
+function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
 
     if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
 
     NbVar <- ncol(Data)
     NbVarShow <- length(show.variables)
+    
+    if(plot==F) temp <- array(0, dim=c(nrow(Data), 2, NbVarShow), dimnames=list(NULL, c("Var", "Pred"), colnames(Data)[show.variables]))
+    
     
     #consider if factorial variables :     
     Xp  <- as.data.frame(matrix(NA, nc=NbVar, nr=nrow(Data), dimnames=list(NULL, colnames(Data))))
@@ -22,6 +25,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
     if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
     
+    if(plot){
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
     if(save.file=="jpeg") jpeg(paste(name, "jpeg", sep="."), width=ImageSize, height=ImageSize)
     if(save.file=="tiff") tiff(paste(name, "tiff", sep="."), width=ImageSize, height=ImageSize)
@@ -38,7 +42,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
     text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
-
+	}
     for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
     
             #consider if factorial variables :
@@ -69,12 +73,14 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                 Xf[Xf<0]<-0
                 Xf[Xf>1]<-1            
             }
-
-            plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])     
+#             cat("no")
+			if(plot) plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])
+			else {temp[,1,i] <-Xp1[ ,i]; temp[,2,i] <- Xf}     
     }}# i loop for variables
    
    
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
+    if(plot==F) return(temp)
    
   #  if(substr(class(model)[1],1,4)=="nnet" )  detach(package:nnet)
    # if(class(model)[1]=="rpart") detach(package:rpart)

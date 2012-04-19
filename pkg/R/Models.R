@@ -13,6 +13,8 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     require(randomForest, quietly=TRUE)
     require(gam, quietly=TRUE)	
     
+
+    
     #checking possible mistakes in the argument selections
     if(!exists("DataBIOMOD")) stop("Initial.State should be run first in order to procede")
     if(!any(GAM,GBM,GLM,RF,FDA,MARS,SRE,ANN,CTA)) stop("No models were selected \n") 
@@ -29,6 +31,13 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
        if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
     }
     assign("isnullYweights", is.null(Yweights), pos=1)                                                                  #To keep track of Yweights state at origin (user's input)
+    
+    #checking var importance args
+    if(VarImport > 0 && Biomod.material$NbVar < 2){
+      cat("\nVar Importance calculation was automaticly switched off because of only one explanatory variable given\n")
+      VarImport <- 0
+    }
+    
     if(NbRepPA!=0 && is.null(Yweights)) Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
    
     

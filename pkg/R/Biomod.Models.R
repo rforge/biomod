@@ -95,32 +95,31 @@
         }
       
         
-        
         assign("calib.lines", calib.lines, pos = 1)
         if (Model == "ANN") {
             set.seed(555)
-            CV_nnet = .CV.nnet(Input = DataBIOMOD[calib.lines,
-                1:NbVar], Target = DataBIOMOD[calib.lines, NbVar +
+            CV_nnet = .CV.nnet(Input = data.frame(matrix(DataBIOMOD[calib.lines,
+                1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), Target = DataBIOMOD[calib.lines, NbVar +
                 i], nbCV = CV.ann, W = RunWeights[calib.lines])
             if (k == (ncol(Ids) + 1)) {
                 if (is.null(Yweights)) 
-                	model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(.scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                	model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10,1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))),"GBM"),collapse="")))),
                 data = DataBIOMOD[calib.lines,], size = CV_nnet[1,
                     1], rang = 0.1, decay = CV_nnet[1, 2], maxit = 200, 
                   trace = FALSE)
-                else model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(.scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                else model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10,1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))),"GBM"),collapse="")))),
                 data = DataBIOMOD[calib.lines,], size = CV_nnet[1,
                     1], rang = 0.1, decay = CV_nnet[1, 2], weights=RunWeights[calib.lines], maxit = 200, 
                   trace = FALSE)
             }        
             else {
                 if (is.null(Yweights)) 
-            		try(model.sp <- nnet(eval(parse(text=paste("DataBIOMOD[calib.lines, NbVar +",i,"]",paste(.scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+            		try(model.sp <- nnet(eval(parse(text=paste("DataBIOMOD[calib.lines, NbVar +",i,"]",paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10,1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))),"GBM"),collapse="")))),
                 data = DataBIOMOD[calib.lines,],
                 size = CV_nnet[1, 1], rang = 0.1, decay = CV_nnet[1, 
                   2], maxit = 200, trace = FALSE, weights=RunWeights[calib.lines]), silent = TRUE)
                   
-                else  try(model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(.scopeExpSyst(DataBIOMOD[1:10,1:NbVar],"GBM"),collapse="")))),
+                else  try(model.sp <- nnet(eval(parse(text=paste(paste("DataBIOMOD[calib.lines, NbVar +",i,"]"),paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10,1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))),"GBM"),collapse="")))),
                 data = DataBIOMOD[calib.lines,],
                 size = CV_nnet[1, 1], rang = 0.1, decay = CV_nnet[1, 
                   2], maxit = 200, trace = FALSE, weights=RunWeights[calib.lines]), silent = TRUE)
@@ -136,12 +135,12 @@
                 minsplit = 5, cp = 0.001, maxdepth = 25)
             if (k == (ncol(Ids) + 1)) 
                 try(model.sp <- rpart(eval(parse(text = paste("as.factor(", 
-                  SpNames[i], ")", paste(.scopeExpSyst(DataBIOMOD[1:10, 
-                    1:NbVar], "CTA"), collapse = "")))), DataBIOMOD[calib.lines, 
+                  SpNames[i], ")", paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 
+                    1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), "CTA"), collapse = "")))), DataBIOMOD[calib.lines, 
                   ], weights = RunWeights[calib.lines], control = temp))
             else try(model.sp <- rpart(eval(parse(text = paste("as.factor(", 
-                SpNames[i], ")", paste(.scopeExpSyst(DataBIOMOD[1:10, 
-                  1:NbVar], "CTA"), collapse = "")))), DataBIOMOD[calib.lines, 
+                SpNames[i], ")", paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), "CTA"), collapse = "")))), DataBIOMOD[calib.lines, 
                 ], weights = RunWeights[calib.lines], control = temp), 
                 silent = TRUE)
             if (exists("model.sp")) {
@@ -153,8 +152,9 @@
                   model.sp <- prune(model.sp, cp = Cp)
                 else model.sp <- prune(model.sp, cp = Cp[2])
                 g.pred <- data.frame(as.integer(as.numeric(predict(model.sp, 
-                  DataBIOMOD[PA.samp, 1:NbVar], type = "prob")[, 
+                  data.frame(matrix(DataBIOMOD[PA.samp, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), type = "prob")[, 
                   2]) * 1000))
+              
             }
         }
         if (Model == "GAM") {
@@ -162,12 +162,12 @@
                 "~1", collapse = ""))), data = DataBIOMOD[calib.lines, 
                 ], family = binomial, weights = RunWeights[calib.lines])
             if (k == (ncol(Ids) + 1)) 
-                model.sp <- step.gam(gamStart, .scope(DataBIOMOD[1:10, 
-                  1:NbVar], "s", Spline), keep = .functionkeep, 
+                model.sp <- step.gam(gamStart, .scope(data.frame(matrix(DataBIOMOD[1:10, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), "s", Spline), keep = .functionkeep, 
                   direction = "both", trace = FALSE, control = gam.control(maxit = 50, 
                     bf.maxit = 50))
-            else try(model.sp <- step.gam(gamStart, .scope(DataBIOMOD[1:10, 
-                1:NbVar], "s", Spline), keep = .functionkeep, 
+            else try(model.sp <- step.gam(gamStart, .scope(data.frame(matrix(DataBIOMOD[1:10, 
+                1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), "s", Spline), keep = .functionkeep, 
                 direction = "both", trace = FALSE, control = gam.control(maxit = 50, 
                   bf.maxit = 50)), silent = TRUE)
             if (exists("model.sp")) 
@@ -177,14 +177,14 @@
         if (Model == "GBM") {
             if (k == (ncol(Ids) + 1)) 
                 model.sp <- gbm(eval(parse(text = paste(SpNames[i], 
-                  paste(.scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], 
+                  paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                     "GBM"), collapse = "")))), data = DataBIOMOD[calib.lines, 
                   ], distribution = "bernoulli", var.monotone = rep(0, 
                   length = NbVar), w = RunWeights[calib.lines], interaction.depth = 7, shrinkage = 0.001, 
                   bag.fraction = 0.5, train.fraction = 1, n.trees = No.trees, 
                   verbose = FALSE, cv.folds = 5)
             else try(model.sp <- gbm(eval(parse(text = paste(SpNames[i], 
-                paste(.scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], 
+                paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                   "GBM"), collapse = "")))), data = DataBIOMOD[calib.lines, 
                 ], distribution = "bernoulli", var.monotone = rep(0, 
                 length = NbVar), w = RunWeights[calib.lines], 
@@ -204,11 +204,11 @@
                 "~1", collapse = ""))), data = DataBIOMOD[calib.lines, 
                 ], family = binomial, weights = RunWeights[calib.lines])
             if (k == (ncol(Ids) + 1)) 
-                model.sp <- stepAIC(glmStart, .scopeExpSyst(DataBIOMOD[1:10, 
-                  1:NbVar], Type), direction = "both", trace = FALSE, 
+                model.sp <- stepAIC(glmStart, .scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), Type), direction = "both", trace = FALSE, 
                   control = glm.control(maxit = 100), k = criteria)
-            else try(model.sp <- stepAIC(glmStart, .scopeExpSyst(DataBIOMOD[1:10, 
-                1:NbVar], Type), direction = "both", trace = FALSE, 
+            else try(model.sp <- stepAIC(glmStart, .scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 
+                1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), Type), direction = "both", trace = FALSE, 
                 control = glm.control(maxit = 100), k = criteria), 
                 silent = TRUE)
             if (exists("model.sp")) 
@@ -218,26 +218,26 @@
         if (Model == "MARS") {
             if (k == (ncol(Ids) + 1)) {
                 if (is.null(Yweights)) 
-                  model.sp <- mars(x = DataBIOMOD[calib.lines, 
-                    1:NbVar], y = DataBIOMOD[calib.lines, NbVar + 
+                  model.sp <- mars(x = data.frame(matrix(DataBIOMOD[calib.lines, 
+                    1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), y = DataBIOMOD[calib.lines, NbVar + 
                     i], degree = 2)
-                else model.sp <- mars(x = DataBIOMOD[calib.lines, 
-                  1:NbVar], y = DataBIOMOD[calib.lines, NbVar + 
+                else model.sp <- mars(x = data.frame(matrix(DataBIOMOD[calib.lines, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), y = DataBIOMOD[calib.lines, NbVar + 
                   i], degree = 2, w = RunWeights[calib.lines])
             }
             else {
                 if (is.null(Yweights)) 
-                  try(model.sp <- mars(x = DataBIOMOD[calib.lines, 
-                    1:NbVar], y = DataBIOMOD[calib.lines, NbVar + 
+                  try(model.sp <- mars(x = data.frame(matrix(DataBIOMOD[calib.lines, 
+                    1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), y = DataBIOMOD[calib.lines, NbVar + 
                     i], degree = 2), silent = TRUE)
-                else try(model.sp <- mars(x = DataBIOMOD[calib.lines, 
-                  1:NbVar], y = DataBIOMOD[calib.lines, NbVar + 
+                else try(model.sp <- mars(x = data.frame(matrix(DataBIOMOD[calib.lines, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), y = DataBIOMOD[calib.lines, NbVar + 
                   i], degree = 2, w = RunWeights[calib.lines]), 
                   silent = TRUE)
             }
             if (exists("model.sp")) 
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp, 
-                  1:NbVar])
+                TempArray <- predict(model.sp, data.frame(matrix(DataBIOMOD[PA.samp, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))))
         }
         if (Model == "FDA") {
 #           counter <- 1
@@ -247,49 +247,49 @@
             if (k == (ncol(Ids) + 1)) {
                 if (is.null(Yweights)) 
                   model.sp <- fda(eval(parse(text = paste(SpNames[i], 
-                    paste(.scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], 
+                    paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                       "FDA"), collapse = "")))), data = DataBIOMOD[calib.lines, 
                     ], method = mars)
                 else model.sp <- fda(eval(parse(text = paste(SpNames[i], 
-                  paste(.scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], 
+                  paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                     "FDA"), collapse = "")))), data = DataBIOMOD[calib.lines, 
                   ], method = mars, weights = RunWeights[calib.lines])
             }
             else {
                 if (is.null(Yweights)) 
                   try(model.sp <- fda(eval(parse(text = paste(SpNames[i], 
-                    paste(.scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], 
+                    paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                       "FDA"), collapse = "")))), data = DataBIOMOD[calib.lines, 
                     ], method = mars), silent = TRUE)
                 else try(model.sp <- fda(eval(parse(text = paste(SpNames[i], 
-                  paste(.scopeExpSyst(DataBIOMOD[1:10, 1:NbVar], 
+                  paste(.scopeExpSyst(data.frame(matrix(DataBIOMOD[1:10, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                     "FDA"), collapse = "")))), data = DataBIOMOD[calib.lines, 
                   ], method = mars, weights = RunWeights[calib.lines]), silent = TRUE)
             }
             if (exists("model.sp")) 
-                TempArray <- predict(model.sp, DataBIOMOD[PA.samp, 
-                  1:NbVar], type = "post")[, 2]
+                TempArray <- predict(model.sp, data.frame(matrix(DataBIOMOD[PA.samp, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), type = "post")[, 2]
 #             counter <- counter + 1
 #           }
         }
         if (Model == "RF") {
             if (k == (ncol(Ids) + 1)) 
-                model.sp <- randomForest(x = DataBIOMOD[calib.lines, 
-                  1:NbVar], y = as.factor(DataBIOMOD[calib.lines, 
+                model.sp <- randomForest(x = data.frame(matrix(DataBIOMOD[calib.lines, 
+                  1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), y = as.factor(DataBIOMOD[calib.lines, 
                   NbVar + i]), ntree = 750, mtry = NbVar/2, importance = TRUE)
-            else try(model.sp <- randomForest(x = DataBIOMOD[calib.lines, 
-                1:NbVar], y = as.factor(DataBIOMOD[calib.lines, 
+            else try(model.sp <- randomForest(x = data.frame(matrix(DataBIOMOD[calib.lines, 
+                1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), y = as.factor(DataBIOMOD[calib.lines, 
                 NbVar + i]), ntree = 750, mtry = NbVar/2, importance = TRUE), 
                 silent = TRUE)
             if (exists("model.sp")) 
                 g.pred <- data.frame(as.integer(predict(model.sp, 
-                  DataBIOMOD[PA.samp, 1:NbVar], type = "prob")[, 
+                  data.frame(matrix(DataBIOMOD[PA.samp, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), type = "prob")[, 
                   2] * 1000))
         }
         if (Model == "SRE") 
             g.pred <- data.frame(as.integer(as.numeric(sre(eval(parse(text = paste("DataBIOMOD[calib.lines,]$", 
-                paste(SpNames[i]), collapse = ""))), DataBIOMOD[calib.lines, 
-                1:NbVar], DataBIOMOD[PA.samp, ], quant)) * 1000))
+                paste(SpNames[i]), collapse = ""))), data.frame(matrix(DataBIOMOD[calib.lines, 
+                1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), DataBIOMOD[PA.samp, ], quant)) * 1000))
         if (any(c("ANN", "FDA", "MARS") == Model)){
             if (exists("TempArray")){
               g.pred <- data.frame(as.integer(.Rescaler4(as.numeric(TempArray),
@@ -485,7 +485,7 @@
                 if (Model == "MARS") 
                   TempVarImp[1, J] <- TempVarImp[1, J] + cor(g.pred[, 
                     ], as.integer(.Rescaler4(predict(model.sp, 
-                    TempDS[, 1:NbVar]), ref = DataBIOMOD[PA.samp, 
+                    data.frame(matrix(TempDS[, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames)))), ref = DataBIOMOD[PA.samp, 
                     NbVar + i], run = paste(SpNames[i], "_MARS_", 
                     nam, sep = "")) * 1000))
                 if (Model == "FDA") 
@@ -519,22 +519,22 @@
             predind <- predict(model.sp, DataEvalBIOMOD, type = "raw")
         }
         if (Model == "CTA") 
-            predind <- predict(model.sp, DataEvalBIOMOD[, 1:NbVar], 
+            predind <- predict(model.sp, data.frame(matrix(DataEvalBIOMOD[, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                 type = "prob")[, 2]
         if (Model == "GBM") 
             predind <- predict.gbm(model.sp, DataEvalBIOMOD, 
                 best.iter, type = "response")
         if (Model == "MARS") 
-            predind <- predict(model.sp, DataEvalBIOMOD[, 1:NbVar])
+            predind <- predict(model.sp, data.frame(matrix(DataEvalBIOMOD[, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))))
         if (Model == "FDA") 
-            predind <- predict(model.sp, DataEvalBIOMOD[, 1:NbVar], 
+            predind <- predict(model.sp, data.frame(matrix(DataEvalBIOMOD[, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                 type = "post")[, 2]
         if (Model == "RF") 
-            predind <- predict(model.sp, DataEvalBIOMOD[, 1:NbVar], 
+            predind <- predict(model.sp, data.frame(matrix(DataEvalBIOMOD[, 1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                 type = "prob")[, 2]
         if (Model == "SRE") 
             predind <- as.integer(as.numeric(sre(eval(parse(text = paste("DataBIOMOD$", 
-                paste(SpNames[i]), collapse = ""))), DataBIOMOD[1:NbVar], 
+                paste(SpNames[i]), collapse = ""))), data.frame(matrix(DataBIOMOD[1:NbVar],ncol=Biomod.material$NbVar, dimnames=list(NULL,Biomod.material$VarNames))), 
                 DataEvalBIOMOD, quant)) * 1000)
         if (any(c("ANN", "FDA", "MARS") == Model)) 
             predind <- .Rescaler4(predind, ref = DataBIOMOD[PA.samp, 

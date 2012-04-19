@@ -55,9 +55,9 @@ Initial.State(Response=Sp.Env[,11:13], Explanatory=Sp.Env[,4:10],
 
 #View the data
 level.plot(DataBIOMOD[,3], CoorXY, level.range=c(0,5000), title="variable 3")
-x11()
+#x11()
 level.plot(DataBIOMOD[,3], CoorXY, level.range=c(0,5000), title="variable 3", color.gradient='grey')
-x11()
+#x11()
 level.plot(DataBIOMOD[,9], CoorXY, title="distribution of 'Sp290'") 
 
 }

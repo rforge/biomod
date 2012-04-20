@@ -77,7 +77,7 @@ Dataset.SpNoName.circles.8[1:20,]
 
 #you can plot it yourself (or set plot=TRUE in the function call)
 pseudo.data <- pseudo.abs(plot=TRUE, coor=rbind(presences, fulldata), status=c(rep(1,10),rep(0,10000)), strategy="circles", distance=8, create.dataset=TRUE) 
-x11()
+#x11()
 plot(Dataset.SpNoName.circles.8[,1],Dataset.SpNoName.circles.8[,2]) 
 
 

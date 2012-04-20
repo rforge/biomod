@@ -34,21 +34,21 @@ data(Sp.Env)
 data(CoorXY) 
 
 level.plot(Sp.Env[,5], CoorXY, title='var 3')
-x11()
+#x11()
 level.plot(Sp.Env[,5], CoorXY, color.gradient='grey', title='var 3') 
 
 #add in some extreme values
 Sp.Env[15,5] <- 20000   
 Sp.Env[16,5] <- -5000 
 
-x11()
+#x11()
 level.plot(Sp.Env[,5], CoorXY, title='var 3')  
 
 #the extreme values imply a non satisfying view of our data. The contrasts are not clear enough 
-x11()
+#x11()
 hist(Sp.Env[,5], breaks=50, main='variable 3')
 #Let's narrow the range :
-x11()
+#x11()
 level.plot(Sp.Env[,5], CoorXY, level.range=c(0,5000), title='var 3')
  
 }

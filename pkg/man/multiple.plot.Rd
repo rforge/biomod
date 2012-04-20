@@ -32,10 +32,10 @@ multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.
 data(Sp.Env)
 data(CoorXY)
 
-multiple.plot(Sp.Env[,4:18], CoorXY, plots.per.window=16, cex=0.8)
+#multiple.plot(Sp.Env[,4:18], CoorXY, plots.per.window=16, cex=0.8)
 
 #just the set of environmental variables 
-multiple.plot(Sp.Env[,4:10], CoorXY, cex=0.8)
+#multiple.plot(Sp.Env[,4:10], CoorXY, cex=0.8)
 
 }
 

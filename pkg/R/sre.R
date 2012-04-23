@@ -1,10 +1,18 @@
-sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.025) {    if (Quant >= 0.5 | Quant < 0)         stop("\n settings in Quant should be a value between 0 and 0.5 ")     quants <- c(0 + Quant, 1 - Quant)    if (class(Explanatory)[1] != "RasterStack") {        Response <- as.data.frame(Response)        NbVar <- ncol(Explanatory)
+sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.025) 
+{
+    if (Quant >= 0.5 | Quant < 0) 
+        stop("\n settings in Quant should be a value between 0 and 0.5 ")
+     quants <- c(0 + Quant, 1 - Quant)
+    if (class(Explanatory)[1] != "RasterStack") {
+        Response <- as.data.frame(Response)
+        NbVar <- ncol(Explanatory)
         if (class(NewData)[1] != "RasterStack") 
             Pred <- as.data.frame(matrix(0, nr = nrow(NewData), 
                 nc = ncol(Response), dimnames = list(seq(nrow(NewData)), 
                   colnames(Response))))
         for (i in 1:ncol(Response)) {
-            ref <- Explanatory[Response[, i] == 1, ]
+            ref <- data.frame(matrix(Explanatory[Response[, i] == 1, ], ncol = Biomod.material$NbVar, dimnames = list(NULL, 
+       Biomod.material$VarNames)))
             if (class(NewData)[1] == "RasterStack") {
                 TF <- subset(NewData, 1)
                 TF <- TF >= TF@data@min
@@ -30,4 +38,12 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
             else Pred <- TF
         }
     }    
-    if (class(NewData)[1] != "RasterStack" & ncol(Response) == 1)     	Pred <- Pred[[1]]    return(Pred)}
+    if (class(NewData)[1] != "RasterStack" & ncol(Response) == 1) 
+    	Pred <- Pred[[1]]
+
+    return(Pred)
+
+}
+
+
+

@@ -5,14 +5,19 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
      quants <- c(0 + Quant, 1 - Quant)
     if (class(Explanatory)[1] != "RasterStack") {
         Response <- as.data.frame(Response)
+        if (is.vector(Explanatory)){
+          Explanatory <- as.data.frame(Explanatory)
+          NewData <- as.data.frame(NewData)
+          names(Explanatory) <- names(NewData) <- "VarTmp"
+        }
         NbVar <- ncol(Explanatory)
         if (class(NewData)[1] != "RasterStack") 
             Pred <- as.data.frame(matrix(0, nr = nrow(NewData), 
                 nc = ncol(Response), dimnames = list(seq(nrow(NewData)), 
                   colnames(Response))))
         for (i in 1:ncol(Response)) {
-            ref <- data.frame(matrix(Explanatory[Response[, i] == 1, ], ncol = Biomod.material$NbVar, dimnames = list(NULL, 
-       Biomod.material$VarNames)))
+            ref <- as.data.frame(Explanatory[Response[, i] == 1, ])
+            if(ncol(ref)==1){ names(ref) <- names(Explanatory)}
             if (class(NewData)[1] == "RasterStack") {
                 TF <- subset(NewData, 1)
                 TF <- TF >= TF@data@min

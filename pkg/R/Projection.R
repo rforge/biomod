@@ -5,7 +5,7 @@ repetition.models=TRUE, compress="xz")
 {
     require(nnet, quietly=TRUE)
     require(rpart, quietly=TRUE)
-    require(Hmisc, quietly=TRUE)
+#     require(Hmisc, quietly=TRUE)
 #     require(Design, quietly=TRUE)
     require(MASS, quietly=TRUE)
     require(gbm, quietly=TRUE)

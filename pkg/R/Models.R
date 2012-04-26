@@ -5,7 +5,7 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
 {
     require(nnet, quietly=TRUE)
     require(rpart, quietly=TRUE)
-    require(Hmisc, quietly=TRUE)
+#     require(Hmisc, quietly=TRUE)
 #     require(Design, quietly=TRUE)
     require(MASS, quietly=TRUE)
     require(gbm, quietly=TRUE)

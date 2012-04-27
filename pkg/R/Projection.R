@@ -3,15 +3,18 @@ function(Proj=NULL, Proj.name=NULL, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE, compress="xz")
 {
-    require(nnet, quietly=TRUE)
-    require(rpart, quietly=TRUE)
-#     require(Hmisc, quietly=TRUE)
-#     require(Design, quietly=TRUE)
-    require(MASS, quietly=TRUE)
-    require(gbm, quietly=TRUE)
-    require(mda, quietly=TRUE)
-    require(randomForest, quietly=TRUE)
-    require(gam, quietly=TRUE)
+#     require(nnet, quietly=TRUE)
+#     require(rpart, quietly=TRUE)
+# #     require(Hmisc, quietly=TRUE)
+# #     require(Design, quietly=TRUE)
+#     require(MASS, quietly=TRUE)
+#     require(gbm, quietly=TRUE)
+#     require(mda, quietly=TRUE)
+#     require(randomForest, quietly=TRUE)
+#     require(gam, quietly=TRUE)
+  
+  # load required libraries
+  .LoadRequiredPackages(Biomod.material)
         
     if(BinRoc && !Biomod.material$evaluation.choice["Roc"] | FiltRoc && !Biomod.material$evaluation.choice["Roc"]) { BinRoc <- FiltRoc <- FALSE ; cat("Roc cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}
     if(BinKappa && !Biomod.material$evaluation.choice["Kappa"] | FiltKappa && !Biomod.material$evaluation.choice["Kappa"]) { BinKappa <- FiltKappa <- FALSE ; cat("Kappa cannot be used to transform probabilities into binary or filtered values, it was not selected in Models() \n ")}

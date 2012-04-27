@@ -3,15 +3,15 @@ function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 5000, GAM
 NbRunEval=1, DataSplit=100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
-    require(nnet, quietly=TRUE)
-    require(rpart, quietly=TRUE)
-#     require(Hmisc, quietly=TRUE)
-#     require(Design, quietly=TRUE)
-    require(MASS, quietly=TRUE)
-    require(gbm, quietly=TRUE)
-    require(mda, quietly=TRUE)
-    require(randomForest, quietly=TRUE)
-    require(gam, quietly=TRUE)	
+#     require(nnet, quietly=TRUE)
+#     require(rpart, quietly=TRUE)
+# #     require(Hmisc, quietly=TRUE)
+# #     require(Design, quietly=TRUE)
+#     require(MASS, quietly=TRUE)
+#     require(gbm, quietly=TRUE)
+#     require(mda, quietly=TRUE)
+#     require(randomForest, quietly=TRUE)
+#     require(gam, quietly=TRUE)	
     
 
     
@@ -71,7 +71,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     Biomod.material[["calibration.failures"]] <- NA
     assign("BM", Biomod.material, pos=1)
     assign("Biomod.material", Biomod.material, pos=1)
- 
+    
+    # load required libraries
+    .LoadRequiredPackages(Biomod.material)
  
     #run the pseudo.absence function once for each species, keeping all the absences possible each time
     #only the row names are stored in PA.data

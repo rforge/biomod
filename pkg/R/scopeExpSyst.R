@@ -1,7 +1,8 @@
-`.scopeExpSyst` <-
+.scopeExpSyst <-
 function(enviroTrain, mod)
 {
     i <- 1
+    enviroTrain <- as.data.frame(enviroTrain)
     junk2 <- c()
     while(i <= dim(enviroTrain)[2]) {
         

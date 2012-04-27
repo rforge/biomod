@@ -9,17 +9,3 @@ Maintainer: Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>
 Description: Functions for species distribution modeling, calibration and evaluation, ensemble of models.
 License: GPL-2
 LazyLoad: yes
-
-
-Package: dismo
-Type: Package
-Title: Species distribution modeling
-Version: 0.7-19
-Date: 22-April-2012
-Depends: R (>= 2.11.0), methods, raster (>= 1.9-67), sp
-Suggests: rJava (>= 0.5-0), rgdal, gbm, splines, XML, ROCR, deldir, gstat, randomForest, kernlab, maptools
-Author: Robert J. Hijmans, Steven Phillips, John Leathwick and Jane Elith
-Maintainer: <r.hijmans@gmail.com>
-Description: Functions for species distribution modeling, that is, predicting entire geographic distributions form occurences at specific sites.
-License: GPL (>=3)
-LazyLoad: yes

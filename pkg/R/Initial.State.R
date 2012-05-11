@@ -37,19 +37,23 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
     }
     
     #convert "characters" into "factor"
+    VarTypes <- c()
     for (i in 1:dim(Explanatory)[2]){
       if (class(Explanatory[,i]) == "character"){
         Explanatory[,i] = as.factor(Explanatory[,i])
         warning(paste(colnames(Explanatory)[i]," was converted to factor"))
         }
+      VarTypes <- c(VarTypes,class(Explanatory[,i]))
       }
 
     assign("DataBIOMOD", cbind(Explanatory, Response), pos=1)
     Biomod.material <- list()
     Biomod.material[["NbVar"]] <- dim(Explanatory)[2]
     Biomod.material[["VarNames"]] <- colnames(Explanatory)
+    Biomod.material[["VarTypes"]] <- VarTypes
     Biomod.material[["NbSpecies"]] <- dim(Response)[2]
-    Biomod.material[["species.names"]] <- colnames(Response)   
+    Biomod.material[["species.names"]] <- colnames(Response) 
+    Biomod.material[["Independent.data.set"]] <- ifelse(exists("DataEvalBIOMOD"),TRUE,FALSE)
     assign("Biomod.material", Biomod.material, pos=1)
     
     if(dim(na.omit(DataBIOMOD))[1] != dim(DataBIOMOD)[1]) stop("Data contain NA, some models may not work")

@@ -121,7 +121,11 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     nam <- paste(Biomod.material$species.names[i], nam, sep="_")
 
                     #set models to false if under the quality threshold
-                    if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
+                    if(Biomod.material$Independent.data.set) whichEval <- 2 else{
+                      if(Biomod.material$NbRunEval!=0) whichEval <- 1 else whichEval <- 3
+                    }
+                    
+                    
                     for(a in Biomod.material$algo) if(RUNens.choice[a]) if(as.numeric(eval(parse(text=paste("Evaluation.results.", weight.method, sep='')))[[nam]][a,whichEval]) < qual.th) RUNens.choice[a] <- FALSE  #Weights are based on the Cross-validated evaluation values.                       
 
                     

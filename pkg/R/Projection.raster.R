@@ -3,24 +3,10 @@ function(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE, stack.out=TRUE, compress="xz")
 {
-    require(nnet, quietly=TRUE)
-    require(rpart, quietly=TRUE)
-    require(Hmisc, quietly=TRUE)
-#     require(Design, quietly=TRUE)
-    require(MASS, quietly=TRUE)
-    require(gbm, quietly=TRUE)
-    require(mda, quietly=TRUE)
-    require(randomForest, quietly=TRUE)
-    require(gam, quietly=TRUE)
-    
-    require(foreign, quietly=TRUE)
-    require(sp, quietly=TRUE)
-    require(rgdal, quietly=TRUE)
-    require(raster, quietly=TRUE)
-    require(maptools, quietly=TRUE)
-    
-    
-    
+  # load required libraries
+  .LoadRequiredPackages(Biomod.material, raster.req=TRUE)
+  
+  
     #Check wether data input is a raster stack and corresponds to the variables used for calibration
     if(class(RasterProj) != "RasterStack") stop("\n Entry in 'RasterProj' should be an object of the class 'RasterStack' ")
     #checking for the variable name compatibility with initial data
@@ -87,7 +73,11 @@ repetition.models=TRUE, stack.out=TRUE, compress="xz")
             for(jj in 1:NbPA){
                 if(Biomod.material$NbRepPA == 0) run.name <- "full"  else  run.name <- paste("PA", jj, sep="")
 
+                # get current workspace objects
+                objects.to.keep <- c(ls(),"objects.to.keep", "Nrep")
                 for(Nrep in 1:Nbrep){
+                
+                  
                     run.name2 <- run.name
                     if(Nrep > 1) run.name2 <- paste(run.name2, "_rep", Nrep-1, sep="")
                     
@@ -245,7 +235,11 @@ repetition.models=TRUE, stack.out=TRUE, compress="xz")
              
              
              
-                 
+                  # remove objects
+#                   cat("\n***")
+#                   cat(ls()[!(ls() %in% objects.to.keep)], "are now deleted")
+                  rm(list=ls()[!(ls() %in% objects.to.keep)])
+                  gc(reset=TRUE)  
                 } #Nbrep -> coresponds to if repetition models were selected (==1 or ==NbRunEval+1)        
             } #NbPA  
         } #models 'a' loop                      
@@ -254,7 +248,11 @@ repetition.models=TRUE, stack.out=TRUE, compress="xz")
     }  #while species 'i' loop
     
     #save the history and workspace
+    
+    
     if(Biomod.material[["NbSpecies"]]==1) filename <- paste(Biomod.material[["species.names"]], "_run", sep="") else filename <- 'Biomod_run' 
+  
+  
     save.image(paste(filename, ".RData", sep=""))
 
 }

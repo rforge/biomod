@@ -3,15 +3,17 @@ function(GLM=FALSE, TypeGLM="simple", Test="AIC", GBM=FALSE, No.trees= 5000, GAM
 NbRunEval=1, DataSplit=100, NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=NULL, Yweights=NULL, VarImport=0, 
 Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndependent=FALSE)
 {
-    require(nnet, quietly=TRUE)
-    require(rpart, quietly=TRUE)
-    require(Hmisc, quietly=TRUE)
-#     require(Design, quietly=TRUE)
-    require(MASS, quietly=TRUE)
-    require(gbm, quietly=TRUE)
-    require(mda, quietly=TRUE)
-    require(randomForest, quietly=TRUE)
-    require(gam, quietly=TRUE)	
+#     require(nnet, quietly=TRUE)
+#     require(rpart, quietly=TRUE)
+# #     require(Hmisc, quietly=TRUE)
+# #     require(Design, quietly=TRUE)
+#     require(MASS, quietly=TRUE)
+#     require(gbm, quietly=TRUE)
+#     require(mda, quietly=TRUE)
+#     require(randomForest, quietly=TRUE)
+#     require(gam, quietly=TRUE)	
+    
+
     
     #checking possible mistakes in the argument selections
     if(!exists("DataBIOMOD")) stop("Initial.State should be run first in order to procede")
@@ -29,6 +31,13 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
        if(nrow(Yweights) != nrow(DataBIOMOD)) stop("The number of 'Weight' rows does not match with the input calibration data. Simulation cannot proceed.")
     }
     assign("isnullYweights", is.null(Yweights), pos=1)                                                                  #To keep track of Yweights state at origin (user's input)
+    
+    #checking var importance args
+    if(VarImport > 0 && Biomod.material$NbVar < 2){
+      cat("\nVar Importance calculation was automaticly switched off because of only one explanatory variable given\n")
+      VarImport <- 0
+    }
+    
     if(NbRepPA!=0 && is.null(Yweights)) Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
    
     
@@ -62,7 +71,9 @@ Roc=FALSE, Optimized.Threshold.Roc=FALSE, Kappa=FALSE, TSS=FALSE, KeepPredIndepe
     Biomod.material[["calibration.failures"]] <- NA
     assign("BM", Biomod.material, pos=1)
     assign("Biomod.material", Biomod.material, pos=1)
- 
+    
+    # load required libraries
+    .LoadRequiredPackages(Biomod.material)
  
     #run the pseudo.absence function once for each species, keeping all the absences possible each time
     #only the row names are stored in PA.data

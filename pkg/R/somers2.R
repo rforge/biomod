@@ -21,7 +21,7 @@
     }
     else nmiss <- 0
     u <- sort(unique(y))
-    if (any(!(y %in% 0:1) ))
+    if (any(y %nin% 0:1))
         stop("y must be binary")
     if (wtpres) {
         if (normwt)

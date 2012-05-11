@@ -1,3 +1,3 @@
 `.required` <-
-c("gam", "randomForest", "mda", "gbm", "MASS", "rpart", "nnet", "foreign") #, "Hmisc"
-
+c("gam", "randomForest", "mda", "gbm", "MASS", 
+"Hmisc", "rpart", "nnet", "foreign") 

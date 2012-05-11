@@ -3,9 +3,24 @@ function(RasterProj=NULL, Proj.name, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN
 FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
 repetition.models=TRUE, stack.out=TRUE, compress="xz")
 {
-  # load required libraries
-  .LoadRequiredPackages(Biomod.material, raster.req=TRUE)
-  
+    require(nnet, quietly=TRUE)
+    require(rpart, quietly=TRUE)
+    require(Hmisc, quietly=TRUE)
+#     require(Design, quietly=TRUE)
+    require(MASS, quietly=TRUE)
+    require(gbm, quietly=TRUE)
+    require(mda, quietly=TRUE)
+    require(randomForest, quietly=TRUE)
+    require(gam, quietly=TRUE)
+    
+    require(foreign, quietly=TRUE)
+    require(sp, quietly=TRUE)
+    require(rgdal, quietly=TRUE)
+    require(raster, quietly=TRUE)
+    require(maptools, quietly=TRUE)
+    
+    
+    
     #Check wether data input is a raster stack and corresponds to the variables used for calibration
     if(class(RasterProj) != "RasterStack") stop("\n Entry in 'RasterProj' should be an object of the class 'RasterStack' ")
     #checking for the variable name compatibility with initial data

@@ -10,17 +10,17 @@
         if(is.null(W)){
             Eval[,3] = Eval[,3] + apply(Eval[,1:2], 1, Samp, Target, Input, FUN=function(x, Samp, Target, Input){
               nn = nnet(eval(parse(text = paste("Target[Samp$calibration]",
-                    paste(.scopeExpSyst(data.frame(matrix(Input[1:10, ], ncol = Biomod.material$NbVar, dimnames = list(NULL, Biomod.material$VarNames))), "GBM"), collapse = "")))),data=data.frame(matrix(Input[Samp$calibration, ], ncol = Biomod.material$NbVar, dimnames = list(NULL, Biomod.material$VarNames))),
+                    paste(.scopeExpSyst(Input[1:10, ], "GBM"), collapse = "")))),data=Input[Samp$calibration, ],
                     size = x[1], decay = x[2], maxit = 200, trace = FALSE)
-              AUC = .somers2(predict(nn, data.frame(matrix(Input[Samp$evaluation,],ncol = Biomod.material$NbVar, dimnames = list(NULL, Biomod.material$VarNames))) ), Target[Samp$evaluation])["C"]
+              AUC = .somers2(predict(nn, Input[Samp$evaluation,]), Target[Samp$evaluation])["C"]
               return(AUC)
             })
         } else{
             Eval[,3] = Eval[,3] + apply(Eval[,1:2], 1, Samp, Target, Input, W, FUN=function(x, Samp, Target, Input, W){
               nn = nnet(eval(parse(text = paste("Target[Samp$calibration]",
-                    paste(.scopeExpSyst(data.frame(matrix(Input[1:10, ], ncol = Biomod.material$NbVar, dimnames = list(NULL, Biomod.material$VarNames))), "GBM"), collapse = "")))),data=data.frame(matrix(Input[Samp$calibration, ], ncol = Biomod.material$NbVar, dimnames = list(NULL, Biomod.material$VarNames))),
+                    paste(.scopeExpSyst(Input[1:10, ], "GBM"), collapse = "")))),data=Input[Samp$calibration, ],
                     weights=W[Samp$calibration], size = x[1], decay = x[2], maxit = 200, trace = FALSE)
-              AUC = .somers2(predict(nn, data.frame(matrix(Input[Samp$evaluation,],ncol = Biomod.material$NbVar, dimnames = list(NULL, Biomod.material$VarNames)))), Target[Samp$evaluation])["C"]
+              AUC = .somers2(predict(nn, Input[Samp$evaluation,]), Target[Samp$evaluation])["C"]
               return(AUC)
             })
         }

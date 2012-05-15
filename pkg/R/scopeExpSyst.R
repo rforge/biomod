@@ -9,11 +9,11 @@ function(varNames, varTypes, mod)
 	      
         if(mod=="NNET" | mod=="FDA" | mod=="GLMs" | mod=="CTA" | mod=="GBM") junk <- vname
         if(mod == "GLMq") {
-            if(varTypes[i] == 'numeric')      junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)", sep="")
+            if(varTypes[i] %in% c('numeric','integer'))      junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)", sep="")
             else if(varTypes[i] == 'factor')  junk <- vname
         }
         if(mod == "GLMp") {
-            if(varTypes[i] == 'numeric')     junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)+", "poly(", vname, ",2) + poly(", vname, ",3)", sep="")
+            if(varTypes[i] %in% c('numeric','integer'))     junk <- paste(vname, "+I(", vname, "^2)+I(",vname, "^3)+", "poly(", vname, ",2) + poly(", vname, ",3)", sep="")
             else if(varTypes[i] == 'factor') junk <- vname
         }
         junk2 <- c(junk2, junk)

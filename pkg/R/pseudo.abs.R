@@ -41,6 +41,11 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 		abs.set <- subset(abs, pred[-(1:length(pres))] == 0)
 	}
 	
+  # check some candidates absences are there
+ if( length(abs.set) == 0 ){
+   stop("! No pseudo absences able to be selected according to given parameters.\n  Please check strategy and distances values.")
+ }
+ 
 	#selecting only a limited number of absences from the whole bank
 	if(!is.null(nb.points)){
 		abs.set <- sample(abs.set,nb.points)

@@ -2,7 +2,7 @@ Package: BIOMOD
 Type: Package
 Title: Ensemble platform for species distribution modeling
 Suggests: ade4,nnet,rpart,MASS,gbm,mda,randomForest,gam,foreign
-Version: 1.1-7.02
+Version: 1.1-7.03
 Date: 26-April-2012
 Author: Wilfried Thuiller, Damien Georges and Robin Engler
 Maintainer: Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>

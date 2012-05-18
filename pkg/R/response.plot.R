@@ -74,8 +74,13 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                 Xf[Xf>1]<-1            
             }
 #             cat("no")
-			if(plot) plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])
-			else {temp[,1,i] <-Xp1[ ,i]; temp[,2,i] <- Xf}     
+			if(plot) {
+				plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])
+				rug(Data[ ,i])
+			}	
+			else{ 
+				temp[,1,i] <-Xp1[ ,i]; temp[,2,i] <- Xf
+			}     
     }}# i loop for variables
    
    

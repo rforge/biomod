@@ -35,8 +35,8 @@ function(GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, FDA=TRUE, M
                     if(transfo == "BinKappa" | transfo == "FiltKappa") for(a in Biomod.material$algo[algo.c]) th <- c(th, as.numeric(Evaluation.results.Kappa[[nam]][a,4]))
                     if(transfo == "BinTSS" | transfo == "FiltTSS")     for(a in Biomod.material$algo[algo.c]) th <- c(th, as.numeric(Evaluation.results.TSS[[nam]][a,4]))
                       
-                    if(transfo == "BinRoc" | transfo == "BinKappa" | transfo == "BinTSS") sp.data.new[,algo.c,k,j] <- as.matrix(BinaryTransformation(as.data.frame(sp.data[,algo.c,k,j]), as.data.frame(th)))                      
-                    if(transfo == "FiltRoc" | transfo == "FiltKappa" | transfo == "FiltTSS") sp.data.new[,algo.c,k,j] <- as.matrix(FilteringTransformation(as.data.frame(sp.data[,algo.c,k,j]), as.data.frame(th)))
+                    if(transfo == "BinRoc" | transfo == "BinKappa" | transfo == "BinTSS") sp.data.new[,algo.c,k,j] <- as.matrix(BinaryTransformation(as.data.frame(sp.data[,algo.c,k,j]), th))                      
+                    if(transfo == "FiltRoc" | transfo == "FiltKappa" | transfo == "FiltTSS") sp.data.new[,algo.c,k,j] <- as.matrix(FilteringTransformation(as.data.frame(sp.data[,algo.c,k,j]), th))
 
                 }
             }

@@ -104,7 +104,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                             for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                                 #create a vector to accumulate the binary prediction for each model successively 
                                 kdata <- rep(0, dim(sp.data)[1])
-                                for(kk in Biomod.material$algo[RUNens.choice]) if(kk!='SRE') kdata <- kdata + BinaryTransformation(cons.data[,kk], as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4]))
+                                for(kk in Biomod.material$algo[RUNens.choice]) if(kk!='SRE') kdata <- kdata + BinaryTransformation(as.data.frame(cons.data[,kk]), as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][kk,4]))
         
                                 if(RUNens.choice['SRE']) kdata <- kdata + cons.data[,'SRE']/1000  #because SRE already in binary
                                 ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- kdata / sum(RUNens.choice) *1000   
@@ -188,7 +188,10 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                 #binary values
                                 for(jj in 1:3){ if(Biomod.material$evaluation.choice[Th[jj]]){
                                     thresh <- as.numeric(eval(parse(text=paste("Evaluation.results.", Th[jj], sep="")))[[nam]][Biomod.material$algo[RUNens.choice],4])
-                                    ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- BinaryTransformation(sp.data[,RUNens.choice,k,j], thresh) * 1000    
+#                                     cat("\n*** tresh =", thresh)
+#                                     cat("\n*** dim(data.frame()) =",dim(as.data.frame(sp.data[,RUNens.choice,k,j])))
+                                    
+                                    ARRAY[, (j-1)*nbrep+k, paste(Th[jj],'.mean',sep="")] <- BinaryTransformation(as.data.frame(sp.data[,RUNens.choice,k,j]), thresh ) * 1000    
                                 
                                     #store thresholds
                                     if(Th[[jj]] == weight.method){
@@ -239,8 +242,8 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                 # if binary=TRUE, then we transform the ensemble forecasting values into binary ones
                 if(binary){
                     for(j in c(1,2,4,5,6)){                                                                                                               #no conversuion for 3 -> median = no associated threshold
-                        if(j<4){ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun]) 
-                        } else if(Biomod.material$evaluation.choice[Th[j-3]]) ARRAY.bin[,EnsRun,j] <- BinaryTransformation(ARRAY[,EnsRun,j], ths[[j]][EnsRun])    #to check if method was chosen
+                        if(j<4){ARRAY.bin[,EnsRun,j] <- BinaryTransformation(as.data.frame(ARRAY[,EnsRun,j]), as.numeric(unlist(ths[[j]][EnsRun]))) 
+                        } else if(Biomod.material$evaluation.choice[Th[j-3]]) ARRAY.bin[,EnsRun,j] <- BinaryTransformation(as.data.frame(ARRAY[,EnsRun,j]), as.numeric(unlist(ths[[j]][EnsRun])))    #to check if method was chosen
                     }
                    # assign(paste("consensus_", Biomod.material$species.names[i], "_", Proj.name, "_Bin", sep=""), ARRAY.bin) 
                     
@@ -276,28 +279,28 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                     ARRAY.tot[, i, 'median'] <-             apply(ARRAY[,TotalModels,3], 1, median)
 
                     #convert those first 3 methods final consensus in binary
-                    ARRAY.tot.bin[, i, 'prob.mean'] <-          BinaryTransformation(ARRAY.tot[, i, 'prob.mean'], mean(ths[[1]][TotalModels]))
-                    ARRAY.tot.bin[, i, 'prob.mean.weighted'] <- BinaryTransformation(ARRAY.tot[, i, 'prob.mean.weighted'], mean(ths[[2]][TotalModels]))
-                    ARRAY.tot.bin[, i, 'median'] <-             BinaryTransformation(ARRAY.tot[, i, 'median'], median(ths[[3]][TotalModels]))
+                    ARRAY.tot.bin[, i, 'prob.mean'] <-          BinaryTransformation(as.data.frame(ARRAY.tot[, i, 'prob.mean']), as.numeric(mean(ths[[1]][TotalModels])))
+                    ARRAY.tot.bin[, i, 'prob.mean.weighted'] <- BinaryTransformation(as.data.frame(ARRAY.tot[, i, 'prob.mean.weighted']), as.numeric(mean(ths[[2]][TotalModels])))
+                    ARRAY.tot.bin[, i, 'median'] <-             BinaryTransformation(as.data.frame(ARRAY.tot[, i, 'median']), as.numeric(median(ths[[3]][TotalModels])))
                     
                     if(Biomod.material$evaluation.choice[["Roc"]]){ 
                         ARRAY.tot[, i, 'Roc.mean'] <- apply(ARRAY[,TotalModels,4], 1, mean)
-                        ARRAY.tot.bin[, i, 'Roc.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'Roc.mean'], 500)
+                        ARRAY.tot.bin[, i, 'Roc.mean'] <- BinaryTransformation(as.data.frame(ARRAY.tot[, i, 'Roc.mean']), 500)
                     }    
                     if(Biomod.material$evaluation.choice[["Kappa"]]){ 
                         ARRAY.tot[, i, 'Kappa.mean'] <- apply(ARRAY[,TotalModels,5], 1, mean)
-                        ARRAY.tot.bin[, i, 'Kappa.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'Roc.mean'], 500)
+                        ARRAY.tot.bin[, i, 'Kappa.mean'] <- BinaryTransformation(as.data.frame(ARRAY.tot[, i, 'Roc.mean']), 500)
                     }    
                     if(Biomod.material$evaluation.choice[["TSS"]]){ 
                         ARRAY.tot[, i, 'TSS.mean'] <- apply(ARRAY[,TotalModels,6], 1, mean) 
-                        ARRAY.tot.bin[, i, 'TSS.mean'] <- BinaryTransformation(ARRAY.tot[, i, 'TSS.mean'], 500)
+                        ARRAY.tot.bin[, i, 'TSS.mean'] <- BinaryTransformation(as.data.frame(ARRAY.tot[, i, 'TSS.mean']), 500)
                     }
                 } else { #if only one run was done there is no further calculation possible
                  
                     ARRAY.tot[,i,] <- ARRAY[,1,]
                     for(j in c(1,2,4,5,6)){
                         if(!is.na(ARRAY[1,1,j]))
-                        ARRAY.tot.bin[,i,j] <- BinaryTransformation(ARRAY.tot[,i,j], as.numeric(ths[[j]]))
+                        ARRAY.tot.bin[,i,j] <- BinaryTransformation(as.data.frame(ARRAY.tot[,i,j]), as.numeric(ths[[j]]))
                     }
                 }
             }#if ii==1             

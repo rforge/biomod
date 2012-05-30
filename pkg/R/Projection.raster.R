@@ -5,6 +5,7 @@ repetition.models=TRUE, stack.out=TRUE, compress="xz")
 {
   # load required libraries
   .LoadRequiredPackages(Biomod.material, raster.req=TRUE)
+  require('raster', quietly=TRUE)
   
   
     #Check wether data input is a raster stack and corresponds to the variables used for calibration

@@ -1,6 +1,7 @@
 `Ensemble.Forecasting.raster` <-
 function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE,SRE=TRUE, Proj.name, weight.method, decay=1.6, PCA.median=TRUE, binary=TRUE, bin.method='Roc', Test=FALSE, repetition.models=TRUE, final.model.out=FALSE, qual.th=0, compress="xz")
 {
+    require('raster', quietly=TRUE)
     #Verify if user input is correct
     Th <- c('Roc', 'Kappa', 'TSS')
     if(!any(Th == bin.method)) stop("\n bin.method should be one of 'Roc', 'Kappa' or 'TSS'  \n")
@@ -35,7 +36,7 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
     
     #--------- start species loop ---------       
     for(i in 1:Biomod.material$NbSpecies){
-        cat(paste(Biomod.material$species.names[i], " \n"))
+        cat('\n-=-=-= ',Biomod.material$species.names[i])
         
         if(Test) nbrun <- 2 else nbrun <- 1
         nbrun <- 1        # no test can work yet
@@ -263,13 +264,20 @@ function(ANN=TRUE,CTA=TRUE,GAM=TRUE,GBM=TRUE,GLM=TRUE,MARS=TRUE,FDA=TRUE,RF=TRUE
                                     if(Th[jj] == weight.method){
                                         ths[[1]] <- c(ths[[1]], thresh)
                                         ths[[2]] <- c(ths[[2]], thresh)
+                                        ths[[3]] <- c(ths[[3]], thresh)
                                     }
                                 }}
                             } else {
                                 STACK.R <- addLayer(STACK.R, STKcons)
                                 STACK.K <- addLayer(STACK.K, STKcons)
                                 STACK.T <- addLayer(STACK.T, STKcons)                        
-                            }   
+                            }
+#                             cat("\n*** str(out) = ")
+#                             print(str(out))
+#                             cat("\n*** j = ", j, ", nbrep = ", nbrep, ", k = ", k)
+#                             cat("\n***", c(ths[[1]][length(ths[[1]])], ths[[2]][length(ths[[2]])],ths[[3]][length(ths[[3]])],500,500,500))
+#                             cat("\n***", str(ths))
+                            
                             out[["thresholds"]][,(j-1)*nbrep+k] <- c(ths[[1]][length(ths[[1]])], ths[[2]][length(ths[[2]])],ths[[3]][length(ths[[3]])],500,500,500)
                             out[["weights"]][(j-1)*nbrep+k, ] <- rep(0,9) ; out[["weights"]][(j-1)*nbrep+k, RUNens.choice] <- 1
                         }                                  

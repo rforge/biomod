@@ -9,8 +9,11 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
     (is.null(IndependentResponse) && !is.null(IndependentExplanatory)))
     stop("Independent data should be entered for both response and explanatory variables")
 
+  if(is.matrix(Response)){
+    Response <- as.data.frame(Response)
+  }
     if(is.null(IndependentResponse)) {
-        if(is.vector(Response) || is.double(Response)) {
+        if(is.vector(Response)){# | is.double(Response)) {
             Response <- as.data.frame(Response)
             dimnames(Response) <- list(seq(dim(Response)[1]), sp.name)
         }

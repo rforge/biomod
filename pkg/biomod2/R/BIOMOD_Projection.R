@@ -100,7 +100,8 @@
                                      models.evaluation = getModelsEvaluations(modeling.output),
                                      models.options = getModelsOptions(modeling.output),
                                      compress = compress,
-                                     rescaled.models = modeling.output@rescal.all.models)
+                                     rescaled.models = modeling.output@rescal.all.models,
+                                     do.stack = do.stack)
                                        
 #   # 2.b a posteriori clamping...
 #   #### TO DO : make an a priori claming

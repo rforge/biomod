@@ -17,7 +17,8 @@ setMethod( 'Projection_v2', signature(new.env.data = 'data.frame'),
            models.evaluation = NULL,
            models.options = NULL,
            compress="xz",
-           rescaled.models=TRUE){
+           rescaled.models=TRUE,
+           do.stack = FALSE){
         
     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
     .Models.dependencies(silent=TRUE)
@@ -119,7 +120,8 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
            models.options = NULL,
            stack = TRUE,
            compress="xz",
-           rescaled.models=TRUE){
+           rescaled.models=TRUE,
+           do.stack = FALSE){
         
     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
     .Models.dependencies(silent=TRUE)
@@ -136,77 +138,143 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
     
     # 4. Computing Projections =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     cat('\nDoing Models Projections...')
-    if(length(grep('EF.',models.name)) > 0 ){
-      kept.models.name <- models.name[-grep('EF.',models.name)] 
-      kept.algo.run <- algo.run[-grep('EF.',algo.run)]
-    } else {
-      kept.models.name <- models.name
-      kept.algo.run <- algo.run
-    }
+#     if(length(grep('EF.',models.name)) > 0 ){
+#       kept.models.name <- models.name[-grep('EF.',models.name)] 
+#       kept.algo.run <- algo.run[-grep('EF.',algo.run)]
+#     } else {
+#       kept.models.name <- models.name
+#       kept.algo.run <- algo.run
+#     }
+    
+    if(do.stack){
+      proj.ras <- lapply(models.name, .Projection.do.proj, env=new.env.data)
+  
+      # transform list of rasterLayers into a rasterStack
+      proj.stack <- stack(x = proj.ras)
+  
+      layerNames(proj.stack) <- models.name #names(proj.ras.mod)
+      rm(proj.ras)
+
+      # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+      if(length(binary.proj)>0){
+        cat("\nBinary transformations...")
+        lapply(binary.proj, function(bin.proj){
+          
+          cuts <- unlist(lapply(layerNames(proj.stack), function(x){
+            mod <- tail(unlist(strsplit(x,"_")), 3)[3]
+            run <- tail(unlist(strsplit(x,"_")), 3)[2]
+            dat <- tail(unlist(strsplit(x,"_")), 3)[1]
+            return(models.evaluation[bin.proj,"Cutoff", mod, run, dat])
+            }))
+  
+          proj.bin.stack <- BinaryTransformation(proj.stack, cuts)
+          layerNames(proj.bin.stack) <- paste(layerNames(proj.stack), ".bin", sep="")
+  
+          eval(parse(text = paste(proj.name,"_",sp.name,"_bin_",bin.proj, "_RasterStack <- proj.bin.stack", sep="")))
+          eval(parse(text = paste("save(",proj.name,"_",sp.name,"_bin_",bin.proj,
+                                  "_RasterStack, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                                  proj.name,"_",sp.name,"_bin_",bin.proj,"_RasterStack' )",sep="")))
+          
+          eval(parse(text = paste("rm(",proj.name,"_",sp.name,"_bin_",bin.proj,"_RasterStack , proj.bin.stack, cuts)", sep="" )))
+        })
+      }
       
-    proj.ras <- lapply(kept.models.name, .Projection.do.proj, env=new.env.data)
-
-    # transform list of rasterLayers into a rasterStack
-    proj.stack <- stack(x = proj.ras)
-
-    layerNames(proj.stack) <- kept.models.name #names(proj.ras.mod)
-    rm(proj.ras)
-    
-    # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-    if(length(binary.proj)>0){
-      cat("\nBinary transformations...")
-      lapply(binary.proj, function(bin.proj){
-        
-        cuts <- unlist(lapply(layerNames(proj.stack), function(x){
-          mod <- tail(unlist(strsplit(x,"_")), 3)[3]
-          run <- tail(unlist(strsplit(x,"_")), 3)[2]
-          dat <- tail(unlist(strsplit(x,"_")), 3)[1]
-          return(models.evaluation[bin.proj,"Cutoff", mod, run, dat])
+      # 6. Computing Filtering transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+      if(length(filtred.proj)>0){
+        cat("\nFiltered transformations...")
+        lapply(filtred.proj, function(filt.proj){
+          
+          cuts <- unlist(lapply(layerNames(proj.stack), function(x){
+            mod <- tail(unlist(strsplit(x,"_")), 3)[3]
+            run <- tail(unlist(strsplit(x,"_")), 3)[2]
+            dat <- tail(unlist(strsplit(x,"_")), 3)[1]
+            return(models.evaluation[filt.proj,"Cutoff", mod, run, dat])
           }))
+          
+          proj.filt.stack <- FilteringTransformation(proj.stack, cuts)
+          layerNames(proj.filt.stack) <- paste(layerNames(proj.stack), ".filt", sep="")
+          
+          eval(parse(text = paste(proj.name,"_",sp.name,"_filt_",filt.proj, "_RasterStack <- proj.filt.stack", sep="")))
+          eval(parse(text = paste("save(",proj.name,"_",sp.name,"_filt_",filt.proj,
+                                  "_RasterStack, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                                  proj.name,"_",sp.name,"_filt_",filt.proj,"_RasterStack' )",sep="")))
+          
+          eval(parse(text = paste("rm(",proj.name,"_",sp.name,"_filt_",filt.proj,"_RasterStack , proj.filt.stack, cuts)", sep="" )))
+        })
+      }
+      
+      # 7. Saving projection on hard disk
+       eval(parse(text = paste(proj.name,"_",sp.name, " <- proj.stack", sep="")))
+       eval(parse(text = paste("save(",proj.name,"_",sp.name, ", file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                               proj.name,"_",sp.name,"' )",sep="")))
+       eval(parse(text = paste("rm(",proj.name,"_",sp.name,")", sep="" )))
+       gc(reset=TRUE)
+    } else{
+      
+      # all models will be saved separatly
+      for(m.n in models.name){
+        
+        proj.ras <- .Projection.do.proj(m.n, env=new.env.data)
+        layerNames(proj.ras) <- m.n #names(proj.ras.mod)
 
-        proj.bin.stack <- BinaryTransformation(proj.stack, cuts)
-        layerNames(proj.bin.stack) <- paste(layerNames(proj.stack), ".bin", sep="")
-
-        eval(parse(text = paste(proj.name,"_",sp.name,"_bin_",bin.proj, "_RasterStack <- proj.bin.stack", sep="")))
-        eval(parse(text = paste("save(",proj.name,"_",sp.name,"_bin_",bin.proj,
-                                "_RasterStack, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
-                                proj.name,"_",sp.name,"_bin_",bin.proj,"_RasterStack' )",sep="")))
+        # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+        if(length(binary.proj)>0){
+          cat("\nBinary transformations...")
+          lapply(binary.proj, function(bin.proj){
+            
+            cuts <- unlist(lapply(layerNames(proj.ras), function(x){
+              mod <- tail(unlist(strsplit(x,"_")), 3)[3]
+              run <- tail(unlist(strsplit(x,"_")), 3)[2]
+              dat <- tail(unlist(strsplit(x,"_")), 3)[1]
+              return(models.evaluation[bin.proj,"Cutoff", mod, run, dat])
+              }))
+    
+            proj.bin.ras <- BinaryTransformation(proj.ras, cuts)
+            layerNames(proj.bin.ras) <- paste(layerNames(proj.ras), ".bin", sep="")
+    
+            eval(parse(text = paste(proj.name,"_",m.n,"_bin_",bin.proj, "_RasterLayer <- proj.bin.ras", sep="")))
+            eval(parse(text = paste("save(",proj.name,"_",m.n,"_bin_",bin.proj,
+                                    "_RasterLayer, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                                    proj.name,"_",m.n,"_bin_",bin.proj,"_RasterLayer' )",sep="")))
+            
+            eval(parse(text = paste("rm(",proj.name,"_",m.n,"_bin_",bin.proj,"_RasterLayer , proj.bin.ras, cuts)", sep="" )))
+          })
+        }
         
-        eval(parse(text = paste("rm(",proj.name,"_",sp.name,"_bin_",bin.proj,"_RasterStack , proj.bin.stack, cuts)", sep="" )))
-      })
+        # 6. Computing Filtering transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+        if(length(filtred.proj)>0){
+#           cat("\nFiltered transformations...")
+#           lapply(filtred.proj, function(filt.proj){
+#             
+#             cuts <- unlist(lapply(layerNames(proj.stack), function(x){
+#               mod <- tail(unlist(strsplit(x,"_")), 3)[3]
+#               run <- tail(unlist(strsplit(x,"_")), 3)[2]
+#               dat <- tail(unlist(strsplit(x,"_")), 3)[1]
+#               return(models.evaluation[filt.proj,"Cutoff", mod, run, dat])
+#             }))
+#             
+#             proj.filt.stack <- FilteringTransformation(proj.stack, cuts)
+#             layerNames(proj.filt.stack) <- paste(layerNames(proj.stack), ".filt", sep="")
+#             
+#             eval(parse(text = paste(proj.name,"_",sp.name,"_filt_",filt.proj, "_RasterStack <- proj.filt.stack", sep="")))
+#             eval(parse(text = paste("save(",proj.name,"_",sp.name,"_filt_",filt.proj,
+#                                     "_RasterStack, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+#                                     proj.name,"_",sp.name,"_filt_",filt.proj,"_RasterStack' )",sep="")))
+#             
+#             eval(parse(text = paste("rm(",proj.name,"_",sp.name,"_filt_",filt.proj,"_RasterStack , proj.filt.stack, cuts)", sep="" )))
+#           })
+        }
+        
+        # 7. Saving projection on hard disk
+         eval(parse(text = paste(proj.name,"_",m.n, " <- proj.ras", sep="")))
+         eval(parse(text = paste("save(",proj.name,"_",m.n, ", file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                                 proj.name,"_",m.n,"' )",sep="")))
+         eval(parse(text = paste("rm(",proj.name,"_",m.n,")", sep="" )))
+         gc(reset=TRUE)
+         proj.stack <- raster::stack()
+      }
+      
     }
-    
-    # 6. Computing Filtering transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-    if(length(filtred.proj)>0){
-      cat("\nFiltered transformations...")
-      lapply(filtred.proj, function(filt.proj){
-        
-        cuts <- unlist(lapply(layerNames(proj.stack), function(x){
-          mod <- tail(unlist(strsplit(x,"_")), 3)[3]
-          run <- tail(unlist(strsplit(x,"_")), 3)[2]
-          dat <- tail(unlist(strsplit(x,"_")), 3)[1]
-          return(models.evaluation[filt.proj,"Cutoff", mod, run, dat])
-        }))
-        
-        proj.filt.stack <- FilteringTransformation(proj.stack, cuts)
-        layerNames(proj.filt.stack) <- paste(layerNames(proj.stack), ".filt", sep="")
-        
-        eval(parse(text = paste(proj.name,"_",sp.name,"_filt_",filt.proj, "_RasterStack <- proj.filt.stack", sep="")))
-        eval(parse(text = paste("save(",proj.name,"_",sp.name,"_filt_",filt.proj,
-                                "_RasterStack, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
-                                proj.name,"_",sp.name,"_filt_",filt.proj,"_RasterStack' )",sep="")))
-        
-        eval(parse(text = paste("rm(",proj.name,"_",sp.name,"_filt_",filt.proj,"_RasterStack , proj.filt.stack, cuts)", sep="" )))
-      })
-    }
-    
-    # 7. Saving projection on hard disk
-     eval(parse(text = paste(proj.name,"_",sp.name, " <- proj.stack", sep="")))
-     eval(parse(text = paste("save(",proj.name,"_",sp.name, ", file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
-                             proj.name,"_",sp.name,"' )",sep="")))
-     eval(parse(text = paste("rm(",proj.name,"_",sp.name,")", sep="" )))
-    gc(reset=TRUE)
-    
     
     return(invisible(proj.stack))   
   })

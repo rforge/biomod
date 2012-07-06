@@ -212,6 +212,7 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
   })
 
 
+    
 setGeneric( ".Projection.do.proj", 
             def = function(model.name, env, model.dir = NULL,...){
                     standardGeneric( ".Projection.do.proj" )

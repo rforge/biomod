@@ -27,11 +27,18 @@
                                 binary.meth = NULL,
                                 filtered.meth = NULL,
                                 compress = 'xz',
-                                clamping.mask = TRUE){
-  
-  clamped.value <- -1
-  
+                                clamping.mask = TRUE,
+                                ...){
   cat("\n-=-=-=- BIOMOD Projection Stuff -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
+  # 0. get additional args
+  add.args <- list(...)
+  if(!is.null(add.args$do.stack)){
+    do.stack <- add.args$do.stack
+  } else{
+    do.stack <- TRUE
+  }
+  
+  
   # 1. Some Inputs args checking
   args <- .BIOMOD_Projection.check.args(modeling.output,
                                         new.env,
@@ -40,13 +47,15 @@
                                         selected.models,
                                         binary.meth,
                                         filtered.meth,
-                                        compress)#, clamping.level)
+                                        compress,
+                                        do.stack)#, clamping.level)
   
   proj.name <- args$proj.name
   selected.models <- args$selected.models
   binary.meth <- args$binary.meth
   filtered.meth <- args$filtered.meth
   compress <- args$compress
+  do.stack <- args$do.stack
 #   clamping.level <- args$clamping.level
   
   rm(args)
@@ -129,7 +138,7 @@
 
 .BIOMOD_Projection.check.args <- function(modeling.output, new.env, proj.name, xy.new.env, 
                                           selected.models, binary.meth, filtered.meth,
-                                          compress){#, clamping.level){
+                                          compress, do.stack){#, clamping.level){
   ## modeling.output
   if( class(modeling.output) != 'BIOMOD.models.out'){
     stop("'modeling.output' must be the result of BIOMOD_Modeling() computation")
@@ -215,6 +224,20 @@
   if(compress == 'xz'){
     compress <- ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')
   }
+      
+  ## do.stack
+  if(do.stack){
+    if(class(new.env) != 'RasterStack'){
+      do.stack <- FALSE
+    } else{
+      # test if there is memory enough to work with RasterStack
+      do.stack = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
+      if (!do.stack){ 
+        cat("\n   ! Results will be saved as individual RasterLayers because of a lack of memory !")
+      }
+    }
+  }
+
     
 #   ## clamping checking
 #   if(!is.null(clamping.level)){
@@ -242,7 +265,8 @@
               selected.models = selected.models,
               binary.meth = binary.meth,
               filtered.meth = filtered.meth,
-              compress = compress))#, clamping.level = clamping.level))
+              compress = compress,
+              do.stack = do.stack))#, clamping.level = clamping.level))
 
 }
 

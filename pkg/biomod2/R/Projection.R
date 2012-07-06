@@ -7,13 +7,6 @@ setGeneric( "Projection_v2",
             def = function(models.name,
                            modeling.work.dir = getwd(),
                            new.env.data ,
-#                            xy = NULL,
-#                            proj.name = NULL,
-#                            binary.proj = NULL,
-#                            filtred.proj = NULL,
-#                            models.evaluation = NULL,
-#                            models.options = NULL,
-#                            compress="xz"
                            ...){
                             standardGeneric( "Projection_v2" )
                             } )

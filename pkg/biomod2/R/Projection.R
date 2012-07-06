@@ -34,20 +34,12 @@ setMethod( 'Projection_v2', signature(new.env.data = 'data.frame'),
     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
     .Models.dependencies(silent=TRUE)
   
-    # 2. args checking =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-    args <- .Projection.check.args(models.name, modeling.work.dir, new.env.data, xy,
-                                   proj.name, binary.proj, 
-                                   filtred.proj, models.evaluation, compress)
-    models.name <- args$models.name
-    sp.name <- args$sp.name
-    PA.run <- args$PA.run
-    eval.run <- args$eval.run
-    algo.run <- args$algo.run
-    new.env.data <- args$new.env.data
-    proj.name <- args$proj.name
-    binary.proj <- args$binary.proj
-    filtred.proj <- args$filtred.proj
-    compress <- args$compress
+    # 2. extract model info  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    
+    sp.name  <- .extractModelNamesInfo(model.names=models.name, info='species')
+    PA.run   <- .extractModelNamesInfo(model.names=models.name, info='data.set')
+    eval.run <- .extractModelNamesInfo(model.names=models.name, info='run.eval')
+    algo.run <- .extractModelNamesInfo(model.names=models.name, info='models')
     
     # 3. Printing Projection Summary =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     
@@ -144,21 +136,12 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
     .Models.dependencies(silent=TRUE)
   
-    # 2. args checking =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-    args <- .Projection.check.args(models.name, modeling.work.dir, new.env.data, xy,
-                                   proj.name, binary.proj, 
-                                   filtred.proj, models.evaluation, compress)
-    models.name <- args$models.name
-    sp.name <- args$sp.name
-    PA.run <- args$PA.run
-    eval.run <- args$eval.run
-    algo.run <- args$algo.run
-    new.env.data <- args$new.env.data
-    proj.name <- args$proj.name
-    binary.proj <- args$binary.proj
-    filtred.proj <- args$filtred.proj
-#     stack <- args$stack
-    compress <- args$compress
+    # 2. extract model info  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    
+    sp.name  <- .extractModelNamesInfo(model.names=models.name, info='species')
+    PA.run   <- .extractModelNamesInfo(model.names=models.name, info='data.set')
+    eval.run <- .extractModelNamesInfo(model.names=models.name, info='run.eval')
+    algo.run <- .extractModelNamesInfo(model.names=models.name, info='models')
        
     
     # 3. Printing Projection Summary =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -207,7 +190,7 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
     
     # 6. Computing Filtering transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     if(length(filtred.proj)>0){
-      cat("\nfiltary transformations...")
+      cat("\nFiltered transformations...")
       lapply(filtred.proj, function(filt.proj){
         
         cuts <- unlist(lapply(layerNames(proj.stack), function(x){
@@ -240,104 +223,6 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
     return(invisible(proj.stack))   
   })
 
-####################################################################################################
-####################################################################################################
-####################################################################################################
-.Projection.check.args <- function(models.name, modeling.work.dir, new.env.data, xy,
-                                 proj.name, binary.proj, 
-                                 filtred.proj, models.evaluation, compress){
-  # The model object given
-  if(length(models.name) < 1){
-    stop("You must select at least one model to do projections")
-  }
-  
-  # check that given models exits
-  sp.name = unlist(strsplit(models.name[1],'_'))[1]
-  files.check <- paste(modeling.work.dir,'/',sp.name,'/models/',models.name,sep='')
-  not.checked.files <- c(grep('MAXENT', files.check), grep('SRE', files.check), grep('EF.', files.check))
-  if(length(not.checked.files) > 0){files.check <- files.check[-not.checked.files]}
-  missing.files <- files.check[!file.exists(files.check)]
-#   models.name <- models.name[file.exists(files.check)] 
-  if( length(missing.files) > 0 ){
-    stop(paste("Projection files missing : ", toString(missing.files), sep=''))
-    if(length(missing.files) == length(files.check)){
-      stop("Impossible to find any models, migth be a problem of given working directory")
-    }
-  }
-  
-  # get sp.name
-  models.name.split <-  matrix(unlist(sapply(models.name,strsplit, split='_')),
-                               ncol=length(models.name))
-  if(nrow(models.name.split) > 3){ PA.run <- unique(models.name.split[2,])} else {PA.run='AllData'}
-  sp.name <- unique(models.name.split[1,])
-  if(length(sp.name) > 1) {stop("Projection is a monospecifique function")}
-  eval.run <- unique(models.name.split[nrow(models.name.split)-1,])
-  algo.run <- unique(models.name.split[nrow(models.name.split),])
-  
-  # The New environement
-  if(is.null(new.env.data)){
-    stop("\nProjection need 'New' environemental variables\n")
-  } else {
-    # check that given env var are the same that those used for building models
-  }
-  
-  # Check xy coordinates
-
-  
-  # The projection Name
-  if(is.null(proj.name)){
-    stop("\nYou must define a name for Projection Outpus")
-  } else{
-    dir.create(paste(modeling.work.dir,'/',sp.name,'/proj_',proj.name,'/',sep=''),
-               showWarnings=FALSE)
-  }
-  
-  # The binaries  and filtering transformations
-  if(!is.null(binary.proj) | !is.null(filtred.proj)){
-    if(is.null(models.evaluation)){
-      warning("Binary and/or Filtred transformations of projection not ran because of models
-              evaluation informations missing")
-    } else{
-      available.evaluation <- unique(unlist(dimnames(models.evaluation)[1]))
-      if(!is.null(binary.proj)){
-        if(sum(!(binary.proj %in% available.evaluation)) > 0){
-          warning(paste(toString(binary.proj[!(binary.proj %in% available.evaluation)]),
-                        " Binary Transformation were switched off because no correspunding",
-                        " evaluation method found ", sep=""))
-          binary.proj <- binary.proj[binary.proj %in% available.evaluation]
-        }
-      }
-      
-      if(!is.null(filtred.proj)){
-        if(sum(!(filtred.proj %in% available.evaluation)) > 0){
-          warning(paste(toString(filtred.proj[!(filtred.proj %in% available.evaluation)]),
-                        " Filtred Transformation were switched off because no correspunding",
-                        " evaluation method found ", sep=""))          
-          filtred.proj <- filtred.proj[filtred.proj %in% available.evaluation]
-        }
-      }
-    }
-  }
- 
-    
-  # The Compression type
-  if(!(compress %in%  c(FALSE, 'gzip', 'xz') )) stop("\n compress should be one of FALSE, 'gzip' or 'xz'  \n")
-  if(compress == 'xz'){
-    compress <- ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')
-  }
-  
-  return(list(models.name = models.name,
-              sp.name = sp.name,
-              PA.run = PA.run,
-              eval.run = eval.run,
-              algo.run = algo.run,
-              new.env.data = new.env.data,
-              proj.name = proj.name,
-              binary.proj = binary.proj,
-              filtred.proj = filtred.proj,
-              compress = compress))
- 
-}
 
 setGeneric( ".Projection.do.proj", 
             def = function(model.name, env, model.dir = NULL,...){

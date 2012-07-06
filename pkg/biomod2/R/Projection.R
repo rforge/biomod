@@ -1,8 +1,3 @@
-# require(abind,quietly=TRUE)
-# function(Proj=NULL, Proj.name=NULL, GLM=TRUE, GBM=TRUE, GAM=TRUE, CTA=TRUE, ANN=TRUE, SRE=TRUE, quant=0.025,
-# FDA=TRUE, MARS=TRUE, RF=TRUE, BinRoc=FALSE, BinKappa=FALSE, BinTSS=FALSE, FiltRoc=FALSE, FiltKappa=FALSE, FiltTSS=FALSE,
-# repetition.models=TRUE, compress="xz")
-
 setGeneric( "Projection_v2", 
             def = function(models.name,
                            modeling.work.dir = getwd(),

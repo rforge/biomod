@@ -151,7 +151,16 @@
   }
   
   ## proj.name
+  # The projection Name
+  if(is.null(proj.name)){
+    stop("\nYou must define a name for Projection Outpus")
+  } else{
+    dir.create(paste(modeling.output@sp.name,'/proj_',proj.name,'/',sep=''),
+               showWarnings=FALSE)
+  }
+  
   ## xy.new.env
+  
   ## selected.models
   if(selected.models[1] == 'all'){
     selected.models <- modeling.output@models.computed
@@ -161,8 +170,47 @@
   if(length(selected.models) < 1){
     stop('No models selected')
   }
-  ## binary.meth
-  ## filtered.meth
+  
+  # check that given models exits
+  files.check <- paste(modeling.output@sp.name,'/models/',selected.models,sep='')
+  not.checked.files <- c(grep('MAXENT', files.check), grep('SRE', files.check))
+  if(length(not.checked.files) > 0){files.check <- files.check[-not.checked.files]}
+  missing.files <- files.check[!file.exists(files.check)]
+  if( length(missing.files) > 0 ){
+    stop(paste("Projection files missing : ", toString(missing.files), sep=''))
+    if(length(missing.files) == length(files.check)){
+      stop("Impossible to find any models, migth be a problem of working directory")
+    }
+  }
+      
+  # The binaries  and filtering transformations
+  if(!is.null(binary.meth) | !is.null(filtered.meth)){
+    models.evaluation <- getModelsEvaluations(modeling.output)
+    if(is.null(models.evaluation)){
+      warning("Binary and/or Filtred transformations of projection not ran because of models
+              evaluation informations missing")
+    } else{
+      available.evaluation <- unique(unlist(dimnames(models.evaluation)[1]))
+      if(!is.null(binary.meth)){
+        if(sum(!(binary.meth %in% available.evaluation)) > 0){
+          warning(paste(toString(binary.meth[!(binary.meth %in% available.evaluation)]),
+                        " Binary Transformation were switched off because no correspunding",
+                        " evaluation method found ", sep=""))
+          binary.meth <- binary.meth[binary.meth %in% available.evaluation]
+        }
+      }
+      
+      if(!is.null(filtered.meth)){
+        if(sum(!(filtered.meth %in% available.evaluation)) > 0){
+          warning(paste(toString(filtered.meth[!(filtered.meth %in% available.evaluation)]),
+                        " Filtred Transformation were switched off because no correspunding",
+                        " evaluation method found ", sep=""))          
+          filtered.meth <- filtered.meth[filtered.meth %in% available.evaluation]
+        }
+      }
+    }
+  }
+  
   ## compress
   if(compress == 'xz'){
     compress <- ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')

@@ -228,6 +228,10 @@
   
   # MAXENT specific checking
   if("MAXENT" %in% models){
+    if(!file.exists("maxent.jar")){
+      models = models[-which(models=='MAXENT')]
+      warning("The maxent.jar file is missing. You need to download this file (http://www.cs.princeton.edu/~schapire/maxent) and put the maxent.jar file in your working directory -> MAXENT was switched off")
+    }
     if(!.check.java.installed()){
       models = models[-which(models=='MAXENT')]
     } else{

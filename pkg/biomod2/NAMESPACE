@@ -3,7 +3,6 @@ exportPattern("^[[:alpha:]]+")
 exportClasses(
      "BIOMOD.formated.data",
      "BIOMOD.formated.data.PA",
-     "BIOMOD.Model.Options",
      "BIOMOD.models.out",
      "BIOMOD.stored.array",
      "BIOMOD.stored.data",

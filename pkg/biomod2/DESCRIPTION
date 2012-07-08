@@ -9,3 +9,4 @@ Description: Functions for species distribution modeling, calibration and evalua
 Depends: methods, raster, sp
 Suggests: ade4, nnet, rpart, MASS, gbm, mda, randomForest, gam, foreign, abind, Hmisc
 License: GPL-2
+LazyLoad: yes

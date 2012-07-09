@@ -121,7 +121,8 @@
   if(do.stack){
     proj_out@proj@inMemory <- TRUE
     proj_out@proj@link <- paste(modeling.output@sp.name, "/proj_", proj.name, 
-                                "/", proj.name, "_", modeling.output@sp.name, sep="")    
+                                "/", proj.name, "_", modeling.output@sp.name,
+                                "_", proj_out@type, sep="")    
   } else{
     proj_out@proj@inMemory <- FALSE
     proj_out@proj@link <- paste(modeling.output@sp.name, "/proj_", proj.name, 

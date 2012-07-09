@@ -204,10 +204,10 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
       }
       
       # 7. Saving projection on hard disk
-       eval(parse(text = paste(proj.name,"_",sp.name, " <- proj.stack", sep="")))
-       eval(parse(text = paste("save(",proj.name,"_",sp.name, ", file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
-                               proj.name,"_",sp.name,"' )",sep="")))
-       eval(parse(text = paste("rm(",proj.name,"_",sp.name,")", sep="" )))
+       eval(parse(text = paste(proj.name,"_",sp.name, "_RasterStack <- proj.stack", sep="")))
+       eval(parse(text = paste("save(",proj.name,"_",sp.name, "_RasterStack, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                               proj.name,"_",sp.name,"_RasterStack' )",sep="")))
+       eval(parse(text = paste("rm(",proj.name,"_",sp.name,"_RasterStack)", sep="" )))
        gc(reset=TRUE)
     } else{
       
@@ -267,12 +267,11 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
         }
         
         # 7. Saving projection on hard disk
-        eval(parse(text = paste(proj.name,"_",m.n, " <- proj.ras", sep="")))
-        eval(parse(text = paste("save(",proj.name,"_",m.n, ", file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
-                                 proj.name,"_",m.n,"' )",sep="")))
-        cat("\n*** here : ", paste(proj.name,"_",m.n,sep=""))
-        proj.stack <- c( proj.stack, paste(proj.name,"_",m.n,sep="") )
-        eval(parse(text = paste("rm(",proj.name,"_",m.n,")", sep="" )))
+        eval(parse(text = paste(proj.name,"_",m.n, "_RasterLayer <- proj.ras", sep="")))
+        eval(parse(text = paste("save(",proj.name,"_",m.n, "_RasterLayer, file = '",modeling.work.dir,"/",sp.name,"/proj_",proj.name,"/",
+                                 proj.name,"_",m.n,"_RasterLayer' )",sep="")))
+        proj.stack <- c( proj.stack, paste(proj.name,"_",m.n,"_RasterLayer",sep="") )
+        eval(parse(text = paste("rm(",proj.name,"_",m.n,"_RasterLayer)", sep="" )))
         gc(reset=TRUE)
       }
       

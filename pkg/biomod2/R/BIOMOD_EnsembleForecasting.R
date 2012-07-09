@@ -126,7 +126,7 @@
         } else if(projection.output@type == 'array'){
         ef.median <- round(apply(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)], 1, median))
         } else if(projection.output@type == 'character'){
-          cat("Not done because projection RasterStack seems to be too heavy")
+          cat("\n      ! Not done because projection RasterStack seems to be too heavy !")
         } else { 
           cat("Unsupported yet !")
         }
@@ -152,6 +152,48 @@
           }
           ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
           ef.ci.inf[ef.ci.inf<0] <- 0
+        } else if(projection.output@type == 'character'){
+          # get models to load
+          projToLoad <- c()
+          for(mod in getEMkeptModels(EM.output, em.comp)){
+            projToLoad <- c(projToLoad, grep(mod, projection.output@proj@val, fixed=T, value=TRUE))
+          }
+          if(length(projToLoad)<1){
+            cat("\nnot done because of invalid models names!")
+          } else {
+            
+            if(!exists('ef.mean')){
+              # load the first raster (as mask)
+              ef.mean <- get(load(paste(projection.output@proj@link, projToLoad[1], sep="")))
+              rm(list=paste(projToLoad[1]))
+              # sum all projections
+              if(length(projToLoad) > 1 ){
+                for(ptl in projToLoad[-1]){
+                  ef.mean <- ef.mean + get(load(paste(projection.output@proj@link, ptl, sep="")))
+                  rm(list=paste(ptl))
+                }
+              }
+              # dividing by number of projection to get mean
+              ef.mean <- ef.mean / length(projToLoad)              
+            }
+            
+            if(!exists('ef.sd')){
+              # load the first raster (as mask)
+              ef.sd <- (get(load(paste(projection.output@proj@link, projToLoad[1], sep=""))) - ef.mean)^2
+              rm(list=paste(projToLoad[1]))
+              # sum all projections
+              if(length(projToLoad) > 1 ){
+                for(ptl in projToLoad[-1]){
+                  ef.sd <- ef.sd + (get(load(paste(projection.output@proj@link, ptl, sep=""))) - ef.mean)^2
+                  rm(list=paste(ptl))
+                }
+              }
+              # dividing by number of projection to get mean and keepin the square root to have sd
+              ef.sd <- sqrt(ef.sd / length(projToLoad))
+            }
+            
+            ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
+            }             
         } else { 
           cat("Unsupported yet !")
         }

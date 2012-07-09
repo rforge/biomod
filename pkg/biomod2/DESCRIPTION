@@ -6,7 +6,8 @@ Date: 2012-05-14
 Author: Wilfried Thuiller, Damien Georges and Robin Engler
 Maintainer: Damien Georges <damien.georges2@gmail.com>, Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>
 Description: Functions for species distribution modeling, calibration and evaluation, ensemble of models.
-Depends: methods, raster, sp, gam, abind
-Suggests: ade4, nnet, rpart, MASS, gbm, mda, randomForest, foreign, Hmisc
+Depends: methods, raster, sp
+Imports:gam, rpart, abind
+Suggests: ade4, nnet, MASS, gbm, mda, randomForest, foreign, Hmisc
 License: GPL-2
 LazyLoad: yes

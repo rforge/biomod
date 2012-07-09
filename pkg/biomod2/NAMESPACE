@@ -1,3 +1,6 @@
+importFrom("gam", gam.control)
+importFrom("rpart", rpart.control)
+
 exportPattern("^[[:alpha:]]+")
 
 exportClasses(

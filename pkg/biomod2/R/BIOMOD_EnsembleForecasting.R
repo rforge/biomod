@@ -29,8 +29,28 @@
                                                  getEMkeptModels(EM.output, em.comp)))
         } else if(projection.output@type == 'array'){
           ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
-        } else { 
-          cat("Unsupported yet !")
+        } else if(projection.output@type == 'character'){ 
+          # get models to load
+          projToLoad <- c()
+          for(mod in getEMkeptModels(EM.output, em.comp)){
+            projToLoad <- c(projToLoad, grep(mod, projection.output@proj@val, fixed=T, value=TRUE))
+          }
+          if(length(projToLoad)<1){
+            cat("\nnot done because of invalid models names!")
+          } else{
+            # load the first raster (as mask)
+            ef.mean <- get(load(paste(projection.output@proj@link, projToLoad[1], sep="")))
+            rm(list=paste(projToLoad[1]))
+            # sum all projections
+            if(length(projToLoad) > 1 ){
+              for(ptl in projToLoad[-1]){
+                ef.mean <- ef.mean + get(load(paste(projection.output@proj@link, ptl, sep="")))
+                rm(list=paste(ptl))
+              }
+            }
+            # dividing by number of projection to get mean
+            ef.mean <- ef.mean / length(projToLoad)
+          }
         }
       }
       
@@ -160,7 +180,7 @@
     ef.potential <- c('ef.mean','ef.cv','ef.ci.inf','ef.ci.sup','ef.median','ef.ca','ef.pmw')
     ef.computed <- ef.potential[unlist(lapply(ef.potential, exists, envir = environment()))]
     
-    if(projection.output@type == 'RasterStack'){
+    if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
       eval(parse(text = paste(em.comp ,"<- raster::stack(", toString(ef.computed), ")", sep="")))
       eval(parse(text = paste("layerNames(", em.comp, ") <-  ef.computed", sep="")))
     } else if(projection.output@type == 'array'){
@@ -182,7 +202,7 @@
       }
 
       eval(parse(text=paste(em.comp,".bin.", bin.meth," <- BinaryTransformation(", em.comp,", cuts)" , sep="")))
-      if(projection.output@type == 'RasterStack'){
+      if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
         eval(parse(text=paste("layerNames(", em.comp,".bin.", bin.meth ,") <- paste(layerNames(",em.comp,"), '.bin',sep='')", sep="")))
       }
       eval(parse(text = paste("save(", em.comp,".bin.", bin.meth, ", file = '", 

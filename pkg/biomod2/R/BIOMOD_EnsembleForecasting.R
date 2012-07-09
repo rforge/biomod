@@ -51,6 +51,8 @@
             # dividing by number of projection to get mean
             ef.mean <- ef.mean / length(projToLoad)
           }
+        } else{
+          cat("Unsupported yet !")
         }
       }
       
@@ -66,7 +68,51 @@
           }
           ef.cv <- round(ef.sd / ef.mean, 2)
           # putting to 0 points where mean = 0
-          em.cv[ em.mean == 0 ] <- 0
+          ef.cv[ ef.mean == 0 ] <- 0
+        } else if(projection.output@type == 'character'){ 
+          # get models to load
+          projToLoad <- c()
+          for(mod in getEMkeptModels(EM.output, em.comp)){
+            projToLoad <- c(projToLoad, grep(mod, projection.output@proj@val, fixed=T, value=TRUE))
+          }
+          if(length(projToLoad)<1){
+            cat("\nnot done because of invalid models names!")
+          } else{
+            
+            if(!exists('ef.mean')){
+              # load the first raster (as mask)
+              ef.mean <- get(load(paste(projection.output@proj@link, projToLoad[1], sep="")))
+              rm(list=paste(projToLoad[1]))
+              # sum all projections
+              if(length(projToLoad) > 1 ){
+                for(ptl in projToLoad[-1]){
+                  ef.mean <- ef.mean + get(load(paste(projection.output@proj@link, ptl, sep="")))
+                  rm(list=paste(ptl))
+                }
+              }
+              # dividing by number of projection to get mean
+              ef.mean <- ef.mean / length(projToLoad)              
+            }
+            
+            if(!exists('ef.sd')){
+              # load the first raster (as mask)
+              ef.sd <- (get(load(paste(projection.output@proj@link, projToLoad[1], sep=""))) - ef.mean)^2
+              rm(list=paste(projToLoad[1]))
+              # sum all projections
+              if(length(projToLoad) > 1 ){
+                for(ptl in projToLoad[-1]){
+                  ef.sd <- ef.sd + (get(load(paste(projection.output@proj@link, ptl, sep=""))) - ef.mean)^2
+                  rm(list=paste(ptl))
+                }
+              }
+              # dividing by number of projection to get mean and keepin the square root to have sd
+              ef.sd <- sqrt(ef.sd / length(projToLoad))
+            }
+            
+            ef.cv <- round(ef.sd / ef.mean, 2)
+            # putting to 0 points where mean = 0
+            ef.cv[ ef.mean[] == 0 ] <- 0            
+          }
         } else { 
           cat("Unsupported yet !")
         }        
@@ -199,17 +245,17 @@
     if(!is.null(binary.meth)){
       for(bin.meth in binary.meth){
         cuts <- getEMeval(EM.output, em.comp)[[1]][bin.meth, "Cutoff", ]
-      }
+        cuts <- cuts[sub("ef.","em.", ef.computed)]
 
-      eval(parse(text=paste(em.comp,".bin.", bin.meth," <- BinaryTransformation(", em.comp,", cuts)" , sep="")))
-      if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
-        eval(parse(text=paste("layerNames(", em.comp,".bin.", bin.meth ,") <- paste(layerNames(",em.comp,"), '.bin',sep='')", sep="")))
+        eval(parse(text=paste(em.comp,".bin.", bin.meth," <- BinaryTransformation(", em.comp,", cuts)" , sep="")))
+        if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
+          eval(parse(text=paste("layerNames(", em.comp,".bin.", bin.meth ,") <- paste(layerNames(",em.comp,"), '.bin',sep='')", sep="")))
+        }
+        eval(parse(text = paste("save(", em.comp,".bin.", bin.meth, ", file = '", 
+                                projection.output@sp.name, .Platform$file.sep, "proj_",
+                                projection.output@proj.names, .Platform$file.sep,
+                                em.comp,".bin.", bin.meth, "')", sep="")))
       }
-      eval(parse(text = paste("save(", em.comp,".bin.", bin.meth, ", file = '", 
-                              projection.output@sp.name, .Platform$file.sep, "proj_",
-                              projection.output@proj.names, .Platform$file.sep,
-                              em.comp,".bin.", bin.meth, "')", sep="")))
-
     }
 
     # 9. Doing Filtred Transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -235,6 +281,13 @@
     ### Initialisation
     ef.cons <- get(load(paste(projection.output@sp.name, .Platform$file.sep, "proj_", projection.output@proj.names,
                    .Platform$file.sep, EM.output@em.computed[1], sep="")))
+    
+    if(class(ef.cons) == 'RasterStack'){
+      ef.computed <- layerNames(ef.cons)
+    } else{
+      ef.computed <- colnames(ef.cons)
+    }
+
     rm(list = paste(EM.output@em.computed[1], sep=""))
     
     ### Filling
@@ -258,18 +311,19 @@
       for(bin.meth in binary.meth){
         cuts <- t(as.data.frame(sapply(EM.output@em.computed, function(em.comp){
           return(getEMeval(EM.output, em.comp)[[1]][bin.meth, "Cutoff", ])})))
-        cuts <- apply(cuts,2,mean)
+        cuts <- apply(cuts,2,mean, na.rm=T)
+        cuts <- cuts[sub("ef.", "em.", ef.computed)]
+    
+        eval(parse(text=paste(projection.output@sp.name, "_TotalConsensus.bin.", bin.meth," <- BinaryTransformation(",
+                              projection.output@sp.name, "_TotalConsensus, cuts)" , sep="")))
+        if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
+          eval(parse(text=paste("layerNames(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth,") <- paste(layerNames(",projection.output@sp.name, "_TotalConsensus), '.bin',sep='')", sep="")))
+        }
+        eval(parse(text = paste("save(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth, ", file = '", 
+                                projection.output@sp.name, .Platform$file.sep, "proj_",
+                                projection.output@proj.names, .Platform$file.sep,
+                                projection.output@sp.name, "_TotalConsensus.bin.", bin.meth, "')", sep="")))
       }
-
-      eval(parse(text=paste(projection.output@sp.name, "_TotalConsensus.bin.", bin.meth," <- BinaryTransformation(",
-                            projection.output@sp.name, "_TotalConsensus, cuts)" , sep="")))
-      if(projection.output@type == 'RasterStack'){
-        eval(parse(text=paste("layerNames(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth,") <- paste(layerNames(",projection.output@sp.name, "_TotalConsensus), '.bin',sep='')", sep="")))
-      }
-      eval(parse(text = paste("save(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth, ", file = '", 
-                              projection.output@sp.name, .Platform$file.sep, "proj_",
-                              projection.output@proj.names, .Platform$file.sep,
-                              projection.output@sp.name, "_TotalConsensus.bin.", bin.meth, "')", sep="")))
 
     }
 

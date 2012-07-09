@@ -748,6 +748,14 @@ setClass("BIOMOD.stored.raster.stack",
            return(TRUE)
          })
 
+setClass("BIOMOD.stored.files",
+         contains = "BIOMOD.stored.data",
+         representation(val = 'character'),
+         prototype(val = NULL),
+         validity = function(object){
+           return(TRUE)
+         })
+
 setClass("BIOMOD.stored.formated.data",
          contains = "BIOMOD.stored.data",
          representation(val = 'BIOMOD.formated.data'),

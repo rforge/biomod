@@ -1,6 +1,3 @@
-importFrom("gam", gam.control)
-importFrom("rpart", rpart.control)
-
 exportPattern("^[[:alpha:]]+")
 
 exportClasses(
@@ -25,6 +22,7 @@ exportMethods(
     "Projection_v2",
     "pseudo.abs.selection",
     "random.pseudo.abs.selection",
-    ".transform.outputs" 
+    ".transform.outputs",
+    ".Models.prepare.data"
 )
 

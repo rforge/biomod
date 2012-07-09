@@ -193,7 +193,8 @@
             }
             
             ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
-            }             
+            ef.ci.inf <- raster::reclass(ef.ci.inf, c(-Inf,0,0))
+          }             
         } else { 
           cat("Unsupported yet !")
         }
@@ -218,6 +219,49 @@
           }
           ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
           ef.ci.inf[ef.ci.inf>1000] <- 1000
+        } else if(projection.output@type == 'character'){
+          # get models to load
+          projToLoad <- c()
+          for(mod in getEMkeptModels(EM.output, em.comp)){
+            projToLoad <- c(projToLoad, grep(mod, projection.output@proj@val, fixed=T, value=TRUE))
+          }
+          if(length(projToLoad)<1){
+            cat("\nnot done because of invalid models names!")
+          } else {
+            
+            if(!exists('ef.mean')){
+              # load the first raster (as mask)
+              ef.mean <- get(load(paste(projection.output@proj@link, projToLoad[1], sep="")))
+              rm(list=paste(projToLoad[1]))
+              # sum all projections
+              if(length(projToLoad) > 1 ){
+                for(ptl in projToLoad[-1]){
+                  ef.mean <- ef.mean + get(load(paste(projection.output@proj@link, ptl, sep="")))
+                  rm(list=paste(ptl))
+                }
+              }
+              # dividing by number of projection to get mean
+              ef.mean <- ef.mean / length(projToLoad)              
+            }
+            
+            if(!exists('ef.sd')){
+              # load the first raster (as mask)
+              ef.sd <- (get(load(paste(projection.output@proj@link, projToLoad[1], sep=""))) - ef.mean)^2
+              rm(list=paste(projToLoad[1]))
+              # sum all projections
+              if(length(projToLoad) > 1 ){
+                for(ptl in projToLoad[-1]){
+                  ef.sd <- ef.sd + (get(load(paste(projection.output@proj@link, ptl, sep=""))) - ef.mean)^2
+                  rm(list=paste(ptl))
+                }
+              }
+              # dividing by number of projection to get mean and keepin the square root to have sd
+              ef.sd <- sqrt(ef.sd / length(projToLoad))
+            }
+            
+            ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
+            ef.ci.sup <- raster::reclass(ef.ci.sup, c(1000,+Inf,1000))
+          }             
         } else { 
           cat("Unsupported yet !")
         }

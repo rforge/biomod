@@ -69,7 +69,9 @@
               rescaled.models = modeling.output@rescal.all.models)
   
   # adapting the proj slot to projection data type (e.g. rasterStack, array)
-  if(inherits(new.env, 'Raster')){
+  if(!do.stack){
+    proj_out@proj <- new('BIOMOD.stored.files')
+  } else if(inherits(new.env, 'Raster')){
     proj_out@proj <- new('BIOMOD.stored.raster.stack')
   } else{
     proj_out@proj <- new('BIOMOD.stored.array')
@@ -229,7 +231,7 @@
   ## do.stack
   if(do.stack){
     if(class(new.env) != 'RasterStack'){
-      do.stack <- FALSE
+      do.stack <- TRUE
     } else{
       # test if there is memory enough to work with RasterStack
       do.stack = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )

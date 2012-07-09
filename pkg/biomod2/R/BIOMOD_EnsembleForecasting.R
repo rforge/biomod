@@ -327,6 +327,26 @@
           ef.pmw <- round(sum(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)) * models.kept.scores))
         } else if(projection.output@type == 'array'){
           ef.pmw <- round(as.vector(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)]%*% models.kept.scores))
+        } else if(projection.output@type == 'character'){
+          # get models to load
+          projToLoad <- c()
+          for(mod in getEMkeptModels(EM.output, em.comp)){
+            projToLoad <- c(projToLoad, grep(mod, projection.output@proj@val, fixed=T, value=TRUE))
+          }
+          if(length(projToLoad)<1){
+            cat("\nnot done because of invalid models names!")
+          } else {
+            # load the first raster (as mask)
+            ef.pmw <- get(load(paste(projection.output@proj@link, projToLoad[1], sep=""))) * models.kept.tresh[1]
+            rm(list=paste(projToLoad[1]))
+            # sum all projections
+            if(length(projToLoad) > 1 ){
+              for(ptl in projToLoad[-1]){
+                ef.pmw <- ef.pmw + get(load(paste(projection.output@proj@link, ptl, sep=""))) * models.kept.tresh[which(projToLoad == ptl)]
+                rm(list=paste(ptl))
+              }
+            }          
+          }
         } else { 
           cat("Unsupported yet !")
         }

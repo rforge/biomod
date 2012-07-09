@@ -125,6 +125,8 @@
                                                  getEMkeptModels(EM.output, em.comp)), median))
         } else if(projection.output@type == 'array'){
         ef.median <- round(apply(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)], 1, median))
+        } else if(projection.output@type == 'character'){
+          cat("Not done because projection RasterStack seems to be too heavy")
         } else { 
           cat("Unsupported yet !")
         }

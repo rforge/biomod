@@ -117,12 +117,18 @@
 #     
 #   }
   
-  
-  proj_out@proj@inMemory <- TRUE
-  proj_out@proj@link <- paste(modeling.output@sp.name, "/proj_", proj.name, 
-                              "/", proj.name, "_", modeling.output@sp.name, sep="")
-  
   proj_out@type <- class(proj_out@proj@val)
+  if(do.stack){
+    proj_out@proj@inMemory <- TRUE
+    proj_out@proj@link <- paste(modeling.output@sp.name, "/proj_", proj.name, 
+                                "/", proj.name, "_", modeling.output@sp.name, sep="")    
+  } else{
+    proj_out@proj@inMemory <- FALSE
+    proj_out@proj@link <- paste(modeling.output@sp.name, "/proj_", proj.name, 
+                                "/", sep="")    
+  }
+
+  
   
   # 3. Removing Maxent Tmp Data
   if(file.exists('MaxentTmpData/')){

@@ -108,51 +108,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
   }
 )
 
-# setMethod('BIOMOD.formated.data', signature(sp='numeric', env='SpatialPointsDataFrame' ), 
-#   function(sp,env,xy=NULL,sp.name=NULL){
-#     if(!is.null(xy)){
-#       env <- merge(x=data.frame(env),y=as.data.frame(xy), by.x = c(dim(env)[2]+1, dim(env)[2]+2))
-#       xy <- env[,((ncol(env)-1):(ncol(env)))]
-#       env <- env[,1:(ncol(env)-2)]
-#     } else{
-#       xy <- data.frame(env)[,((dim(env)[2]+1):(dim(env)[2]+2))]
-#       env <- data.frame(env)[,1:dim(env)[2]]
-#     }
-#     BFD <- BIOMOD.formated.data(sp,env,xy,sp.name)
-#     return(BFD)
-#   }
-# )
-
-# setMethod('BIOMOD.formated.data', signature(sp='RasterLayer'), 
-#   function(sp,env,xy=NULL,sp.name=NULL){
-#     # NOTE : if species occurences are given into 'RasterLayer', the NA's ddont correspund to no info
-#     # so we have to convert it
-#     if(is.null(xy)) xy <- as.data.frame(coordinates(sp)[which(!is.na(sp[])),])
-#     sp <- as.numeric(na.omit(sp[]))
-#     # convert sp to have the good code for pres, abs and ndata
-#     sp[which(sp==-1)] <- NA
-#     BFD <- BIOMOD.formated.data(sp,env,xy,sp.name)
-#     return(BFD)
-#   }
-# )
-#     
-# setMethod('BIOMOD.formated.data', signature(sp='SpatialPointsDataFrame'), 
-#   function(sp,env,xy=NULL,sp.name=NULL){
-#     if(dim(sp)[2]>1){
-#       stop("BIOMOD.formated.data is monospecific")
-#     }
-# #     if(is.null(xy)) xy <- coordinates(sp) #as.data.frame(coordinates(sp))
-# #     sp <- merge(x=data.frame(sp),y=as.data.frame(xy), by.x = c(dim(env)[2]+1, dim(env)[2]+2))
-# #     xy <- sp[,((ncol(sp)-1):ncol(sp))]
-# #     sp <- sp[,1]
-#     BFD <- BIOMOD.formated.data(unlist(sp@data),env,coordinates(sp),sp.name)
-#     return(BFD)
-#   }
-# )
-          
-
-
-
 # 1.3 Other Functions
 if( !isGeneric( "plot" ) ) {
   setGeneric( "plot", 

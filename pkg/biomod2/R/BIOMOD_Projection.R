@@ -236,10 +236,10 @@
   }
       
   ## do.stack
-  if(do.stack){
-    if(class(new.env) != 'RasterStack'){
-      do.stack <- TRUE
-    } else{
+  if(class(new.env) != 'RasterStack'){
+    do.stack <- TRUE
+  } else{
+    if(do.stack){
       # test if there is memory enough to work with RasterStack
       do.stack = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
       if (!do.stack){ 

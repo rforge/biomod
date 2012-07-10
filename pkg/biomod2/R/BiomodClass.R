@@ -673,7 +673,9 @@ setMethod('show', signature('BIOMOD.Model.Options'),
   for (i in 1:length(ctrl)){
     out <- c(out, paste(names(ctrl)[i], " = ", ctrl[[i]], sep=""))
   }
-  return(toString(out))
+#   return(toString(out))
+  return(out)
+  
 }
 ####################################################################################################
 ### BIOMOD Storing Results Objects #################################################################

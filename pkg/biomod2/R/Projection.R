@@ -394,9 +394,8 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
                              ".lambdas\" MaxentTmpData/Proj_swd.csv MaxentTmpData/projMaxent", sep=""), wait = TRUE)
         
         maxent.proj <- read.asciigrid("MaxentTmpData/projMaxent.asc")@data
-        
         .Delete.Maxent.WorkDir()
-        return(proj = as.integer(.Rescaler5(as.numeric(maxent.proj), 
+        return(proj = as.integer(.Rescaler5(as.numeric(maxent.proj[,1]), 
                                               name = model.name) * 1000))
       } else {
         cat('\n MAXENT need coordinates to run! NA returned ')

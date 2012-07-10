@@ -479,7 +479,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
                    
             ## MAXENT options
             cat("\n")
-            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, "),", sep="", fill=.Options$width)
+            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, ")", sep="", fill=.Options$width)
 
             .bmCat()
           })

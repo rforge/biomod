@@ -151,19 +151,19 @@ setMethod('plot', signature(x='BIOMOD.formated.data'),
 setMethod('show', signature('BIOMOD.formated.data'),
           function(object){
             .bmCat("'BIOMOD.formated.data'")
-            cat("\nsp.name = ", object@sp.name)
+            cat("\nsp.name = ", object@sp.name, fill=.Options$width)
             cat("\n\t", sum(object@data.species, na.rm=TRUE), 'presences, ',
                 sum(object@data.species==0, na.rm=TRUE), 'true absences and ', 
-                sum(is.na(object@data.species), na.rm=TRUE),'undifined points in dataset')
-            cat("\n\n\t", ncol(object@data.env.var), 'explanatory variables\n')
+                sum(is.na(object@data.species), na.rm=TRUE),'undifined points in dataset', fill=.Options$width)
+            cat("\n\n\t", ncol(object@data.env.var), 'explanatory variables\n', fill=.Options$width)
             print(summary(object@data.env.var))
             
             if(object@has.data.eval){
-              cat("\n\nEvaluation data :")
+              cat("\n\nEvaluation data :", fill=.Options$width)
               cat("\n\t", sum(object@eval.data.species, na.rm=TRUE), 'presences, ',
                 sum(object@eval.data.species==0, na.rm=TRUE), 'true absences and ', 
-                sum(is.na(object@eval.data.species), na.rm=TRUE),'undifined points in dataset')
-              cat("\n\n")
+                sum(is.na(object@eval.data.species), na.rm=TRUE),'undifined points in dataset', fill=.Options$width)
+              cat("\n\n", fill=.Options$width)
               print(summary(object@eval.data.env.var))
             }
             
@@ -255,7 +255,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
     
     rm(list='BFD')
   } else {
-    cat("\n   ! PA selection not done")
+    cat("\n   ! PA selection not done", fill=.Options$width)
       
     BFDP <- BIOMOD.formated.data(sp=pa.data.tmp$sp,
                                 env=pa.data.tmp$env,
@@ -328,7 +328,7 @@ setMethod('plot', signature(x='BIOMOD.formated.data.PA'),
 setMethod('show', signature('BIOMOD.formated.data.PA'),
           function(object){
             .bmCat("'BIOMOD.formated.data.PA'")
-            cat("\nsp.name = ", object@sp.name,fill=.Options$width)
+            cat("\nsp.name = ", object@sp.name,fill=.Options$width, fill=.Options$width)
             cat("\n\t", sum(object@data.species, na.rm=TRUE), 'presences, ',
                 sum(object@data.species==0, na.rm=TRUE), 'true absences and ', 
                 sum(is.na(object@data.species), na.rm=TRUE),'undifined points in dataset', fill=.Options$width)
@@ -336,11 +336,11 @@ setMethod('show', signature('BIOMOD.formated.data.PA'),
             print(summary(object@data.env.var))
             
             if(object@has.data.eval){
-              cat("\n\nEvaluation data :")
+              cat("\n\nEvaluation data :", fill=.Options$width)
               cat("\n\t", sum(object@eval.data.species, na.rm=TRUE), 'presences, ',
                 sum(object@eval.data.species==0, na.rm=TRUE), 'true absences and ', 
-                sum(is.na(object@eval.data.species), na.rm=TRUE),'undifined points in dataset')
-              cat("\n\n")
+                sum(is.na(object@eval.data.species), na.rm=TRUE),'undifined points in dataset', fill=.Options$width)
+              cat("\n\n", fill=.Options$width)
               print(summary(object@eval.data.env.var))
             }
             
@@ -608,7 +608,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n            test = '", object@GLM$test, "',", sep="")
             cat("\n            family = '", object@GLM$family, "',", sep="")
             cat("\n            mustart = ", object@GLM$mustart, ",", sep="")
-            cat("\n            control = glm.control(", .print.control(object@GLM$control), ") ),", sep="")
+            cat("\n            control = glm.control(", .print.control(object@GLM$control), ") ),", sep="", fill=.Options$width)
             
             ## GBM options
             cat("\n")
@@ -625,14 +625,14 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\nGAM = list( spline = ", object@GAM$spline, ",", sep="")
             cat("\n            test = '", object@GAM$test, "',", sep="")
             cat("\n            family = '", object@GAM$family, "',", sep="")
-            cat("\n            control = gam::gam.control(", .print.control(object@GAM$control), ") ),", sep="")
+            cat("\n            control = gam::gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
 
             ## CTA options
             cat("\n")
             cat("\nCTA = list( method = '", object@CTA$method, "',", sep="")
             cat("\n            parms = '", object@CTA$parms, "',", sep="")
             cat("\n            cost = ", ifelse(length(object@CTA$cost)<1,'NULL',object@CTA$cost), ",", sep="")
-            cat("\n            control = rpart.control(", .print.control(object@CTA$control), ") ),", sep="")
+            cat("\n            control = rpart.control(", .print.control(object@CTA$control), ") ),", sep="", fill=.Options$width)
             
             ## ANN options
             cat("\n")
@@ -663,7 +663,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
                    
             ## MAXENT options
             cat("\n")
-            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, "),", sep="")
+            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, "),", sep="", fill=.Options$width)
 
             .bmCat()
           })
@@ -761,11 +761,11 @@ setClass("BIOMOD.models.out",
 setMethod('show', signature('BIOMOD.models.out'),
           function(object){
             .bmCat("'BIOMOD.models.out")
-            cat("\nSpecie modelised :", object@sp.name)
-            cat("\nConsidered variables :", object@expl.var.names)
+            cat("\nSpecie modelised :", object@sp.name, fill=.Options$width)
+            cat("\nConsidered variables :", object@expl.var.names, fill=.Options$width)
             
-            cat("\n\nComputed Models : ", object@models.computed)
-            cat("\n\nFailed Models : ", object@models.failed)
+            cat("\n\nComputed Models : ", object@models.computed, fill=.Options$width)
+            cat("\n\nFailed Models : ", object@models.failed, fill=.Options$width)
             .bmCat()
           })
 
@@ -1055,20 +1055,20 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
               } else{ stop("invalid str.grep arg")}
               
             } else if(class(x@proj) == "BIOMOD.stored.raster.stack"){
-              cat("will be able soon!")
-            } else {cat("\n !  Biomod Projection plotting issue !")}
+              cat("will be able soon!", fill=.Options$width)
+            } else {cat("\n !  Biomod Projection plotting issue !", fill=.Options$width)}
 
           })
 
 setMethod('show', signature('BIOMOD.projection.out'),
           function(object){
             .bmCat("'BIOMOD.projection.out'")
-            cat("\nProjection directory :", paste(object@sp.name,"/",object@proj.names, sep=""))
+            cat("\nProjection directory :", paste(object@sp.name,"/",object@proj.names, sep=""), fill=.Options$width)
             cat("\n")
-            cat("\nsp.name :", object@sp.name)
-            cat("\nexpl.var.names :", object@expl.var.names)
+            cat("\nsp.name :", object@sp.name, fill=.Options$width)
+            cat("\nexpl.var.names :", object@expl.var.names, fill=.Options$width)
             cat("\n")
-            cat("\nmodels projected :", toString(object@models.projected))
+            cat("\nmodels projected :", toString(object@models.projected), fill=.Options$width)
 
             .bmCat()
           })
@@ -1113,10 +1113,10 @@ setClass("BIOMOD.EnsembleModeling.out",
 setMethod('show', signature('BIOMOD.EnsembleModeling.out'),
           function(object){
             .bmCat("'BIOMOD.EnsembleModeling.out'")
-            cat("\nsp.name :", object@sp.name)
-            cat("\nexpl.var.names :", object@expl.var.names)
+            cat("\nsp.name :", object@sp.name, fill=.Options$width)
+            cat("\nexpl.var.names :", object@expl.var.names, fill=.Options$width)
             cat("\n")
-            cat("\nmodels computed:", toString(object@em.computed))
+            cat("\nmodels computed:", toString(object@em.computed), fill=.Options$width)
 
             .bmCat()
           })

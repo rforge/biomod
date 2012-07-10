@@ -10,3 +10,17 @@ CleverCut <- function(x){
          '8' = return(c(3,3)),
          return(c(3,3)))
 }
+
+.bmCat <- function(x=NULL,...){
+  if(is.null(x)){
+    cat("\n")
+    cat(paste(rep("-=", round(.Options$width/2) ), collapse=""))
+    cat("\n")
+  } else{
+    x.length = nchar(x) + 2
+    y.length = (.Options$width - x.length) / 2
+    cat("\n")
+    cat(paste(rep("-=", round(y.length/2) ), collapse=""), x, paste(rep("-=", round(y.length/2) ), collapse=""))
+    cat("\n")
+  }
+}

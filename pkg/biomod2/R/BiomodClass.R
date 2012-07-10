@@ -150,7 +150,7 @@ setMethod('plot', signature(x='BIOMOD.formated.data'),
 
 setMethod('show', signature('BIOMOD.formated.data'),
           function(object){
-            cat("\n-=-=-=- 'BIOMOD.formated.data' -=-=-=-")
+            .bmCat("'BIOMOD.formated.data'")
             cat("\nsp.name = ", object@sp.name)
             cat("\n\t", sum(object@data.species, na.rm=TRUE), 'presences, ',
                 sum(object@data.species==0, na.rm=TRUE), 'true absences and ', 
@@ -167,7 +167,7 @@ setMethod('show', signature('BIOMOD.formated.data'),
               print(summary(object@eval.data.env.var))
             }
             
-            cat("\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
+            .bmCat()
           })
 
 # 2. The BIOMOD.formated.data.PA =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=- #
@@ -327,12 +327,12 @@ setMethod('plot', signature(x='BIOMOD.formated.data.PA'),
 
 setMethod('show', signature('BIOMOD.formated.data.PA'),
           function(object){
-            cat("\n-=-=-=- 'BIOMOD.formated.data.PA' -=-=-=-")
-            cat("\nsp.name = ", object@sp.name)
+            .bmCat("'BIOMOD.formated.data.PA'")
+            cat("\nsp.name = ", object@sp.name,fill=.Options$width)
             cat("\n\t", sum(object@data.species, na.rm=TRUE), 'presences, ',
                 sum(object@data.species==0, na.rm=TRUE), 'true absences and ', 
-                sum(is.na(object@data.species), na.rm=TRUE),'undifined points in dataset')
-            cat("\n\n\t", ncol(object@data.env.var), 'explanatory variables\n')
+                sum(is.na(object@data.species), na.rm=TRUE),'undifined points in dataset', fill=.Options$width)
+            cat("\n\n\t", ncol(object@data.env.var), 'explanatory variables\n', fill=.Options$width)
             print(summary(object@data.env.var))
             
             if(object@has.data.eval){
@@ -345,8 +345,8 @@ setMethod('show', signature('BIOMOD.formated.data.PA'),
             }
             
             cat("\n\n", ncol(object@PA), 'Pseudo Absences dataset available (', colnames(object@PA),") with ",
-                sum(object@PA[,1], na.rm=T) - sum(object@data.species, na.rm=TRUE), 'absences in each (true abs + pseudo abs)')
-            cat("\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
+                sum(object@PA[,1], na.rm=T) - sum(object@data.species, na.rm=TRUE), 'absences in each (true abs + pseudo abs)', fill=.Options$width)
+            .bmCat()
           })
 
 # # 3. The BIOMOD.formated.data.indep =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=- #
@@ -598,7 +598,7 @@ setClass("BIOMOD.Model.Options",
 
 setMethod('show', signature('BIOMOD.Model.Options'),
           function(object){
-            cat("\n-=-=-=- 'BIOMOD.Model.Options' -=-=-=-")
+            .bmCat("'BIOMOD.Model.Options'")
             cat("\n")
 
             ## GLM options
@@ -665,7 +665,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n")
             cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, "),", sep="")
 
-            cat("\n\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
+            .bmCat()
           })
 
 .print.control <- function(ctrl){
@@ -760,14 +760,13 @@ setClass("BIOMOD.models.out",
 
 setMethod('show', signature('BIOMOD.models.out'),
           function(object){
-            cat("\n\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
-            cat("\nBIOMOD.models.out")
+            .bmCat("'BIOMOD.models.out")
             cat("\nSpecie modelised :", object@sp.name)
             cat("\nConsidered variables :", object@expl.var.names)
             
             cat("\n\nComputed Models : ", object@models.computed)
             cat("\n\nFailed Models : ", object@models.failed)
-            cat("\n\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
+            .bmCat()
           })
 
 
@@ -1063,7 +1062,7 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
 
 setMethod('show', signature('BIOMOD.projection.out'),
           function(object){
-            cat("\n-=-=-=- 'BIOMOD.projection.out' -=-=-=-")
+            .bmCat("'BIOMOD.projection.out'")
             cat("\nProjection directory :", paste(object@sp.name,"/",object@proj.names, sep=""))
             cat("\n")
             cat("\nsp.name :", object@sp.name)
@@ -1071,7 +1070,7 @@ setMethod('show', signature('BIOMOD.projection.out'),
             cat("\n")
             cat("\nmodels projected :", toString(object@models.projected))
 
-            cat("\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
+            .bmCat()
           })
 
            
@@ -1113,13 +1112,13 @@ setClass("BIOMOD.EnsembleModeling.out",
 
 setMethod('show', signature('BIOMOD.EnsembleModeling.out'),
           function(object){
-            cat("\n-=-=-=- 'BIOMOD.EnsembleModeling.out' -=-=-=-")
+            .bmCat("'BIOMOD.EnsembleModeling.out'")
             cat("\nsp.name :", object@sp.name)
             cat("\nexpl.var.names :", object@expl.var.names)
             cat("\n")
             cat("\nmodels computed:", toString(object@em.computed))
 
-            cat("\n-=-=-=--=-=-=--=-=-=--=-=-=--=-=-=--=-\n")
+            .bmCat()
           })
 
 
@@ -1285,3 +1284,5 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
             }
             return(list.out)
           })
+
+

@@ -625,7 +625,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\nGAM = list( spline = ", object@GAM$spline, ",", sep="")
             cat("\n            test = '", object@GAM$test, "',", sep="")
             cat("\n            family = '", object@GAM$family, "',", sep="")
-            cat("\n            control = gam::gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
+            cat("\n            control = gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
 
             ## CTA options
             cat("\n")
@@ -669,9 +669,12 @@ setMethod('show', signature('BIOMOD.Model.Options'),
           })
 
 .print.control <- function(ctrl){
-  out <- c()
-  for (i in 1:length(ctrl)){
-    out <- c(out, paste(names(ctrl)[i], " = ", ctrl[[i]], sep=""))
+  out <-  paste(names(ctrl)[1], " = ", ctrl[[1]], sep="")
+  
+  if(length(ctrl) > 1){
+    for (i in 2:length(ctrl)){
+      out <- c(out, paste(", ", names(ctrl)[i], " = ", ctrl[[i]], sep=""))
+    }    
   }
 #   return(toString(out))
   return(out)

@@ -381,7 +381,7 @@ setClass("BIOMOD.Model.Options",
                                 cv.folds = 5),
                    
                    GAM = list( spline = 2,
-                               test = 'AIC',
+#                                test = 'AIC',
                                family = 'binomial',
                                control = gam::gam.control(maxit = 50, bf.maxit = 50)),
                    
@@ -439,7 +439,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             ## GAM options
             cat("\n")
             cat("\nGAM = list( spline = ", object@GAM$spline, ",", sep="")
-            cat("\n            test = '", object@GAM$test, "',", sep="")
+#             cat("\n            test = '", object@GAM$test, "',", sep="")
             cat("\n            family = '", object@GAM$family, "',", sep="")
             cat("\n            control = gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
 

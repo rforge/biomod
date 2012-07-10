@@ -84,7 +84,7 @@ Please refer to \code{\link[gbm]{gbm}} help file to get the meaning of this opti
 \section{=-=-= GAM =-=-=  (\code{\link[gam]{gam}})}{
   \itemize{
     \item{spline : a smooth term in a formula argument to gam (see \code{\link[gam]{s}})}
-    \item{test : Information criteria for the stepwise selection procedure: AIC for Akaike Information Criteria, and BIC for Bayesian Information Criteria ('AIC' or 'BIC')}  
+%    \item{test : Information criteria for the stepwise selection procedure: AIC for Akaike Information Criteria, and BIC for Bayesian Information Criteria ('AIC' or 'BIC')}  
     \item{family : a description of the error distribution and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \link{family} for details of family functions.) . BIOMOD only runs on presence-absence data so far, so binomial family by default. }
     \item{control : see \code{\link[gam]{gam.control}}}  
   }

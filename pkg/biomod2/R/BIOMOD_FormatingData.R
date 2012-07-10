@@ -40,6 +40,8 @@
                                    PA.dist.min = 0,
                                    PA.dist.max = NULL,
                                    PA.sre.quant = 0.025){
+  .bmCat(paste(resp.name, " Data Formating", sep=""))
+  
   # 1 check args
   args <- .BIOMOD_FormatingData.check.args(resp.var,
                                            expl.var,

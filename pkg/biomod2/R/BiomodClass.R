@@ -104,6 +104,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
       env <- as.data.frame(extract(env,xy))
     }
     BFD <- BIOMOD.formated.data(sp,env,xy,sp.name,eval.sp, eval.env, eval.xy)
+    .bmCat('Done')
     return(BFD)
   }
 )
@@ -269,6 +270,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
   
   rm(list = "pa.data.tmp" )
   
+  .bmCat('Done')
   return(BFDP)
 
 }

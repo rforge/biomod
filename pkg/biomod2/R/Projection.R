@@ -387,10 +387,11 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
     
     if(model.type == 'MAXENT'){
       if(!is.null(xy)){
-        .Prepare.Maxent.Proj.WorkDir(env, xy)
-        system(command=paste("java -cp maxent.jar density.Project ", model.dir,"/",
-                             model.name,"/",sub("_MAXENT","",model.name),
-                             ".lambdas MaxentTmpData/Proj_swd.csv MaxentTmpData/projMaxent", sep=""))
+        .Prepare.Maxent.Proj.WorkDir(env, xy)        
+        
+        system(command=paste("java -cp maxent.jar density.Project \"", model.dir,.Platform$file.sep,
+                             model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),
+                             ".lambdas\" MaxentTmpData/Proj_swd.csv MaxentTmpData/projMaxent", sep=""), wait = TRUE)
         
         maxent.proj <- read.asciigrid("MaxentTmpData/projMaxent.asc")@data
         
@@ -518,13 +519,15 @@ setMethod('.Projection.do.proj', signature(env='RasterStack'),
     
     if(model.type == 'MAXENT'){
         .Prepare.Maxent.Proj.Raster.WorkDir(env)
-        system(command=paste("java -cp maxent.jar density.Project ", model.dir,"/",
-                             model.name,"/",sub("_MAXENT","",model.name),
-                             ".lambdas MaxentTmpData/Proj MaxentTmpData/projMaxent", sep=""))
         
+        system(command=paste("java -cp maxent.jar density.Project \"", model.dir,.Platform$file.sep,
+                             model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),
+                             ".lambdas\" MaxentTmpData/Proj MaxentTmpData/projMaxent", sep=""), wait = TRUE)        
+
         proj.ras <- raster("MaxentTmpData/projMaxent.asc")
         proj.ras[!is.na(proj.ras[])] <- .Rescaler5(proj.ras[!is.na(proj.ras[])], ref=NULL,
                                                  name=model.name, original=FALSE)
+        .Delete.Maxent.WorkDir()
         return(round(proj.ras*1000))
     }
     

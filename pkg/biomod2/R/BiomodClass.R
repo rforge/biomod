@@ -330,7 +330,7 @@ setMethod('plot', signature(x='BIOMOD.formated.data.PA'),
 setMethod('show', signature('BIOMOD.formated.data.PA'),
           function(object){
             .bmCat("'BIOMOD.formated.data.PA'")
-            cat("\nsp.name = ", object@sp.name,fill=.Options$width, fill=.Options$width)
+            cat("\nsp.name = ", object@sp.name,fill=.Options$width)
             cat("\n\t", sum(object@data.species, na.rm=TRUE), 'presences, ',
                 sum(object@data.species==0, na.rm=TRUE), 'true absences and ', 
                 sum(is.na(object@data.species), na.rm=TRUE),'undifined points in dataset', fill=.Options$width)

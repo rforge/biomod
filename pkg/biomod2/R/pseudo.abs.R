@@ -477,12 +477,26 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               pb <- txtProgressBar(min = 0, max = nrow(pres.xy), initial = 0, char = "=-",width = 20,  style = 3, file = "")
               for(i in 1:nrow(pres.xy)){
                 setTxtProgressBar(pb,i)
-                maskInside <- maskInside + (distanceFromPoints(mask, pres.xy[i,]) > (distMin * coef.conversion))
-                maskOutside <- maskOutside + (distanceFromPoints(mask, pres.xy[i,]) <= (distMax * coef.conversion))
+                if(distMin > 0){
+                  maskInside <- maskInside + (distanceFromPoints(mask, pres.xy[i,]) > (distMin * coef.conversion))
+                }
+                if(!is.null(distMax)){
+                  maskOutside <- maskOutside + (distanceFromPoints(mask, pres.xy[i,]) <= (distMax * coef.conversion))
+                } 
               }
               
-              maskInside <- maskInside == nrow(pres.xy)
-              maskOutside <- maskOutside > 0
+              if(distMin > 0){
+                maskInside <- maskInside == nrow(pres.xy)
+              } else { # keep all cells
+                maskInside <- maskInside + 1
+              }
+              
+              if(!is.null(distMax)){
+                maskOutside <- maskOutside > 0                
+              } else{ # keep all cells
+                maskOutside <- maskOutside + 1
+              }
+
                           
               mask <- maskInside * maskOutside
               mask[mask==0] <- NA

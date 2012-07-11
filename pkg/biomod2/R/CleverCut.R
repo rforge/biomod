@@ -1,4 +1,4 @@
-CleverCut <- function(x){
+.CleverCut <- function(x){
   switch(EXPR=x,
          '1' = return(c(1,1)),
          '2' = return(c(1,2)),

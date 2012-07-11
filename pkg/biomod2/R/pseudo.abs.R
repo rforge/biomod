@@ -100,6 +100,18 @@ function(sp, env, nb.repet=1, strategy='random', distMin=0, distMax=NULL, nb.poi
   # 4. Nb repetition checking
   
   # 5. Distances checking
+  if(!is.null(distMin)){
+    if(distMin < 0){
+        distMin <- 0
+    }    
+  }
+
+  if(!is.null(distMax)){
+    if(distMax < 0){
+        distMax <- NULL
+    }    
+  }
+  
   if(!is.null(distMax) & !is.null(distMin)){
     if(distMin >= distMax){
       stop("distMin >= distMax")
@@ -295,38 +307,6 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
             }
           })
   
-# random.pseudo.abs.selection <- function(data, nb.points=1000, nb.repet=1){
-#   nb.points.max <- .nb.available.pa.cells(data)
-#   if(nb.points > nb.points.max){ nb.repet <- 0 } # all available pa cell will be selected
-#   
-#   if(inherits(data, 'SpatialPoints')){ # convert sp.data.frame into vector
-#     data <- as.vector(data@data)
-#   }
-#   
-#   if(is.vector(data)){
-#     if( nb.repet < 1 ){
-#       pa.tab <- data.frame(matrix(1:length(data),ncol=1, nrow=length(data), dimnames=list(NULL,c('PA.all.abs'))))
-#     } else {
-#       pa.tab <- sapply(1:nb.repet, function(i){.rand.pseudo.abs.selection(data, nb.points)})
-#       colnames(pa.tab) <- paste('PA',1:nb.repet,sep="")
-#     }
-#   }
-#   
-#   if(inherits(data, 'Raster')){
-#     if( nb.repet < 1 ){
-#       pa.tab <- data.frame(matrix(which(data[]==-1),ncol=1, nrow=nb.points.max, dimnames=list(NULL,c('PA.all.abs'))))
-#     } else {
-#       pa.tab <- sapply(1:nb.repet, function(i){.rand.pseudo.abs.selection(data, nb.points)})
-#       colnames(pa.tab) <- paste('PA',1:nb.repet,sep="")
-#     }
-#   }
-#     
-#   return(pa.tab)
-# 
-#   ## return xy, sp, env, pa.tab
-#   
-# }
-
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # if( !isGeneric( "random.pseudo.abs.selection" ) ) {
   setGeneric( "sre.pseudo.abs.selection", 
@@ -448,7 +428,12 @@ setMethod('disk.pseudo.abs.selection', signature(env="SpatialPointsDataFrame"),
               # removing points too close from presences
               inside <- inside + ( sqrt((coor[tmp.abs,1]-coor[pres[i],1])^2 + (coor[tmp.abs,2]-coor[pres[i],2])^2) > distMin )
               # keeping points not to far from presences
-              outside <- outside + ( sqrt((coor[tmp.abs,1]-coor[pres[i],1])^2 + (coor[tmp.abs,2]-coor[pres[i],2])^2) < distMax )
+              if(!is.null(distMax)){
+                outside <- outside + ( sqrt((coor[tmp.abs,1]-coor[pres[i],1])^2 + (coor[tmp.abs,2]-coor[pres[i],2])^2) < distMax )
+              } 
+            }
+            if(is.null(distMax)){ # no cells are too far 
+              outside <- outside + 1
             }
             selected.abs <- tmp.abs[ (inside == length(pres)) & (outside > 0) ]
         			         
@@ -580,128 +565,6 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
 # 
 # }
 
-`pseudo.abs_v2` <-
-function(data.biomod, nb.repet=1, strategy='random', distance=0, nb.points=NULL)
-{	
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-# 'pseudo.abs' function permits Pseudo Absences selection. Several strategy for selecting the 
-# absences are available ('random', 'per', 'squares', 'circles' or 'sre')
-#
-#  data.biomod <- BIOMOD.formated.data object
-#  nb_repet <- nb of different PA set you want
-#  strategy <- one of random, circles, per, sre, squares strategy
-#  distance <- the distance min between selectable absences and presence
-# Damien Georges, nov. 2011
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  
-  cat("\n-=-=-=- BIOMOD Pseudo-Absences Sampling -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n")
-  # 1. args checking =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  
-  #   1.1 Validity of given arguments
-  
-  # check length of all args are tue same
-#   if (length(strategy) != length(distance) || (!is.null(nb.points) && length(strategy) != 
-#     length(nb.points)) )
-#     stop("Please give as many Pseudo Absences sampling strategies as number of Pseudo Absences points
-#          to select and distances ")
-  
-  # if the number of pseudo absences to select is defined, it must be a single integer (same for all
-  # species) or a vector of Nb species integer (a different nuber by specie)
-#   if( !is.null(nb.points) && (sum(length(nb.points) != c(1, length(data.biomod['species'])) ) == 0 ))
-#     stop(paste("If you define a number of Pseudo Absences to be selected, you have to give a lone integer
-#          or a vector of ",length(data.biomod['species'])," integer",sep="") )
-  
-  # Available strategy define ?
-	if(strategy!='random' && strategy!='per' && strategy!='squares' && strategy!='circles' && strategy!='sre') stop("\n strategy must be one of random, per, squares, circles, sre \n") 
-	
-  # 2. Pseudo Absences selection =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  
-  # find the coordinates of possible absences
-    coor <- data.biomod@coord
-    pres <- which(data.biomod@data.species==1)
-    true.abs <- which(data.biomod@data.species==0)
-  	abs <- (1:length(data.biomod@data.species))[-c(pres,true.abs)]
-  
-  cat('\nGiven DataSet summary :\n')
-  cat('\tpres = ', length(pres), '\ttrue.abs = ', length(true.abs), '\tposs.abs = ', length(abs),'\n')
-  cat('\tstategy = ', strategy, '\tdistance = ', distance, '\tnb.points = ', nb.points, '\n' )
-  
-  if(!is.null(nb.points)){ # if nb point is less than real absences case
-    if(length(true.abs) > nb.points){
-      cat('You try to select less absences that true.absenses <- original dataset returned\n')
-      tab.out <- data.frame(matrix(FALSE, 
-                        nrow = length(data.biomod@data.species),
-                        ncol = 1))
-      tab.out[c(pres,true.abs),1] <- TRUE
-      colnames(tab.out) <- 'all.data'
-      return(tab.out)
-    }    
-  }
-
-  
-    out <- rep(FALSE, length(abs))
-    
-    # running the different strategies
-  	if(strategy=='random') abs.set <- abs
-
-  	if(strategy=='per'){
-  		abs.set <- abs[coor[abs,1] > max(coor[pres,1]) | coor[abs,1] < min(coor[pres,1]) |
-  				   coor[abs,2] > max(coor[pres,2]) | coor[abs,2] < min(coor[pres,2])]
-  	}
-    
-  	if(strategy=='squares'){
-  		for(i in 1:length(pres)) {
-  			out <- out + (coor[abs,1] > (coor[pres[i],1] + distance) | coor[abs,1] < (coor[pres[i],1] - distance) |
-  			     	  coor[abs,2] > (coor[pres[i],2] + distance) | coor[abs,2] < (coor[pres[i],2] - distance))
-  		}
-  		abs.set <- abs[out==length(pres)]
-  	}
-    
-  	if(strategy=='circles'){
-  		for(i in 1:length(pres))
-  			out <- out + ( sqrt((coor[abs,1]-coor[pres[i],1])^2 + (coor[abs,2]-coor[pres[i],2])^2) > distance)
-  		abs.set <- abs[out==length(pres)]
-  	}
-    
-  	if(strategy == 'sre'){
-  		pred <- sre(.allAvailableAbs(data.biomod@data.species), data.biomod@data.env.var, data.biomod@data.env.var)
-#       abs.set <- raster::subset(abs, pred[-(1:length(pres))] == 0)
-      abs.set <- abs[abs %in% which(pred==0)]
-  	}
-  	
-    # selecting all the possible obsences or....
-    abs.selected <- matrix(c(true.abs,abs.set) ,ncol=1)
-    colnames(abs.selected) <- 'PA.all.abs'
-    nb.abs.pos <- length(c(true.abs,abs.set))
-    
-  	# ... selecting only a limited number of absences from the whole bank
-  	if(!is.null(nb.points) && (nb.points > length(true.abs) )){
-      if ((nb.points - length(true.abs) ) < length(abs.set)){
-        abs.selected <- c() # initializing selected absences
-#         meth.name <- paste(meth.name, "partial", sep=".")
-        for (r in 1:nb.repet){ # loop on repetition
-          abs.selected <- cbind(abs.selected,c(true.abs,sample(abs.set,(nb.points - length(true.abs)) )) )
-        }
-        colnames(abs.selected) <- paste('PA',1:nb.repet,sep="")
-        nb.abs.pos <- nb.points
-      }
-    }
-        
-#   return(abs.selected)
-#   print(dim(abs.selected))
-#   print(summary(abs.selected))
-  tab.out <- data.frame(matrix(FALSE, 
-                        nrow = length(data.biomod@data.species),
-                        ncol = ncol(abs.selected)))
-  colnames(tab.out) <- colnames(abs.selected)
-  for (j in 1:ncol(abs.selected)){
-    tab.out[abs.selected[,j],j] <- TRUE
-  }
-  cat('\n', ncol(tab.out), 'Pseudo Absences dataset created (',toString(colnames(tab.out)),')\n')
-  cat('\n-=-=-=- Done -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= \n')
-  return(tab.out)
-}
-
 # additional hidden functions
 .allAvailableAbs <- function(data.biomod.species){
   out <- data.biomod.species
@@ -710,15 +573,4 @@ function(data.biomod, nb.repet=1, strategy='random', distance=0, nb.points=NULL)
   return(out)
 }
 
-.CleverCut <- function(x){
-  switch(EXPR=x,
-         '1' = return(c(1,1)),
-         '2' = return(c(1,2)),
-         '3' = return(c(2,2)),
-         '4' = return(c(2,2)),
-         '5' = return(c(2,3)),
-         '6' = return(c(2,3)),
-         '7' = return(c(3,3)),
-         '8' = return(c(3,3)),
-         return(c(3,3)))
-}
+

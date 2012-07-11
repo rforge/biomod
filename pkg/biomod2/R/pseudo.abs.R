@@ -1,8 +1,3 @@
-setGeneric( "pseudo.abs.selection", 
-            def = function(sp,env, ...){
-                    standardGeneric( "pseudo.abs.selection" )
-                    } )
-
 `pseudo.absences.sampling` <-
 function(sp, env, nb.repet=1, strategy='random', distMin=0, distMax=NULL, nb.points=NULL, quant.SRE = 0){
   

@@ -29,7 +29,7 @@
                                 compress = 'xz',
                                 clamping.mask = TRUE,
                                 ...){
-  cat("\n-=-=-=- BIOMOD Projection Stuff -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
+  .bmCat("Do Models Projections")
   # 0. get additional args
   add.args <- list(...)
   if(!is.null(add.args$do.stack)){
@@ -137,7 +137,7 @@
   }
   
   
-  cat("\n\n-=-=-=- Done -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n")
+  .bmCat("Done")
   # 4. Returning output
   return(proj_out)
 }

@@ -77,13 +77,35 @@
                   calib.failure = NULL) 
         
   if (Model == "CTA") {
-    model.sp <- rpart(makeFormula(colnames(Data)[1],
-                                  head(Data[,-c(1,ncol(Data))]),
-                                  'simple', 0),
-                      data = Data[calibLines,],
-                      weights = Yweigths,
-                      method= "class", 
-                      control = eval(Options@CTA$control))
+    
+    # converting cost argument
+    if(is.null(Options@CTA$cost)){
+      cost.tmp <- rep(1,(ncol(Data)-2))
+    } else{
+      cost.tmp <- Options@CTA$cost
+    } 
+    if(Options@CTA$parms == 'default'){
+      model.sp <- rpart(makeFormula(colnames(Data)[1],
+                                    head(Data[,-c(1,ncol(Data))]),
+                                    'simple', 0),
+                        data = Data[calibLines,],
+                        weights = Yweigths,
+                        method = Options@CTA$method,
+                        cost = cost.tmp,
+                        control = eval(Options@CTA$control))      
+    } else{
+      model.sp <- rpart(makeFormula(colnames(Data)[1],
+                                    head(Data[,-c(1,ncol(Data))]),
+                                    'simple', 0),
+                        data = Data[calibLines,],
+                        weights = Yweigths,
+                        method = Options@CTA$method,
+                        parms = Options@CTA$parms,
+                        cost = cost.tmp,
+                        control = eval(Options@CTA$control))      
+    }
+    
+
 
     if (exists("model.sp")) {
       # select best trees --------------- May be done otherway

@@ -385,7 +385,7 @@ setClass("BIOMOD.Model.Options",
                                family = 'binomial',
                                control = gam::gam.control(maxit = 50, bf.maxit = 50)),
                    
-                   CTA = list(method = 'default',
+                   CTA = list(method = 'class',
                               parms = 'default',
                               control = rpart.control(xval = 5, minbucket = 5, minsplit = 5,
                                                       cp = 0.001, maxdepth = 25),

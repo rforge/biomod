@@ -45,8 +45,8 @@
   }
   
   if(!is.null(GBM)){
-    if(!is.null(GBM$type )) { opt@GBM$type <- GBM$type }
-    if(!is.null(GBM$interaction.level )) { opt@GBM$interaction.level <- GBM$interaction.level }
+#     if(!is.null(GBM$type )) { opt@GBM$type <- GBM$type }
+#     if(!is.null(GBM$interaction.level )) { opt@GBM$interaction.level <- GBM$interaction.level }
     if(!is.null(GBM$distribution )) { opt@GBM$distribution <- GBM$distribution }
     if(!is.null(GBM$interaction.depth )) { opt@GBM$interaction.depth <- GBM$interaction.depth }
     if(!is.null(GBM$shrinkage )) { opt@GBM$shrinkage <- GBM$shrinkage }
@@ -58,15 +58,15 @@
 
   if(!is.null(GAM)){
     if(!is.null(GAM$spline )) { opt@GAM$spline <- GAM$spline }
-    if(!is.null(GAM$test )) { opt@GAM$test <- GAM$test }
+#     if(!is.null(GAM$test )) { opt@GAM$test <- GAM$test }
     if(!is.null(GAM$family )) { opt@GAM$family <- GAM$family }
     if(!is.null(GAM$control )) { opt@GAM$control <- GAM$control } 
   } 
 
 
   if(!is.null(CTA)){
-    if(!is.null(CTA$type )) { opt@CTA$type <- CTA$type }
-    if(!is.null(CTA$interaction.level )) { opt@CTA$interaction.level <- CTA$interaction.level }
+#     if(!is.null(CTA$type )) { opt@CTA$type <- CTA$type }
+#     if(!is.null(CTA$interaction.level )) { opt@CTA$interaction.level <- CTA$interaction.level }
     if(!is.null(CTA$method )) { opt@CTA$method <- CTA$method }
     if(!is.null(CTA$parms )) { opt@CTA$parms <- CTA$parms }
     if(!is.null(CTA$control )) { opt@CTA$control <- CTA$control }

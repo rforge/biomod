@@ -10,7 +10,7 @@
                                        committee.averaging = TRUE,
                                        prob.mean.weight = TRUE,
                                        prob.mean.weight.decay = 'proportional'){
-  
+  .bmCat("Build Ensemble Models")
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   args <- .BIOMOD_EnsembleModeling.check.args( modeling.output,
                                                chosen.models,
@@ -235,7 +235,8 @@
       rm(list=c('em.pred', 'em.cross.validation'))
     } 
   }
-    
+  
+  .bmCat("Done")  
   return(EM)
 }
 

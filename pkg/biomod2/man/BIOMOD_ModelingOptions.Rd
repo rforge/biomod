@@ -95,7 +95,7 @@ Please refer to \code{\link[gbm]{gbm}} help file to get the meaning of this opti
 
   Please refer to \code{\link[rpart]{rpart}} help file to get the meaning of the following options.
   \itemize{
-    \item{method ('default')}
+    \item{method ('class')}
     \item{parms ('default')}
     \item{cost}
     \item{control}

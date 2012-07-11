@@ -380,13 +380,24 @@
       Data[,1] <- as.factor(Data[,1])  
     }
     
-    model.sp <- randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
-                             data = Data[calibLines,],
-                             ntree = Options@RF$ntree,
-                             #mtry = ifelse(Options@RF$ntree == 'default', round((ncol(Data)-1)/2), Options@RF$ntree ),
-                             importance = FALSE,
-                             norm.votes = TRUE,
-                             strata = factor(c(0,1)))
+    if(Options@RF$mtry == 'default'){
+      model.sp <- randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
+                               data = Data[calibLines,],
+                               ntree = Options@RF$ntree,
+                               #mtry = ifelse(Options@RF$ntree == 'default', round((ncol(Data)-1)/2), Options@RF$ntree ),
+                               importance = FALSE,
+                               norm.votes = TRUE,
+                               strata = factor(c(0,1)))         
+    } else {
+      model.sp <- randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
+                               data = Data[calibLines,],
+                               ntree = Options@RF$ntree,
+                               mtry = Options@RF$mtry,
+                               importance = FALSE,
+                               norm.votes = TRUE,
+                               strata = factor(c(0,1)))      
+    }
+
 
     if(Options@RF$do.classif){                             
       # canceling occurences class modifications

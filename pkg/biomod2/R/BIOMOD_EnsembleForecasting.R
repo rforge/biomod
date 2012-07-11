@@ -3,7 +3,7 @@
                                           total.consensus = FALSE,
                                           binary.meth = NULL,
                                           filtered.meth = NULL ){
-  
+  .bmCat("Do Ensemble Models Projections")
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   args <- .BIOMOD_EnsembleForecasting.check.args( projection.output,
                                                   EM.output,
@@ -459,7 +459,7 @@
     }
 
   }
-   
+  .bmCat("Done") 
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #

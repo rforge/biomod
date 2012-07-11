@@ -5,11 +5,7 @@
                                 mod.eval.method,
                                 SavePred,
                                 xy=NULL,
-                                rescal.models = TRUE
-#                                   ,do.EF = TRUE
-#                                   EF.algo = NULL
-                                  
-                                   ){
+                                rescal.models = TRUE){
   cat("\n\n-=-=-=- Run : ",X$name, '\n')
   res.sp.run <- list()
 

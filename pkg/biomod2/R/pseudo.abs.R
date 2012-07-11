@@ -147,30 +147,6 @@ function(sp, env, nb.repet=1, strategy='random', distMin=0, distMax=NULL, nb.poi
   if(inherits(sp, 'Raster')) return(sum(sp[]==0, na.rm=TRUE))
 }
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-
-# .is.some.na.in.data <- function(sp){
-#   if(is.vector(sp)){
-#     if(sum(is.na(sp)) == 0){
-#       cat('\nAvailable absences will be get in explanatory variables')
-#       return(FALSE)
-#     } else { return(TRUE) }    
-#   }
-#   
-#   if(inherits(sp, 'SpatialPoints')){
-#     if(sum(is.na(sp[,1])) == 0){
-#       cat('\nAvailable absences will be get in explanatory variables')
-#       return(FALSE)
-#     } else { return(TRUE) }
-#   }
-#   
-#   if(inherits(sp, 'Raster')){
-#     if(sp@data@min >= 0){
-#       cat('\nAvailable absences will be get in explanatory variables')
-#       return(FALSE)
-#     } else { return(TRUE) }
-#   }
-# }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
@@ -463,12 +439,6 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               mask <- maskInside <- maskOutside <- reclass(raster::subset(env,1), c(-Inf,Inf,0))
               pres.xy <- coordinates(sp[which(sp@data[,1]==1),])
               
-#               inside <- unique(unlist(extract(mask, pres.xy, buffer = distMin * pointDistance(c(0, 0), c(0, 1), longlat=TRUE), cellnumbers=TRUE)$cells))
-#               outside <- unique(unlist(extract(mask, pres.xy, buffer = distMax * pointDistance(c(0, 0), c(0, 1), longlat=TRUE), cellnumbers=TRUE)$cells))
-#               cat("\n*** length(inside) = ", length(inside))
-#               cat("\n*** length(outside) = ", length(outside))
-#               
-             
               # to convert longitudinal degrees into metters
               coef.conversion <- ifelse(grep("longlat",env@crs@projargs), 111319.5, 1)
 #               coef.conversion <- 1
@@ -543,21 +513,7 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
             } 
           })
 
-# 
-#     coor <- data.biomod@coord
-#     pres <- which(data.biomod@data.species==1)
-#     true.abs <- which(data.biomod@data.species==0)
-#     abs <- (1:length(data.biomod@data.species))[-c(pres,true.abs)]
-# # 
-#     	for(i in 1:length(pres))
-#   			out <- out + ( sqrt((coor[abs,1]-coor[pres[i],1])^2 + (coor[abs,2]-coor[pres[i],2])^2) > distance)
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-
-
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #  
 # .arranging.pa.table(pa.data, pa.tab, sp.data=NULL, xy=NULL){
 # 
 #   # transforming sp.data into vector if it's not
@@ -579,12 +535,35 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
 # 
 # }
 
-# additional hidden functions
-.allAvailableAbs <- function(data.biomod.species){
-  out <- data.biomod.species
-  if( sum(is.na(out)>0) )
-    out[is.na(out)] <- 0
-  return(out)
-}
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# # additional hidden functions
+# .allAvailableAbs <- function(data.biomod.species){
+#   out <- data.biomod.species
+#   if( sum(is.na(out)>0) )
+#     out[is.na(out)] <- 0
+#   return(out)
+# }
 
-
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #                          
+# .is.some.na.in.data <- function(sp){
+#   if(is.vector(sp)){
+#     if(sum(is.na(sp)) == 0){
+#       cat('\nAvailable absences will be get in explanatory variables')
+#       return(FALSE)
+#     } else { return(TRUE) }    
+#   }
+#   
+#   if(inherits(sp, 'SpatialPoints')){
+#     if(sum(is.na(sp[,1])) == 0){
+#       cat('\nAvailable absences will be get in explanatory variables')
+#       return(FALSE)
+#     } else { return(TRUE) }
+#   }
+#   
+#   if(inherits(sp, 'Raster')){
+#     if(sp@data@min >= 0){
+#       cat('\nAvailable absences will be get in explanatory variables')
+#       return(FALSE)
+#     } else { return(TRUE) }
+#   }
+# }

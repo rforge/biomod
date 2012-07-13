@@ -121,14 +121,27 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   nb.pts <- args$nb.pts
 
   # 2. build function outputs
-  array.out <- array()
+  
+  ## array for monavariate res
+  array.mono.out <- array(0, 
+                     dim=c(nb.pts,2,length(show.variables), length(models)), 
+                     dimnames=list(NULL,  c("Var", "Pred"), show.variables, models) )
+  if(do.bivariate){
+    ## array for bivariate res
+    array.bi.out <- array(0, 
+                       dim=c(nb.pts,3,length(show.variables), length(models)), 
+                       dimnames=list(NULL,  c("Var1", "Var2", "Pred"), show.variables, models) )    
+  }
 
+#   # Create a ranged data table
+#   Data.r <- data.frame(matrix(NA, nrow=nb.pts, ncol=ncol(Data)))
+  
+  
+  
+  
     NbVar <- ncol(Data)
     NbVarShow <- length(show.variables)
-    
-    if(plot==F) temp <- array(0, dim=c(nrow(Data), 2, NbVarShow), dimnames=list(NULL, c("Var", "Pred"), colnames(Data)[show.variables]))
-    
-    
+        
     # Build a ranged models     
     Xp  <- as.data.frame(matrix(NA, ncol=NbVar, nrow=nrow(Data), dimnames=list(NULL, colnames(Data))))
     for(i in 1:NbVar){

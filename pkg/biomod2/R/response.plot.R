@@ -103,10 +103,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                              save.file="no", 
                              name="response_curve", 
                              ImageSize=480, 
-                             plot=TRUE){
+                             plot=TRUE,
+                             ...){
   
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate)
+  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, ...)
   
   models <- args$models
   Data <- args$Data
@@ -116,8 +117,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   ImageSize <- args$ImageSize
   plot <- args$plot
   fixed.var.metric <- args$fixed.var.metric
+  do.bivariate <- args$do.bivariate
+  nb.pts <- args$nb.pts
 
-    
+  # 2. build function outputs
+  array.out <- array()
 
     NbVar <- ncol(Data)
     NbVarShow <- length(show.variables)
@@ -125,7 +129,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(plot==F) temp <- array(0, dim=c(nrow(Data), 2, NbVarShow), dimnames=list(NULL, c("Var", "Pred"), colnames(Data)[show.variables]))
     
     
-    #consider if factorial variables :     
+    # Build a ranged models     
     Xp  <- as.data.frame(matrix(NA, ncol=NbVar, nrow=nrow(Data), dimnames=list(NULL, colnames(Data))))
     for(i in 1:NbVar){
         if(is.numeric(Data[,i])) { Xp[,i] <- mean(Data[,i])
@@ -221,12 +225,12 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 }
  
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate){
+.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, ...){
   
   if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
   
   # models checking
-  
+  nb.pts <- 100
   # TO DO 
   return(list(models = models,
               Data = Data,
@@ -236,6 +240,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
               ImageSize = ImageSize, 
               plot = plot,
               fixed.var.metric = fixed.var.metric,
-              do.bivariate = do.bivariate))
+              do.bivariate = do.bivariate,
+              nb.pts = nb.pts))
 }
 

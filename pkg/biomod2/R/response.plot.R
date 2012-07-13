@@ -95,11 +95,17 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-`response.plot2` <-
-function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
+`response.plot2` <- function(models, 
+                             Data, 
+                             show.variables=seq(1:ncol(Data)),
+                             fixed.var.metric = 'mean',
+                             save.file="no", 
+                             name="response_curve", 
+                             ImageSize=480, 
+                             plot=TRUE){
   
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot)
+  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric)
   
   models <- args$models
   Data <- args$Data
@@ -108,8 +114,9 @@ function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="r
   name <- args$name
   ImageSize <- args$ImageSize
   plot <- args$plot
+  fixed.var.metric <- args$fixed.var.metric
 
-    if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
+    
 
     NbVar <- ncol(Data)
     NbVarShow <- length(show.variables)
@@ -127,26 +134,16 @@ function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="r
         	levels(Xp[,i]) <- levels(Data[, i])	 	
         }
     }
-    
-#     # load models if character vector 
-#     if(class(model) == "character"){
-#       for(m in model){
-# 
-#       }
-#     }
-      
-    if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
-    if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
-    if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
-    
-    if(plot){
+  
+  
+  if(plot){
+    # X. Open a graphic file for plotting restults
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
     if(save.file=="jpeg") jpeg(paste(name, "jpeg", sep="."), width=ImageSize, height=ImageSize)
     if(save.file=="tiff") tiff(paste(name, "tiff", sep="."), width=ImageSize, height=ImageSize)
     if(save.file=="postscript") postscript(paste(name, "eps", sep="."))
     
-    #plotting window
+    # XX. parametrize our plot window
     W.width <- ceiling(sqrt(NbVarShow))
     W.height <- ceiling(NbVarShow/W.width)
     mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), ncol=W.width, byrow=TRUE) 
@@ -157,7 +154,21 @@ function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="r
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
     text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
-	}
+  }
+  
+  
+  for(model in models){
+      
+    # 1. load library if some needed
+    if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
+    if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
+    if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
+    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+      
+    
+
+  }
+      
     for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
     
             #consider if factorial variables :
@@ -209,7 +220,12 @@ function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="r
 }
  
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot){
+.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric){
+  
+  if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
+  
+  # models checking
+  
   # TO DO 
   return(list(models = models,
               Data = Data,
@@ -217,6 +233,7 @@ function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="r
               save.file = save.file, 
               name = name, 
               ImageSize = ImageSize, 
-              plot = plot))
+              plot = plot,
+              fixed.var.metric = fixed.var.metric))
 }
 

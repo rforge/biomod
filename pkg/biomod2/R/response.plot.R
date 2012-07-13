@@ -98,6 +98,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 `response.plot2` <- function(models, 
                              Data, 
                              show.variables=seq(1:ncol(Data)),
+                             do.bivariate = FALSE,
                              fixed.var.metric = 'mean',
                              save.file="no", 
                              name="response_curve", 
@@ -105,7 +106,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                              plot=TRUE){
   
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric)
+  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate)
   
   models <- args$models
   Data <- args$Data
@@ -220,7 +221,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 }
  
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric){
+.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate){
   
   if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
   
@@ -234,6 +235,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
               name = name, 
               ImageSize = ImageSize, 
               plot = plot,
-              fixed.var.metric = fixed.var.metric))
+              fixed.var.metric = fixed.var.metric,
+              do.bivariate = do.bivariate))
 }
 

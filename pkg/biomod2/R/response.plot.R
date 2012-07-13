@@ -94,8 +94,9 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 } 
 
 `response.plot2` <-
-function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
+function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
   
+  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot)
   
 
     if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
@@ -117,12 +118,12 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         }
     }
     
-    # load models if character vector 
-    if(class(model) == "character"){
-      for(m in model){
-
-      }
-    }
+#     # load models if character vector 
+#     if(class(model) == "character"){
+#       for(m in model){
+# 
+#       }
+#     }
       
     if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
     if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
@@ -197,3 +198,15 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
    # if(class(model)[1]=="randomForest") detach(package:randomForest)            
 }
  
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot){
+  # TO DO 
+  return(list(models = models,
+              Data = Data,
+              show.variables = show.variables, 
+              save.file = save.file, 
+              name = name, 
+              ImageSize = ImageSize, 
+              plot = plot))
+}
+

@@ -93,11 +93,21 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
    # if(class(model)[1]=="randomForest") detach(package:randomForest)            
 } 
 
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 `response.plot2` <-
 function(models, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
   
+  # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot)
   
+  models <- args$models
+  Data <- args$Data
+  show.variables <- args$show.variables
+  save.file <- args$save.file
+  name <- args$name
+  ImageSize <- args$ImageSize
+  plot <- args$plot
 
     if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
 

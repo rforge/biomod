@@ -133,26 +133,35 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                        dimnames=list(NULL,  c("Var1", "Var2", "Pred"), show.variables, models) )    
   }
 
-#   # Create a ranged data table
-#   Data.r <- data.frame(matrix(NA, nrow=nb.pts, ncol=ncol(Data)))
-  
-  
-  
-  
-    NbVar <- ncol(Data)
-    NbVarShow <- length(show.variables)
-        
-    # Build a ranged models     
-    Xp  <- as.data.frame(matrix(NA, ncol=NbVar, nrow=nrow(Data), dimnames=list(NULL, colnames(Data))))
-    for(i in 1:NbVar){
-        if(is.numeric(Data[,i])) { Xp[,i] <- mean(Data[,i])
-        } 
-        else { 
-          Xp[, i] <- as.factor(rep(names(which.max(summary(Data[, i]))), nrow(Data)))
-        	levels(Xp[,i]) <- levels(Data[, i])	 	
-        }
+  # Create a ranged data table
+  Data.r <- data.frame(matrix(NA, nrow=nb.pts, ncol=ncol(Data)))
+  colnames(Data.r) <- colnames(Data)
+  for(i in 1:ncol(Data)){
+    if(is.numeric(Data[,i])){
+      val 
+
     }
+    Data.r[,i] <- rep()
+  }
+  Data.r
   
+  
+  
+  
+#     NbVar <- ncol(Data)
+#     NbVarShow <- length(show.variables)
+#         
+#     # Build a ranged models     
+#     Xp  <- as.data.frame(matrix(NA, ncol=NbVar, nrow=nrow(Data), dimnames=list(NULL, colnames(Data))))
+#     for(i in 1:NbVar){
+#         if(is.numeric(Data[,i])) { Xp[,i] <- mean(Data[,i])
+#         } 
+#         else { 
+#           Xp[, i] <- as.factor(rep(names(which.max(summary(Data[, i]))), nrow(Data)))
+#         	levels(Xp[,i]) <- levels(Data[, i])	 	
+#         }
+#     }
+#   
   
   if(plot){
     # X. Open a graphic file for plotting restults
@@ -175,17 +184,26 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   }
   
   
-  for(model in models){
-      
-    # 1. load library if some needed
-    if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
-    if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
-    if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
-      
     
-
+  for(vari in show.variables){
+    for(model in models){
+      
+      # 0. get model
+      mod <- get(model)
+      
+      # 1. load library if some needed
+      if(substr(class(mod)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
+      if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
+      if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
+      if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+        
+      # 2. build temp data
+      data.tmp <- as.data.frame(matrix())
+  
+    }    
+    
   }
+
       
     for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
     
@@ -201,17 +219,17 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         
             }
         
-            if(class(model)[1]=="glm" | class(model)[1]=="gam") Xf <- predict(model, as.data.frame(Xp1), type="response")
-            if(class(model)[1]=="gbm") Xf <-  predict.gbm(model, as.data.frame(Xp1), model$n.trees, type="response") 
-            if(class(model)[1]=="rpart") Xf <- as.numeric(predict(model, Xp1, type="vector"))
-            if(substr(class(model)[1],1,4)=="nnet" ) Xf <- as.numeric(predict(model, as.data.frame(Xp1), type="raw"))
-            if(class(model)[1]=="mars") Xf <- as.numeric(predict(model, as.data.frame(Xp1)))
-            if(class(model)[1]=="fda") Xf <- predict(model, as.data.frame(Xp1), type="post")[,2]
-            if(class(model)[1]=="randomForest") Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
+            if(class(mod)[1]=="glm" | class(mod)[1]=="gam") Xf <- predict(mod, as.data.frame(Xp1), type="response")
+            if(class(mod)[1]=="gbm") Xf <-  predict.gbm(mod, as.data.frame(Xp1), mod$n.trees, type="response") 
+            if(class(mod)[1]=="rpart") Xf <- as.numeric(predict(mod, Xp1, type="vector"))
+            if(substr(class(mod)[1],1,4)=="nnet" ) Xf <- as.numeric(predict(mod, as.data.frame(Xp1), type="raw"))
+            if(class(mod)[1]=="mars") Xf <- as.numeric(predict(mod, as.data.frame(Xp1)))
+            if(class(mod)[1]=="fda") Xf <- predict(mod, as.data.frame(Xp1), type="post")[,2]
+            if(class(mod)[1]=="randomForest") Xf <- predict(mod, as.data.frame(Xp1), type="prob")[,2]
       
       
             #rescaling preds (not possible to use rescaling_GLM -> no info on calib data)
-            if(class(model)[1]=="mars" | substr(class(model)[1],1,4)=="nnet"  | class(model)[1]=="fda" ){ 
+            if(class(mod)[1]=="mars" | substr(class(mod)[1],1,4)=="nnet"  | class(mod)[1]=="fda" ){ 
                 OriMinMax <- range(Xf)	
                 Xf <- (Xf - min(OriMinMax)) / (max(OriMinMax)-min(OriMinMax))
                 Xf[Xf<0]<-0

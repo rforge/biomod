@@ -342,7 +342,7 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
     }
     
     if(model.type == 'GLM'){
-      proj <- as.integer(.testnull(model.sp, Prev, env) * 1000)
+      proj <- as.integer(.testnull(model.sp, Prev=0.5, env) * 1000)
 
       if(rescaled.models){
         proj <- as.integer(.Rescaler5(proj/1000, name = model.name ) * 1000)
@@ -352,7 +352,7 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
     }
     
     if(model.type == 'GAM'){
-      proj <- as.integer(.testnull(model.sp, Prev, env) * 1000)
+      proj <- as.integer(.testnull(model.sp, Prev=0.5, env) * 1000)
 
       if(rescaled.models){
         proj <- as.integer(.Rescaler5(proj/1000, name = model.name ) * 1000)

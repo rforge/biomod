@@ -1,5 +1,5 @@
 .testnull <-
-function(object, Prev, dat){
+function(object, Prev = 0.5 , dat){
 
     if(object$deviance == object$null.deviance){
         if(Prev < 0.5) pred <- rep(0, nrow(dat))

@@ -162,8 +162,15 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(save.file=="postscript") postscript(paste(name, "eps", sep="."))
     
     # XX. parametrize our plot window
-    W.width <- ceiling(sqrt(length(show.variables)))
-    W.height <- ceiling(length(show.variables)/W.width)
+      
+    if(!do.bivariate){
+      W.width <- ceiling(sqrt(length(show.variables)))
+      W.height <- ceiling(length(show.variables)/W.width)
+    } else{
+      W.width <- length(show.variables)
+      W.height <- length(show.variables)
+    }
+    
     mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), ncol=W.width, byrow=TRUE) 
     layout(mat, widths=rep(1,W.width), heights=c(0.3,rep(1,W.height)))
     
@@ -171,58 +178,110 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
     text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", .extractModelNamesInfo(models[1],"models"), sep=""),col="#4c57eb")
-    par(mar = c(2,2,3.5,1))
-  }
+    par(mar = c(2,2,3.5,1))      
+  } 
+
   
   
-    
-  for(vari in show.variables){
-  	if(plot) {
-      frame()
-      plot.window(xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari)
-			rug(Data[ ,vari])
-		}
-    
-    for(model in models){
+  if(!do.bivariate){  
+    for(vari in show.variables){
+    	if(plot) {
+  #       frame()
+        plot(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
+  			rug(Data[ ,vari])
+  		}
       
-      # 0. get model
-      mod <- get(model)
-      
-      # 1. load library if some needed
-      if(substr(class(mod)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
-      if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
-      if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-      if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
-      if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
+      for(model in models){
         
-      # 2. do projections
-      pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
+        # 0. get model
+        mod <- get(model)
+        
+        # 1. load library if some needed
+        if(substr(class(mod)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
+        if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
+        if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
+        if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+        if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
+          
+        # 2. do projections
+        pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
+        
+        Data.r.tmp <- Data.r
+        Data.r.tmp[,vari] <- pts.tmp
+        
+        if(inherits(mod,'nnet')){ set.seed(555); proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "raw")) }
+        if(inherits(mod,'rpart')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type="prob")[,2]) }
+        if(inherits(mod,'gam')){ proj.tmp <- predict(object=mod, newdata=Data.r.tmp, type="response") }
+        if(inherits(mod,'gbm')){ best.iter <- gbm.perf(mod, method = "cv", plot.it = FALSE); proj.tmp <- predict.gbm(mod, Data.r.tmp, best.iter, type = "response") }
+        if(inherits(mod,'glm') & !inherits(mod,'gam')){ proj.tmp <- .testnull(mod, Prev=0.5,  Data.r.tmp) }
+        if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
+        if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
+        if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
+        
+        # 3. Rescaling stuff
+        ## TO DO
+        
+        # 4. Ploting results
+    		if(plot) {
+  				lines(pts.tmp, proj.tmp)
+  			}
+        
+        # 5. Storing results
+        array.mono.out[,"Var",vari,model] <- pts.tmp
+        array.mono.out[,"Pred",vari,model] <- proj.tmp
+      }    
       
-      Data.r.tmp <- Data.r
-      Data.r.tmp[,vari] <- pts.tmp
-      
-      if(inherits(mod,'nnet')){ set.seed(555); proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "raw")) }
-      if(inherits(mod,'rpart')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type="prob")[,2]) }
-      if(inherits(mod,'gam')){ proj.tmp <- predict(object=mod, newdata=Data.r.tmp, type="response") }
-      if(inherits(mod,'gbm')){ best.iter <- gbm.perf(mod, method = "cv", plot.it = FALSE); proj.tmp <- predict.gbm(mod, Data.r.tmp, best.iter, type = "response") }
-      if(inherits(mod,'glm') & !inherits(mod,'gam')){ proj.tmp <- .testnull(mod, Prev=0.5,  Data.r.tmp) }
-      if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
-      if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
-      if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
-      
-      # 3. Rescaling stuff
-      ## TO DO
-      
-      # 4. Ploting results
-  		if(plot) {
-				lines(pts.tmp, proj.tmp)
-			}
-      
-      # 5. Storing results
-      array.mono.out[,"Var",vari,model] <- pts.tmp
-      array.mono.out[,"Pred",vari,model] <- proj.tmp
-    }    
-    
+    }
+  } else{ ## bivariate case
+    for(vari1 in show.variables){
+      for(vari2 in show.variables[-vari1]){
+        if(plot) {
+    #       frame()
+          plot(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
+    			rug(Data[ ,vari])
+    		}
+        
+        for(model in models){
+          
+          # 0. get model
+          mod <- get(model)
+          
+          # 1. load library if some needed
+          if(substr(class(mod)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
+          if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
+          if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
+          if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+          if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
+            
+          # 2. do projections
+          pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
+          
+          Data.r.tmp <- Data.r
+          Data.r.tmp[,vari] <- pts.tmp
+          
+          if(inherits(mod,'nnet')){ set.seed(555); proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "raw")) }
+          if(inherits(mod,'rpart')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type="prob")[,2]) }
+          if(inherits(mod,'gam')){ proj.tmp <- predict(object=mod, newdata=Data.r.tmp, type="response") }
+          if(inherits(mod,'gbm')){ best.iter <- gbm.perf(mod, method = "cv", plot.it = FALSE); proj.tmp <- predict.gbm(mod, Data.r.tmp, best.iter, type = "response") }
+          if(inherits(mod,'glm') & !inherits(mod,'gam')){ proj.tmp <- .testnull(mod, Prev=0.5,  Data.r.tmp) }
+          if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
+          if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
+          if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
+          
+          # 3. Rescaling stuff
+          ## TO DO
+          
+          # 4. Ploting results
+      		if(plot) {
+    				lines(pts.tmp, proj.tmp)
+    			}
+          
+          # 5. Storing results
+          array.mono.out[,"Var",vari,model] <- pts.tmp
+          array.mono.out[,"Pred",vari,model] <- proj.tmp
+        }        
+      }
+    }
   }
 
   # XXX. Close file

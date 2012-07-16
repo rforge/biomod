@@ -180,8 +180,8 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(save.file=="postscript") postscript(paste(name, "eps", sep="."))
     
     # XX. parametrize our plot window
-    W.width <- ceiling(sqrt(NbVarShow))
-    W.height <- ceiling(NbVarShow/W.width)
+    W.width <- ceiling(sqrt(length(show.variables)))
+    W.height <- ceiling(length(show.variables)/W.width)
     mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), ncol=W.width, byrow=TRUE) 
     layout(mat, widths=rep(1,W.width), heights=c(0.3,rep(1,W.height)))
     

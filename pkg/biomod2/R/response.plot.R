@@ -138,12 +138,21 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   colnames(Data.r) <- colnames(Data)
   for(i in 1:ncol(Data)){
     if(is.numeric(Data[,i])){
-      val 
-
+      Data.r[,i] <- switch(fixed.var.metric,
+                           mean = rep(mean(Data[,i]), nb.pts),
+                           median = rep(median(Data[,i]), nb.pts),
+                           min = rep(min(Data[,i]), nb.pts),
+                           max = rep(max(Data[,i]), nb.pts))
+    } else{
+      Data.r[,i] <- switch(fixed.var.metric,
+                           mean = rep(levels(as.factor(Data[,i]))[round(length(levels(as.factor(Data[,i]))) / 2 )], nb.pts),
+                           median = rep(levels(as.factor(Data[,i]))[round(length(levels(as.factor(Data[,i]))) / 2 )], nb.pts),
+                           min = rep(levels(as.factor(Data[,i]))[1], nb.pts),
+                           max = rep(levels(as.factor(Data[,i]))[length(levels(as.factor(Data[,i])))], nb.pts))
+      Data.r[,i] <- as.factor(Data.r[,i])
     }
-    Data.r[,i] <- rep()
   }
-  Data.r
+
   
   
   
@@ -186,6 +195,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   
     
   for(vari in show.variables){
+  	if(plot) {
+      plot.window(xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari)
+			rug(Data[ ,vari])
+		}
+    
     for(model in models){
       
       # 0. get model
@@ -196,63 +210,42 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
       if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
       if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+      if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
         
-      # 2. build temp data
-      data.tmp <- as.data.frame(matrix())
-  
+      # 2. do projections
+      pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)*
+      
+      Data.r.tmp <- Data.r
+      Data.r.tmp[,vari] <- pts.tmp
+      
+      if(inherits(mod,'nnet')){ set.seed(555); proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "raw")) }
+      if(inherits(mod,'rpart')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type="prob")[,2]) }
+      if(inherits(mod,'gam')){ proj.tmp <- predict(mod, Data.r.tmp, type="response") }
+      if(inherits(mod,'gbm')){ best.iter <- gbm.perf(mod, method = "cv", plot.it = FALSE); proj.tmp <- predict.gbm(mod, Data.r.tmp, best.iter, type = "response") }
+      if(inherits(mod,'glm')){ proj.tmp <- .testnull(mod, Prev, env) }
+      if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
+      if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(model, Data.r.tmp)) }
+      if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(model.sp,env, type='prob')[,'1']) }
+      
+      # 3. Rescaling stuff
+      ## TO DO
+      
+      # 4. Ploting results
+  		if(plot) {
+				lines(pts.tmp, proj.tmp)
+			}
+      
+      # 5. Storing results
+      array.mono.out[,"Var",vari,model] <- pts.tmp
+      array.mono.out[,"Pred",vari,model] <- proj.tmp
     }    
     
   }
 
-      
-    for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
-    
-            #consider if factorial variables :
-            if(!is.factor(Data[,i])){  
-                xr <- range(Data[,i])
-                Xp1 <- Xp
-                Xp1[,i] <- seq(xr[1], xr[2],  len=nrow(Data))
-            } else {
-                Xp1 <- Xp
-                Nrepcat <- floor(nrow(Data)/length(levels(Data[,i])))
-                Xp1[,i] <- as.factor(c(rep(levels(Data[,i])[1], nrow(Data)-(Nrepcat*length(levels(Data[,i])))), rep(levels(Data[,i]), each=Nrepcat)))
-        
-            }
-        
-            if(class(mod)[1]=="glm" | class(mod)[1]=="gam") Xf <- predict(mod, as.data.frame(Xp1), type="response")
-            if(class(mod)[1]=="gbm") Xf <-  predict.gbm(mod, as.data.frame(Xp1), mod$n.trees, type="response") 
-            if(class(mod)[1]=="rpart") Xf <- as.numeric(predict(mod, Xp1, type="vector"))
-            if(substr(class(mod)[1],1,4)=="nnet" ) Xf <- as.numeric(predict(mod, as.data.frame(Xp1), type="raw"))
-            if(class(mod)[1]=="mars") Xf <- as.numeric(predict(mod, as.data.frame(Xp1)))
-            if(class(mod)[1]=="fda") Xf <- predict(mod, as.data.frame(Xp1), type="post")[,2]
-            if(class(mod)[1]=="randomForest") Xf <- predict(mod, as.data.frame(Xp1), type="prob")[,2]
-      
-      
-            #rescaling preds (not possible to use rescaling_GLM -> no info on calib data)
-            if(class(mod)[1]=="mars" | substr(class(mod)[1],1,4)=="nnet"  | class(mod)[1]=="fda" ){ 
-                OriMinMax <- range(Xf)	
-                Xf <- (Xf - min(OriMinMax)) / (max(OriMinMax)-min(OriMinMax))
-                Xf[Xf<0]<-0
-                Xf[Xf>1]<-1            
-            }
-#             cat("no")
-			if(plot) {
-				plot(Xp1[ ,i], Xf, ylim=c(0,1), xlab="", ylab="", type="l", main=names(Data)[i])
-				rug(Data[ ,i])
-			}	
-			else{ 
-				temp[,1,i] <-Xp1[ ,i]; temp[,2,i] <- Xf
-			}     
-    }}# i loop for variables
+  # XXX. Close file
+  if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
    
-   
-    if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
-    if(plot==F) return(temp)
-   
-  #  if(substr(class(model)[1],1,4)=="nnet" )  detach(package:nnet)
-   # if(class(model)[1]=="rpart") detach(package:rpart)
-   # if(class(model)[1]=="mars" | class(model)[1]=="fda") detach(package:mda)
-   # if(class(model)[1]=="randomForest") detach(package:randomForest)            
+  return(array.mono.out)  
 }
  
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #

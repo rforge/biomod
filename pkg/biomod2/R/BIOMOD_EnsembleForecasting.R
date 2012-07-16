@@ -4,6 +4,8 @@
                                           binary.meth = NULL,
                                           filtered.meth = NULL ){
   .bmCat("Do Ensemble Models Projections")
+  
+#   cat("\n*** Dennis Debugged Version ***\n")
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   args <- .BIOMOD_EnsembleForecasting.check.args( projection.output,
                                                   EM.output,
@@ -320,8 +322,8 @@
 #             prediction.kept <- prediction.kept[,models.kept]
 #           }
 #         }
-      
-        models.kept.scores <- eval(parse(text = paste("EM.output@em.weight$", em.comp, sep="")))
+        
+        models.kept.scores = EM.output@em.weight[[em.comp]]
       	### Compute ensemble forecast
         if(projection.output@type == 'RasterStack'){
           ef.pmw <- round(sum(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)) * models.kept.scores))
@@ -337,12 +339,12 @@
             cat("\nnot done because of invalid models names!")
           } else {
             # load the first raster (as mask)
-            ef.pmw <- get(load(paste(projection.output@proj@link, projToLoad[1], sep=""))) * models.kept.tresh[1]
+            ef.pmw <- get(load(paste(projection.output@proj@link, projToLoad[1], sep=""))) * models.kept.scores[1]
             rm(list=paste(projToLoad[1]))
             # sum all projections
             if(length(projToLoad) > 1 ){
               for(ptl in projToLoad[-1]){
-                ef.pmw <- ef.pmw + get(load(paste(projection.output@proj@link, ptl, sep=""))) * models.kept.tresh[which(projToLoad == ptl)]
+                ef.pmw <- ef.pmw + get(load(paste(projection.output@proj@link, ptl, sep=""))) * models.kept.scores[which(projToLoad == ptl)]
                 rm(list=paste(ptl))
               }
             }          

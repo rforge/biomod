@@ -235,11 +235,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   } else{ ## bivariate case
     for(vari1 in show.variables){
       for(vari2 in show.variables[-vari1]){
-        if(plot) {
-    #       frame()
-          plot(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
-    			rug(Data[ ,vari])
-    		}
+#         if(plot) {
+#     #       frame()
+#           persp(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
+#     			rug(Data[ ,vari])
+#     		}
         
         for(model in models){
           
@@ -254,10 +254,12 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
           if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
             
           # 2. do projections
-          pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
+          pts.tmp1 <- rep(seq(min(Data[,vari1]), max(Data[,vari1]), length.out=sqrt(nb.pts)),each=sqrt(nb.pts))
+          pts.tmp2 <- rep(seq(min(Data[,vari2]), max(Data[,vari2]), length.out=sqrt(nb.pts)),sqrt(nb.pts))
           
           Data.r.tmp <- Data.r
-          Data.r.tmp[,vari] <- pts.tmp
+          Data.r.tmp[,vari1] <- pts.tmp1
+          Data.r.tmp[,vari2] <- pts.tmp2
           
           if(inherits(mod,'nnet')){ set.seed(555); proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "raw")) }
           if(inherits(mod,'rpart')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type="prob")[,2]) }
@@ -272,13 +274,14 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
           ## TO DO
           
           # 4. Ploting results
-      		if(plot) {
-    				lines(pts.tmp, proj.tmp)
-    			}
+#       		if(plot) {
+#     				lines(pts.tmp, proj.tmp)
+#     			}
           
           # 5. Storing results
-          array.mono.out[,"Var",vari,model] <- pts.tmp
-          array.mono.out[,"Pred",vari,model] <- proj.tmp
+          array.bi.out[,"Var1",vari1,model] <- pts.tmp1
+          array.bi.out[,"Var2",vari1,model] <- pts.tmp2
+          array.bi.out[,"Pred",vari1,model] <- proj.tmp
         }        
       }
     }
@@ -286,8 +289,13 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 
   # XXX. Close file
   if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
-   
-  return(array.mono.out)  
+  
+  if(!do.bivariate){
+    return(array.mono.out)
+  } else{
+    return(array.bi.out)
+  }
+    
 }
  
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -296,7 +304,12 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
   
   # models checking
-  nb.pts <- 100
+  if(!do.bivariate){
+    nb.pts <- 100
+  } else{
+    nb.pts <- 25^2
+  }
+  
   # TO DO 
   return(list(models = models,
               Data = Data,

@@ -251,7 +251,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 .response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, ...){
   
-  if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
+  if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
   
   # models checking
   nb.pts <- 100

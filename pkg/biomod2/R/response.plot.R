@@ -42,6 +42,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
     text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
+
 	}
     for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
     
@@ -152,25 +153,6 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       Data.r[,i] <- as.factor(Data.r[,i])
     }
   }
-
-  
-  
-  
-  
-#     NbVar <- ncol(Data)
-#     NbVarShow <- length(show.variables)
-#         
-#     # Build a ranged models     
-#     Xp  <- as.data.frame(matrix(NA, ncol=NbVar, nrow=nrow(Data), dimnames=list(NULL, colnames(Data))))
-#     for(i in 1:NbVar){
-#         if(is.numeric(Data[,i])) { Xp[,i] <- mean(Data[,i])
-#         } 
-#         else { 
-#           Xp[, i] <- as.factor(rep(names(which.max(summary(Data[, i]))), nrow(Data)))
-#         	levels(Xp[,i]) <- levels(Data[, i])	 	
-#         }
-#     }
-#   
   
   if(plot){
     # X. Open a graphic file for plotting restults
@@ -188,7 +170,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     par(mar = c(0.1, 0.1, 0.1, 0.1))
     plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
-    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
+    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", .extractModelNamesInfo(models[1],"models"), sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
   }
   
@@ -196,6 +178,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     
   for(vari in show.variables){
   	if(plot) {
+      frame()
       plot.window(xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari)
 			rug(Data[ ,vari])
 		}
@@ -213,19 +196,19 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
         
       # 2. do projections
-      pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)*
+      pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
       
       Data.r.tmp <- Data.r
       Data.r.tmp[,vari] <- pts.tmp
       
       if(inherits(mod,'nnet')){ set.seed(555); proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "raw")) }
       if(inherits(mod,'rpart')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type="prob")[,2]) }
-      if(inherits(mod,'gam')){ proj.tmp <- predict(mod, Data.r.tmp, type="response") }
+      if(inherits(mod,'gam')){ proj.tmp <- predict(object=mod, newdata=Data.r.tmp, type="response") }
       if(inherits(mod,'gbm')){ best.iter <- gbm.perf(mod, method = "cv", plot.it = FALSE); proj.tmp <- predict.gbm(mod, Data.r.tmp, best.iter, type = "response") }
-      if(inherits(mod,'glm')){ proj.tmp <- .testnull(mod, Prev, env) }
+      if(inherits(mod,'glm') & !inherits(mod,'gam')){ proj.tmp <- .testnull(mod, Prev=0.5,  Data.r.tmp) }
       if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
-      if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(model, Data.r.tmp)) }
-      if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(model.sp,env, type='prob')[,'1']) }
+      if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
+      if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
       
       # 3. Rescaling stuff
       ## TO DO

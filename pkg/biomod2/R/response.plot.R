@@ -130,8 +130,8 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if(do.bivariate){
     ## array for bivariate res
     array.bi.out <- array(0, 
-                       dim=c(nb.pts,3,length(show.variables), length(models)), 
-                       dimnames=list(NULL,  c("Var1", "Var2", "Pred"), show.variables, models) )    
+                       dim=c(nb.pts,3,length(show.variables)^2, length(models)), 
+                       dimnames=list(NULL,  c("Var1", "Var2", "Pred"), paste(rep(show.variables,each=length(show.variables)),rep(show.variables,length(show.variables)), sep="-"), models) )    
   }
 
   # Create a ranged data table
@@ -234,7 +234,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     }
   } else{ ## bivariate case
     for(vari1 in show.variables){
-      for(vari2 in show.variables[-vari1]){
+      for(vari2 in show.variables[-which(show.variables == vari1)]){
 #         if(plot) {
 #     #       frame()
 #           persp(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
@@ -279,9 +279,9 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 #     			}
           
           # 5. Storing results
-          array.bi.out[,"Var1",vari1,model] <- pts.tmp1
-          array.bi.out[,"Var2",vari1,model] <- pts.tmp2
-          array.bi.out[,"Pred",vari1,model] <- proj.tmp
+          array.bi.out[,"Var1",paste(vari1,vari2,sep="-"),model] <- pts.tmp1
+          array.bi.out[,"Var2",paste(vari1,vari2,sep="-"),model] <- pts.tmp2
+          array.bi.out[,"Pred",paste(vari1,vari2,sep="-"),model] <- proj.tmp
         }        
       }
     }

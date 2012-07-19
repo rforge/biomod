@@ -297,7 +297,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             ncz <- length(pts.tmp2)
             nrz <- length(pts.tmp1)
             # Create a function interpolating colors in the range of specified colors
-            jet.colors <- colorRampPalette(c("red", "white", "green"))
+            jet.colors <- colorRampPalette(c("red", "orange", "green"))
             # Generate the desired number of colors from this palette
             nbcol <- 50
             color <- jet.colors(nbcol)
@@ -307,7 +307,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             facetcol <- cut(zfacet, nbcol)
             
     				persp(x=pts.tmp1,y=pts.tmp2,z=proj.tmp, xlab = vari1, ylab=vari2, zlab="pred", theta = 30, phi = 30,
-              expand = 0.5, col = facetcol, ltheta = 120, shade = 0.25, ticktype = "detailed", main = model, cex.axis=0.7)
+              expand = 0.5, col = color[facetcol], ltheta = 120, shade = 0.25, ticktype = "detailed", main = model, cex.axis=0.7)
     			}
           
         }        

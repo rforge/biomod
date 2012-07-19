@@ -273,15 +273,21 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
           # 3. Rescaling stuff
           ## TO DO
           
-          # 4. Ploting results
-#       		if(plot) {
-#     				lines(pts.tmp, proj.tmp)
-#     			}
-          
-          # 5. Storing results
+          # 4. Storing results
           array.bi.out[,"Var1",paste(vari1,vari2,sep="-"),model] <- pts.tmp1
           array.bi.out[,"Var2",paste(vari1,vari2,sep="-"),model] <- pts.tmp2
           array.bi.out[,"Pred",paste(vari1,vari2,sep="-"),model] <- proj.tmp
+          
+          # 5. Ploting results
+        	if(plot) {
+            # reformating results to perform a persp plot
+            pts.tmp1 <- sort(unique(pts.tmp1))
+            pts.tmp2 <- sort(unique(pts.tmp2))
+            proj.tmp <- matrix(proj.tmp, ncol=length(pts.tmp2), byrow=FALSE)
+    				persp(x=pts.tmp1,y=pts.tmp1,z=proj.tmp, xlab = vari1, ylab=vari2, zlab="pred", theta = 30, phi = 30,
+              expand = 0.5, col = "lightblue", ltheta = 120, shade = 0.75, ticktype = "detailed", main = model)
+    			}
+          
         }        
       }
     }

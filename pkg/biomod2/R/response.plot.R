@@ -129,9 +129,16 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                      dimnames=list(NULL,  c("Var", "Pred"), show.variables, models) )
   if(do.bivariate){
     ## array for bivariate res
+    dim3.array.bi.out <- c()
+    for(i in 1:(length(show.variables)-1)){
+      for(j in (i+1):length(show.variables)){
+        dim3.array.bi.out <- c(dim3.array.bi.out, paste(show.variables[i],show.variables[j],sep="-"))
+      }
+    }
+    
     array.bi.out <- array(0, 
-                       dim=c(nb.pts,3,length(show.variables)^2, length(models)), 
-                       dimnames=list(NULL,  c("Var1", "Var2", "Pred"), paste(rep(show.variables,each=length(show.variables)),rep(show.variables,length(show.variables)), sep="-"), models) )    
+                       dim=c(nb.pts,3,length(dim3.array.bi.out), length(models)), 
+                       dimnames=list(NULL,  c("Var1", "Var2", "Pred"), dim3.array.bi.out, models) )    
   }
 
   # Create a ranged data table
@@ -233,8 +240,8 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       
     }
   } else{ ## bivariate case
-    for(vari1 in show.variables){
-      for(vari2 in show.variables[-which(show.variables == vari1)]){
+    for(vari1 in show.variables[-length(show.variables)]){
+      for(vari2 in show.variables[-(1:which(show.variables == vari1))]){
 #         if(plot) {
 #     #       frame()
 #           persp(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=c(0,1), main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")

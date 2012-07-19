@@ -292,8 +292,22 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             pts.tmp1 <- sort(unique(pts.tmp1))
             pts.tmp2 <- sort(unique(pts.tmp2))
             proj.tmp <- matrix(proj.tmp, ncol=length(pts.tmp2), byrow=FALSE)
+            
+            # build color scale
+            ncz <- length(pts.tmp2)
+            nrz <- length(pts.tmp1)
+            # Create a function interpolating colors in the range of specified colors
+            jet.colors <- colorRampPalette(c("red", "white", "green"))
+            # Generate the desired number of colors from this palette
+            nbcol <- 50
+            color <- jet.colors(nbcol)
+            # Compute the z-value at the facet centres
+            zfacet <- proj.tmp[-1, -1] + proj.tmp[-1, -ncz] + proj.tmp[-nrz, -1] + proj.tmp[-nrz, -ncz]
+            # Recode facet z-values into color indices
+            facetcol <- cut(zfacet, nbcol)
+            
     				persp(x=pts.tmp1,y=pts.tmp2,z=proj.tmp, xlab = vari1, ylab=vari2, zlab="pred", theta = 30, phi = 30,
-              expand = 0.5, col = "lightblue", ltheta = 120, shade = 0.75, ticktype = "detailed", main = model)
+              expand = 0.5, col = facetcol, ltheta = 120, shade = 0.25, ticktype = "detailed", main = model, cex.axis=0.7)
     			}
           
         }        

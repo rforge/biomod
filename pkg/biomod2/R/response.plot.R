@@ -335,20 +335,35 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     warning(paste(toString(names(add.args)[which(! (names(add.args) %in% c("nb.pts")))]), " are unknown arguments", sep="" ))
   }
   
+  ### check of models args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+  if(!is.character(models)){
+    stop("models must be a character vector of models names")
+  }
+  for(mod in models){
+    if(!exists(mod)){
+      stop("you need to load the models selected!")
+    }
+  }
   
+  ### check of data args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    
+  ### check show.variables arg -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
+    
+  ### check save.file arg -=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  if(!is.nu)
   
-  ### defining the number split in each variables range ############
+  ### defining the number split in each variables range =-=-=-=-=- #
   if(!is.null(add.args$nb.pts)){
     if(do.bivariate){
       # total number of points is the square of the difined
-      nb.pts <- nb.pts^2
+      add.args$nb.pts <- add.args$nb.pts^2
     }
   } else{
     if(!do.bivariate){
-      nb.pts <- 100
+      add.args$nb.pts <- 100
     } else{
-      nb.pts <- 25^2
+      add.args$nb.pts <- 25^2
     }
   }
 
@@ -363,7 +378,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
               plot = plot,
               fixed.var.metric = fixed.var.metric,
               do.bivariate = do.bivariate,
-              nb.pts = nb.pts))
+              nb.pts = add.args$nb.pts))
 }
 
 ###

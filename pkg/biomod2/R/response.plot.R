@@ -171,12 +171,13 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     # XX. parametrize our plot window
       
     if(!do.bivariate){
-      W.width <- ceiling(sqrt(length(show.variables)))
-      W.height <- ceiling(length(show.variables)/W.width)
+      nb.graphs <- length(show.variables)
     } else{
-      W.width <- length(show.variables)
-      W.height <- length(show.variables)
+      nb.graphs <- (length(show.variables)-1) * length(show.variables) / 2
     }
+    
+    W.width <- ceiling(sqrt(nb.graphs))
+    W.height <- ceiling(nb.graphs/W.width)    
     
     mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), ncol=W.width, byrow=TRUE) 
     layout(mat, widths=rep(1,W.width), heights=c(0.3,rep(1,W.height)))

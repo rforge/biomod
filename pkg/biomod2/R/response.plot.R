@@ -108,7 +108,8 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                              ...){
   
   # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, ...)
+  add.args <- list(...)
+  args <- .response.plot2.check.arg(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, add.args)
   
   models <- args$models
   Data <- args$Data
@@ -173,7 +174,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(!do.bivariate){
       nb.graphs <- length(show.variables)
     } else{
-      nb.graphs <- (length(show.variables)-1) * length(show.variables) / 2
+      nb.graphs <- length(models) *  ( (length(show.variables)-1) * length(show.variables) / 2 )
     }
     
     W.width <- ceiling(sqrt(nb.graphs))
@@ -185,7 +186,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     par(mar = c(0.1, 0.1, 0.1, 0.1))
     plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
-    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", .extractModelNamesInfo(models[1],"models"), sep=""),col="#4c57eb")
+    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves for ", .extractModelNamesInfo(models[1],"species"), "'s ", .extractModelNamesInfo(models[1],"models"),sep=""),  ,col="#4c57eb")
     par(mar = c(2,2,3.5,1))      
   } 
 
@@ -307,7 +308,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             facetcol <- cut(zfacet, nbcol)
             
     				persp(x=pts.tmp1,y=pts.tmp2,z=proj.tmp, xlab = vari1, ylab=vari2, zlab="pred", theta = 30, phi = 30,
-              expand = 0.5, col = color[facetcol], ltheta = 120, shade = 0.25, ticktype = "simple", main = model, cex.main = 0.75, cex.axis=0.7)
+              expand = 0.5, col = color[facetcol], ltheta = 120, shade = 0.25, ticktype = "simple", main = paste(.extractModelNamesInfo(model,"data.set"), " ", .extractModelNamesInfo(model,"run.eval") ,sep=""), cex.main = 0.9, cex.axis=0.7)
     			}
           
         }        
@@ -327,16 +328,30 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 }
  
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, ...){
+.response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, add.args){
+  
+  # 1. check add.args
+  if(sum(! (names(add.args) %in% c("nb.pts"))) > 0){
+    warning(paste(toString(names(add.args)[which(! (names(add.args) %in% c("nb.pts")))]), " are unknown arguments", sep="" ))
+  }
+  
   
   if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
   
-  # models checking
-  if(!do.bivariate){
-    nb.pts <- 100
+  ### defining the number split in each variables range ############
+  if(!is.null(add.args$nb.pts)){
+    if(do.bivariate){
+      # total number of points is the square of the difined
+      nb.pts <- nb.pts^2
+    }
   } else{
-    nb.pts <- 25^2
+    if(!do.bivariate){
+      nb.pts <- 100
+    } else{
+      nb.pts <- 25^2
+    }
   }
+
   
   # TO DO 
   return(list(models = models,
@@ -350,4 +365,8 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
               do.bivariate = do.bivariate,
               nb.pts = nb.pts))
 }
+
+###
+# list of supported additional arguments  
+# - nb.pts  
 

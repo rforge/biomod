@@ -72,6 +72,7 @@
   PA.sre.quant <- args$PA.sre.quant
   
   rm('args')
+  gc()
   
   if(PA.nb.rep < 1){ # no Pseudo Absences
     return(BIOMOD.formated.data(sp=resp.var,

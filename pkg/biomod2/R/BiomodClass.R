@@ -69,24 +69,24 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
 	}
 )
 
-# setMethod('BIOMOD.formated.data', signature(sp='data.frame'), 
-#   function(sp,env,xy=NULL,sp.name=NULL){
-#     if(ncol(sp) > 1 ){
-#       stop("Invalid response variable")
-#     }
-#     sp <- as.numeric(unlist(sp))
-#     BFD <- BIOMOD.formated.data(sp,env,xy,sp.name)
-#     return(BFD)
-#   }
-# )
-# 
-# setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ), 
-#   function(sp,env,xy=NULL,sp.name=NULL){
-#     env <- as.data.frame(env)
-#     BFD <- BIOMOD.formated.data(sp,env,xy,sp.name)
-#     return(BFD)
-#   }
-# )
+setMethod('BIOMOD.formated.data', signature(sp='data.frame'), 
+  function(sp,env,xy=NULL,sp.name=NULL){
+    if(ncol(sp) > 1 ){
+      stop("Invalid response variable")
+    }
+    sp <- as.numeric(unlist(sp))
+    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name)
+    return(BFD)
+  }
+)
+
+setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ), 
+  function(sp,env,xy=NULL,sp.name=NULL){
+    env <- as.data.frame(env)
+    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name)
+    return(BFD)
+  }
+)
           
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
   function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL){

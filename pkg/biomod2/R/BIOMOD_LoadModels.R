@@ -1,4 +1,4 @@
-BIOMOD_LoadModels<- function(bm.out, ... ){
+BIOMOD_LoadModels <- function(bm.out, ... ){
   
   ####
   # ... can be models, run.eval, data.set to make a models subselection

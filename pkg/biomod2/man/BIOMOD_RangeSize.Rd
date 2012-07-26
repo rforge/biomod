@@ -1,4 +1,5 @@
 \name{BIOMOD_RangeSize}
+\alias{BIOMOD_RangeSize}
 \alias{BIOMOD_RangeSize-methods}
 \alias{BIOMOD_RangeSize,data.frame,data.frame-method}
 \alias{BIOMOD_RangeSize,array,array-method}

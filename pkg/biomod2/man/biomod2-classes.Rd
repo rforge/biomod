@@ -14,6 +14,10 @@
 \alias{BIOMOD.stored.array-class}
 \alias{BIOMOD.stored.formated.data-class}
 \alias{BIOMOD.stored.models.options-class}
+\alias{BIOMOD.stored.files-class}
+\alias{BIOMOD.stored.models.out-class}
+\alias{BIOMOD.stored.raster.stack-class}
+
 
 
 % BIOMOD.formated.data-method

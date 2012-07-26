@@ -86,21 +86,21 @@ BIOMOD_LoadModels<- function(bm.out, ... ){
   ## check additional args values
   ### models names
   if(!is.null(add.args$models)){
-    if(sum(add.args$models %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='models') != length(args$models)) ){
+    if(sum(add.args$models %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='models') != length(add.args$models)) ){
       stop(paste("models argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed), info='models'), sep="") )
     }
   }
   
   ### run.eval names
   if(!is.null(add.args$run.eval)){
-    if(sum(add.args$run.eval %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='run.eval') != length(args$run.eval)) ){
+    if(sum(add.args$run.eval %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='run.eval') != length(add.args$run.eval)) ){
       stop(paste("run.eval argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed), info='run.eval'), sep="") )
     }
   }
   
   ### data.set names
   if(!is.null(add.args$data.set)){
-    if(sum(add.args$data.set %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='data.set') != length(args$data.set)) ){
+    if(sum(add.args$data.set %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='data.set') != length(add.args$data.set)) ){
       stop(paste("data.set argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed), info='data.set'), sep="") )
     }
   }
@@ -116,5 +116,24 @@ BIOMOD_LoadModels<- function(bm.out, ... ){
   
   return(list(add.args = add.args))
   
+}
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+                
+'.extractModelNamesInfo' <- function(model.names, info = 'species'){
+  if(!is.character(model.names)){
+    stop("model.names must be a character vector")
+  }
+  if(!is.character(info) | length(info) != 1 | !(info %in% c('species', 'data.set', 'models', 'run.eval')) ){
+    stop("info must be 'specie', 'data.set', 'models' or 'run.eval'")
+  }
+                
+  info.tmp <- as.data.frame(strsplit(model.names, "_"))
   
+  return( switch(info,
+                 species = paste(unique(unlist(info.tmp[-c(nrow(info.tmp), nrow(info.tmp)-1, nrow(info.tmp)-2),])), collapse="_"),
+                 data.set = paste(unique(unlist(info.tmp[(nrow(info.tmp)-2),]))),
+                 run.eval = paste(unique(unlist(info.tmp[(nrow(info.tmp)-1),]))),
+                 models = paste(unique(unlist(info.tmp[(nrow(info.tmp)),]))) ) )
+              
 }

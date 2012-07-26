@@ -21,12 +21,14 @@
   If you run this function referencing only \code{bm.out} argument, all models built will be loaded. However, you can make a models subselection using the additional arguments (see below).
   
   \bold{Additional arguments (\ldots{}) : }
+  All the following arguments are optional.
   
   \itemize{
 
     \item{\bold{models:}}{ a character vector defining the names of models (e.g c(\sQuote{GLM}, \sQuote{GAM}, \sQuote{RF}) ) you want to load (models subselection) }
     \item{\bold{run.eval:}}{ a character vector defining the names of evaluation run (e.g c(\sQuote{RUN1}, \sQuote{Full}) ) you want to load (repetition subselection) }
     \item{\bold{data.set:}}{ a character vector defining the names of data.set (e.g c(\sQuote{PA1}, \sQuote{PA2})) you want to load (pseudo absences subselection) }
+    \item{\bold{path:}}{ the path to file where the species folder is. To be filled if species folder is different from your working directory) }
     
   }
   

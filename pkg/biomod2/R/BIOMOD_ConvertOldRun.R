@@ -1,5 +1,5 @@
 BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
-  cat("\n-=-=-=- BIOMOD results migration -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+  .bmCat("BIOMOD results migration")
   # 1. Check path exists and all objects needed exists too -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if(!file.exists(savedObj)){
     stop("Input object doesn't exist")
@@ -22,6 +22,15 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
   if(!exists('DataBIOMOD') | !exists('Biomod.material')){
     stop("DataBIOMOD or Biomod.material Object not in your input object, please check it!")
   }
+  
+  ### tips to remove some compiling warnings 
+  if(!exists('Biomod.material')){ Biomod.material <- NULL }
+  if(!exists('DataBIOMOD')){ DataBIOMOD <- NULL }
+  if(!exists('Biomod.PA.sample')){ Biomod.PA.sample <- NULL }
+  if(!exists('Evaluation.results.Roc')){ Evaluation.results.Roc <- NULL }
+  if(!exists('Evaluation.results.TSS')){ Evaluation.results.TSS <- NULL }
+  if(!exists('Evaluation.results.Kappa')){ Evaluation.results.Kappa <- NULL }
+  if(!exists('VarImportance')){ VarImportance <- NULL }
   
   sp.names <- Biomod.material$species.names
   
@@ -157,9 +166,9 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
     }
                         
     mod.eval.met <- c()
-    if(exists('Evaluation.results.Roc')) mod.eval.met <- c(mod.eval.met, 'ROC')
-    if(exists('Evaluation.results.TSS')) mod.eval.met <- c(mod.eval.met, 'TSS')
-    if(exists('Evaluation.results.Kappa')) mod.eval.met <- c(mod.eval.met, 'KAPPA')
+    if(!is.null(Evaluation.results.Roc)) mod.eval.met <- c(mod.eval.met, 'ROC')
+    if(!is.null(Evaluation.results.TSS)) mod.eval.met <- c(mod.eval.met, 'TSS')
+    if(!is.null(Evaluation.results.Kappa)) mod.eval.met <- c(mod.eval.met, 'KAPPA')
          
     models.evaluation <- array(data=NA,
                                dim=c(length(mod.eval.met), 4, length(algo.choosen.names),
@@ -179,15 +188,15 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
         runOldName <- ifelse(renOld!='', 
                              paste(models.out@sp.name, pdnOld, renOld, sep='_'), 
                              paste(models.out@sp.name, pdnOld, sep='_'))
-        if(exists('Evaluation.results.Roc')){
+        if(!is.null(Evaluation.results.Roc)){
           models.evaluation['ROC',,,ren,pdn] <- matrix(round(as.numeric(as.matrix(Evaluation.results.Roc[[runOldName]][,c('Cross.validation', 'Cutoff', "Sensitivity", "Specificity")])),digits=3), nrow=4, byrow=T)
         }
 
-        if(exists('Evaluation.results.TSS')){
+        if(!is.null(Evaluation.results.TSS)){
           models.evaluation['TSS',,,ren,pdn] <- matrix(round(as.numeric(as.matrix(Evaluation.results.TSS[[runOldName]][,c('Cross.validation', 'Cutoff', "Sensitivity", "Specificity")])),digits=3), nrow=4, byrow=T)
         } 
 
-        if(exists('Evaluation.results.Kappa')){
+        if(!is.null(Evaluation.results.Kappa)){
           models.evaluation['KAPPA',,,ren,pdn] <- matrix(round(as.numeric(as.matrix(Evaluation.results.Kappa[[runOldName]][,c('Cross.validation', 'Cutoff', "Sensitivity", "Specificity")]),digits=3)), nrow=4, byrow=T)
         }
 
@@ -205,7 +214,7 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
     #   3.4 Models variable Importances
 
     # save model variables importances
-    if(exists('VarImportance')){
+    if(!is.null(VarImportance)){
       variables.importances <- t(VarImportance[[sp.name]])
       save(variables.importances, file = paste(models.out@sp.name,"/.BIOMOD_DATA/variables.importances",sep=""), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
       models.out@variables.importances@inMemory <- TRUE

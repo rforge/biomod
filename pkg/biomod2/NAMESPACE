@@ -12,14 +12,12 @@ exportClasses(
 
 exportMethods(
     "BIOMOD.formated.data",
-    "EnsembleForecast_V2",
     "getModelsEvaluations",
     "getModelsOptions",
     "getModelsPrediction",
     "getModelsVarImport",
     ".Models.prepare.data",
     ".Projection.do.proj",
-    "Projection_v2",
     "random.pseudo.abs.selection",
     ".transform.outputs",
     ".Models.prepare.data"

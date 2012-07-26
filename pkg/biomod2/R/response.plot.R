@@ -320,9 +320,9 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
   
   if(!do.bivariate){
-    return(array.mono.out)
+    invisible(array.mono.out)
   } else{
-    return(array.bi.out)
+    invisible(array.bi.out)
   }
     
 }
@@ -351,7 +351,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
     
   ### check save.file arg -=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  if(!is.nu)
+
   
   ### defining the number split in each variables range =-=-=-=-=- #
   if(!is.null(add.args$nb.pts)){

@@ -1,12 +1,12 @@
 \name{BinaryTransformation}
 \alias{BinaryTransformation}
-%\alias{BinaryTransformation-methods}
-%\alias{BinaryTransformation,data.frame-method}
-%\alias{BinaryTransformation,matrix-method}
-%\alias{BinaryTransformation,numeric-method}
-%\alias{BinaryTransformation,RasterBrick-method}
-%\alias{BinaryTransformation,RasterLayer-method}
-%\alias{BinaryTransformation,RasterStack-method}
+\alias{BinaryTransformation-methods}
+\alias{BinaryTransformation,data.frame-method}
+\alias{BinaryTransformation,matrix-method}
+\alias{BinaryTransformation,numeric-method}
+\alias{BinaryTransformation,RasterBrick-method}
+\alias{BinaryTransformation,RasterLayer-method}
+\alias{BinaryTransformation,RasterStack-method}
 
 \title{Convert species' probability of occurrence into binary presence-absence data using a predefined threshold }
 

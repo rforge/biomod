@@ -24,7 +24,7 @@
   
   \itemize{
 
-    \item{\bold{models:}}{ a character vector defining the names of models (e.g \code{c(\sQuote{GLM}, \sQuote{GAM}, \sQuote{RF})} ) you want to load (models subselection) }
+    \item{\bold{models:}}{ a character vector defining the names of models (e.g c(\sQuote{GLM}, \sQuote{GAM}, \sQuote{RF}) ) you want to load (models subselection) }
     \item{\bold{run.eval:}}{ a character vector defining the names of evaluation run (e.g c(\sQuote{RUN1}, \sQuote{Full}) ) you want to load (repetition subselection) }
     \item{\bold{data.set:}}{ a character vector defining the names of data.set (e.g c(\sQuote{PA1}, \sQuote{PA2})) you want to load (pseudo absences subselection) }
     

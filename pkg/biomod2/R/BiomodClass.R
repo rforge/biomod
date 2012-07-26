@@ -762,6 +762,10 @@ setMethod("getModelsInputData", "BIOMOD.models.out",
                     return(list(levels = levels(x)))
                   }
                 }) )
+            } else if(subinfo == 'expl.var'){
+              return(getModelsInputData(obj)@data.env.var)
+            } else if(subinfo == 'expl.var.names'){
+              return(obj@expl.var.names)
             } else{
               stop("Unknow subinfo tag")
             }

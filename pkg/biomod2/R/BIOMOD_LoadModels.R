@@ -107,7 +107,7 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   
   ### path to sim
   if(!is.null(add.args$path)){
-    if(!(bm.ou@sp.name %in% list.dirs(path = add.args$path))){
+    if(!(bm.out@sp.name %in% list.dirs(path = add.args$path))){
       stop("invalid path given")
     }
   } else{

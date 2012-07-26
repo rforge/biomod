@@ -715,7 +715,7 @@
   } else { # all values are taken for cali and valid stuff -----> Not so good but usefull for little data set
     evalLines <- calibLines
     if(sum(Data[,1] == 0 ) == 0 || sum(Data[,1] == 0 ) == nrow(Data)){
-      warning(paste(colnames(Data)[1], " ", Model, " ", nam," was switch off because of no both
+      warning(paste(colnames(Data)[1], " ", Model," was switch off because of no both
                    presences and absences data given (full model)",sep=""), immediate.=T)
       return(NULL)
     }

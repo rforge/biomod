@@ -10,8 +10,7 @@
 
 \title{Convert species' probability of occurrence into binary presence-absence data using a predefined threshold }
 
-\description{ Function that converts an object containing probability values into a binary 
-presence-absence object according to a pre-defined threshold(s).
+\description{ Function that converts an object containing probability values into a filtered object according to a pre-defined threshold(s).
 }
 
 \usage{

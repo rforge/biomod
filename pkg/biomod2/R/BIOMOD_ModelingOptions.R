@@ -108,6 +108,20 @@
 
   if(!is.null(MAXENT)){
     if(!is.null(MAXENT$maximumiterations )) { opt@MAXENT$maximumiterations <- MAXENT$maximumiterations }
+    if(!is.null(MAXENT$visible )) { opt@MAXENT$visible <- MAXENT$visible }
+    if(!is.null(MAXENT$linear )) { opt@MAXENT$linear <- MAXENT$linear }
+    if(!is.null(MAXENT$quadratic )) { opt@MAXENT$quadratic <- MAXENT$quadratic }
+    if(!is.null(MAXENT$product )) { opt@MAXENT$product <- MAXENT$product }
+    if(!is.null(MAXENT$threshold )) { opt@MAXENT$threshold <- MAXENT$threshold }
+    if(!is.null(MAXENT$hinge )) { opt@MAXENT$hinge <- MAXENT$hinge }
+    if(!is.null(MAXENT$lq2lqptthreshold )) { opt@MAXENT$lq2lqptthreshold <- MAXENT$lq2lqptthreshold }
+    if(!is.null(MAXENT$l2lqthreshold )) { opt@MAXENT$l2lqthreshold <- MAXENT$l2lqthreshold }
+    if(!is.null(MAXENT$hingethreshold )) { opt@MAXENT$hingethreshold <- MAXENT$hingethreshold }
+    if(!is.null(MAXENT$beta_threshold )) { opt@MAXENT$beta_threshold <- MAXENT$beta_threshold }
+    if(!is.null(MAXENT$beta_categorical )) { opt@MAXENT$beta_categorical <- MAXENT$beta_categorical }
+    if(!is.null(MAXENT$beta_lqp )) { opt@MAXENT$beta_lqp <- MAXENT$beta_lqp }
+    if(!is.null(MAXENT$beta_hinge )) { opt@MAXENT$beta_hinge <- MAXENT$beta_hinge }
+    if(!is.null(MAXENT$defaultprevalence )) { opt@MAXENT$defaultprevalence <- MAXENT$defaultprevalence }
   }
 
   return(opt)

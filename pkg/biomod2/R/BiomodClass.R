@@ -493,7 +493,21 @@ setMethod('show', signature('BIOMOD.Model.Options'),
                    
             ## MAXENT options
             cat("\n")
-            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, ")", sep="", fill=.Options$width)
+            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, ",", sep="", fill=.Options$width)
+            cat("\n           visible = ", object@MAXENT$visible, ",", sep="")
+            cat("\n           linear = ", object@MAXENT$linear, ",", sep="")
+            cat("\n           quadratic = ", object@MAXENT$quadratic, ",", sep="")
+            cat("\n           product = ", object@MAXENT$product, ",", sep="")
+            cat("\n           threshold = ", object@MAXENT$threshold, ",", sep="")
+            cat("\n           hinge = ", object@MAXENT$hinge, ",", sep="")
+            cat("\n           lq2lqptthreshold = ", object@MAXENT$lq2lqptthreshold, ",", sep="")
+            cat("\n           l2lqthreshold = ", object@MAXENT$l2lqthreshold, ",", sep="")
+            cat("\n           hingethreshold = ", object@MAXENT$hingethreshold, ",", sep="")
+            cat("\n           beta_threshold = ", object@MAXENT$beta_threshold, ",", sep="")
+            cat("\n           beta_categorical = ", object@MAXENT$beta_categorical, ",", sep="")
+            cat("\n           beta_lqp = ", object@MAXENT$beta_lqp, ",", sep="")
+            cat("\n           beta_hinge = ", object@MAXENT$beta_hinge, ",", sep="")
+            cat("\n           defaultprevalence = ", object@MAXENT$defaultprevalence, ")", sep="")
 
             .bmCat()
           })

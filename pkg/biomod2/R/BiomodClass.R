@@ -408,7 +408,21 @@ setClass("BIOMOD.Model.Options",
                              ntree = 50,
                              mtry = 'default'),
                    
-                   MAXENT = list(maximumiterations = 200)
+                   MAXENT = list(maximumiterations = 200,
+                                 visible = FALSE,
+                                 linear = TRUE,
+                                 quadratic = TRUE,
+                                 product = TRUE,
+                                 threshold = TRUE,
+                                 hinge = TRUE,
+                                 lq2lqptthreshold = 80,
+                                 l2lqthreshold = 10,
+                                 hingethreshold = 15,
+                                 beta_threshold = -1.0,
+                                 beta_categorical = -1.0,
+                                 beta_lqp = -1.0,
+                                 beta_hinge = -1.0,
+                                 defaultprevalence = 0.5)
                    
                    ))
 

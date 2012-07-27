@@ -155,7 +155,21 @@ NOTE: for method and parms, you can give a 'real' value as described in the rpar
 
 \section{=-=-= MAXENT -=  \url{http://www.cs.princeton.edu/~schapire/maxent/}}{
   \itemize{
-    \item{maximumiterations : maximum iteration done}
+    \item{maximumiterations : integer (default 200), maximum iteration done}
+    \item{visible : logical (default FALSE), make the Maxent user interface visible}
+    \item{linear : logical (default TRUE), allow linear features to be used}
+    \item{quadratic : logical (default TRUE), allow quadratic features to be used}
+    \item{product : logical (default TRUE), allow product features to be used}
+    \item{threshold : logical (default TRUE), allow threshold features to be used}
+    \item{hinge : logical (default TRUE), allow hinge features to be used}
+    \item{lq2lqptthreshold : integer (default 80), number of samples at which product and threshold features start being used}
+    \item{l2lqthreshold : integer (default 10), number of samples at which quadratic features start being used}
+    \item{hingethreshold : integer (default 15), number of samples at which hinge features start being used}
+    \item{beta_threshold : numeric (default -1.0), regularization parameter to be applied to all threshold features; negative value enables automatic setting}
+    \item{beta_categorical : numeric (default -1.0), regularization parameter to be applied to all categorical features; negative value enables automatic setting}
+    \item{beta_lqp : numeric (default -1.0), regularization parameter to be applied to all linear, quadratic and product features; negative value enables automatic setting}
+    \item{beta_hinge : numeric (default -1.0), regularization parameter to be applied to all hinge features; negative value enables automatic setting}
+    \item{defaultprevalence : numeric (default 0.5), default prevalence of the species: probability of presence at ordinary occurrence points}
   }
 
 }

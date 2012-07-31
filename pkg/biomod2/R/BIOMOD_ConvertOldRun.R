@@ -42,7 +42,8 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
     
     models.out <- new('BIOMOD.models.out',
                       sp.name = sp.name,
-                      expl.var.names = Biomod.material$VarNames)
+                      expl.var.names = Biomod.material$VarNames,
+                      rescal.all.models = FALSE)
     
     #   3.1 BIOMOD.formated.data creation
     cat("\n\tBIOMOD.formated.data creation")
@@ -174,7 +175,7 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
                                dim=c(length(mod.eval.met), 4, length(algo.choosen.names),
                                      length(run.eval.names), length(pa.data.names)),
                                dimnames=list(mod.eval.met,
-                                             c("Cross.validation", "Cutoff", "Sensitivity", "Specificity"),
+                                             c("Testing.data", "Cutoff", "Sensitivity", "Specificity"),
                                              algo.choosen.names,
                                              run.eval.names,
                                              pa.data.names))

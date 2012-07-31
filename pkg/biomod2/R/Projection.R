@@ -42,7 +42,7 @@ setMethod( 'Projection_v2', signature(new.env.data = 'data.frame'),
       kept.algo.run <- algo.run
     }
     
-    proj.array <- lapply(kept.models.name, .Projection.do.proj, env=new.env.data, xy=xy)
+    proj.array <- lapply(kept.models.name, .Projection.do.proj, env=new.env.data, xy=xy, rescaled.models=rescaled.models)
     proj.array <- as.data.frame(proj.array)
     names(proj.array) <- kept.models.name
     
@@ -147,7 +147,7 @@ setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
 #     }
     
     if(do.stack){
-      proj.ras <- lapply(models.name, .Projection.do.proj, env=new.env.data)
+      proj.ras <- lapply(models.name, .Projection.do.proj, env=new.env.data, rescaled.models=rescaled.models)
   
       # transform list of rasterLayers into a rasterStack
       proj.stack <- stack(x = proj.ras)

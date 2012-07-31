@@ -48,7 +48,7 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
     cat("\n\tBIOMOD.formated.data creation")
     data <- BIOMOD.formated.data(sp = DataBIOMOD[,sp.name],
                                    env = DataBIOMOD[,Biomod.material$VarNames],
-                                   xy = NULL,
+                                   xy = data.frame(),
                                    sp.name = sp.name)
     
     if(Biomod.material$NbRepPA > 0){

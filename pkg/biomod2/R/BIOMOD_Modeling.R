@@ -125,7 +125,6 @@
                       SavePred = SavePredictions,
                       rescal.models = rescal.all.models
                       )
-  
   # put outputs in good format and save those
 
   models.out@models.computed <- .transform.outputs(modeling.out, out='models.run')
@@ -143,6 +142,12 @@
     # save model variables importances
     if(VarImport > 0 ){
       variables.importances <- .transform.outputs(modeling.out, out='var.import')
+      ## trick to put appropriate dimnames
+      vi.dim.names <- dimnames(variables.importances)
+      vi.dim.names[[1]] <- models.out@expl.var.names
+      dimnames(variables.importances) <- vi.dim.names
+      rm('vi.dim.names')
+    
       save(variables.importances, file = paste(models.out@sp.name,"/.BIOMOD_DATA/variables.importances",sep=""), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
       models.out@variables.importances@inMemory <- TRUE
       models.out@variables.importances@link <- paste(models.out@sp.name,"/.BIOMOD_DATA/variables.importances",sep="")

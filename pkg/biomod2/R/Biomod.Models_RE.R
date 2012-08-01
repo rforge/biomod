@@ -704,7 +704,7 @@
             }
         }
                                                                
-          ListOut$var.import <- sapply(round(as.numeric(1 - (TempVarImp/VarImport)), digits = 3),min,1)
+        ListOut$var.import <- sapply(round(as.numeric(1 - (TempVarImp/VarImport)), digits = 3),min,1)
 
      } # end do Varimp stuff
   

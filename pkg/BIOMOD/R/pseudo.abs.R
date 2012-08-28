@@ -38,7 +38,8 @@ function(coor=NULL, status, env=NULL, strategy='random', distance=0, nb.points=N
 	if(strategy == 'sre'){
 		assign("NbVar", ncol(env), pos=1)
 		pred <- sre(status, env, env)
-		abs.set <- subset(abs, pred[-(1:length(pres))] == 0)
+# 		abs.set <- subset(abs, pred[-(1:length(pres))] == 0)
+    abs.set <- subset(abs, pred[status==0] == 0) # BUG discover by lucas fortini
 	}
 	
   # check some candidates absences are there

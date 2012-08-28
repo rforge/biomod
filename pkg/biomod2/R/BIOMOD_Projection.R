@@ -132,8 +132,8 @@
   
   
   # 3. Removing Maxent Tmp Data
-  if(file.exists('MaxentTmpData/')){
-    .Delete.Maxent.WorkDir()
+  if(file.exists(paste(modeling.output@sp.name, "/proj_", proj.name,'/MaxentTmpData/',sep=''))){
+    .Delete.Maxent.WorkDir(modeling.output@sp.name, "/proj_", proj.name)
   }
   
   

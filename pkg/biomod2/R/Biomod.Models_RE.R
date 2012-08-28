@@ -461,7 +461,7 @@
   }
                        
   if (Model == "MAXENT"){
-    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy)
+    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy, species.name=colnames(Data)[1])
 
     # run MaxEnt:
 #     if(VarImport > 0 ){ # projection on suffle table to be able to compute VarImport latter
@@ -473,9 +473,9 @@
     
     
       system(command=paste("java -mx512m -jar maxent.jar environmentallayers=\"",
-                           getwd(), .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Back_swd.csv\" samplesfile=\"",
-                           getwd(), .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Sp_swd.csv\" projectionlayers=\"",
-                           gsub(", ",",",toString(list.files(paste(getwd(), .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Pred",sep=""),
+                           getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Back_swd.csv\" samplesfile=\"",
+                           getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Sp_swd.csv\" projectionlayers=\"",
+                           gsub(", ",",",toString(list.files(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Pred",sep=""),
                                                full.names= T))), "\" outputdirectory=\"",
                            getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT\" outputformat=logistic ",
 #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations, 

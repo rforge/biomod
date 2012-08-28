@@ -26,7 +26,7 @@ function(Response=NULL, Explanatory=NULL, IndependentResponse=NULL, IndependentE
         if(nb != ncol(Explanatory)) stop("The variable names given in IndependentExplanatory do not correspond to the one used for calibrating the models \n") 
         
         #reorder the variables correctly 
-        IndependentExplanatory <- IndependentExplanatory[match(colnames(Explanatory),colnames(IndependentExplanatory))]
+        IndependentExplanatory <- IndependentExplanatory[,match(colnames(Explanatory),colnames(IndependentExplanatory))]
             
         if(is.vector(Response) || is.double(Response)) {
             Response <- as.data.frame(Response)

@@ -240,30 +240,51 @@
         
   if (Model == "GLM"){
     
-    glmStart <- glm(eval(parse(text=paste(colnames(Data)[1],"~1",sep=""))), 
-                    data = Data[calibLines,],
-                    family = Options@GLM$family,
-                    control = eval(Options@GLM$control),
-                    weights = Yweigths[calibLines],
-                    mustart = rep(Options@GLM$mustart, sum(calibLines)),
-                    model = TRUE)
-    
+    ## build the most complete model formula
     if(is.null(Options@GLM$myFormula)){
       glm.formula <- makeFormula(colnames(Data)[1],head(Data),Options@GLM$type, Options@GLM$interaction.level)
     } else{
       glm.formula <- Options@GLM$myFormula
     }
     
-    model.sp <- stepAIC(glmStart, 
-                        glm.formula,
-                        data = Data[calibLines,],
-                        direction = "both", trace = FALSE, 
-                        k = criteria, 
-                        weights = Yweigths[calibLines],
-                        steps = 10000,
-                        mustart = rep(Options@GLM$mustart, sum(calibLines)))
+    if(Options@GLM$test != 'none'){
+      ## make the model selection
+      glmStart <- glm(eval(parse(text=paste(colnames(Data)[1],"~1",sep=""))), 
+                      data = Data[calibLines,],
+                      family = Options@GLM$family,
+                      control = eval(Options@GLM$control),
+                      weights = Yweigths[calibLines],
+                      mustart = rep(Options@GLM$mustart, sum(calibLines)),
+                      model = TRUE)
+      
+      model.sp <- stepAIC(glmStart, 
+                          glm.formula,
+                          data = Data[calibLines,],
+                          direction = "both", trace = FALSE, 
+                          k = criteria, 
+                          weights = Yweigths[calibLines],
+                          steps = 10000,
+                          mustart = rep(Options@GLM$mustart, sum(calibLines)))
+                          
+    } else {
+      ## keep the total model      
+      model.sp <- glm(glm.formula, 
+                      data = cbind(Data[calibLines,],matrix(Yweigths[calibLines], ncol=1, dimnames=list(NULL, "Yweigths"))) ,
+                      family = eval(parse(text=call(Options@GLM$family))),
+#                       family = Options@GLM$family,
+                      control = eval(Options@GLM$control),
+                      weights = Yweigths,
+#                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
+                      model = TRUE)
+    }
+                  
+
                       
-    if (exists("model.sp")){
+    if (exists("model.sp")){     
+      # print the selected formula
+      cat("\n\tselected formula : ")
+      print(model.sp$formula, useSource=FALSE)
+      
       # make prediction
       g.pred <- data.frame(as.integer(.testnull(model.sp, Prev, Data[,-1]) * 1000))
       
@@ -746,12 +767,18 @@
 
     if(Options@GLM$test == "AIC"){
       criteria <- 2
-      cat("\n\t Stepwise procedure using AIC criteria")      
-    }
-    if(Options@GLM$test == "BIC"){
+      cat("\n\tStepwise procedure using AIC criteria")      
+    } else if(Options@GLM$test == "BIC"){
       criteria <- log(ncol(Data))
       cat("\n\tStepwise procedure using BIC criteria")     
+    } else {#if(Options@GLM$test == "none"){
+      cat("\n\tNo stepwise procedure")
+    }
+      
+    if(is.null(Yweigths)){
+      Yweigths <- rep(1,nrow(Data))
     } 
+    
   }
                  
     if (Model == "GBM") {

@@ -42,8 +42,10 @@ function(respName, explVar, type = 'simple', interaction.level = 0)
          "quadratic" = { 
            for (v in 1:ncol(explVar) ){
              if(is.numeric(explVar[,v])){
-               junk <- c(junk, paste(explVarNames[v], "+I(", explVarNames[v], 
-                                      "^2)+I(",explVarNames[v],"^3)", sep="") )
+#                junk <- c(junk, paste(explVarNames[v], "+I(", explVarNames[v], 
+#                                       "^2)+I(",explVarNames[v],"^3)", sep="") )
+                junk <- c(junk, paste(explVarNames[v], "+I(", explVarNames[v], 
+                                      "^2)", sep="") )
              } else { junk <- c(junk, explVarNames[v]) }
            } },
 

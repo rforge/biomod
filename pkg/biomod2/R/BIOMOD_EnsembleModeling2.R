@@ -63,7 +63,7 @@
   em.models.assembling <- function(chosen.models, em.by){
     assembl.list = list()
     
-    if(em.by == 'PA_data_set'){
+    if(em.by == 'PA_dataset'){
       for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
         assembl.list[[paste(dat,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",dat,"_",sep=""), chosen.models)]
       }
@@ -124,7 +124,7 @@
           prediction.kept <- as.data.frame(getModelsPredictionEval(modeling.output, as.data.frame = TRUE)[,models.kept])
         } else{
           ## load prediction on each PA dataset
-          if(em.by %in% c('PA_data_set')){
+          if(em.by %in% c('PA_dataset')){
             prediction.kept <- as.data.frame(getModelsPrediction(modeling.output, as.data.frame = TRUE)[,models.kept])
           } else{ ## redo prediction on full data.set
             cat("\n   ! Models projection for whole zonation required...")
@@ -263,7 +263,7 @@
                                         obs <-  as.vector(getModelsInputData(modeling.output)@eval.data.species)
                                       } else{
                                         ##### !!!!!! TO DO -> select appropriate part of dataset according to em.by
-                                        if(em.by == "PA_data_set"){
+                                        if(em.by == "PA_dataset"){
                                           if(head(unlist(strsplit(assemb,"_")),1) == 'AllData'){
                                             obs <-  as.vector(getModelsInputData(modeling.output)@data.species)
                                           } else{
@@ -421,9 +421,9 @@
   }
   
   # 8. by arg checking
-  available.em.by <- c('inter_algos', 'PA_data_set', 'algo', 'all')
+  available.em.by <- c('PA_dataset', 'algo', 'all', 'PA_dataset+repet', 'PA_dataset+algo')
   if(!(em.by %in% available.em.by) ){
-    stop("Invalid 'em.by' argument given. It must be one of : 'inter-algos', 'PA_data_set', 'algo', 'all' ...")
+    stop("Invalid 'em.by' argument given. It must be one of : 'PA_dataset', 'algo', 'all', 'PA_dataset+repet' or 'PA_dataset+algo'")
   }
   
   return( list( modeling.output = modeling.output,

@@ -77,6 +77,11 @@
       return(assembl.list)
     }
     
+    if(em.by == 'all'){
+      assembl.list[["TotalConsensus"]] <- chosen.models
+      return(assembl.list)
+    }
+      
   }
   
   em.mod.assemb <- em.models.assembling(chosen.models, em.by)
@@ -122,6 +127,7 @@
           if(em.by %in% c('PA_data_set')){
             prediction.kept <- as.data.frame(getModelsPrediction(modeling.output, as.data.frame = TRUE)[,models.kept])
           } else{ ## redo prediction on full data.set
+            cat("\n   ! Models projection for whole zonation required...")
             prediction.kept <- BIOMOD_Projection(modeling.output = modeling.output,
                                           new.env = getModelsInputData(modeling.output)@data.env.var,
                                           proj.name = 'Tmp',
@@ -139,7 +145,7 @@
                                                    }))
             # keep only wanted columns
             prediction.kept <- prediction.kept[,models.kept]
-            
+            cat("\n")
           }
 
         }
@@ -267,7 +273,7 @@
                                           }                                
                                         }
                                         
-                                        if(em.by == "algo"){
+                                        if(em.by %in% c("algo","all") ){
                                           ## we need to take all data even if it is much better to have 
                                           obs <-  as.vector(getModelsInputData(modeling.output)@data.species)
                                           obs[is.na(obs)] <- 0
@@ -415,9 +421,9 @@
   }
   
   # 8. by arg checking
-  available.em.by <- c('inter_algos', 'PA_data_set', 'algo')
+  available.em.by <- c('inter_algos', 'PA_data_set', 'algo', 'all')
   if(!(em.by %in% available.em.by) ){
-    stop("Invalid 'em.by' argument given. It must be one of : 'inter-algos', 'PA_data_set', 'algo' ...")
+    stop("Invalid 'em.by' argument given. It must be one of : 'inter-algos', 'PA_data_set', 'algo', 'all' ...")
   }
   
   return( list( modeling.output = modeling.output,

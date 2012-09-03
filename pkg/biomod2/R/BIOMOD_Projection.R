@@ -29,7 +29,6 @@
                                 compress = 'xz',
                                 clamping.mask = TRUE,
                                 ...){
-  .bmCat("Do Models Projections")
   # 0. get additional args
   add.args <- list(...)
   if(!is.null(add.args$do.stack)){
@@ -38,6 +37,15 @@
     do.stack <- TRUE
   }
   
+  if(!is.null(add.args$silent)){
+    silent <- add.args$silent
+  } else{
+    silent <- FALSE
+  }
+  
+  if(!silent){
+    .bmCat("Do Models Projections")
+  }
   
   # 1. Some Inputs args checking
   args <- .BIOMOD_Projection.check.args(modeling.output,
@@ -82,7 +90,7 @@
   
   # 1.c Define the clamping mask
   if(clamping.mask){
-    cat("\n   > defining clamping mask")
+    if(!silent) cat("\n   > defining clamping mask")
     MinMax <- getModelsInputData(modeling.output,'MinMax')
     eval(parse(text = paste("clamping.mask.",proj.name," <- .build.clamping.mask(new.env, MinMax)", sep="") )) 
     eval(parse(text = paste("save(clamping.mask.",proj.name,", file = '", modeling.output@sp.name, "/proj_", proj.name, 
@@ -137,7 +145,7 @@
   }
   
   
-  .bmCat("Done")
+  if(!silent) .bmCat("Done")
   # 4. Returning output
   return(proj_out)
 }

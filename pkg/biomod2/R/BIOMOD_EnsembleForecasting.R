@@ -305,7 +305,6 @@
         } else { 
           cat("Unsupported yet !")
         }
-          
       }
       
       # 6. weighted mean of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -326,7 +325,12 @@
         models.kept.scores = EM.output@em.weight[[em.comp]]
       	### Compute ensemble forecast
         if(projection.output@type == 'RasterStack'){
-          ef.pmw <- round(sum(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)) * models.kept.scores))
+          if(length(getEMkeptModels(EM.output, em.comp)) > 1){
+            ef.pmw <- round(sum(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)) * models.kept.scores))
+          } else{
+            ef.pmw <- raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp))
+          }
+
         } else if(projection.output@type == 'array'){
           ef.pmw <- round(as.vector(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)]%*% models.kept.scores))
         } else if(projection.output@type == 'character'){
@@ -373,14 +377,22 @@
                             projection.output@proj.names, .Platform$file.sep,
                             em.comp, "')", sep="")))
       
-
+    cat("\n*** 7. done")
+    
     # 8. Doing Binary Transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     if(!is.null(binary.meth)){
       for(bin.meth in binary.meth){
         cuts <- getEMeval(EM.output, em.comp)[[1]][bin.meth, "Cutoff", ]
         cuts <- cuts[sub("ef.","em.", ef.computed)]
+        cat("\n*** cuts selected !")
+        cat("\n*** cuts =", cuts)
+        if(sum(is.na(cuts)) > 0) {
+          warning(em.comp, " : ",toString(ef.computed[which(is.na(cuts))])," cuts was automaticly set to 500.. That can lead to strange binary results.") 
+          cuts[which(is.na(cuts))] <- 500
+          }
 
         eval(parse(text=paste(em.comp,".bin.", bin.meth," <- BinaryTransformation(", em.comp,", cuts)" , sep="")))
+        cat("\n*** bin trans done !")
         if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
           eval(parse(text=paste("layerNames(", em.comp,".bin.", bin.meth ,") <- paste(layerNames(",em.comp,"), '.bin',sep='')", sep="")))
         }
@@ -390,7 +402,8 @@
                                 em.comp,".bin.", bin.meth, "')", sep="")))
       }
     }
-
+    
+    cat("\n*** 8. done")
     # 9. Doing Filtred Transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     if(!is.null(filtered.meth)){
       cat("\n      ! Filtered transformation not supported yet!")

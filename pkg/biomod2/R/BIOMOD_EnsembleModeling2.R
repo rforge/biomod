@@ -60,6 +60,8 @@
   # 2. doing Ensemble modeling
   
   ## 2.1 make a list of models names that will be combined together according to by argument.
+  
+  # =-=-=-=-=-=-=-=- em.models.assembling function -=-=-=-=-=-=-=- #
   em.models.assembling <- function(chosen.models, em.by){
     assembl.list = list()
     
@@ -81,8 +83,35 @@
       assembl.list[["TotalConsensus"]] <- chosen.models
       return(assembl.list)
     }
-      
+    
+    if(em.by == 'PA_dataset+repet'){
+      for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
+        for(repet in .extractModelNamesInfo(chosen.models, info='run.eval')){
+          mod.tmp <- intersect(x=grep(paste("_",dat,"_",sep=""), chosen.models), 
+                               y=grep(paste("_",repet,"_",sep=""), chosen.models))
+          if(length(mod.tmp)){
+            assembl.list[[paste(dat,"_",repet,'_AllAlgos', sep="")]] <- chosen.models[mod.tmp]
+          }
+        }
+      }
+      return(assembl.list)      
+    }
+
+    if(em.by == 'PA_dataset+algo'){
+      for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
+        for(algo in .extractModelNamesInfo(chosen.models, info='models')){
+          mod.tmp <- intersect(x=grep(paste("_",dat,"_",sep=""), chosen.models), 
+                               y=grep(paste("_",algo,sep=""), chosen.models))
+          if(length(mod.tmp)){
+            assembl.list[[paste(dat,"_AllRepet_",algo, sep="")]] <- chosen.models[mod.tmp]
+          }
+        }
+      }
+      return(assembl.list)      
+    }
+  
   }
+  # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
   em.mod.assemb <- em.models.assembling(chosen.models, em.by)
   
@@ -263,9 +292,10 @@
                                         obs <-  as.vector(getModelsInputData(modeling.output)@eval.data.species)
                                       } else{
                                         ##### !!!!!! TO DO -> select appropriate part of dataset according to em.by
-                                        if(em.by == "PA_dataset"){
+                                        if(em.by %in% c("PA_dataset",'PA_dataset+algo','PA_dataset+repet')){
                                           if(head(unlist(strsplit(assemb,"_")),1) == 'AllData'){
                                             obs <-  as.vector(getModelsInputData(modeling.output)@data.species)
+                                            obs[is.na(obs)] <- 0
                                           } else{
                                             obs <- as.vector(getModelsInputData(modeling.output)@data.species)
                                             obs <- obs[getModelsInputData(modeling.output)@PA[, paste(head(unlist(strsplit(assemb,"_")),1))]]
@@ -317,19 +347,19 @@
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-.BIOMOD_EnsembleModeling2.check.args <- function( modeling.output,
-                                                 chosen.models,
-                                                 eval.metric,
-                                                 eval.metric.quality.threshold,
-                                                 prob.mean,
-                                                 prob.cv,
-                                                 prob.ci,
-                                                 prob.ci.alpha,
-                                                 prob.median,
-                                                 committee.averaging,
-                                                 prob.mean.weight,
-                                                 prob.mean.weight.decay,
-                                                 em.by){
+.BIOMOD_EnsembleModeling2.check.args <- function(  modeling.output,
+                                                   chosen.models,
+                                                   eval.metric,
+                                                   eval.metric.quality.threshold,
+                                                   prob.mean,
+                                                   prob.cv,
+                                                   prob.ci,
+                                                   prob.ci.alpha,
+                                                   prob.median,
+                                                   committee.averaging,
+                                                   prob.mean.weight,
+                                                   prob.mean.weight.decay,
+                                                   em.by ){
   # 1. modeling.output checking
   if(!(inherits(modeling.output, "BIOMOD.models.out"))){
     stop("Invalid modeling.output argument !\nIt must be a 'BIOMOD.models.out' object")

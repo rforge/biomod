@@ -1,5 +1,6 @@
 'BIOMOD_EnsembleModeling' <- function( modeling.output,
                                        chosen.models = 'all',
+                                       em.by = 'PA_dataset+repet',
                                        eval.metric = 'all',
                                        eval.metric.quality.threshold = NULL,
                                        prob.mean = TRUE,
@@ -23,7 +24,8 @@
                                                prob.median,
                                                committee.averaging,
                                                prob.mean.weight,
-                                               prob.mean.weight.decay )
+                                               prob.mean.weight.decay,
+                                               em.by)
   
   modeling.output <- args$modeling.output
   chosen.models <- args$chosen.models
@@ -37,6 +39,7 @@
   committee.averaging <- args$committee.averaging
   prob.mean.weight <- args$prob.mean.weight
   prob.mean.weight.decay  <- args$prob.mean.weight.decay
+  em.by <- args$em.by
   
   rm('args')
   
@@ -53,19 +56,81 @@
             em.ci.alpha = prob.ci.alpha)
   
   EM@models.out.obj@link <- paste(modeling.output@sp.name,"/",modeling.output@sp.name,".models.out",sep="")
+  
   # 2. doing Ensemble modeling
+  
+  ## 2.1 make a list of models names that will be combined together according to by argument.
+  
+  # =-=-=-=-=-=-=-=- em.models.assembling function -=-=-=-=-=-=-=- #
+  em.models.assembling <- function(chosen.models, em.by){
+    assembl.list = list()
+    
+    if(em.by == 'PA_dataset'){
+      for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
+        assembl.list[[paste(dat,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",dat,"_",sep=""), chosen.models)]
+      }
+      return(assembl.list)
+    }
+    
+    if(em.by == 'algo'){
+      for(algo in .extractModelNamesInfo(chosen.models, info='models')){
+        assembl.list[[paste(algo,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",algo,sep=""), chosen.models)]
+      }
+      return(assembl.list)
+    }
+    
+    if(em.by == 'all'){
+      assembl.list[["TotalConsensus"]] <- chosen.models
+      return(assembl.list)
+    }
+    
+    if(em.by == 'PA_dataset+repet'){
+      for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
+        for(repet in .extractModelNamesInfo(chosen.models, info='run.eval')){
+          mod.tmp <- intersect(x=grep(paste("_",dat,"_",sep=""), chosen.models), 
+                               y=grep(paste("_",repet,"_",sep=""), chosen.models))
+          if(length(mod.tmp)){
+            assembl.list[[paste(dat,"_",repet,'_AllAlgos', sep="")]] <- chosen.models[mod.tmp]
+          }
+        }
+      }
+      return(assembl.list)      
+    }
+
+    if(em.by == 'PA_dataset+algo'){
+      for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
+        for(algo in .extractModelNamesInfo(chosen.models, info='models')){
+          mod.tmp <- intersect(x=grep(paste("_",dat,"_",sep=""), chosen.models), 
+                               y=grep(paste("_",algo,sep=""), chosen.models))
+          if(length(mod.tmp)){
+            assembl.list[[paste(dat,"_AllRepet_",algo, sep="")]] <- chosen.models[mod.tmp]
+          }
+        }
+      }
+      return(assembl.list)      
+    }
+  
+  }
+  # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  
+  em.mod.assemb <- em.models.assembling(chosen.models, em.by)
+  
+  
   
   ## At this step we made one meta model for each dataset
   ## We have to think about it..
   
-  for(dat in .extractModelNamesInfo(modeling.output@models.computed, info='data.set')){
-    cat("\n   >", dat)
-    models.kept <- chosen.models[grep(paste("_",dat,"_",sep=""), chosen.models)]
+#   for(dat in .extractModelNamesInfo(modeling.output@models.computed, info='data.set')){
+#     cat("\n   >", dat)
+
+  for(assemb in names(em.mod.assemb) ){
+    cat("\n\n  >", assemb, "ensemble modeling")
+    models.kept <- em.mod.assemb[[assemb]]
     
     for(eval.m in eval.metric){
       
       if( eval.m != 'none'){
-        cat("\n\n   >", eval.m)
+        cat("\n   >", eval.m)
         models.kept.scores <- unlist(lapply(models.kept, function(x){
           mod <- tail(unlist(strsplit(x,"_")), 3)[3]
           run <- tail(unlist(strsplit(x,"_")), 3)[2]
@@ -87,7 +152,31 @@
         if(modeling.output@has.evaluation.data){
           prediction.kept <- as.data.frame(getModelsPredictionEval(modeling.output, as.data.frame = TRUE)[,models.kept])
         } else{
-          prediction.kept <- as.data.frame(getModelsPrediction(modeling.output, as.data.frame = TRUE)[,models.kept])
+          ## load prediction on each PA dataset
+          if(em.by %in% c("PA_dataset",'PA_dataset+algo','PA_dataset+repet')){
+            prediction.kept <- as.data.frame(getModelsPrediction(modeling.output, as.data.frame = TRUE)[,models.kept])
+          } else{ ## redo prediction on full data.set
+            cat("\n   ! Models projection for whole zonation required...")
+            prediction.kept <- BIOMOD_Projection(modeling.output = modeling.output,
+                                          new.env = getModelsInputData(modeling.output)@data.env.var,
+                                          proj.name = 'Tmp',
+                                          xy.new.env = myRespCoord,
+                                          selected.models = models.kept,
+                                          compress = 'xz',
+                                          clamping.mask = F,
+                                          do.stack=T, silent = T)@proj@val
+            
+            # transform array into data.frame
+            prediction.kept <- as.data.frame(prediction.kept)
+            names(prediction.kept) <- unlist(lapply(strsplit(names(prediction.kept),".", fixed=TRUE), 
+                                                  function(x){
+                                                   return(paste(modeling.output@sp.name, x[3], x[2], x[1],sep="_"))
+                                                   }))
+            # keep only wanted columns
+            prediction.kept <- prediction.kept[,models.kept]
+            cat("\n")
+          }
+
         }
       } else {
         cat("\n   ! No models kept due to treshold filtering... Ensemble Modeling was skip!")
@@ -145,8 +234,7 @@
         em.ca <- round(apply(as.data.frame(BinaryTransformation(prediction.kept,models.kept.tresh)), 1, mean)*1000)
         ### keep bin thresholds
         EM@em.bin.tresh <- c(EM@em.bin.tresh, 
-                             eval(parse( text = paste("list('", modeling.output@sp.name, "_", dat,
-                                                      "_AllRun_EM.", eval.m,"' = models.kept.tresh)", sep=""))) )
+                             eval(parse( text = paste("list('", modeling.output@sp.name, "_", assemb, "_EM.", eval.m,"' = models.kept.tresh)", sep=""))) )
       }
       
       # 6. weighted mean of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -187,8 +275,7 @@
       	em.pmw <- round(as.vector(as.matrix(prediction.kept) %*% models.kept.scores))
         
         ### keep the weighted scores of models
-        EM@em.weight <- c(EM@em.weight, eval(parse( text = paste("list('", modeling.output@sp.name, "_", dat,
-                                                      "_AllRun_EM.", eval.m,"' = models.kept.scores)", sep=""))))
+        EM@em.weight <- c(EM@em.weight, eval(parse( text = paste("list('", modeling.output@sp.name, "_", assemb, "_EM.", eval.m,"' = models.kept.scores)", sep=""))))
       }
       
       # 7. Assembling all computed models -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -204,14 +291,32 @@
                                       if(modeling.output@has.evaluation.data){
                                         obs <-  as.vector(getModelsInputData(modeling.output)@eval.data.species)
                                       } else{
-                                        if( dat == 'AllData'){
-                                          obs <-  as.vector(getModelsInputData(modeling.output)@data.species)
-                                        } else{
-                                          obs <- as.vector(getModelsInputData(modeling.output)@data.species)
-                                          obs <- obs[getModelsInputData(modeling.output)@PA[,dat]]
-                                          obs[is.na(obs)] <- 0
+                                        ##### !!!!!! TO DO -> select appropriate part of dataset according to em.by
+                                        if(em.by %in% c("PA_dataset",'PA_dataset+algo','PA_dataset+repet')){
+                                          if(head(unlist(strsplit(assemb,"_")),1) == 'AllData'){
+                                            obs <-  as.vector(getModelsInputData(modeling.output)@data.species)
+                                            obs[is.na(obs)] <- 0
+                                          } else{
+                                            obs <- as.vector(getModelsInputData(modeling.output)@data.species)
+                                            obs <- obs[getModelsInputData(modeling.output)@PA[, paste(head(unlist(strsplit(assemb,"_")),1))]]
+                                            obs[is.na(obs)] <- 0                                              
+                                          }                                
                                         }
+                                        
+                                        if(em.by %in% c("algo","all") ){
+                                          ## we need to take all data even if it is much better to have 
+                                          obs <-  as.vector(getModelsInputData(modeling.output)@data.species)
+                                          obs[is.na(obs)] <- 0
+                                        }                                        
+
                                       }
+#                                         ############################
+#                                         cat("\n***")
+#                                         return(list(pred = as.vector(x), obs = obs))
+#                                         cat("\n***")
+#                                     })
+#       return(em.cross.validation)
+#                                         ############################
                                       em.cr.val <- sapply(unlist(dimnames(getModelsEvaluations(modeling.output))[1]),
                                                       Find.Optim.Stat,
                                                       Fit = as.vector(x),
@@ -228,9 +333,9 @@
       em.cross.validation <- abind(em.cross.validation, along=3)
       
                                       
-      EM@em.computed <- c(EM@em.computed, paste(modeling.output@sp.name, "_", dat, "_AllRun_EM.", eval.m,sep=""))
+      EM@em.computed <- c(EM@em.computed, paste(modeling.output@sp.name, "_", assemb, "_EM.", eval.m,sep=""))
       
-      eval(parse(text = paste('EM@em.res$',modeling.output@sp.name, "_", dat, "_AllRun_EM.", eval.m, " <- list(em.models.kept = models.kept, em.algo = colnames(em.pred), em.pred = em.pred, em.cross.validation = em.cross.validation )", sep="")))
+      eval(parse(text = paste('EM@em.res$',modeling.output@sp.name, "_", assemb, "_EM.", eval.m, " <- list(em.models.kept = models.kept, em.algo = colnames(em.pred), em.pred = em.pred, em.cross.validation = em.cross.validation )", sep="")))
       
       rm(list=c('em.pred', 'em.cross.validation'))
     } 
@@ -242,18 +347,19 @@
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-.BIOMOD_EnsembleModeling.check.args <- function( modeling.output,
-                                                 chosen.models,
-                                                 eval.metric,
-                                                 eval.metric.quality.threshold,
-                                                 prob.mean,
-                                                 prob.cv,
-                                                 prob.ci,
-                                                 prob.ci.alpha,
-                                                 prob.median,
-                                                 committee.averaging,
-                                                 prob.mean.weight,
-                                                 prob.mean.weight.decay ){
+.BIOMOD_EnsembleModeling.check.args <- function(  modeling.output,
+                                                   chosen.models,
+                                                   eval.metric,
+                                                   eval.metric.quality.threshold,
+                                                   prob.mean,
+                                                   prob.cv,
+                                                   prob.ci,
+                                                   prob.ci.alpha,
+                                                   prob.median,
+                                                   committee.averaging,
+                                                   prob.mean.weight,
+                                                   prob.mean.weight.decay,
+                                                   em.by ){
   # 1. modeling.output checking
   if(!(inherits(modeling.output, "BIOMOD.models.out"))){
     stop("Invalid modeling.output argument !\nIt must be a 'BIOMOD.models.out' object")
@@ -344,6 +450,12 @@
     eval.metric <- 'none'
   }
   
+  # 8. by arg checking
+  available.em.by <- c('PA_dataset', 'algo', 'all', 'PA_dataset+repet', 'PA_dataset+algo')
+  if(!(em.by %in% available.em.by) ){
+    stop("Invalid 'em.by' argument given. It must be one of : 'PA_dataset', 'algo', 'all', 'PA_dataset+repet' or 'PA_dataset+algo'")
+  }
+  
   return( list( modeling.output = modeling.output,
                 chosen.models = chosen.models,
                 eval.metric = eval.metric,
@@ -355,7 +467,8 @@
                 prob.median = prob.median,
                 committee.averaging = committee.averaging,
                 prob.mean.weight = prob.mean.weight,
-                prob.mean.weight.decay  = prob.mean.weight.decay ))
+                prob.mean.weight.decay  = prob.mean.weight.decay,
+                em.by = em.by))
   
 }
 

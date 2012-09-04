@@ -9,6 +9,7 @@
 \usage{
 BIOMOD_EnsembleModeling( modeling.output,
                          chosen.models = 'all',
+                         em.by = 'PA_dataset+repet',
                          eval.metric = 'all',
                          eval.metric.quality.threshold = NULL,
                          prob.mean = TRUE,
@@ -24,6 +25,7 @@ BIOMOD_EnsembleModeling( modeling.output,
 \arguments{
   \item{modeling.output}{a \code{"\link[=BIOMOD.models.out-class]{BIOMOD.models.out}"} returned by \code{\link[biomod2]{BIOMOD_Modeling}}}
   \item{chosen.models}{a character vector (either 'all' or a sub-selection of model names) that defines the models kept for building the ensemble models (might be useful for removing some models)}
+  \item{em.by}{Character. Flag defining the way to models will be combined to build ensemble models. Availables values are \code{'PA_dataset+repet'} (default), \code{'PA_dataset+algo'}, \code{'PA_dataset'}, \code{'algo'} and  \code{'all'}}
   \item{eval.metric}{vector of names of evaluation metric. If 'all', the same evaluation metrics than those of \code{modeling.output} will be automatically selected}
   \item{eval.metric.quality.threshold}{If not \code{NULL}, the minimum scores under which models will be excluded of ensemble-models building.}
   \item{prob.mean}{Logical. Estimate the mean probabilities across predictions }
@@ -41,6 +43,23 @@ BIOMOD_EnsembleModeling( modeling.output,
     \item{\bold{Models sub-selection (\code{chosen.models})}}{
 
       Useful to exclude some models that have been selected in the previous steps (\code{modeling.output}). This vector of model names can be access applying \code{getModelsBuiltModels} to your \code{modeling.output} data. It makes easier the models selection. The default value (i.e. \sQuote{all}) will kept all available models.}
+    
+    \item{\bold{Models assembly rules (\code{em.by})}}{
+    
+    Please refer to \code{"\link[=../inst/doc/EnsembleModelingAssembly.pdf]{EnsembleModelingAssembly}"} vignette that is dedicated to this parameter.
+    
+      5 differents ways to combine models can be considered. You can make ensemble models considering :
+      \itemize{
+        \item{ Dataset used for models building (Pseudo Absences dataset and repetitions done)}{: \code{'PA_dataset+repet'}}
+        \item{ Dataset used and statistical models }{: \code{'PA_dataset+algo'}}
+        \item{ Pseudo-absences selection dataset }{: \code{'PA_dataset'}}
+        \item{ Statistical models }{: \code{'algo'}}
+        \item{ A total consensus model  }{: \code{'all'}}
+      }
+      
+      The value choosed for this parameter will control the number of ensemble models built.
+      If you didn't give some evaluation data at \code{\link[biomod2]{BIOMOD_FormatingData}} step, some ensemble models evaluation may be a bit unfair because the data that will be used for evaluating ensemble models could differ from those used for evaluate \code{\link[biomod2]{BIOMOD_Modeling}} models (in particular, some data used for 'basal models' calibration can be reused for ensemble models evaluation). You have to keep it in mind ! (\code{"\link[=../inst/doc/EnsembleModelingAssembly.pdf]{EnsembleModelingAssembly}"} vignette for extra details)
+    }
     
     \item{\bold{Evaluation metrics}}{
       \itemize{
@@ -184,6 +203,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
 # 4. Doing Ensemble Modelling
 myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
                            chosen.models = 'all',
+                           em.by = 'algo',
                            eval.metric = c('TSS'),
                            eval.metric.quality.threshold = c(0.7),
                            prob.mean = TRUE,

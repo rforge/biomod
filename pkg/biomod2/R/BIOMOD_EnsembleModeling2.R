@@ -153,7 +153,7 @@
           prediction.kept <- as.data.frame(getModelsPredictionEval(modeling.output, as.data.frame = TRUE)[,models.kept])
         } else{
           ## load prediction on each PA dataset
-          if(em.by %in% c('PA_dataset')){
+          if(em.by %in% c("PA_dataset",'PA_dataset+algo','PA_dataset+repet')){
             prediction.kept <- as.data.frame(getModelsPrediction(modeling.output, as.data.frame = TRUE)[,models.kept])
           } else{ ## redo prediction on full data.set
             cat("\n   ! Models projection for whole zonation required...")

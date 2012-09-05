@@ -48,7 +48,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
                            quantile, probs = c(0 + Quant, 1 - Quant), na.rm = TRUE))
       } else { if(inherits(Explanatory, 'Raster')){
         maskTmp <- raster::subset(Explanatory,1)
-        maskTmp <- reclass(maskTmp, c(-Inf,Inf,NA))
+        maskTmp <- raster::reclass(maskTmp, c(-Inf,Inf,NA))
         maskTmp[cellFromXY(maskTmp, coordinates(Response)[occ.pts,])] <- 1
         extrem.cond <- quantile(raster::mask(Explanatory, maskTmp), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
       } else { if(inherits(Explanatory, 'SpatialPoints')){
@@ -160,7 +160,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
   }
   
   if(inherits(NewData, "Raster")){
-    out <- reclass(raster::subset(NewData,1,drop=TRUE), c(-Inf, Inf, 1))
+    out <- raster::reclass(raster::subset(NewData,1,drop=TRUE), c(-Inf, Inf, 1))
     for(j in 1:nlayers(NewData)){
       out <- out * ( raster::subset(NewData,j,drop=TRUE) >= ExtremCond[j,1] ) * ( raster::subset(NewData,j,drop=TRUE) <= ExtremCond[j,2] )
     }

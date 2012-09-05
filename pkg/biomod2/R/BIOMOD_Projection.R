@@ -118,7 +118,7 @@
 #   if(!is.null(clamping.level)){
 #     cat("\n   > clamping projections...")
 #     if(inherits(proj_out@proj@val, 'Raster')){
-#       proj_out@proj@val <- raster::stack(reclass(proj_out@proj@val * reclass( (- 1 * (clampMask)), c(-0.5,0.5,1)), c(-Inf,0,clamped.value) ))
+#       proj_out@proj@val <- raster::stack(raster::reclass(proj_out@proj@val * raster::reclass( (- 1 * (clampMask)), c(-0.5,0.5,1)), c(-Inf,0,clamped.value) ))
 #     } else{
 #       proj_out@proj@val[which(clampMask > 0),,,] <- clamped.value
 #     }

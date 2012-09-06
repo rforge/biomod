@@ -12,10 +12,6 @@ This function replace default html index file by a custom one if defined
 CustomIndexMaker()
 }
 
-\arguments{
-	
-}
-
 \details{
 ....
   

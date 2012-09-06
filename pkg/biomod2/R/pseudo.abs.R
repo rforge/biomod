@@ -211,6 +211,7 @@ setMethod('random.pseudo.abs.selection', signature(env="SpatialPointsDataFrame")
 
 setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
           function( sp, env, nb.points, nb.repet ){
+            require('raster',quietly=T)
             cat("\n   > random pseudo absences selection")
 
             # 1. Check if NA are present in sp or not to determine which dataset to use

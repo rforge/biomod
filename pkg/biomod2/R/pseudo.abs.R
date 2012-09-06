@@ -241,9 +241,7 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
               cat("\n   > Pseudo absences are selected in explanatory variables")
               # create a mask
               mask <- raster:::subset(env, 1, drop=TRUE)
-              cat("\n*** before reclass")
               mask <- raster:::reclass(mask, c(-Inf,Inf,-1))
-              cat("\n*** after reclass")
               
               # remove presences and true absences from our raster
               mask[cellFromXY(mask,coordinates(sp))] <- NA

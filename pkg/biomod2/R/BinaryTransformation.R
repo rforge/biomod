@@ -31,18 +31,18 @@ setMethod('BinaryTransformation', signature(data='numeric'),
 setMethod('BinaryTransformation', signature(data='RasterLayer'), 
   function(data, threshold)
   {
-    return(raster::reclass(data,c(-Inf,threshold,0, threshold,+Inf,1)))
+    return(raster:::reclass(data,c(-Inf,threshold,0, threshold,+Inf,1)))
   })
 
 setMethod('BinaryTransformation', signature(data='RasterStack'), 
   function(data, threshold)
   {
     if(length(threshold) == 1){
-      threshold <- rep(threshold, raster::nlayers(data))
+      threshold <- rep(threshold, raster:::nlayers(data))
     }
-    StkTmp <- raster::stack()
-    for(i in 1:raster::nlayers(data)){
-      StkTmp <- raster::addLayer(StkTmp, BinaryTransformation(raster::subset(data,i,drop=TRUE), threshold[i]))
+    StkTmp <- raster:::stack()
+    for(i in 1:raster:::nlayers(data)){
+      StkTmp <- raster:::addLayer(StkTmp, BinaryTransformation(raster:::subset(data,i,drop=TRUE), threshold[i]))
     }
     return(StkTmp)
   })
@@ -50,6 +50,6 @@ setMethod('BinaryTransformation', signature(data='RasterStack'),
 setMethod('BinaryTransformation', signature(data='RasterBrick'), 
   function(data, threshold)
   {
-    data <- raster::stack(data)
+    data <- raster:::stack(data)
     return(BinaryTransformation(data, threshold))
   })

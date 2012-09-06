@@ -512,7 +512,7 @@ setMethod('.Projection.do.proj', signature(env='RasterStack'),
 #       sre.out <- eval(parse(text=paste("sre(Data_",model.name,"$Response, Data_",
 #                                    model.name,"$Explanatory, env, Data_",model.name,
 #                                    "$Quant)*1000", sep="")))
-      sre.out <- raster::subset(sre(data.sre$Response, data.sre$Explanatory, env, data.sre$Quant), 1, drop=TRUE) * 1000
+      sre.out <- raster:::subset(sre(data.sre$Response, data.sre$Explanatory, env, data.sre$Quant), 1, drop=TRUE) * 1000
       
       return(sre.out)
     }

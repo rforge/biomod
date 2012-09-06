@@ -160,7 +160,7 @@
             prediction.kept <- BIOMOD_Projection(modeling.output = modeling.output,
                                           new.env = getModelsInputData(modeling.output)@data.env.var,
                                           proj.name = 'Tmp',
-                                          xy.new.env = myRespCoord,
+                                          xy.new.env = getModelsInputData(modeling.output)@coord,
                                           selected.models = models.kept,
                                           compress = 'xz',
                                           clamping.mask = F,

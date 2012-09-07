@@ -100,7 +100,7 @@
   
   
   # 2. Doing projections
-  proj_out@proj@val <- Projection_v2(models.name = selected.models,
+  proj_out@proj@val <- Projection(models.name = selected.models,
                                      modeling.work.dir = getwd(),
                                      new.env.data  = new.env,
                                      xy = xy.new.env,

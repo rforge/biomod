@@ -30,7 +30,7 @@ Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Pecision = 5, Fixed.thresh = NULL
       sensibility <- (true.pos * 100)/sum(misc[,'1'])
     } else{
       best.stat <- .somers2(Fit, Obs)["C"]
-      Cut <- CutOff.Optimised(Obs, Fit)
+      Cut <- .CutOff.Optimised(Obs, Fit)
       cutoff <- Cut[1]
       sensibility <- Cut[2]
       specificity <- Cut[3]

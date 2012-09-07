@@ -1,12 +1,12 @@
-setGeneric( "Projection_v2", 
+setGeneric( "Projection", 
             def = function(models.name,
                            modeling.work.dir = getwd(),
                            new.env.data ,
                            ...){
-                            standardGeneric( "Projection_v2" )
+                            standardGeneric( "Projection" )
                             } )
 
-setMethod( 'Projection_v2', signature(new.env.data = 'data.frame'),
+setMethod( 'Projection', signature(new.env.data = 'data.frame'),
   function(models.name,
            modeling.work.dir = getwd(),
            new.env.data ,
@@ -108,7 +108,7 @@ setMethod( 'Projection_v2', signature(new.env.data = 'data.frame'),
   })
 
 
-setMethod( 'Projection_v2', signature(new.env.data = 'RasterStack'),
+setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
   function(models.name,
            modeling.work.dir = getwd(),
            new.env.data ,

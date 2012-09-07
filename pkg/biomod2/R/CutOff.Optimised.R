@@ -1,4 +1,4 @@
-`CutOff.Optimised` <-
+`.CutOff.Optimised` <-
 function(Obs, Fit){
     
     SumObs <- sum(Obs)

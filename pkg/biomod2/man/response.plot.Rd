@@ -44,55 +44,127 @@ predicted responses from species distribution models. Ecological Modelling 186, 
 
 \seealso{ \code{\link{BIOMOD_Modeling}}  }
 \examples{
-\dontrun{
-data(Sp.Env)
+# 0. Load data & Selecting Data
 
-#This command is necessary for the run of BIOMOD as a new dataframe is produced for the Models function
-Initial.State(Response=Sp.Env[,12:13], Explanatory=Sp.Env[,4:10], 
-IndependentResponse=NULL, IndependentExplanatory=NULL)
+# species occurances
+species_occ <- read.csv(system.file("external/species/species_occ.csv",package="biomod2"))
 
-#Let's run only a few models : GLM, FDA and RF. This will take a few moments to run.
-#Do note that the response.plot() function works for all the models available. Feel free to switch them on or off.
-Models(GLM = TRUE, TypeGLM = "quad", Test = "AIC", FDA = TRUE, CV.tree = 50, RF = TRUE, CV.ann = 2, 
-   NbRunEval = 0, DataSplit = 80, Roc=TRUE, Optimized.Threshold.Roc=TRUE, Kappa=TRUE, TSS=TRUE, VarImport=5,
-   NbRepPA=0, strategy="sre", coor=NULL, distance=0, nb.absences=1000)
+# we consider only presences of MyocastorCoypus species
+myRespName <- 'MyocastorCoypus'
+myRespCoord <- species_occ[which(!is.na(species_occ[,myRespName])),c('x','y')]
+myResp <- as.numeric(na.omit(species_occ[,myRespName]))
 
+# Environemental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
+myExpl = raster::stack(system.file("external/climat/current/bio3.grd",package="biomod2"),
+                       system.file("external/climat/current/bio4.grd",package="biomod2"),
+                       system.file("external/climat/current/bio7.grd",package="biomod2"),
+                       system.file("external/climat/current/bio11.grd",package="biomod2"),
+                       system.file("external/climat/current/bio12.grd",package="biomod2"))
+
+# 1. Formating Data
+myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
+                                     expl.var = myExpl,
+                                     resp.xy = myRespCoord,
+                                     resp.name = myRespName,
+                                     PA.nb.rep = 2,
+                                     PA.nb.absences = 200,
+                                     PA.strategy = 'random')
+                                                                     
+# 2. Defining Models Options using default options.
+myBiomodOption <- BIOMOD_ModelingOptions()
+
+# 3. Doing Modelisation
+
+myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData, 
+                                       models = c('SRE','CTA','RF'), 
+                                       models.options = myBiomodOption, 
+                                       NbRunEval=1, 
+                                       DataSplit=80, 
+                                       Yweights=NULL, 
+                                       VarImport=3, 
+                                       models.eval.meth = c('TSS','ROC'),
+                                       SaveObj = TRUE )
+
+
+# 0. Load data & Selecting Data
+
+# species occurances
+species_occ <- read.csv(system.file("external/species/species_occ.csv",package="biomod2"))
+
+# we consider only presences of MyocastorCoypus species
+myRespName <- 'MyocastorCoypus'
+myRespCoord <- species_occ[which(!is.na(species_occ[,myRespName])),c('x','y')]
+myResp <- as.numeric(na.omit(species_occ[,myRespName]))
+
+# Environemental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
+myExpl = raster::stack(system.file("external/climat/current/bio3.grd",package="biomod2"),
+                       system.file("external/climat/current/bio4.grd",package="biomod2"),
+                       system.file("external/climat/current/bio7.grd",package="biomod2"),
+                       system.file("external/climat/current/bio11.grd",package="biomod2"),
+                       system.file("external/climat/current/bio12.grd",package="biomod2"))
+
+# 1. Formating Data
+myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
+                                     expl.var = myExpl,
+                                     resp.xy = myRespCoord,
+                                     resp.name = myRespName,
+                                     PA.nb.rep = 2,
+                                     PA.nb.absences = 200,
+                                     PA.strategy = 'random')
+                                                                     
+# 2. Defining Models Options using default options.
+myBiomodOption <- BIOMOD_ModelingOptions()
+
+# 3. Doing Modelisation
+
+myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData, 
+                                       models = c('GLM','RF','FDA'), 
+                                       models.options = myBiomodOption, 
+                                       NbRunEval=1, 
+                                       DataSplit=80, 
+                                       Yweights=NULL, 
+                                       VarImport=3, 
+                                       models.eval.meth = c('TSS','ROC'),
+                                       SaveObj = TRUE )
+
+
+# 4. Plot response curves
 
 #The response plots for the first species modelled 
-load("models/Sp290_GLM_full")
-response.plot(Sp290_GLM_full, Sp.Env[,4:10], plot=TRUE)
+load("MyocastorCoypus/models/MyocastorCoypus_PA1_Full_GLM")
+response.plot(MyocastorCoypus_PA1_Full_GLM, getModelsInputData(myBiomomodModelOut, 'expl.var'), plot=TRUE)
 
-load("models/Sp290_FDA_full")
-response.plot(Sp290_FDA_full, Sp.Env[,4:10], plot=TRUE)
+load("MyocastorCoypus/models/MyocastorCoypus_PA1_Full_RF")
+response.plot(MyocastorCoypus_PA1_Full_RF, getModelsInputData(myBiomomodModelOut, 'expl.var'), plot=TRUE)
 
-load("models/Sp290_RF_full")
-response.plot(Sp290_RF_full, Sp.Env[,4:10], plot=TRUE)
+load("MyocastorCoypus/models/MyocastorCoypus_PA1_Full_FDA")
+response.plot(MyocastorCoypus_PA1_Full_FDA, getModelsInputData(myBiomomodModelOut, 'expl.var'), plot=TRUE)
 
 ### Save the object
-GLM.RC <- response.plot(Sp290_GLM_full, Sp.Env[,4:10], plot=F)
-FDA.RC <- response.plot(Sp290_FDA_full, Sp.Env[,4:10], plot=F)
-RF.RC <- response.plot(Sp290_RF_full, Sp.Env[,4:10], plot=F)
+GLM.RC <- response.plot(MyocastorCoypus_PA1_Full_GLM, getModelsInputData(myBiomomodModelOut, 'expl.var'), plot=FALSE)
+RF.RC <- response.plot(MyocastorCoypus_PA1_Full_RF, getModelsInputData(myBiomomodModelOut, 'expl.var'), plot=FALSE)
+FDA.RC <- response.plot(MyocastorCoypus_PA1_Full_FDA, getModelsInputData(myBiomomodModelOut, 'expl.var'), plot=FALSE)
 
 ### plot the response for GLM for the first variable (the 1 for the third dimension)
 plot(GLM.RC[,1,1], GLM.RC[,2,1],  type="l", ylim=c(0,1), xlab=colnames(GLM.RC[,1,])[1], ylab="Probability of occurrence")
 ### then add the lines for the two other models with different colors
 lines(FDA.RC[,1,1], FDA.RC[,2,1], col='blue')
 lines(RF.RC[,1,1], RF.RC[,2,1], col='red')
-library(plots)
-smartlegend(x="left",y="top", inset = 0, c("GLM", "FDA", "RF"), fill = c("black", "blue", "red"))
+# library(plots)
+# smartlegend(x="left",y="top", inset = 0, c("GLM", "FDA", "RF"), fill = c("black", "blue", "red"))
 
 
 #### the same but with all variables plotted in the same plot window. 
-library(gplots)
-par(mfrow=c(3,3))
-for(i in 1:ncol(Sp.Env[,4:10])){
-	
-	plot(GLM.RC[,1,i], GLM.RC[,2,i],  type="l", ylim=c(0,1), xlab=colnames(GLM.RC[,1,])[i], ylab="Probability of occurrence")
-	lines(FDA.RC[,1,i], FDA.RC[,2,i], col='blue')
-	lines(RF.RC[,1,i], RF.RC[,2,i], col='red')
-	smartlegend(x="left",y="top", inset = 0, c("GLM", "FDA", "RF"), fill = c("black", "blue", "red"),cex=0.6)
-	}
-}
+# library(gplots)
+# par(mfrow=c(3,3))
+# for(i in 1:ncol(getModelsInputData(myBiomomodModelOut, 'expl.var'))){
+#   
+#   plot(GLM.RC[,1,i], GLM.RC[,2,i],  type="l", ylim=c(0,1), xlab=colnames(GLM.RC[,1,])[i], ylab="Probability of occurrence")
+# 	lines(FDA.RC[,1,i], FDA.RC[,2,i], col='blue')
+# 	lines(RF.RC[,1,i], RF.RC[,2,i], col='red')
+# 	smartlegend(x="left",y="top", inset = 0, c("GLM", "FDA", "RF"), fill = c("black", "blue", "red"),cex=0.6)
+# 	}
+
 }
 
 \keyword{ dplot }

@@ -64,7 +64,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             if(substr(class(model)[1],1,4)=="nnet" ) Xf <- as.numeric(predict(model, as.data.frame(Xp1), type="raw"))
             if(class(model)[1]=="mars") Xf <- as.numeric(predict(model, as.data.frame(Xp1)))
             if(class(model)[1]=="fda") Xf <- predict(model, as.data.frame(Xp1), type="post")[,2]
-            if(class(model)[1]=="randomForest") Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
+            if("randomForest" %in% class(model)) Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
       
       
             #rescaling preds (not possible to use rescaling_GLM -> no info on calib data)

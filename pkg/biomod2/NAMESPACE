@@ -18,9 +18,7 @@ exportMethods(
     "getModelsVarImport",
     ".Models.prepare.data",
     ".Projection.do.proj",
-    "random.pseudo.abs.selection",
     ".transform.outputs",
     ".Models.prepare.data"
 )
 
-import(raster)

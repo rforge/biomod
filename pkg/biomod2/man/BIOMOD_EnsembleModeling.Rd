@@ -46,7 +46,7 @@ BIOMOD_EnsembleModeling( modeling.output,
     
     \item{\bold{Models assembly rules (\code{em.by})}}{
     
-    Please refer to \code{"\link[=../doc/EnsembleModelingAssembly.pdf]{EnsembleModelingAssembly}"} vignette that is dedicated to this parameter.
+    Please refer to \href{../doc/EnsembleModelingAssembly.pdf}{EnsembleModelingAssembly} vignette that is dedicated to this parameter.
     
       5 differents ways to combine models can be considered. You can make ensemble models considering :
       \itemize{
@@ -58,7 +58,7 @@ BIOMOD_EnsembleModeling( modeling.output,
       }
       
       The value choosed for this parameter will control the number of ensemble models built.
-      If you didn't give some evaluation data at \code{\link[biomod2]{BIOMOD_FormatingData}} step, some ensemble models evaluation may be a bit unfair because the data that will be used for evaluating ensemble models could differ from those used for evaluate \code{\link[biomod2]{BIOMOD_Modeling}} models (in particular, some data used for 'basal models' calibration can be reused for ensemble models evaluation). You have to keep it in mind ! (\code{"\link[=../doc/EnsembleModelingAssembly.pdf]{EnsembleModelingAssembly}"} vignette for extra details)
+      If you didn't give some evaluation data at \code{\link[biomod2]{BIOMOD_FormatingData}} step, some ensemble models evaluation may be a bit unfair because the data that will be used for evaluating ensemble models could differ from those used for evaluate \code{\link[biomod2]{BIOMOD_Modeling}} models (in particular, some data used for 'basal models' calibration can be reused for ensemble models evaluation). You have to keep it in mind ! (\href{../doc/EnsembleModelingAssembly.pdf}{EnsembleModelingAssembly} vignette for extra details)
     }
     
     \item{\bold{Evaluation metrics}}{

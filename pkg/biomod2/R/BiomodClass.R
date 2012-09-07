@@ -1013,17 +1013,17 @@ setGeneric("getEMeval",
            })
 
 setMethod("getEMeval", "BIOMOD.EnsembleModeling.out",
-          function(obj, model=NULL, meth=NULL){
+          function(obj, model=NULL, met=NULL){
             if(is.null(model)){
               model <- obj@em.computed
             }
             if(is.character(model) | is.numeric(model)){
               lout <- list()
               for(mod in model){
-                if(is.null(meth)){
+                if(is.null(met)){
                   lout[[mod]] <- obj@em.res[[mod]]$em.cross.validation
                 } else if(!is.null(meth)){
-                  lout[[mod]] <- (obj@em.res[[mod]]$em.cross.validation[meth,,])
+                  lout[[mod]] <- (obj@em.res[[mod]]$em.cross.validation[met,,])
                 } 
               }
               return(lout)
@@ -1035,7 +1035,7 @@ setMethod("getEMeval", "BIOMOD.EnsembleModeling.out",
           )
 
 setGeneric("getEMbuiltModels",
-           function(obj, ...){
+           function(obj){
              standardGeneric("getEMbuiltModels")
            })
 

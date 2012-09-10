@@ -28,7 +28,7 @@
 \alias{.Models.prepare.data,BIOMOD.formated.data-method}
 \alias{.Models.prepare.data,BIOMOD.formated.data.PA-method}
 
-\title{ BIOMOD.EnsembleModeling.out getters }
+\title{ biomod2 internal functions }
 
 \description{ 
 biomod2 internal functions.

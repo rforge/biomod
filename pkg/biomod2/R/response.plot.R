@@ -1,5 +1,19 @@
 `response.plot` <-
 function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
+  
+  if(inherits(Data,"Raster")){
+    cat("\n   > Extracting raster infos..")
+    DataTmp <- matrix(0,ncol=nlayers(Data), nrow=100)
+    colnames(DataTmp) <- layerNames(Data)
+    maxVal <- maxValue(Data)
+    minVal <- minValue(Data)
+    for(i in 1:ncol(DataTmp)){
+      DataTmp[,i] <- seq(minVal[i],maxVal[i],length.out=100)
+    }
+    Data <- DataTmp
+    rm(list=c('maxVal','minVal','DataTmp'))
+    
+  }
 
     if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
 
@@ -23,7 +37,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
     if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
     if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+    if("randomForest" %in% class(model)) if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
     
     if(plot){
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
@@ -209,7 +223,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         if(substr(class(mod)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
         if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
         if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-        if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+        if("randomForest" %in% class(mod)) if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
         if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
           
         # 2. do projections
@@ -259,7 +273,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
           if(substr(class(mod)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
           if(class(mod)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
           if(class(mod)[1]=="mars" | class(mod)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-          if(class(mod)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+          if("randomForest" %in% class(mod)) if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
           if(inherits(mod, 'gbm')) if(sum(search()=="package:gbm")==0) library(gbm,  verbose=FALSE)
             
           # 2. do projections
@@ -345,14 +359,6 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     }
   }
   
-  ### check of data args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-    
-  ### check show.variables arg -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
-    
-  ### check save.file arg -=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-
-  
   ### defining the number split in each variables range =-=-=-=-=- #
   if(!is.null(add.args$nb.pts)){
     if(do.bivariate){
@@ -366,6 +372,29 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       add.args$nb.pts <- 25^2
     }
   }
+  
+  ### check of data args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+  if(inherits(Data,"Raster")){
+    cat("\n   > Extracting raster infos..")
+    DataTmp <- matrix(0,ncol=nlayers(Data), nrow=add.args$nb.pts)
+    colnames(DataTmp) <- layerNames(Data)
+    maxVal <- maxValue(Data)
+    minVal <- minValue(Data)
+    for(i in 1:ncol(DataTmp)){
+      DataTmp[,i] <- seq(minVal[i],maxVal[i],length.out=add.args$nb.pts)
+    }
+    Data <- DataTmp
+    rm(list=c('maxVal','minVal','DataTmp'))
+    
+  }
+    
+  ### check show.variables arg -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  if( ( length(show.variables) > ncol(Data) ) | (sum(!(show.variables %in% colnames(Data)))) ) stop("columns wanted in show.variables do not match the data \n")
+    
+  ### check save.file arg -=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
+  
+
 
   
   # TO DO 

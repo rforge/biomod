@@ -1,5 +1,19 @@
 `response.plot` <-
 function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
+  
+  if(inherits(Data,"Raster")){
+    cat("\n   > Extracting raster infos..")
+    DataTmp <- matrix(0,ncol=nlayers(Data), nrow=100)
+    colnames(DataTmp) <- layerNames(Data)
+    maxVal <- maxValue(Data)
+    minVal <- minValue(Data)
+    for(i in 1:ncol(DataTmp)){
+      DataTmp[,i] <- seq(minVal[i],maxVal[i],length.out=100)
+    }
+    Data <- DataTmp
+    rm(list=c('maxVal','minVal','DataTmp'))
+    
+  }
 
     if(sum(show.variables > ncol(Data)) > 0) stop("columns wanted in show.variables do not match the data \n")
 
@@ -10,12 +24,12 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     
     
     #consider if factorial variables :     
-    Xp  <- as.data.frame(matrix(NA, nc=NbVar, nr=nrow(Data), dimnames=list(NULL, colnames(Data))))
+    Xp  <- as.data.frame(matrix(NA, ncol=NbVar, nrow=nrow(Data), dimnames=list(NULL, colnames(Data))))
     for(i in 1:NbVar){
         if(is.numeric(Data[,i])) { Xp[,i] <- mean(Data[,i])
         } 
         else { 
-        	Xp[, i] <- as.factor(rep(names(which.max(summary(Data[, i]))), nrow(Data)))
+          Xp[, i] <- as.factor(rep(names(which.max(summary(Data[, i]))), nrow(Data)))
         	levels(Xp[,i]) <- levels(Data[, i])	 	
         }
     }   
@@ -23,7 +37,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     if(substr(class(model)[1],1,4)=="nnet" ) if(sum(search()=="package:nnet")==0) library(nnet)
     if(class(model)[1]=="rpart") if(sum(search()=="package:rpart")==0) library(rpart)
     if(class(model)[1]=="mars" | class(model)[1]=="fda") if(sum(search()=="package:mda")==0) library(mda)
-    if(class(model)[1]=="randomForest") if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
+    if("randomForest" %in% class(model)) if(sum(search()=="package:randomForest")==0) library(randomForest,  verbose=FALSE)
     
     if(plot){
     if(save.file=="pdf") pdf(paste(name, "pdf", sep="."))
@@ -34,7 +48,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     #plotting window
     W.width <- ceiling(sqrt(NbVarShow))
     W.height <- ceiling(NbVarShow/W.width)
-    mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), nc=W.width, byrow=TRUE) 
+    mat <- matrix(c(rep(1,W.width), 1:(W.height*W.width)+1), ncol=W.width, byrow=TRUE) 
     layout(mat, widths=rep(1,W.width), heights=c(0.3,rep(1,W.height)))
     
     par(mar = c(0.1, 0.1, 0.1, 0.1))
@@ -42,6 +56,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
     text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves ", class(model)[1], sep=""),col="#4c57eb")
     par(mar = c(2,2,3.5,1))
+
 	}
     for(i in 1:NbVar){ if(sum(i==show.variables) > 0){
     
@@ -63,7 +78,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             if(substr(class(model)[1],1,4)=="nnet" ) Xf <- as.numeric(predict(model, as.data.frame(Xp1), type="raw"))
             if(class(model)[1]=="mars") Xf <- as.numeric(predict(model, as.data.frame(Xp1)))
             if(class(model)[1]=="fda") Xf <- predict(model, as.data.frame(Xp1), type="post")[,2]
-            if(class(model)[1]=="randomForest") Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
+            if("randomForest" %in% class(model)) Xf <- predict(model, as.data.frame(Xp1), type="prob")[,2]
       
       
             #rescaling preds (not possible to use rescaling_GLM -> no info on calib data)
@@ -91,5 +106,6 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
    # if(class(model)[1]=="rpart") detach(package:rpart)
    # if(class(model)[1]=="mars" | class(model)[1]=="fda") detach(package:mda)
    # if(class(model)[1]=="randomForest") detach(package:randomForest)            
-}    
+} 
+
  

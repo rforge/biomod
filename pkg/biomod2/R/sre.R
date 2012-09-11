@@ -31,9 +31,9 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
     nb.resp <- nlayers(Response)
     resp.names <- layerNames(Response)
     for(j in 1:nb.resp){
-      occ.pts <- raster::subset(Response,j)
+      occ.pts <- raster:::subset(Response,j)
       occ.pts[occ.pts != 1] <- NA
-      extrem.cond <- quantile(raster::mask(Explanatory, occ.pts), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
+      extrem.cond <- quantile(raster:::mask(Explanatory, occ.pts), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
       lout[[j]] <- .sre.projection(NewData, extrem.cond)
     }
   }
@@ -47,10 +47,10 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
         extrem.cond <- t(apply(as.data.frame(Explanatory[occ.pts,]), 2, 
                            quantile, probs = c(0 + Quant, 1 - Quant), na.rm = TRUE))
       } else { if(inherits(Explanatory, 'Raster')){
-        maskTmp <- raster::subset(Explanatory,1)
-        maskTmp <- raster::reclass(maskTmp, c(-Inf,Inf,NA))
+        maskTmp <- raster:::subset(Explanatory,1)
+        maskTmp <- raster:::reclass(maskTmp, c(-Inf,Inf,NA))
         maskTmp[cellFromXY(maskTmp, coordinates(Response)[occ.pts,])] <- 1
-        extrem.cond <- quantile(raster::mask(Explanatory, maskTmp), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
+        extrem.cond <- quantile(raster:::mask(Explanatory, maskTmp), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
       } else { if(inherits(Explanatory, 'SpatialPoints')){
         ## May be good to check corespondances of Response and Explanatory variables
         extrem.cond <- t(apply(as.data.frame(Explanatory[occ.pts,]), 2, 
@@ -135,7 +135,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
       if(sum(!(names.expl.vars %in% layerNames(NewData))) > 0 ){
         stop("Explanatory variables names differs in the 2 dataset given")
       }
-      NewData <- raster::subset(NewData, names.expl.vars)
+      NewData <- raster:::subset(NewData, names.expl.vars)
       if(nlayers(NewData) != nb.expl.vars ){
         stop("Incompatible number of variables in NewData objects")
       }
@@ -160,9 +160,9 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
   }
   
   if(inherits(NewData, "Raster")){
-    out <- raster::reclass(raster::subset(NewData,1,drop=TRUE), c(-Inf, Inf, 1))
+    out <- raster:::reclass(raster:::subset(NewData,1,drop=TRUE), c(-Inf, Inf, 1))
     for(j in 1:nlayers(NewData)){
-      out <- out * ( raster::subset(NewData,j,drop=TRUE) >= ExtremCond[j,1] ) * ( raster::subset(NewData,j,drop=TRUE) <= ExtremCond[j,2] )
+      out <- out * ( raster:::subset(NewData,j,drop=TRUE) >= ExtremCond[j,1] ) * ( raster:::subset(NewData,j,drop=TRUE) <= ExtremCond[j,2] )
     }
   }
 

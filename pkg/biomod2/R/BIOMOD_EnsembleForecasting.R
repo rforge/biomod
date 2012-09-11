@@ -27,7 +27,7 @@
       # 1. Mean of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if (em.algo == 'em.mean'){
         if(projection.output@type == 'RasterStack'){
-          ef.mean <- raster::mean(raster::subset(getProjection(projection.output), 
+          ef.mean <- raster:::mean(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp)))
         } else if(projection.output@type == 'array'){
           ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
@@ -61,7 +61,7 @@
       # 2. CV of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if(em.algo == 'em.cv'){
         if(projection.output@type == 'RasterStack'){
-          ef.cv <- round(raster::cv(raster::subset(getProjection(projection.output), 
+          ef.cv <- round(raster:::cv(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp))), digits=2)
         } else if(projection.output@type == 'array'){
           ef.sd <- apply(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)],1,sd)
@@ -123,7 +123,7 @@
       # 3. Median of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if(em.algo == 'em.median'){
         if(projection.output@type == 'RasterStack'){
-          ef.median <- round(calc(raster::subset(getProjection(projection.output), 
+          ef.median <- round(calc(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp)), median))
         } else if(projection.output@type == 'array'){
         ef.median <- round(apply(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)], 1, median))
@@ -138,13 +138,13 @@
       if(em.algo == 'em.ci.inf'){
         if(projection.output@type == 'RasterStack'){
           if(!exists('ef.mean')){
-            ef.mean <- raster::mean(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)))
+            ef.mean <- raster:::mean(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)))
           }
           if(!exists('ef.sd')){
-            ef.sd <- calc(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
+            ef.sd <- calc(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
           }
           ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
-          ef.ci.inf <- raster::reclass(ef.ci.inf, c(-Inf,0,0))
+          ef.ci.inf <- raster:::reclass(ef.ci.inf, c(-Inf,0,0))
         } else if(projection.output@type == 'array'){
           if(!exists('ef.mean')){
             ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
@@ -195,7 +195,7 @@
             }
             
             ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
-            ef.ci.inf <- raster::reclass(ef.ci.inf, c(-Inf,0,0))
+            ef.ci.inf <- raster:::reclass(ef.ci.inf, c(-Inf,0,0))
           }             
         } else { 
           cat("Unsupported yet !")
@@ -205,13 +205,13 @@
       if(em.algo == 'em.ci.sup'){
         if(projection.output@type == 'RasterStack'){
           if(!exists('ef.mean')){
-            ef.mean <- raster::mean(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)))
+            ef.mean <- raster:::mean(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)))
           }
           if(!exists('ef.sd')){
-            ef.sd <- calc(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
+            ef.sd <- calc(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
           }
           ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
-          ef.ci.sup <- raster::reclass(ef.ci.sup, c(1000,+Inf,1000))
+          ef.ci.sup <- raster:::reclass(ef.ci.sup, c(1000,+Inf,1000))
         } else if(projection.output@type == 'array'){
           if(!exists('ef.mean')){
             ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
@@ -262,7 +262,7 @@
             }
             
             ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
-            ef.ci.sup <- raster::reclass(ef.ci.sup, c(1000,+Inf,1000))
+            ef.ci.sup <- raster:::reclass(ef.ci.sup, c(1000,+Inf,1000))
           }             
         } else { 
           cat("Unsupported yet !")
@@ -275,7 +275,7 @@
         models.kept.tresh <- eval(parse(text = paste("EM.output@em.bin.tresh$", em.comp, sep="")))
       
         if(projection.output@type == 'RasterStack'){
-          ef.ca <- round(raster::mean(BinaryTransformation(raster::subset(getProjection(projection.output), 
+          ef.ca <- round(raster:::mean(BinaryTransformation(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp)), models.kept.tresh)) * 1000)
         } else if(projection.output@type == 'array'){
           ef.ca <- round(apply(as.data.frame(BinaryTransformation(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)] ,models.kept.tresh)), 1, mean)*1000)
@@ -326,9 +326,9 @@
       	### Compute ensemble forecast
         if(projection.output@type == 'RasterStack'){
           if(length(getEMkeptModels(EM.output, em.comp)) > 1){
-            ef.pmw <- round(sum(raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)) * models.kept.scores))
+            ef.pmw <- round(sum(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)) * models.kept.scores))
           } else{
-            ef.pmw <- raster::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp))
+            ef.pmw <- raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp))
           }
 
         } else if(projection.output@type == 'array'){
@@ -364,7 +364,7 @@
     ef.computed <- ef.potential[unlist(lapply(ef.potential, exists, envir = environment()))]
     
     if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
-      eval(parse(text = paste(em.comp ,"<- raster::stack(", toString(ef.computed), ")", sep="")))
+      eval(parse(text = paste(em.comp ,"<- raster:::stack(", toString(ef.computed), ")", sep="")))
       eval(parse(text = paste("layerNames(", em.comp, ") <-  ef.computed", sep="")))
     } else if(projection.output@type == 'array'){
       eval(parse(text = paste(em.comp ," <- cbind(", toString(ef.computed), ")", sep="")))
@@ -418,7 +418,7 @@
   if(total.consensus){
     cat("\n\n*** Projections Consensus...")
 #     if(projection.output@type == 'RasterStack'){
-#       ef.cons <- raster::stack()
+#       ef.cons <- raster:::stack()
 #     } else if(projection.output@type == 'array'){
 #       ef.cons <- array()
 #     } else { 

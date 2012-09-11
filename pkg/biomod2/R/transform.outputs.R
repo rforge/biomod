@@ -144,14 +144,34 @@ setMethod('.transform.outputs', signature(modOut='list'),
     }
     
     if (out=='evaluation'){
-      if( is.null(modOut[[1]][[1]][[1]][['evaluation']])){ return(NULL) }
-      eval.meth.names <- rownames(as.data.frame(modOut[[1]][[1]][[1]][['evaluation']]))
-      eval.col.names <- colnames(as.data.frame(modOut[[1]][[1]][[1]][['evaluation']]))
+      
+      eval.tab <- NULL
+      nb_pa <- length(modOut)
+      nb_run <- length(modOut[[1]])
+      nb_mod <- length(modOut[[1]][[1]])
+      
+      for(i in 1:nb_pa){
+        for(j in 1:nb_run){
+          for(k in 1:nb_mod){
+            eval.tab <- modOut[[i]][[j]][[k]][['evaluation']]
+            if(!is.null(eval.tab)){ break }
+          }
+          if(!is.null(eval.tab)){ break }  
+        }
+        if(!is.null(eval.tab)){ break }
+      }
+      
+      if( is.null(eval.tab)){ return(NULL) }
+  
+      eval.meth.names <- rownames(as.data.frame(eval.tab))
+      eval.col.names <- colnames(as.data.frame(eval.tab))
       
       eval.out <- lapply(names(modOut),function(d1){ # data set
                     lapply(names(modOut[[d1]]), function(d2){ # run eval
                       lapply(names(modOut[[d1]][[d2]]), function(d3){ # models
-                        return(data.frame(modOut[[d1]][[d2]][[d3]][['evaluation']]))
+                        if(is.null(modOut[[d1]][[d2]][[d3]][['calib.failure']])){
+                          return(data.frame(modOut[[d1]][[d2]][[d3]][['evaluation']]))
+                        } else { matrix(NA, ncol=4, nrow=length(eval.meth.names), dimnames=list(eval.meth.names,eval.col.names))}
                       })
                     })
                   })
@@ -172,14 +192,36 @@ setMethod('.transform.outputs', signature(modOut='list'),
     }
     
     if (out=='prediction'){
-      if( is.null(modOut[[1]][[1]][[1]][['pred']])){ return(NULL) }
 
-      nb.pts.pred <- length(as.numeric(unlist(modOut[[1]][[1]][[1]][['pred']])))
+      pred.tab <- NULL
+      nb_pa <- length(modOut)
+      nb_run <- length(modOut[[1]])
+      nb_mod <- length(modOut[[1]][[1]])
+      
+      for(i in 1:nb_pa){
+        for(j in 1:nb_run){
+          for(k in 1:nb_mod){
+            pred.tab <- modOut[[i]][[j]][[k]][['pred']]
+            if(!is.null(pred.tab)){ break }
+          }
+          if(!is.null(pred.tab)){ break }  
+        }
+        if(!is.null(pred.tab)){ break }
+      }
+      
+      if( is.null(pred.tab)){ return(NULL) }
+      
+
+      nb.pts.pred <- length(as.numeric(pred.tab))
       
       pred.out <- lapply(names(modOut),function(d1){ # data set
                     lapply(names(modOut[[d1]]), function(d2){ # run eval
                       lapply(names(modOut[[d1]][[d2]]), function(d3){ # models
-                        return(as.numeric(modOut[[d1]][[d2]][[d3]][['pred']]))
+                        if(is.null(modOut[[d1]][[d2]][[d3]][['pred']])){
+                          return(rep(NA,nb.pts.pred))
+                        } else{
+                          return(as.numeric(modOut[[d1]][[d2]][[d3]][['pred']]))
+                        }
                       })
                     })
                   })
@@ -198,14 +240,35 @@ setMethod('.transform.outputs', signature(modOut='list'),
     }
     
     if (out=='prediction.eval'){
-      if( is.null(modOut[[1]][[1]][[1]][['pred.eval']])){ return(NULL) }
-
-      nb.pts.pred.eval <- length(as.numeric(unlist(modOut[[1]][[1]][[1]][['pred.eval']])))
+      pred.eval.tab <- NULL
+      nb_pa <- length(modOut)
+      nb_run <- length(modOut[[1]])
+      nb_mod <- length(modOut[[1]][[1]])
       
+      for(i in 1:nb_pa){
+        for(j in 1:nb_run){
+          for(k in 1:nb_mod){
+            pred.eval.tab <- modOut[[i]][[j]][[k]][['pred.eval']]
+            if(!is.null(pred.eval.tab)){ break }
+          }
+          if(!is.null(pred.eval.tab)){ break }  
+        }
+        if(!is.null(pred.eval.tab)){ break }
+      }
+      
+      if( is.null(pred.eval.tab)){ return(NULL) }
+      
+
+      nb.pts.pred.eval <- length(as.numeric(pred.eval.tab))
+     
       pred.eval.out <- lapply(names(modOut),function(d1){ # data set
                     lapply(names(modOut[[d1]]), function(d2){ # run eval
                       lapply(names(modOut[[d1]][[d2]]), function(d3){ # models
-                        return(as.numeric(modOut[[d1]][[d2]][[d3]][['pred.eval']]))
+                        if(is.null(modOut[[d1]][[d2]][[d3]][['pred.eval']])){
+                          return(rep(NA,nb.pts.pred.eval))
+                        } else{
+                          return(as.numeric(modOut[[d1]][[d2]][[d3]][['pred.eval']]))
+                        }
                       })
                     })
                   })
@@ -224,8 +287,25 @@ setMethod('.transform.outputs', signature(modOut='list'),
     }
     
     if (out=='var.import'){
-      if( is.null(modOut[[1]][[1]][[1]][['var.import']])){ return(NULL) }
-      nb.var <- length(as.numeric(unlist(modOut[[1]][[1]][[1]][['var.import']])))
+      vi.tab <- NULL
+      nb_pa <- length(modOut)
+      nb_run <- length(modOut[[1]])
+      nb_mod <- length(modOut[[1]][[1]])
+      
+      for(i in 1:nb_pa){
+        for(j in 1:nb_run){
+          for(k in 1:nb_mod){
+            vi.tab <- modOut[[i]][[j]][[k]][['var.import']]
+            if(!is.null(vi.tab)){ break }
+          }
+          if(!is.null(vi.tab)){ break }  
+        }
+        if(!is.null(vi.tab)){ break }
+      }
+      
+      if( is.null(vi.tab)){ return(NULL) }                             
+      
+      nb.var <- length(as.numeric(unlist(vi.tab)))
       
       ef.mod <- grep(pattern="EF.",mod.names) # EF models
       if(length(ef.mod)>0){
@@ -237,7 +317,11 @@ setMethod('.transform.outputs', signature(modOut='list'),
       vi.out <- lapply(names(modOut),function(d1){ # data set
                   lapply(names(modOut[[d1]]), function(d2){ # run eval
                     lapply(kept.mod, function(d3){ # models without EF ones
-                      return(as.matrix(modOut[[d1]][[d2]][[d3]][['var.import']]))
+                      if(is.null(modOut[[d1]][[d2]][[d3]][['var.import']])){
+                        return(rep(NA,nb.var))
+                      } else{                      
+                        return(as.matrix(modOut[[d1]][[d2]][[d3]][['var.import']]))
+                      }
                     })
                   })
                 })                                 
@@ -259,13 +343,14 @@ setMethod('.transform.outputs', signature(modOut='list'),
       cf.out <- lapply(names(modOut),function(d1){ # data set
                   lapply(names(modOut[[d1]]), function(d2){ # run eval
                     lapply(names(modOut[[d1]][[d2]]), function(d3){ # models 
-                      return(as.numeric(modOut[[d1]][[d2]][[d3]][['calib.failure']]))
+                      return(modOut[[d1]][[d2]][[d3]][['calib.failure']])
                     })
                   })
                 })
+
       cf.out <- na.omit(unlist(cf.out))
       cf.out <- cf.out[!is.null(cf.out)]
-      if(is.na(cf.out)) cf.out <- 'none'
+      if(!length(cf.out)) cf.out <- 'none'
       return(cf.out)
     }
     

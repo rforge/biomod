@@ -240,8 +240,8 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
             } else {
               cat("\n   > Pseudo absences are selected in explanatory variables")
               # create a mask
-              mask <- raster::subset(env, 1, drop=TRUE)
-#               mask <- raster::reclass(mask, c(-Inf,Inf,-1))
+              mask <- raster:::subset(env, 1, drop=TRUE)
+#               mask <- raster:::reclass(mask, c(-Inf,Inf,-1))
               mask[!is.na(mask[])] <- -1
               
               # remove presences and true absences from our raster
@@ -343,7 +343,7 @@ setMethod('sre.pseudo.abs.selection', signature(env="RasterStack"),
             mask[cellFromXY(mask,coordinates(sp)[which(as.vector(sp@data)==1),])] <- NA
             mask[cellFromXY(mask,coordinates(sp)[which(as.vector(sp@data)==0),])] <- NA
             
-            mask <- raster::reclass(mask, c(-Inf,Inf,-1))
+            mask <- raster:::reclass(mask, c(-Inf,Inf,-1))
             
             # checking of nb candidates
             nb.cells <- .nb.available.pa.cells(mask)
@@ -438,7 +438,7 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               cat("\n   > Pseudo absences are selected in explanatory variables")
               
               # create a mask
-              mask <- maskInside <- maskOutside <- raster::reclass(raster::subset(env,1), c(-Inf,Inf,0))
+              mask <- maskInside <- maskOutside <- raster:::reclass(raster:::subset(env,1), c(-Inf,Inf,0))
               pres.xy <- coordinates(sp[which(sp@data[,1]==1),])
               
               # to convert longitudinal degrees into metters

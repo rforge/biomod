@@ -143,11 +143,15 @@
           }
           
           }))
+        ## set NA to -1
+        if(!is.null(models.kept.scores)){
+          models.kept.scores[is.na(models.kept.scores)] <- -1
+        }
         models.kept <- models.kept[models.kept.scores > eval.metric.quality.threshold[which(eval.metric == eval.m)]]
         models.kept.scores <- models.kept.scores[models.kept.scores > eval.metric.quality.threshold[which(eval.metric == eval.m)]]
       }
       
-      if(length(models.kept)){
+      if(length(models.kept) ){
         cat("\n   > models kept : ", toString(models.kept))
         if(modeling.output@has.evaluation.data){
           prediction.kept <- as.data.frame(getModelsPredictionEval(modeling.output, as.data.frame = TRUE)[,models.kept])
@@ -174,6 +178,8 @@
                                                    }))
             # keep only wanted columns
             prediction.kept <- prediction.kept[,models.kept]
+            
+            prediction.kept <- as.data.frame(prediction.kept)
             cat("\n")
           }
 
@@ -186,14 +192,14 @@
       # 1. Mean of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if(prob.mean){
         cat("\n   > Mean of probabilities...")
-        em.mean <- round(apply(prediction.kept, 1, mean))
+        em.mean <- round(apply(prediction.kept, 1, mean, na.rm=T))    
       }
       
       # 2. CV of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if(prob.cv){
         cat("\n   > Coef of variation of probabilities...")
-        em.sd <- apply(prediction.kept, 1, sd)
-        if(!exists('em.mean')) em.mean <- round(apply(prediction.kept, 1, mean))
+        em.sd <- apply(prediction.kept, 1, sd, na.rm=T)
+        if(!exists('em.mean')) em.mean <- round(apply(prediction.kept, 1, mean, na.rm=T))
         em.cv <- round( em.sd / em.mean,2)
         # putting to 0 points where mean = 0
         em.cv[ em.mean == 0 ] <- 0
@@ -202,13 +208,13 @@
       # 3. Median of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if(prob.median){
         cat("\n   > Median of ptobabilities...")
-        em.median <- round(apply(prediction.kept, 1, median))
+        em.median <- round(apply(prediction.kept, 1, median, na.rm=T))
       }
       
       # 4. CI of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
       if(prob.ci){
         cat("\n   > Confidence Interval...")
-        if(!exists('em.mean')) em.mean <- round(apply(prediction.kept, 1, mean))
+        if(!exists('em.mean')) em.mean <- round(apply(prediction.kept, 1, mean, na.rm=T))
         if(!exists('em.sd')) em.sd <- apply(prediction.kept, 1, sd)
         cat("\n      >", prob.ci.alpha/2*100, "%")
         em.ci.inf <- round(em.mean - qt(1-prob.ci.alpha/2, df = length(models.kept) + 1 ) / sqrt(length(models.kept)) * em.sd)

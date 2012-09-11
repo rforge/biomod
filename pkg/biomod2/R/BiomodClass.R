@@ -383,7 +383,7 @@ setClass("BIOMOD.Model.Options",
                    GAM = list( spline = 2,
 #                                test = 'AIC',
                                family = 'binomial',
-                               control = gam::gam.control(maxit = 50, bf.maxit = 50)),
+                               control = gam:::gam.control(maxit = 50, bf.maxit = 50)),
                    
                    CTA = list(method = 'class',
                               parms = 'default',
@@ -904,7 +904,7 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
               if(is.null(str.grep)){
                 plot(getProjection(x))
               } else if(length(grep(str.grep, x@models.projected,value=T))>0){
-                plot(raster::subset(getProjection(x), grep(str.grep, x@models.projected,value=T)))
+                plot(raster:::subset(getProjection(x), grep(str.grep, x@models.projected,value=T)))
               } else{ stop("invalid str.grep arg")}
               
             } else if(class(x@proj) == "BIOMOD.stored.raster.stack"){

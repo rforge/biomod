@@ -85,16 +85,16 @@
       cost.tmp <- Options@CTA$cost
     } 
     if(Options@CTA$parms == 'default'){
-      model.sp <- rpart(makeFormula(colnames(Data)[1],
+      model.sp <- try( rpart(makeFormula(colnames(Data)[1],
                                     head(Data[,-c(1,ncol(Data))]),
                                     'simple', 0),
                         data = Data[calibLines,],
                         weights = Yweigths,
                         method = Options@CTA$method,
                         cost = cost.tmp,
-                        control = eval(Options@CTA$control))      
+                        control = eval(Options@CTA$control)) )    
     } else{
-      model.sp <- rpart(makeFormula(colnames(Data)[1],
+      model.sp <- try( rpart(makeFormula(colnames(Data)[1],
                                     head(Data[,-c(1,ncol(Data))]),
                                     'simple', 0),
                         data = Data[calibLines,],
@@ -102,12 +102,12 @@
                         method = Options@CTA$method,
                         parms = Options@CTA$parms,
                         cost = cost.tmp,
-                        control = eval(Options@CTA$control))      
+                        control = eval(Options@CTA$control)) )     
     }
     
 
 
-    if (exists("model.sp")) {
+    if( !inherits(model.sp,"try-error") ){
       # select best trees --------------- May be done otherway
       tr <- as.data.frame(model.sp$cptable)
       tr$xsum <- tr$xerror + tr$xstd
@@ -157,14 +157,14 @@
                           " data = Data[calibLines,], family = ", eval(Options@GAM$family),
                           ", weigths = Yweigths[calibLines])" ,sep="")))
 
-    model.sp <- step.gam(gamStart, .scope(Data[1:3,-1], "s", Options@GAM$spline),
+    model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-1], "s", Options@GAM$spline),
                          data = Data[calibLines,],
                          keep = .functionkeep, 
                          direction = "both",
                          trace=Options@GAM$control$trace,
-                         control = eval(Options@GAM$control))
+                         control = eval(Options@GAM$control)) ) 
 
-    if (exists("model.sp")){  
+    if( !inherits(model.sp,"try-error") ){ 
       # make prediction
       g.pred <- data.frame(as.integer(.testnull(model.sp, Prev, Data[,-1]) * 1000))
       
@@ -194,21 +194,23 @@
         
   if (Model == "GBM") {
 
-    model.sp <- gbm(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
-                    data = Data[calibLines,], 
-                    distribution = Options@GBM$distribution,
-                    var.monotone = rep(0, length = ncol(Data)-2), # -2 because of removing of sp and weights
-                    weights = Yweigths,
-                    interaction.depth = Options@GBM$interaction.depth,
-                    shrinkage = Options@GBM$shrinkage,
-                    bag.fraction = Options@GBM$bag.fraction,
-                    train.fraction = Options@GBM$train.fraction,
-                    n.trees = Options@GBM$n.trees,
-                    verbose = FALSE,
-                    cv.folds = Options@GBM$cv.folds)
+      model.sp <- try(gbm(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
+                      data = Data[calibLines,], 
+                      distribution = Options@GBM$distribution,
+                      var.monotone = rep(0, length = ncol(Data)-2), # -2 because of removing of sp and weights
+                      weights = Yweigths,
+                      interaction.depth = Options@GBM$interaction.depth,
+                      shrinkage = Options@GBM$shrinkage,
+                      bag.fraction = Options@GBM$bag.fraction,
+                      train.fraction = Options@GBM$train.fraction,
+                      n.trees = Options@GBM$n.trees,
+                      verbose = FALSE,
+                      cv.folds = Options@GBM$cv.folds))
 
-    if (exists("model.sp")) {
-      best.iter <- gbm.perf(model.sp, method = "cv", plot.it = FALSE) # may be have to be save
+      if( !inherits(model.sp,"try-error") ){
+#     if (exists("model.sp")) {
+      best.iter <- try(gbm.perf(model.sp, method = "cv", plot.it = FALSE)) # may be have to be save
+
       # make prediction
       g.pred <- data.frame(as.integer(predict.gbm(model.sp, Data[,-c(1,ncol(Data))], best.iter,
                                                       type = "response") * 1000))
@@ -257,30 +259,30 @@
                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
                       model = TRUE)
       
-      model.sp <- stepAIC(glmStart, 
+      model.sp <- try( stepAIC(glmStart, 
                           glm.formula,
                           data = Data[calibLines,],
                           direction = "both", trace = FALSE, 
                           k = criteria, 
                           weights = Yweigths[calibLines],
                           steps = 10000,
-                          mustart = rep(Options@GLM$mustart, sum(calibLines)))
+                          mustart = rep(Options@GLM$mustart, sum(calibLines))) ) 
                           
     } else {
       ## keep the total model      
-      model.sp <- glm(glm.formula, 
+      model.sp <- try( glm(glm.formula, 
                       data = cbind(Data[calibLines,],matrix(Yweigths[calibLines], ncol=1, dimnames=list(NULL, "Yweigths"))) ,
                       family = eval(parse(text=call(Options@GLM$family))),
 #                       family = Options@GLM$family,
                       control = eval(Options@GLM$control),
                       weights = Yweigths,
 #                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
-                      model = TRUE)
+                      model = TRUE) )
     }
                   
 
                       
-    if (exists("model.sp")){     
+    if( !inherits(model.sp,"try-error") ){    
       # print the selected formula
       cat("\n\tselected formula : ")
       print(model.sp$formula, useSource=FALSE)
@@ -313,15 +315,15 @@
   } 
         
   if (Model == "MARS"){
-    model.sp <- mars(x = Data[calibLines,2:ncol(Data)],
+    model.sp <- try( mars(x = Data[calibLines,2:ncol(Data)],
                      y = Data[calibLines,1],
                      degree = Options@MARS$degree,
                      penalty = Options@MARS$penalty,
                      thresh = Options@MARS$thresh,
                      prune = Options@MARS$prune,
-                     w = Yweigths[calibLines])
+                     w = Yweigths[calibLines]) )
 
-    if (exists("model.sp")){
+    if( !inherits(model.sp,"try-error") ){
       # prediction are automaticly rescaled
       g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,2:ncol(Data)])),
                                                  ref = Data[, 1], 
@@ -338,19 +340,24 @@
   }
         
   if (Model == "FDA") {
-    model.sp <- fda(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
+    model.sp <- try(fda(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
                     data = Data[calibLines,],
                     method = eval(parse(text=call(Options@FDA$method))),
-                    weights = Yweigths)
+                    weights = Yweigths))
                     
-    if (exists("model.sp")){
+    if( !inherits(model.sp,"try-error") ){
       # prediction are automaticly rescaled
-      g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,-c(1,ncol(Data))],
+      g.pred <- try(data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,-c(1,ncol(Data))],
                                                  type = "posterior")[, 2]),
                                                  ref = as.numeric(Data[, 1]), 
                                                  name = paste(nam,'_',Model,sep=""),
-                                                 original = TRUE) * 1000))
-                                                 
+                                                 original = TRUE) * 1000)))
+      
+      if( inherits(g.pred,"try-error") ){
+        # remove g.pred if not run
+        rm('g.pred')
+      }
+      
       if(!is.null(evalData)){
         g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, evalData[,-c(1)],
                                                  type = "posterior")[, 2]),
@@ -367,16 +374,16 @@
                          nbCV = Options@ANN$NbCV, 
                          W = Yweigths[calibLines])
       
-      model.sp <- nnet(formula = makeFormula(colnames(Data)[1],head(Data[,-c(1,ncol(Data))]), 'simple',0),
+      model.sp <- try(nnet(formula = makeFormula(colnames(Data)[1],head(Data[,-c(1,ncol(Data))]), 'simple',0),
                        data = Data[calibLines,],
                        size = CV_nnet[1,1],
                        rang = Options@ANN$rang,
                        decay = CV_nnet[1, 2],
                        weights=Yweigths,
                        maxit = Options@ANN$maxit,
-                       trace = FALSE) 
+                       trace = FALSE))
 
-      if (exists("model.sp")){
+      if( !inherits(model.sp,"try-error") ){
         # prediction are automaticly rescaled
         g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,-c(1,ncol(Data))], type = "raw")),
                                                    ref = Data[,1], 
@@ -402,21 +409,21 @@
     }
     
     if(Options@RF$mtry == 'default'){
-      model.sp <- randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
+      model.sp <- try(randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
                                data = Data[calibLines,],
                                ntree = Options@RF$ntree,
                                #mtry = ifelse(Options@RF$ntree == 'default', round((ncol(Data)-1)/2), Options@RF$ntree ),
                                importance = FALSE,
                                norm.votes = TRUE,
-                               strata = factor(c(0,1)))         
+                               strata = factor(c(0,1))) )      
     } else {
-      model.sp <- randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
+      model.sp <- try(randomForest(formula = makeFormula(colnames(Data)[1],head(Data), 'simple',0),
                                data = Data[calibLines,],
                                ntree = Options@RF$ntree,
                                mtry = Options@RF$mtry,
                                importance = FALSE,
                                norm.votes = TRUE,
-                               strata = factor(c(0,1)))      
+                               strata = factor(c(0,1))) )
     }
 
 
@@ -426,7 +433,7 @@
       rm(dTmp)
     }
     
-    if (exists("model.sp")){
+    if( !inherits(model.sp,"try-error") ){
       # make prediction
       g.pred <- data.frame(as.integer(as.numeric(predict(model.sp,Data[,-1], type='prob')[,'1']) *1000))
       
@@ -553,10 +560,13 @@
   }
                       
   if (!exists("g.pred")) { # keep the name of uncompleted modelisations
+    cat("\n   ! Note : ",paste(nam,'_',Model,sep=''), "failed!\n")
     ListOut$calib.failure = paste(nam,'_',Model,sep='')
+    return(ListOut)
   }
 
   if (exists("g.pred")){
+
     ## Evaluation result stuff
     if(length(mod.eval.method) > 0){
       cat("\n\tEvaluating Model stuff...")
@@ -627,6 +637,7 @@
                              ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'),
                              "')", sep = "")))
    if(Model == 'GBM'){
+     if(exists('best.iter'))
        save(best.iter, file=paste( getwd(), .Platform$file.sep, unlist(strsplit(nam,'_'))[1] , .Platform$file.sep, "models",  .Platform$file.sep, nam, "_", Model,"_best.iter", sep=""), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
    }
       

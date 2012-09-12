@@ -69,7 +69,7 @@ setMethod('BIOMOD_RangeSize', signature(CurrentPred='RasterStack', FutureProj='R
     # 1. args checking -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
     args <- .BIOMOD_RangeSize.check.args( CurrentPred, FutureProj,  SpChange.Save )
 
-    CBS <- matrix(ncol=10, nrow=length(CurrentPred@layers), dimnames=list(layerNames(CurrentPred), 
+    CBS <- matrix(ncol=10, nrow=length(CurrentPred@layers), dimnames=list(names(CurrentPred), 
       c("Loss","Stable0", "Stable1", "Gain", "PercLoss", "PercGain", "SpeciesRangeChange", "CurrentRangeSize", "FutureRangeSize.NoDisp", "FutureRangeSize.FullDisp")))
 
     
@@ -98,7 +98,7 @@ setMethod('BIOMOD_RangeSize', signature(CurrentPred='RasterStack', FutureProj='R
 
     if(is.null(SpChange.Save)) SpChange.Save <- "NoName"
 #     assign(paste(SpChange.Save, "_Compt.By.Species", sep=""), CBS, pos=1)
-    layerNames(sp.stack) <- rownames(CBS)
+    names(sp.stack) <- rownames(CBS)
 #     assign(paste(SpChange.Save, "_Diff.By.Pixel", sep=""), sp.stack, pos=1)
     return(list(Compt.By.Models = CBS,
                 Diff.By.Pixel = sp.stack))

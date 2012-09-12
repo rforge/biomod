@@ -29,7 +29,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
   
   if(inherits(Response, 'Raster')){
     nb.resp <- nlayers(Response)
-    resp.names <- layerNames(Response)
+    resp.names <- names(Response)
     for(j in 1:nb.resp){
       occ.pts <- raster:::subset(Response,j)
       occ.pts[occ.pts != 1] <- NA
@@ -69,7 +69,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
 
   if(inherits(NewData, 'Raster')){
     lout <- stack(lout)
-    layerNames(lout) <- resp.names
+    names(lout) <- resp.names
   }
 
   return(lout)
@@ -113,7 +113,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
       stop("If Response variable is raster object then Explanatory must also be one")
     }
     nb.expl.vars <- nlayers(Explanatory)
-    names.expl.vars <- layerNames(Explanatory) 
+    names.expl.vars <- names(Explanatory) 
   }
   
   # If no NewData given, projection will be done on Explanatory variables
@@ -132,7 +132,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
       }
     } else if(!inherits(NewData, 'Raster')){
       NewData <- stack(NewData)
-      if(sum(!(names.expl.vars %in% layerNames(NewData))) > 0 ){
+      if(sum(!(names.expl.vars %in% names(NewData))) > 0 ){
         stop("Explanatory variables names differs in the 2 dataset given")
       }
       NewData <- raster:::subset(NewData, names.expl.vars)

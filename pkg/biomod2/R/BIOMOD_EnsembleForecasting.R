@@ -365,7 +365,7 @@
     
     if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
       eval(parse(text = paste(em.comp ,"<- raster:::stack(", toString(ef.computed), ")", sep="")))
-      eval(parse(text = paste("layerNames(", em.comp, ") <-  ef.computed", sep="")))
+      eval(parse(text = paste("names(", em.comp, ") <-  ef.computed", sep="")))
     } else if(projection.output@type == 'array'){
       eval(parse(text = paste(em.comp ," <- cbind(", toString(ef.computed), ")", sep="")))
     } else{
@@ -394,7 +394,7 @@
         eval(parse(text=paste(em.comp,".bin.", bin.meth," <- BinaryTransformation(", em.comp,", cuts)" , sep="")))
         cat("\n*** bin trans done !")
         if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
-          eval(parse(text=paste("layerNames(", em.comp,".bin.", bin.meth ,") <- paste(layerNames(",em.comp,"), '.bin',sep='')", sep="")))
+          eval(parse(text=paste("names(", em.comp,".bin.", bin.meth ,") <- paste(names(",em.comp,"), '.bin',sep='')", sep="")))
         }
         eval(parse(text = paste("save(", em.comp,".bin.", bin.meth, ", file = '", 
                                 projection.output@sp.name, .Platform$file.sep, "proj_",
@@ -429,7 +429,7 @@
                    .Platform$file.sep, EM.output@em.computed[1], sep="")))
     
     if(class(ef.cons) == 'RasterStack'){
-      ef.computed <- layerNames(ef.cons)
+      ef.computed <- names(ef.cons)
     } else{
       ef.computed <- colnames(ef.cons)
     }
@@ -463,7 +463,7 @@
         eval(parse(text=paste(projection.output@sp.name, "_TotalConsensus.bin.", bin.meth," <- BinaryTransformation(",
                               projection.output@sp.name, "_TotalConsensus, cuts)" , sep="")))
         if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
-          eval(parse(text=paste("layerNames(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth,") <- paste(layerNames(",projection.output@sp.name, "_TotalConsensus), '.bin',sep='')", sep="")))
+          eval(parse(text=paste("names(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth,") <- paste(names(",projection.output@sp.name, "_TotalConsensus), '.bin',sep='')", sep="")))
         }
         eval(parse(text = paste("save(", projection.output@sp.name, "_TotalConsensus.bin.", bin.meth, ", file = '", 
                                 projection.output@sp.name, .Platform$file.sep, "proj_",

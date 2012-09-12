@@ -4,7 +4,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if(inherits(Data,"Raster")){
     cat("\n   > Extracting raster infos..")
     DataTmp <- matrix(0,ncol=nlayers(Data), nrow=100)
-    colnames(DataTmp) <- layerNames(Data)
+    colnames(DataTmp) <- names(Data)
     maxVal <- maxValue(Data)
     minVal <- minValue(Data)
     for(i in 1:ncol(DataTmp)){
@@ -377,7 +377,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if(inherits(Data,"Raster")){
     cat("\n   > Extracting raster infos..")
     DataTmp <- matrix(0,ncol=nlayers(Data), nrow=add.args$nb.pts)
-    colnames(DataTmp) <- layerNames(Data)
+    colnames(DataTmp) <- names(Data)
     maxVal <- maxValue(Data)
     minVal <- minValue(Data)
     for(i in 1:ncol(DataTmp)){

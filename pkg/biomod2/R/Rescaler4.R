@@ -7,7 +7,7 @@
 #         DataF <- as.data.frame(dataToRescale)         
 #         colnames(DataF) <- "DataF"                  
 #     } else{
-#         layerNames(dataToRescale) <-"DataF"
+#         names(dataToRescale) <-"DataF"
 # 	      DataF <- stack(dataToRescale) 
 #     }
 #     
@@ -35,7 +35,7 @@ function(dataToRescale, ref=NULL, name, original=FALSE)
         DataF <- as.data.frame(dataToRescale)         
         colnames(DataF) <- "DataF"                  
 #     } else{
-#         layerNames(dataToRescale) <-"DataF"
+#         names(dataToRescale) <-"DataF"
 #         DataF <- stack(dataToRescale) 
 #     }
 #     

@@ -152,7 +152,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
       # transform list of rasterLayers into a rasterStack
       proj.stack <- stack(x = proj.ras)
   
-      layerNames(proj.stack) <- models.name #names(proj.ras.mod)
+      names(proj.stack) <- models.name #names(proj.ras.mod)
       rm(proj.ras)
 
       # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -160,7 +160,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
         cat("\nBinary transformations...")
         lapply(binary.proj, function(bin.proj){
           
-          cuts <- unlist(lapply(layerNames(proj.stack), function(x){
+          cuts <- unlist(lapply(names(proj.stack), function(x){
             mod <- tail(unlist(strsplit(x,"_")), 3)[3]
             run <- tail(unlist(strsplit(x,"_")), 3)[2]
             dat <- tail(unlist(strsplit(x,"_")), 3)[1]
@@ -168,7 +168,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
             }))
   
           proj.bin.stack <- BinaryTransformation(proj.stack, cuts)
-          layerNames(proj.bin.stack) <- paste(layerNames(proj.stack), ".bin", sep="")
+          names(proj.bin.stack) <- paste(names(proj.stack), ".bin", sep="")
   
           eval(parse(text = paste(proj.name,"_",sp.name,"_bin_",bin.proj, "_RasterStack <- proj.bin.stack", sep="")))
           eval(parse(text = paste("save(",proj.name,"_",sp.name,"_bin_",bin.proj,
@@ -184,7 +184,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
         cat("\nFiltered transformations...")
         lapply(filtred.proj, function(filt.proj){
           
-          cuts <- unlist(lapply(layerNames(proj.stack), function(x){
+          cuts <- unlist(lapply(names(proj.stack), function(x){
             mod <- tail(unlist(strsplit(x,"_")), 3)[3]
             run <- tail(unlist(strsplit(x,"_")), 3)[2]
             dat <- tail(unlist(strsplit(x,"_")), 3)[1]
@@ -192,7 +192,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
           }))
           
           proj.filt.stack <- FilteringTransformation(proj.stack, cuts)
-          layerNames(proj.filt.stack) <- paste(layerNames(proj.stack), ".filt", sep="")
+          names(proj.filt.stack) <- paste(names(proj.stack), ".filt", sep="")
           
           eval(parse(text = paste(proj.name,"_",sp.name,"_filt_",filt.proj, "_RasterStack <- proj.filt.stack", sep="")))
           eval(parse(text = paste("save(",proj.name,"_",sp.name,"_filt_",filt.proj,
@@ -216,14 +216,14 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
       for(m.n in models.name){
         
         proj.ras <- .Projection.do.proj(m.n, env=new.env.data, proj.name=paste("proj_",proj.name, sep=""))
-        layerNames(proj.ras) <- m.n #names(proj.ras.mod)
+        names(proj.ras) <- m.n #names(proj.ras.mod)
 
         # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         if(length(binary.proj)>0){
           cat("\nBinary transformations...")
           lapply(binary.proj, function(bin.proj){
             
-            cuts <- unlist(lapply(layerNames(proj.ras), function(x){
+            cuts <- unlist(lapply(names(proj.ras), function(x){
               mod <- tail(unlist(strsplit(x,"_")), 3)[3]
               run <- tail(unlist(strsplit(x,"_")), 3)[2]
               dat <- tail(unlist(strsplit(x,"_")), 3)[1]
@@ -231,7 +231,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
               }))
     
             proj.bin.ras <- BinaryTransformation(proj.ras, cuts)
-            layerNames(proj.bin.ras) <- paste(layerNames(proj.ras), ".bin", sep="")
+            names(proj.bin.ras) <- paste(names(proj.ras), ".bin", sep="")
     
             eval(parse(text = paste(proj.name,"_",m.n,"_bin_",bin.proj, "_RasterLayer <- proj.bin.ras", sep="")))
             eval(parse(text = paste("save(",proj.name,"_",m.n,"_bin_",bin.proj,
@@ -247,7 +247,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
           cat("\nFiltered transformations...")
           lapply(filtred.proj, function(filt.proj){
             
-            cuts <- unlist(lapply(layerNames(proj.ras), function(x){
+            cuts <- unlist(lapply(names(proj.ras), function(x){
               mod <- tail(unlist(strsplit(x,"_")), 3)[3]
               run <- tail(unlist(strsplit(x,"_")), 3)[2]
               dat <- tail(unlist(strsplit(x,"_")), 3)[1]
@@ -255,7 +255,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
             }))
             
             proj.filt.ras <- FilteringTransformation(proj.ras, cuts)
-            layerNames(proj.filt.ras) <- paste(layerNames(proj.ras), ".filt", sep="")
+            names(proj.filt.ras) <- paste(names(proj.ras), ".filt", sep="")
             
             eval(parse(text = paste(proj.name,"_",sp.name,"_filt_",filt.proj, "_RasterLayer <- proj.filt.ras", sep="")))
             eval(parse(text = paste("save(",proj.name,"_",sp.name,"_filt_",filt.proj,

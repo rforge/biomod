@@ -168,7 +168,7 @@
     stop("'new.env' must be a matrix, a data.frame or a RasterStack")
   }
   if( class(new.env) == 'RasterStack' ){
-    if(sum(!(layerNames(new.env) %in% modeling.output@expl.var.names)) > 0 ){
+    if(sum(!(names(new.env) %in% modeling.output@expl.var.names)) > 0 ){
       stop("'new.env' layer names don't match with explanatory variables used for buiding models")
     }
   } else{

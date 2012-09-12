@@ -81,7 +81,7 @@
   
   # Proj Data
   for(i in 1:nlayers(Data)){
-    writeRaster(Data[[i]], filename=paste(getwd(),'/',proj.name,'/MaxentTmpData/Proj/',layerNames(Data)[i],'.asc',sep=''),
+    writeRaster(Data[[i]], filename=paste(getwd(),'/',proj.name,'/MaxentTmpData/Proj/',names(Data)[i],'.asc',sep=''),
                 format='ascii', overwrite=TRUE)
   }
 }

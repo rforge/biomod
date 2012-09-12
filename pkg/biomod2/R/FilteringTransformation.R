@@ -51,7 +51,7 @@ setMethod('FilteringTransformation', signature(data='numeric'),
 setMethod('FilteringTransformation', signature(data='RasterLayer'), 
   function(data, threshold)
   {
-    return(raster:::reclass(data,c(-Inf,threshold,0)))
+    return(reclassify(data,c(-Inf,threshold,0)))
   })
 
 setMethod('FilteringTransformation', signature(data='RasterStack'), 

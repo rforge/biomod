@@ -118,7 +118,7 @@
 #   if(!is.null(clamping.level)){
 #     cat("\n   > clamping projections...")
 #     if(inherits(proj_out@proj@val, 'Raster')){
-#       proj_out@proj@val <- raster:::stack(raster:::reclass(proj_out@proj@val * raster:::reclass( (- 1 * (clampMask)), c(-0.5,0.5,1)), c(-Inf,0,clamped.value) ))
+#       proj_out@proj@val <- raster:::stack(reclassify(proj_out@proj@val * reclassify( (- 1 * (clampMask)), c(-0.5,0.5,1)), c(-Inf,0,clamped.value) ))
 #     } else{
 #       proj_out@proj@val[which(clampMask > 0),,,] <- clamped.value
 #     }
@@ -297,7 +297,7 @@
     env <- raster:::subset(env,names(MinMax))
     
     # create an empty mask
-#     clamp.mask <- raster:::reclass( raster:::subset(env,1, drop=TRUE), c(-Inf,Inf,0) )
+#     clamp.mask <- reclassify( raster:::subset(env,1, drop=TRUE), c(-Inf,Inf,0) )
     clamp.mask <- raster:::subset(env,1, drop=TRUE)
     clamp.mask[!is.na(clamp.mask[])] <- 0
     

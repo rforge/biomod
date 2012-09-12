@@ -144,7 +144,7 @@
             ef.sd <- calc(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
           }
           ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
-          ef.ci.inf <- raster:::reclass(ef.ci.inf, c(-Inf,0,0))
+          ef.ci.inf <- reclassify(ef.ci.inf, c(-Inf,0,0))
         } else if(projection.output@type == 'array'){
           if(!exists('ef.mean')){
             ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
@@ -195,7 +195,7 @@
             }
             
             ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
-            ef.ci.inf <- raster:::reclass(ef.ci.inf, c(-Inf,0,0))
+            ef.ci.inf <- reclassify(ef.ci.inf, c(-Inf,0,0))
           }             
         } else { 
           cat("Unsupported yet !")
@@ -211,7 +211,7 @@
             ef.sd <- calc(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
           }
           ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
-          ef.ci.sup <- raster:::reclass(ef.ci.sup, c(1000,+Inf,1000))
+          ef.ci.sup <- reclassify(ef.ci.sup, c(1000,+Inf,1000))
         } else if(projection.output@type == 'array'){
           if(!exists('ef.mean')){
             ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
@@ -262,7 +262,7 @@
             }
             
             ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(projToLoad) + 1 ) / sqrt(length(projToLoad)) * ef.sd)
-            ef.ci.sup <- raster:::reclass(ef.ci.sup, c(1000,+Inf,1000))
+            ef.ci.sup <- reclassify(ef.ci.sup, c(1000,+Inf,1000))
           }             
         } else { 
           cat("Unsupported yet !")

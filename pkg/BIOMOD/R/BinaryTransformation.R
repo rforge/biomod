@@ -33,7 +33,7 @@ if('raster' %in% installed.packages()[,'Package']){
   setMethod('BinaryTransformation', signature(data='RasterLayer'), 
     function(data, threshold)
     {
-      return(raster::reclass(data,c(-Inf,threshold,0, threshold,+Inf,1)))
+      return(reclassify(data,c(-Inf,threshold,0, threshold,+Inf,1)))
     })
   
   setMethod('BinaryTransformation', signature(data='RasterStack'), 

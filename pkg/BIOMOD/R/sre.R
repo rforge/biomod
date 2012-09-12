@@ -129,7 +129,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
   }
   
   if(inherits(NewData, "Raster")){
-    out <- reclass(subset(NewData,1), c(-Inf, Inf, 1))
+    out <- reclassify(subset(NewData,1), c(-Inf, Inf, 1))
     for(j in 1:nlayers(NewData)){
       out <- out * ( subset(NewData,j) >= ExtremCond[j,1] ) * ( subset(NewData,j) <= ExtremCond[j,2] )
     }

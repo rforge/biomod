@@ -1,9 +1,9 @@
-\name{BIOMOD_EnsembleModeling}
+﻿\name{BIOMOD_EnsembleModeling}
 \alias{BIOMOD_EnsembleModeling}
 
 \title{ Create and evaluate an ensemble set of models and predictions}
 \description{
-\code{BIOMOD_EnsembleModeling} combines models and make ensemble predictions built with \code{\link[biomod2]{BIOMOD_Modeling}}. The ensemble predictions can also be evaluated against the original data given to  \code{\link[biomod2]{BIOMOD_Modeling}}. Biomod2 proposed a range of options to build ensemble models and predictions and to assess the modeling uncertainty. The created ensemble models can then be used to project distributions over space and time as classical \pkg{biomod2} models. 
+\code{BIOMOD_EnsembleModeling} combines models and make ensemble predictions built with \code{\link[biomod2]{BIOMOD_Modeling}}. The ensemble predictions can also be evaluated against the original data given to  \code{\link[biomod2]{BIOMOD_Modeling}}. Biomod2 proposes a range of options to build ensemble models and predictions and to assess the modeling uncertainty. The created ensemble models can then be used to project distributions over space and time as classical \pkg{biomod2} models. 
 }
 
 \usage{
@@ -24,10 +24,10 @@ BIOMOD_EnsembleModeling( modeling.output,
 
 \arguments{
   \item{modeling.output}{a \code{"\link[=BIOMOD.models.out-class]{BIOMOD.models.out}"} returned by \code{\link[biomod2]{BIOMOD_Modeling}}}
-  \item{chosen.models}{a character vector (either 'all' or a sub-selection of model names) that defines the models kept for building the ensemble models (might be useful for removing some models)}
-  \item{em.by}{Character. Flag defining the way to models will be combined to build ensemble models. Availables values are \code{'PA_dataset+repet'} (default), \code{'PA_dataset+algo'}, \code{'PA_dataset'}, \code{'algo'} and  \code{'all'}}
+  \item{chosen.models}{a character vector (either 'all' or a sub-selection of model names) that defines the models kept for building the ensemble models (might be useful for removing some non-preferred models)}
+  \item{em.by}{Character. Flag defining the way the models will be combined to build the ensemble models. Available values are \code{'PA_dataset+repet'} (default), \code{'PA_dataset+algo'}, \code{'PA_dataset'}, \code{'algo'} and  \code{'all'}}
   \item{eval.metric}{vector of names of evaluation metric. If 'all', the same evaluation metrics than those of \code{modeling.output} will be automatically selected}
-  \item{eval.metric.quality.threshold}{If not \code{NULL}, the minimum scores under which models will be excluded of ensemble-models building.}
+  \item{eval.metric.quality.threshold}{If not \code{NULL}, the minimum scores below which models will be excluded of the ensemble-models building.}
   \item{prob.mean}{Logical. Estimate the mean probabilities across predictions }
   \item{prob.cv}{Logical. Estimate the coefficient of variation across predictions}
   \item{prob.ci}{Logical . Estimate the confidence interval around the \code{prob.mean}}
@@ -42,13 +42,13 @@ BIOMOD_EnsembleModeling( modeling.output,
   \enumerate{ 
     \item{\bold{Models sub-selection (\code{chosen.models})}}{
 
-      Useful to exclude some models that have been selected in the previous steps (\code{modeling.output}). This vector of model names can be access applying \code{getModelsBuiltModels} to your \code{modeling.output} data. It makes easier the models selection. The default value (i.e. \sQuote{all}) will kept all available models.}
+      Useful to exclude some models that have been selected in the previous steps (\code{modeling.output}). This vector of model names can be access applying \code{getModelsBuiltModels} to your \code{modeling.output} data. It makes easier the selection of models. The default value (i.e. \sQuote{all}) will kept all available models.}
     
     \item{\bold{Models assembly rules (\code{em.by})}}{
     
     Please refer to \href{../doc/EnsembleModelingAssembly.pdf}{EnsembleModelingAssembly} vignette that is dedicated to this parameter.
     
-      5 differents ways to combine models can be considered. You can make ensemble models considering :
+      5 different ways to combine models can be considered. You can make ensemble models considering :
       \itemize{
         \item{ Dataset used for models building (Pseudo Absences dataset and repetitions done)}{: \code{'PA_dataset+repet'}}
         \item{ Dataset used and statistical models }{: \code{'PA_dataset+algo'}}
@@ -57,8 +57,8 @@ BIOMOD_EnsembleModeling( modeling.output,
         \item{ A total consensus model  }{: \code{'all'}}
       }
       
-      The value choosed for this parameter will control the number of ensemble models built.
-      If you didn't give some evaluation data at \code{\link[biomod2]{BIOMOD_FormatingData}} step, some ensemble models evaluation may be a bit unfair because the data that will be used for evaluating ensemble models could differ from those used for evaluate \code{\link[biomod2]{BIOMOD_Modeling}} models (in particular, some data used for 'basal models' calibration can be reused for ensemble models evaluation). You have to keep it in mind ! (\href{../doc/EnsembleModelingAssembly.pdf}{EnsembleModelingAssembly} vignette for extra details)
+      The value chosen for this parameter will control the number of ensemble models built.
+      If no evaluation data was given the at \code{\link[biomod2]{BIOMOD_FormatingData}} step, some ensemble models evaluation may be a bit unfair because the data that will be used for evaluating ensemble models could differ from those used for evaluate \code{\link[biomod2]{BIOMOD_Modeling}} models (in particular, some data used for 'basal models' calibration can be re-used for ensemble models evaluation). You have to keep it in mind ! (\href{../doc/EnsembleModelingAssembly.pdf}{EnsembleModelingAssembly} vignette for extra details)
     }
     
     \item{\bold{Evaluation metrics}}{
@@ -79,7 +79,7 @@ BIOMOD_EnsembleModeling( modeling.output,
       
         \item{\bold{\code{eval.metric.quality.threshold}}}{
         
-          You have to give as many threshold as \code{eval.metric} you have selected.  If you have selected  several evaluation metrics , take care to make the order of thresholds match with the order of \code{eval.metric}.
+          You have to give as many threshold as \code{eval.metric} you have selected.  If you have selected  several evaluation metrics , take care to ensure that the order of thresholds matches the order of \code{eval.metric}.
           All models having a score lower than these quality thresholds will not be kept for building ensemble-models.
         }
       }
@@ -94,7 +94,7 @@ BIOMOD_EnsembleModeling( modeling.output,
         
         \item{\bold{Coefficient of variation of Probabilities (\code{prob.cv}) }}{
         
-          This ensemble-model corresponds to the coefficient of variation (i.e. sd / mean) of the probabilities over the selected models. This model is not rescaled. It will be evaluated like all other ensemble-models although this interpretation is obviously different. CV is a measure of uncertainty rather a measure of probability of occurrence. If the CV gets a high evalution score it means that the uncertainty is high where the species is observed (which might not be a good feature of the models). A lower is the score, the better are the models. CV is a nice complement to the mean probability. 
+          This ensemble-model corresponds to the coefficient of variation (i.e. sd / mean) of the probabilities over the selected models. This model is not rescaled. It will be evaluated like all other ensemble-models although this interpretation is obviously different. CV is a measure of uncertainty rather a measure of probability of occurrence. If the CV gets a high evaluation score it means that the uncertainty is high where the species is observed (which might not be a good feature of the models). The lower is the score, the better are the models. CV is a nice complement to the mean probability. 
         }
       
         \item{\bold{Confidence interval (\code{prob.ci} & \code{prob.ci.alpha}) }}{
@@ -104,7 +104,7 @@ BIOMOD_EnsembleModeling( modeling.output,
             \item{The upper one (there is less than a 100*\code{prob.ci.alpha}/2 \% of chance to get probabilities upper than the given ones)}
                         \item{The lower one (there is less than a 100*\code{prob.ci.alpha}/2 \% of chance to get probabilities lower the than given ones)}
           }
-          These interval are calculated with the following function :
+          These intervals are calculated with the following function :
           
           \deqn{
             I_c = [ \bar{x} -  \frac{t_\alpha sd }{ \sqrt{n} }; \bar{x} +  \frac{t_\alpha sd }{ \sqrt{n} }]
@@ -113,7 +113,7 @@ BIOMOD_EnsembleModeling( modeling.output,
         
         \item{\bold{ Median of probabilities (\code{prob.median})}}{
         
-          This ensemble-model correspond to the median probabilities over the selected models. The median is less sensitive to outliers than the mean. In practical terms, calculating the median requires more time and memory than the mean (or even weighting mean) as it asks to load all predictions to then extract the median. It may need to be considered in case of large dataset. 
+          This ensemble-model corresponds to the median probability over the selected models. The median is less sensitive to outliers than the mean. In practical terms, calculating the median requires more time and memory than the mean (or even weighting mean) as it asks to load all predictions to then extract the median. It may need to be considered in case of large dataset. 
         }
         
         \item{\bold{ Models committee averaging (\code{committee.averaging})}}{
@@ -123,9 +123,9 @@ BIOMOD_EnsembleModeling( modeling.output,
         
         \item{\bold{ Weighted mean of probabilities (\code{prob.mean.weight} & \code{prob.mean.weight.decay})}}{
         
-          This algorithm return the mean weighted (or more exactly this is the weighted sum) by the selected evaluation method scores (better a model is, more importance it has in the ensemble). The scores come from \code{\link[biomod2]{BIOMOD_Modeling}} step. 
+          This algorithm return the mean weighted (or more precisely this is the weighted sum) by the selected evaluation method scores (better a model is, more importance it has in the ensemble). The scores come from \code{\link[biomod2]{BIOMOD_Modeling}} step. 
           
-          The \code{prob.mean.weight.decay} is the ratio between a weight and the following or prior one. The formula is : W = W(-1) * \code{prob.mean.weight.decay}. For example, with the default value of 1.6 and 4 weights wanted, the relative importance of the weights will be 1 /1.6/2.56(=1.6*1.6)/4.096(=2.56*1.6) from the weakest to the strongest, and gives 0.11/0.17/0.275/0.445 considering that the sum of the weights is equal to one. The lowest the \code{prob.mean.weight.decay}, the smoother the differences between the weights enhancing a weak discrimination between models (please read the BIOMOD manual for some examples).
+          The \code{prob.mean.weight.decay} is the ratio between a weight and the following or prior one. The formula is : W = W(-1) * \code{prob.mean.weight.decay}. For example, with the default value of 1.6 and 4 weights wanted, the relative importance of the weights will be 1 /1.6/2.56(=1.6*1.6)/4.096(=2.56*1.6) from the weakest to the strongest, and gives 0.11/0.17/0.275/0.445 considering that the sum of the weights is equal to one. The lower the \code{prob.mean.weight.decay}, the smoother the differences between the weights enhancing a weak discrimination between models (please read the BIOMOD manual for some examples).
           
           The value 'proportional' (default) is also possible for the \code{prob.mean.weight.decay}: the weights are awarded for each method proportionally to their evaluation scores. The advantage is that the discrimination is more fair than with the \code{prob.mean.weight.decay}. In the latter case, close scores can strongly diverge in the weights they are awarded, when the proportional method will consider them as being fairly similar in prediction quality and award them a similar weight.
         }

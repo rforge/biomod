@@ -1,9 +1,9 @@
-\name{response.plot2}
+﻿\name{response.plot2}
 \alias{response.plot2}
 
-\title{ Analysis of the 2D or 3D response curves of a model within biomod2}
+\title{ Function for for plotting predicted responses from species distribution models in 2 or 3 dimensions}
 \description{ Adaptation of the Evaluation Strip method proposed by Elith et al.(2005). This function enables to plot the response curves of a model independently of the algorithm used for
-building the model. It therefore permits a direct comparisons of different statistical approaches on the same data. 
+building the model. It therefore permits a direct comparison of predicted responses from the different statistical approaches on the same data. 
   
 }
 \usage{
@@ -20,20 +20,20 @@ response.plot2( models,
 }
 
 \arguments{
-  \item{models}{ a charcater vector of models names for which you want the response curves to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, FDA and MARS.}
-  \item{Data}{ the variables for which you want the response curves to be plotted. A data frame is wanted with one column per variable. They must have the same names as the ones used to calibrate the model. RasterStack are also supported. }
-  \item{show.variables}{ the names or the column numbers of 'Data' for selecting the variables that are wanted to be plotted }
-  \item{do.bivariate}{ 'logical', if FALSE (default), the response curves produced will consider the effect of a lone variable. If TRUE, 2 variables responses curves will be produced}
-  \item{fixed.var.metric}{ either 'mean' (default), 'median', 'min' or 'max' controling the statistic used for fixed variables values calculation}
+  \item{models}{ a character vector specifying the models for which the response curves have to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, FDA and MARS.}
+  \item{Data}{ a dataframe containing the variables for which the response curves have to be plotted. They must have the same names as the ones used to calibrate the model. RasterStack are also supported. }
+  \item{show.variables}{ the names or the column numbers of 'Data' for selecting the variables to be plotted. By default all columns are taken }
+  \item{do.bivariate}{ 'logical', if FALSE (default), the predicted response curves are plotted for every singe variable independently (2-D dimension). If TRUE, the predicted response curves are represented in 3-D for all pairs of variables}
+  \item{fixed.var.metric}{ either 'mean' (default), 'median', 'min' or 'max' specifying the statistic used to fix as constant the remaining variables when the predicted response is estimated for one of the variables}
   \item{save.file}{ can be set to "pdf", "jpeg" or "tiff" to save the plot. Pdf options can be changed by setting the default values of pdf.options().}
   \item{name}{ the name of the file produced if save.file is different to "no" (extensions are already included) }
   \item{ImageSize}{ the size of the image in pixels if save.file is different to "no". Affects "jpeg" and "tiff" outputs only. Default if 480 pixels which is the R default. }
   \item{plot}{ if TRUE (the default) then a plot is produced}
-  \item{\ldots}{ futher arguments (see details)}
+  \item{\ldots}{ further arguments (see details)}
 }
 \details{
-  For building such response curves, n-1 variables are set to a fixed value (mean, median, min or max i.e \code{fixed.var.metric} arg) and only the one (resp. 2 for 3D response plot) of interest is varying across its whole range. The variations observed and the curve thus obtained shows the sensibility of the model to that specific variable. This method does not account for interactions between variables.
-  
+  For building the predicted response curves, n-1 variables are set constant to a fixed value (mean, median, min or max i.e \code{fixed.var.metric} arg) and only the remaining one (resp. 2 for 3D response plot) is varying across its whole range (given by \code{Data}). n the case of categorical variable, the most represented class is taken. The variations observed and the curve thus obtained shows the sensibility of the model to that specific variable. This method does not account for interactions between variables.
+In the evaluation strip initially proposed by Elith et al. 2005 the remaining variables are set to the mean. 
 }
 
 \value{
@@ -41,10 +41,10 @@ response.plot2( models,
     
   Array returned structure : 
   \itemize{
-    \item{First dimension:}{ the number of points combination  for which a prediction was done}
-    \item{Second dimension:}{ 2 or 3 columns: The first (resp. the 2 first) one is the explanatory variable to plot, the last one, the probability of occurrence to plot}
+    \item{First dimension:}{ the dimension of the predictions}
+    \item{Second dimension:}{ 2 or 3 columns: The first one (resp. the first two) is (are) the explanatory variable(s) to plot, the last one, the probability of occurrence}
     \item{Third dimension:}{ The set of environmental variables for which the response.plot was asked to run.}
-    \item{Fourth dimention:}{ the models selected. }
+    \item{Fourth dimension:}{ the selected models}
   
   }
 
@@ -105,7 +105,7 @@ myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData,
 
 # 4. Plot response curves
 
-# 4.1 Load some models you want to plot response curves
+# 4.1 Load the models for which we want to extract the predicted response curves
 myGLMs <- BIOMOD_LoadModels(myBiomomodModelOut, models='GLM')
 
 # 4.2 plot 2D response plots
@@ -131,7 +131,7 @@ myRespPlot3D <- response.plot2(models  = myGLMs[1],
                              ImageSize=480, 
                              plot=TRUE)
 
-### all the values used to produce this plot are stored into returned objects
+### all the values used to produce this plot are stored into the returned object
 ### you can redo plots by yourself and customised them
 dim(myRespPlot2D)
 dimnames(myRespPlot2D)

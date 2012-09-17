@@ -1,7 +1,7 @@
 Package: biomod2
 Type: Package
 Title: Ensemble platform for species distribution modeling
-Version: 1.1.1
+Version: 1.1.2
 Date: 2012-05-14
 Author: Wilfried Thuiller, Damien Georges and Robin Engler
 Maintainer: Damien Georges <damien.georges2@gmail.com>, Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>

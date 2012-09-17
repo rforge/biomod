@@ -1,4 +1,4 @@
-﻿\name{response.plot2}
+\name{response.plot2}
 \alias{response.plot2}
 
 \title{ Function for for plotting predicted responses from species distribution models in 2 or 3 dimensions}

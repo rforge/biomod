@@ -1,4 +1,4 @@
-﻿\name{BIOMOD_EnsembleModeling}
+\name{BIOMOD_EnsembleModeling}
 \alias{BIOMOD_EnsembleModeling}
 
 \title{ Create and evaluate an ensemble set of models and predictions}

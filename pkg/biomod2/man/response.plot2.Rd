@@ -61,6 +61,7 @@ predicted responses from species distribution models. Ecological Modelling 186, 
 
 \seealso{ \code{\link{BIOMOD_Modeling}}  }
 \examples{
+
 # 0. Load data & Selecting Data
 
 # species occurances
@@ -83,7 +84,7 @@ myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
                                      expl.var = myExpl,
                                      resp.xy = myRespCoord,
                                      resp.name = myRespName,
-                                     PA.nb.rep = 2,
+                                     PA.nb.rep = 1,
                                      PA.nb.absences = 200,
                                      PA.strategy = 'random')
                                                                      
@@ -93,13 +94,13 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 # 3. Doing Modelisation
 
 myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData, 
-                                       models = c('GLM','RF','FDA'), 
+                                       models = c('RF','GLM'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=1, 
                                        DataSplit=80, 
                                        Yweights=NULL, 
                                        VarImport=3, 
-                                       models.eval.meth = c('TSS','ROC'),
+                                       models.eval.meth = c('TSS'),
                                        SaveObj = TRUE )
 
 
@@ -138,6 +139,7 @@ dimnames(myRespPlot2D)
 
 dim(myRespPlot3D)
 dimnames(myRespPlot3D)
+
 }
 
 \keyword{ dplot }

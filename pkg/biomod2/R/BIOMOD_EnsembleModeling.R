@@ -372,7 +372,7 @@
   }
   
   # 2. chosen.models checking
-  if(is.null(chosen.models) | chosen.models == 'all'){ # select all models
+  if(!length(chosen.models) | (length(chosen.models)==1 & chosen.models[1] == 'all')){ # select all models
     cat("\n   ! all models available will be included in ensemble.modeling")
     chosen.models <- modeling.output@models.computed
   } else{

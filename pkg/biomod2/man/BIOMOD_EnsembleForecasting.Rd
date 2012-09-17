@@ -75,18 +75,19 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 
 # 3. Running the models 
 myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
-                                       models = c('SRE','CTA','RF'), 
+                                       models = c('CTA','RF'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=1, 
                                        DataSplit=80, 
                                        Yweights=NULL, 
-                                       VarImport=3, 
-                                       models.eval.meth = c('TSS','ROC'),
+                                       VarImport=2, 
+                                       models.eval.meth = c('TSS'),
                                        SaveObj = TRUE )
                                        
 # 4. Creating the ensemble models 
 myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
-                                       chosen.models = 'all',
+                                       chosen.models = grep('_RF', getModelsBuiltModels(myBiomodModelOut), value=TRUE),
+                                       em.by = 'algo',
                                        eval.metric = c('TSS'),
                                        eval.metric.quality.threshold = c(0.7),
                                        prob.mean = TRUE,
@@ -102,19 +103,14 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
 myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
                                         new.env = myExpl,
                                         proj.name = 'current',
-                                        selected.models = 'all',
-                                        binary.meth = 'ROC',
-                                        filtered.meth = 'TSS',
-                                        compress = 'xz',
-                                        clamping.mask = TRUE)
+                                        selected.models = grep('_RF', getModelsBuiltModels(myBiomodModelOut), value=TRUE),
+                                        compress = 'NULL',
+                                        clamping.mask = FALSE)
                                           
 
 # 4. Creating the ensemble projections
 BIOMOD_EnsembleForecasting( projection.output = myBiomodProjection,
-                            EM.output = myBiomodEM,
-                            total.consensus = TRUE,
-                            binary.meth = 'TSS')
-
+                            EM.output = myBiomodEM)
 }
 
 \keyword{ models }

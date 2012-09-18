@@ -44,7 +44,15 @@ function(dataToRescale, ref=NULL, name, original=FALSE)
       if(! file.exists(paste(getwd(),"/", unlist(strsplit(name,'_'))[1], "/models/rescaling_models/", sep=""))){
         dir.create(paste(getwd(),"/", unlist(strsplit(name,'_'))[1], "/models/rescaling_models/", sep=""), showWarnings=F)
       }
-      Rescaling_GLM = glm(ref~DataF, data=DataF, family="binomial", mustart = rep(0.5,length(ref)))
+#       Rescaling_GLM = glm(ref~DataF, data=DataF, family="binomial", mustart = rep(0.5,length(ref)))
+      ## customised wgts
+      wgts = ref
+      wgts[ref==1] <- (length(ref)-sum(ref,na.rm=TRUE))  / sum(ref,na.rm=TRUE) 
+      wgts[ref!=1] <- 1
+
+      Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial(link=probit), x=TRUE, weights=wgts)
+#       Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial, weights=wgts)
+#       Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial, weights=wgts)
       eval(parse(text=paste("save(Rescaling_GLM, file='", getwd(),"/",
                             unlist(strsplit(name,'_'))[1], "/models/rescaling_models/",
                             name, "_rescaled' , compress='",ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')
@@ -54,7 +62,11 @@ function(dataToRescale, ref=NULL, name, original=FALSE)
                             "/models/rescaling_models/",name,"_rescaled')", sep="")))
     }
     #make the rescaling prediction
-    RescaledData <- predict(Rescaling_GLM, DataF, type="response") 
+    RescaledData <- predict(Rescaling_GLM, DataF, type="response")
+  
+#     cat("\n\t\t original range = ", min(DataF) ," - ", max(DataF), "\t rescal ranged = ", min(RescaledData), " - ", max(RescaledData) )
+
+    
 # 	  if(class(dataToRescale)[1]=='RasterLayer')  RescaledData <- predict(model=Rescaling_GLM, DataF, type="response")    #rasters
 	   
     return(RescaledData)

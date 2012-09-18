@@ -288,7 +288,7 @@ setGeneric( ".Projection.do.proj",
 
 setMethod('.Projection.do.proj', signature(env='data.frame'),
   function(model.name, env, xy = NULL, model.dir = NULL, rescaled.models=TRUE, proj.name=NULL){
-    cat('\n***', model.name)
+    cat('\n\t>', model.name)
     # automaticly fill model.dir if not given
     if(is.null(model.dir)){
       model.dir <- paste(getwd(),'/',.extractModelNamesInfo(model.name, info='species'),'/models', sep="")
@@ -408,7 +408,7 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
 
 setMethod('.Projection.do.proj', signature(env='RasterStack'),
   function(model.name, env, model.dir = NULL, rescaled.models=TRUE, proj.name=NULL){
-    cat('\n***', model.name)
+    cat('\n\t>', model.name)
     
     # automaticly fill model.dir if not given
     if(is.null(model.dir)){

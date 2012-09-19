@@ -50,7 +50,7 @@
                       fields="Version")
     
     if(CustomIndexMaker()){
-      packageStartupMessage("Customed index build!")
+      packageStartupMessage("Customed index built!")
     }
     
     packageStartupMessage(paste(pkgname, RFver, "loaded."))

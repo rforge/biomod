@@ -30,7 +30,7 @@
           ef.mean <- raster:::mean(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp)))
         } else if(projection.output@type == 'array'){
-          ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
+          ef.mean <- rowMeans(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
         } else if(projection.output@type == 'character'){ 
           # get models to load
           projToLoad <- c()
@@ -66,7 +66,7 @@
         } else if(projection.output@type == 'array'){
           ef.sd <- apply(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)],1,sd)
           if(!exists('ef.mean')){
-            ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
+            ef.mean <- rowMeans(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
           }
           ef.cv <- round(ef.sd / ef.mean, 2)
           # putting to 0 points where mean = 0
@@ -332,7 +332,11 @@
           }
 
         } else if(projection.output@type == 'array'){
-          ef.pmw <- round(as.vector(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)]%*% models.kept.scores))
+          if(length(getEMkeptModels(EM.output, em.comp)) > 1){
+            ef.pmw <- round(as.vector(data.matrix(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])%*% models.kept.scores))
+          } else{
+            ef.pmw <- as.vector(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
+          }
         } else if(projection.output@type == 'character'){
           # get models to load
           projToLoad <- c()
@@ -376,23 +380,21 @@
                             projection.output@sp.name, .Platform$file.sep, "proj_",
                             projection.output@proj.names, .Platform$file.sep,
                             em.comp, "')", sep="")))
-      
-    cat("\n*** 7. done")
     
     # 8. Doing Binary Transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     if(!is.null(binary.meth)){
       for(bin.meth in binary.meth){
         cuts <- getEMeval(EM.output, em.comp)[[1]][bin.meth, "Cutoff", ]
         cuts <- cuts[sub("ef.","em.", ef.computed)]
-        cat("\n*** cuts selected !")
-        cat("\n*** cuts =", cuts)
+#         cat("\n*** cuts selected !")
+#         cat("\n*** cuts =", cuts)
         if(sum(is.na(cuts)) > 0) {
           warning(em.comp, " : ",toString(ef.computed[which(is.na(cuts))])," cuts was automaticly set to 500.. That can lead to strange binary results.") 
           cuts[which(is.na(cuts))] <- 500
           }
 
         eval(parse(text=paste(em.comp,".bin.", bin.meth," <- BinaryTransformation(", em.comp,", cuts)" , sep="")))
-        cat("\n*** bin trans done !")
+          
         if(projection.output@type == 'RasterStack' | projection.output@type == 'character'){
           eval(parse(text=paste("names(", em.comp,".bin.", bin.meth ,") <- paste(names(",em.comp,"), '.bin',sep='')", sep="")))
         }
@@ -403,7 +405,6 @@
       }
     }
     
-    cat("\n*** 8. done")
     # 9. Doing Filtred Transformation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     if(!is.null(filtered.meth)){
       cat("\n      ! Filtered transformation not supported yet!")

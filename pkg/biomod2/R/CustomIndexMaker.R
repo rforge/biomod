@@ -45,12 +45,14 @@
 
 
 .onAttach <- function(libname, pkgname) {
-  RFver <- read.dcf(file=system.file("DESCRIPTION", package=pkgname),
-                    fields="Version")
-  
-  if(CustomIndexMaker()){
-    packageStartupMessage("Customed index build!")
+  if(file.exists(system.file("DESCRIPTION", package=pkgname))){
+    RFver <- read.dcf(file=system.file("DESCRIPTION", package=pkgname),
+                      fields="Version")
+    
+    if(CustomIndexMaker()){
+      packageStartupMessage("Customed index build!")
+    }
+    
+    packageStartupMessage(paste(pkgname, RFver, "loaded."))
   }
-  
-  packageStartupMessage(paste(pkgname, RFver, "loaded."))
 }

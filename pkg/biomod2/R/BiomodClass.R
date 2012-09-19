@@ -874,7 +874,7 @@ setMethod("getProjection", "BIOMOD.projection.out",
                 } else{ return(NA) }
               }            
             } else if(as.data.frame){
-              if(obj@models.prediction@inMemory ){
+              if(obj@proj@inMemory ){
                 proj <- as.data.frame(obj@proj@val)
                 names(proj) <- unlist(lapply(strsplit(names(proj),".", fixed=TRUE), 
                                                  function(x){
@@ -907,7 +907,7 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
                 plot(raster:::subset(getProjection(x), grep(str.grep, x@models.projected,value=T)))
               } else{ stop("invalid str.grep arg")}
               
-            } else if(class(x@proj) == "BIOMOD.stored.raster.stack"){
+            } else if(class(x@proj) == "BIOMOD.stored.array"){
               cat("will be able soon!", fill=.Options$width)
             } else {cat("\n !  Biomod Projection plotting issue !", fill=.Options$width)}
 

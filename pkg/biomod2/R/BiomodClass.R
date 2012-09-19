@@ -846,15 +846,13 @@ setClass("BIOMOD.projection.out",
                         models.projected = 'character',
                         rescaled.models = 'logical',
                         type = 'character',
-                        proj = 'BIOMOD.stored.data',
-                        xy.coord = 'matrix'),
+                        proj = 'BIOMOD.stored.data'),
          prototype(proj.names = '',
                    sp.name='',
                    expl.var.names='',
                    models.projected='',
                    rescaled.models=TRUE,
-                   type='',
-                   xy.coord=NULL),
+                   type=''),
          validity = function(object){
            return(TRUE)
            })

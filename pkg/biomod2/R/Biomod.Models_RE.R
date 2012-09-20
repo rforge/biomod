@@ -584,7 +584,7 @@
                               Find.Optim.Stat,
                               Fit = g.pred.without.na[evalLines,],
                               Obs = Data[evalLines,1],
-                              Pecision = 5)
+                              Precision = 5)
     rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
     
     if(exists('g.pred.eval')){

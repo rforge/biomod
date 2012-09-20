@@ -224,7 +224,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
     
   }
 
-  pa.data.tmp <- pseudo.absences.sampling(sp = sp,
+  pa.data.tmp <- .pseudo.absences.sampling(sp = sp,
                                           env = env,
                                           nb.repet = PA.NbRep,
                                           strategy = PA.strategy,

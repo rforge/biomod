@@ -327,7 +327,7 @@
                                                       Find.Optim.Stat,
                                                       Fit = as.vector(x),
                                                       Obs = obs,
-                                                      Pecision = 5)
+                                                      Precision = 5)
                                       if(modeling.output@has.evaluation.data){          
                                         rownames(em.cr.val) <- c("Evaluating.data","Cutoff","Sensitivity", "Specificity")
                                       } else{

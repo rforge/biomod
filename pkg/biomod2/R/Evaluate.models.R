@@ -1,4 +1,4 @@
-Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Pecision = 5, Fixed.thresh = NULL){
+Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Precision = 5, Fixed.thresh = NULL){
   if(length(unique(Obs)) == 1 | length(unique(Fit)) == 1){
     warnings("\nObserved or fited data contains only a value.. Evaluation Methods switched off\n")
     best.stat <- cutoff <- true.pos <- sensibility <- true.neg <- specificity <- NA  
@@ -9,7 +9,7 @@ Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Pecision = 5, Fixed.thresh = NULL
         mini <- max(min(quantile(Fit,0.05, na.rm=T), na.rm=T),0)
         maxi <- min(max(quantile(Fit,0.95, na.rm=T), na.rm=T),1000)
         valToTest <- unique( round(c(seq(mini,maxi,length.out=100), mini, maxi)) )
-#         valToTest <- unique( c(seq(mini,maxi,by=Pecision), mini, maxi) )        
+#         valToTest <- unique( c(seq(mini,maxi,by=Precision), mini, maxi) )        
       } else{
         valToTest <- Fixed.thresh
       }
@@ -155,8 +155,12 @@ function(Misc, stat='TSS')
     Misc = matrix(0, ncol=2, nrow=2, dimnames=list(c('FALSE','TRUE'), c('0','1')))
   }
   
-  if((sum(colnames(Misc) %in% c('0','1')) < 2) | (sum(rownames(Misc) %in% c('FALSE','TRUE')) < 2) ){
+  if((sum(colnames(Misc) %in% c('FALSE','TRUE','0','1')) < 2) | (sum(rownames(Misc) %in% c('FALSE','TRUE','0','1')) < 2) ){
     stop("Unavailable contagency table given")
   }
+  
+  if('0' %in% rownames(Misc)) rownames(Misc)[which(rownames(Misc)=='0')] <- 'FALSE'
+  if('1' %in% rownames(Misc)) rownames(Misc)[which(rownames(Misc)=='1')] <- 'TRUE'  
+    
   return(Misc)
 }

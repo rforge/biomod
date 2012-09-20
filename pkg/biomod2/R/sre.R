@@ -69,6 +69,9 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
 
   if(inherits(NewData, 'Raster')){
     lout <- stack(lout)
+    if(nlayers(lout)==1){
+      lout <- raster:::subset(lout,1,drop=TRUE)
+    }
     names(lout) <- resp.names
   }
 
@@ -164,6 +167,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
     for(j in 1:nlayers(NewData)){
       out <- out * ( raster:::subset(NewData,j,drop=TRUE) >= ExtremCond[j,1] ) * ( raster:::subset(NewData,j,drop=TRUE) <= ExtremCond[j,2] )
     }
+    out <- raster:::subset(out,1,drop=TRUE)
   }
 
   return(out)

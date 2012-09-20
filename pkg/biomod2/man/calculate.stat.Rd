@@ -1,4 +1,4 @@
-﻿\name{calculate.stat}
+\name{calculate.stat}
 \alias{calculate.stat}
 
 \title{Calculate evaluation metrics based on a misclassification table }

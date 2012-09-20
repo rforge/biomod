@@ -1,4 +1,4 @@
-﻿\name{getStatOptimValue}
+\name{getStatOptimValue}
 \alias{getStatOptimValue}
 
 \title{get the optimal score of evaluation statistical metrics }

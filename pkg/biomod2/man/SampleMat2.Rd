@@ -1,4 +1,4 @@
-﻿\name{SampleMat2}
+\name{SampleMat2}
 \alias{SampleMat2}
 
 \title{ Sample binary vector  }

@@ -1,4 +1,4 @@
-﻿\name{Find.Optim.Stat}
+\name{Find.Optim.Stat}
 \alias{Find.Optim.Stat}
 
 \title{ Find the threshold driving to the best evaluation score }

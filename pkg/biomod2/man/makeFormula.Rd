@@ -1,4 +1,4 @@
-﻿\name{makeFormula}
+\name{makeFormula}
 \alias{makeFormula}
 
 \title{Standardized formula maker }

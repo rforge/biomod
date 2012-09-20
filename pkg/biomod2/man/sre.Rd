@@ -1,4 +1,4 @@
-﻿\name{sre}
+\name{sre}
 \alias{sre}
 
 \title{ Surface Range Envelope }

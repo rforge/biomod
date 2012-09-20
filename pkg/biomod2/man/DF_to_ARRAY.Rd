@@ -1,4 +1,4 @@
-﻿\name{DF_to_ARRAY}
+\name{DF_to_ARRAY}
 \alias{DF_to_ARRAY}
 
 \title{Convert a biomod2 data.frame into array }

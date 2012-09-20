@@ -29,13 +29,20 @@ multiple.plot(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.
 \seealso{ \code{\link{level.plot}} }
 \examples{
 \dontrun{
-# Load Biomod DataSet
-data(biomod2_data)
+species_occ <- read.csv(system.file("external/species/species_occ.csv",package="biomod2"))
 
-multiple.plot(Data = BiomodDataSet.table[,c('bio3','bio10','bio16','bio19')],
-              coor = BiomodDataSet.table[,c('x','y')] )
-              }
+# we consider only presences of MyocastorCoypus species
+myRespName <- c("CapraIbex", "MelesMeles", "MyocastorCoypus")
+myRespCoord <- species_occ[,c('x','y')]
+myResp <- species_occ[,myRespName]
 
+# NOTE: NA not supported yet
+# replace NA by 0
+myResp[is.na(myResp)] <- 0
+
+multiple.plot(Data = myResp,
+              coor = myRespCoord )
+}
 }
 
 \keyword{ plot }

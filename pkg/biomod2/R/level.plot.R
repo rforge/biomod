@@ -1,11 +1,19 @@
 `level.plot` <-
-function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot", SRC=FALSE, save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4)){
+function(data.in, XY, color.gradient='red', cex=1, level.range=c(min(data.in),max(data.in)), show.scale=TRUE, title="level plot", SRC=FALSE, save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4),...){
+  
+  extra.args <- list(...)
+  if(!is.null(extra.args$multiple.plot)){
+    multiple.plot <- extra.args$multiple.plot
+  } else {
+    multiple.plot <- FALSE
+  }
+  
     
     if(color.gradient!='grey' && color.gradient!='red' && color.gradient!='blue') stop("\n color.gradient should be one of 'grey', 'red' or 'blue' \n") 
     if(ncol(XY)!=2) stop("\n wrong coordinates given in 'XY' : there should be two columns \n")
     if(nrow(XY)!=length(data.in)) stop("\n data and coordinates should be of the same length \n")
 
-    if(exists("multiple")) multiple.plot <- TRUE  else multiple.plot <- FALSE
+#     if() multiple.plot <- TRUE  else multiple.plot <- FALSE
 
 
     if(SRC){

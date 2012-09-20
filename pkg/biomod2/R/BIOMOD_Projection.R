@@ -64,6 +64,7 @@
   filtered.meth <- args$filtered.meth
   compress <- args$compress
   do.stack <- args$do.stack
+  xy.new.env <- args$xy.new.env
 #   clamping.level <- args$clamping.level
   
   rm(args)
@@ -74,7 +75,8 @@
               sp.name =  modeling.output@sp.name,
               expl.var.names = modeling.output@expl.var.names,
               models.projected = selected.models,
-              rescaled.models = modeling.output@rescal.all.models)
+              rescaled.models = modeling.output@rescal.all.models,
+              xy.coord = xy.new.env)
   
   # adapting the proj slot to projection data type (e.g. rasterStack, array)
   if(!do.stack){
@@ -187,6 +189,12 @@
   }
   
   ## xy.new.env
+  if(!is.null(xy.new.env)  & !inherits(new.env,'Raster')){
+    xy.new.env = data.matrix(xy.new.env)
+    if(ncol(xy.new.env) != 2 | nrow(xy.new.env) != nrow(new.env)) stop("invalid xy coordinates argument given -- dimentions mis-match !")
+  } else {
+    xy.new.env = matrix()
+  }
   
   ## selected.models
   if(selected.models[1] == 'all'){
@@ -279,7 +287,7 @@
   return(list(#modeling.output = modeling.output,
               #new.env = new.env,
               proj.name = proj.name,
-              #xy.new.env = xy.new.env,
+              xy.new.env = xy.new.env,
               selected.models = selected.models,
               binary.meth = binary.meth,
               filtered.meth = filtered.meth,

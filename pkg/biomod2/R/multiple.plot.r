@@ -59,7 +59,7 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
              pbox("grey98")
              text(x=0.5, y=0.8, pos=1, cex=1.6, labels=colnames(DataW)[i], col="#4c57eb")
              pbox("grey98")
-             level.plot(DataW[,i], XY=coor, color.gradient=color.gradient, cex=cex, title="", AddPresAbs=AddPresAbs, PresAbsSymbol=PresAbsSymbol) 
+             level.plot(DataW[,i], XY=coor, color.gradient=color.gradient, cex=cex, title="", AddPresAbs=AddPresAbs, PresAbsSymbol=PresAbsSymbol, multiple.plot=TRUE) 
         }
         
         #fill gaps by grey boxes
@@ -67,6 +67,6 @@ function(Data, coor, color.gradient='red', plots.per.window=9, cex=1, save.file=
             
     } #W loop   
     
-    rm(legendcex, multiple, pos=1)
+#     rm('legendcex', 'multiple', pos=1)
     if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
 }

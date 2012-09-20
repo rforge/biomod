@@ -846,13 +846,15 @@ setClass("BIOMOD.projection.out",
                         models.projected = 'character',
                         rescaled.models = 'logical',
                         type = 'character',
-                        proj = 'BIOMOD.stored.data'),
+                        proj = 'BIOMOD.stored.data',
+                        xy.coord = 'matrix'),
          prototype(proj.names = '',
                    sp.name='',
                    expl.var.names='',
                    models.projected='',
                    rescaled.models=TRUE,
-                   type=''),
+                   type='',
+                   xy.coord = matrix()),
          validity = function(object){
            return(TRUE)
            })
@@ -908,7 +910,17 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
               } else{ stop("invalid str.grep arg")}
               
             } else if(class(x@proj) == "BIOMOD.stored.array"){
-              cat("will be able soon!", fill=.Options$width)
+              if(ncol(x@xy.coord) != 2){
+                cat("\n ! Impossible to plot projection because xy coordinates are not available !")
+              } else {
+                if(is.null(str.grep)){
+                  multiple.plot(Data = getProjection(x,as.data.frame=T), coor = x@xy.coord)
+                } else if(length(grep(str.grep, x@models.projected,value=T))>0){
+                  multiple.plot(Data = getProjection(x, model=grep(str.grep, x@models.projected,value=T) ,as.data.frame=T), coor = x@xy.coord)
+                } else{ stop("invalid str.grep arg")}               
+              }
+
+              
             } else {cat("\n !  Biomod Projection plotting issue !", fill=.Options$width)}
 
           })

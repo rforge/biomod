@@ -32,6 +32,7 @@ BIOMOD.projection.out object is created, used and returned by \pkg{biomod2} func
     \item{\code{rescaled.models}:}{ "logical", was projected models rescaled? }
     \item{\code{type}:}{ "character", type of projection done (\code{array}, \code{data.frame}, \code{RasterStack}, \code{RasterLayer} \ldots) }
     \item{\code{proj}:}{ "BIOMOD.stored.data", object containing projected values}
+    \item{\code{xy.coord}:}{ "matrix", coordinates of projected points}
   }
 
 }

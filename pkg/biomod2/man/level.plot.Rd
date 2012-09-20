@@ -6,7 +6,7 @@
   Enables to plot data with 2-dimensional geographical coordinates
 }
 \usage{
-level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot", SRC=FALSE, save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4))
+level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(data.in), max(data.in)), show.scale = TRUE, title = "level plot", SRC=FALSE, save.file="no", ImageSize="small", AddPresAbs=NULL, PresAbsSymbol=c(cex*0.8,16,4), ...)
 }
 
 \arguments{
@@ -23,6 +23,7 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
   \item{ImageSize}{ The image size for JPEG and TIFF files saved to disk. Available : 'small', 'standard' and 'large' }
   \item{AddPresAbs}{ Optional: adds the presences and absences used for calibration to the plot. Data must be entered as a matrix/dataframe with 3 columns (in this order): X-coordinate, Y-coordinate, Presence(1) or Absence(0). X and Y coordinates must be in the same system as the plot. }
   \item{PresAbsSymbol}{ Optional: a 3 element vector giving the symbols to be used by the AddPresAbs argument for plotting. The elements of the vector must be in this order: size of presence/absence symbols given as a multiplication factor of the 'cex' value entered in the function (e.g. a value of 0.5 means that the symbols will be drawn at a size = 0.5*cex value entered in the function), symbol (in PCH code) to be used for presences, symbol (in PCH code) to be used for absences. An example of input vector for this parameter is 'c(0.4,16,4)' }
+  \item{...}{extra args}
 }
 
 \author{ Bruno Lafourcade }
@@ -30,16 +31,18 @@ level.plot(data.in, XY, color.gradient = "red", cex = 1, level.range = c(min(dat
 \seealso{ \code{\link{multiple.plot}} }
 \examples{
 \dontrun{
-# Load Biomod DataSet
-data(biomod2_data)
+species_occ <- read.csv(system.file("external/species/species_occ.csv",package="biomod2"))
 
-Sp277 <- BiomodDataSet.table[,'Sp277']
+# we consider only presences of MyocastorCoypus species
+myRespName <- 'MyocastorCoypus'
+myRespCoord <- species_occ[,c('x','y')]
+myResp <- species_occ[,myRespName]
 
 # NOTE: NA not supported yet
 # replace NA by 0
-Sp277[is.na(Sp277)] <- 0
+myResp[is.na(myResp)] <- 0
 
-level.plot(data.in=Sp277, XY=BiomodDataSet.table[,c('x','y')])
+level.plot(data.in=myResp, XY=myRespCoord)
 }
 }
 

@@ -91,26 +91,26 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
 )
 
 setMethod('BIOMOD.formated.data', signature(sp='data.frame'), 
-  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL){
+  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
     if(ncol(sp) > 1 ){
       stop("Invalid response variable")
     }
     sp <- as.numeric(unlist(sp))
-    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name, eval.sp, eval.env, eval.xy)
+    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name, eval.sp, eval.env, eval.xy, na.rm=na.rm)
     return(BFD)
   }
 )
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ), 
-  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL){
+  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
     env <- as.data.frame(env)
-    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name, eval.sp, eval.env, eval.xy)
+    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name, eval.sp, eval.env, eval.xy, na.rm=na.rm)
     return(BFD)
   }
 )
           
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
-  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL){
+  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
     # take the same eval environemental variables than calibrating ones 
     if(!is.null(eval.sp)){
       if(is.null(eval.env)){
@@ -124,7 +124,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
       xy <- as.data.frame(coordinates(env))
       env <- as.data.frame(extract(env,xy))
     }
-    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name,eval.sp, eval.env, eval.xy)
+    BFD <- BIOMOD.formated.data(sp,env,xy,sp.name,eval.sp, eval.env, eval.xy, na.rm=na.rm)
     .bmCat('Done')
     return(BFD)
   }

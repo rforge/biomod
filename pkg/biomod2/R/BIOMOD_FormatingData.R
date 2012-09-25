@@ -39,7 +39,8 @@
                                    PA.strategy = 'random',
                                    PA.dist.min = 0,
                                    PA.dist.max = NULL,
-                                   PA.sre.quant = 0.025){
+                                   PA.sre.quant = 0.025,
+                                   na.rm = TRUE){
   .bmCat(paste(resp.name, " Data Formating", sep=""))
   
   # 1 check args
@@ -81,13 +82,15 @@
                                 sp.name=resp.name,
                                 eval.sp=eval.resp.var,
                                 eval.env=eval.expl.var,
-                                eval.xy=eval.resp.xy))
+                                eval.xy=eval.resp.xy,
+                                na.rm=na.rm))
   } else{ # Pseudo Absences
     return(BIOMOD.formated.data.PA(sp=resp.var, xy=resp.xy, env=expl.var, sp.name=resp.name,
                                    eval.sp=eval.resp.var, eval.env=eval.expl.var, eval.xy=eval.resp.xy,
                                    PA.NbRep=PA.nb.rep, PA.strategy=PA.strategy, 
                                    PA.nb.absences = PA.nb.absences, PA.dist.min = PA.dist.min,
-                                   PA.dist.max = PA.dist.max, PA.sre.quant = PA.sre.quant))
+                                   PA.dist.max = PA.dist.max, PA.sre.quant = PA.sre.quant,
+                                   na.rm=na.rm))
   } 
 }
 

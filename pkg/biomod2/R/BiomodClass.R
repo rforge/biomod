@@ -38,7 +38,7 @@ setClass("BIOMOD.formated.data",
 # }
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ), 
-  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL ){
+  function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE ){
     
     if(is.null(eval.sp)){
       BFD <- new('BIOMOD.formated.data', 
@@ -65,6 +65,27 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
                  
       rm('BFDeval')
     }
+    if(na.rm){
+      rowToRm <- unique(unlist(lapply(BFD@data.env.var,function(x){return(which(is.na(x)))})))
+      if(length(rowToRm)){
+        cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
+        BFD@coord <- BFD@coord[-rowToRm,]
+        BFD@data.species <- BFD@data.species[-rowToRm]
+        BFD@data.env.var <- BFD@data.env.var[-rowToRm,]
+      }
+      if(BFD@has.data.eval){
+        rowToRm <- unique(unlist(lapply(BFD@eval.data.env.var,function(x){return(which(is.na(x)))})))
+        if(length(rowToRm)){
+          cat("\n\t\t\t! Some NAs have been automaticly removed from your evaluation data")
+          BFD@eval.coord <- BFD@eval.coord[-rowToRm,]
+          BFD@eval.data.species <- BFD@eval.data.species[-rowToRm]
+          FD@eval.data.env.var <- BFD@eval.data.env.var[-rowToRm,]
+        }      
+      }
+      
+      
+    }
+    
     return(BFD)
 	}
 )
@@ -201,7 +222,8 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                      PA.nb.absences = NULL,
                                      PA.dist.min = 0,
                                      PA.dist.max = NULL,
-                                     PA.sre.quant = 0.025){
+                                     PA.sre.quant = 0.025,
+                                     na.rm=TRUE){
   
   # take the same eval environemental variables than calibrating ones 
   if(!is.null(eval.sp)){
@@ -233,6 +255,18 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                           distMax = PA.dist.max,
                                           quant.SRE = PA.sre.quant )
   if(!is.null(pa.data.tmp)){
+    
+    if(na.rm){
+      rowToRm <- unique(unlist(lapply(pa.data.tmp$env,function(x){return(which(is.na(x)))})))
+      if(length(rowToRm)){
+        cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
+        pa.data.tmp$xy <- pa.data.tmp$xy[-rowToRm,]
+        pa.data.tmp$sp <- pa.data.tmp$sp[-rowToRm]
+        pa.data.tmp$env <- pa.data.tmp$env[-rowToRm,]
+        pa.data.tmp$pa.tab <- pa.data.tmp$pa.tab[-rowToRm,]
+      }      
+      
+    }
       
     BFD <- BIOMOD.formated.data(sp=pa.data.tmp$sp,
                                 env=pa.data.tmp$env,
@@ -240,7 +274,8 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                 sp.name=sp.name,
                                 eval.sp=eval.sp,
                                 eval.env=eval.env,
-                                eval.xy=eval.xy)
+                                eval.xy=eval.xy,
+                                na.rm=na.rm) # because check is already done
     
       
     BFDP <- new('BIOMOD.formated.data.PA',

@@ -22,7 +22,8 @@ BIOMOD_FormatingData(resp.var,
                      PA.strategy = 'random',
                      PA.dist.min = 0,
                      PA.dist.max = NULL,
-                     PA.sre.quant = 0.025)
+                     PA.sre.quant = 0.025,
+                     na.rm = TRUE)
 }
 
 \arguments{
@@ -52,6 +53,8 @@ BIOMOD_FormatingData(resp.var,
   \item{PA.dist.max}{maximal distance to presences for \sQuote{disk} Pseudo Absences selection}
   
   \item{PA.sre.quant}{quantile used for \sQuote{SRE} Pseudo Absences selection}
+  
+  \item{na.rm}{locical, if TRUE, all points having one or several missing value for environmental data will be removed from analyse }
 }
 
 \details{

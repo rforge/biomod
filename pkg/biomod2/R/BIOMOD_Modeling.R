@@ -35,7 +35,8 @@
                                models.options = NULL, 
                                NbRunEval=1, 
                                DataSplit=100, 
-                               Yweights=NULL, 
+                               Yweights=NULL,
+                               Prevalence=NULL,
                                VarImport=0, 
                                models.eval.meth = c('KAPPA','TSS','ROC'), 
 #                                SavePredictions = TRUE, 
@@ -49,7 +50,7 @@
 
   # 1. args checking =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   args <- .Models.check.args(data, models, models.options, NbRunEval, DataSplit,
-                             Yweights, VarImport, models.eval.meth)
+                             Yweights, VarImport, models.eval.meth, Prevalence)
   # updating Models arguments
   models <- args$models
   models.options <- args$models.options
@@ -58,6 +59,7 @@
   Yweights <- args$Yweights
   VarImport <- args$VarImport
   models.eval.meth <- args$models.eval.meth
+  Prevalence <- args$Prevalence
 
   rm(args)
   models.out <- new('BIOMOD.models.out',
@@ -92,7 +94,7 @@
 
   # 3. rearanging data and determining calib and eval data -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-  mod.prep.dat <- .Models.prepare.data(data, NbRunEval, DataSplit, Yweights)
+  mod.prep.dat <- .Models.prepare.data(data, NbRunEval, DataSplit, Yweights, Prevalence)
   rm(data)
 
   # keeping calibLines
@@ -123,7 +125,7 @@
                       mod.eval.method = models.eval.meth,
 #                       do.EF = DoEnsembleForcasting,
                       SavePred = SavePredictions,
-                      rescal.models = rescal.all.models
+                      rescal.models = rescal.all.models,
                       )
   # put outputs in good format and save those
 
@@ -209,7 +211,7 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 .Models.check.args <- function(data, models, models.options, NbRunEval, DataSplit,
-                               Yweights, VarImport, models.eval.meth){
+                               Yweights, VarImport, models.eval.meth, Prevalence){
   cat('\n\nChecking Models arguments...\n')
   # data checking
   if( !(class( data ) %in% c("BIOMOD.formated.data",
@@ -319,6 +321,14 @@
                                                                 'PODFD','CSI', 'ETS','HK','ROC')) 
                                        == FALSE) ]," is not a availabe models evaluation metric !",sep=""))
   }
+  
+  # Prevalence checking
+  if(!is.null(Prevalence)){
+    if(!is.numeric(Prevalence) | Prevalence>=1 | Prevalence <=0){
+      stop("Prevalence must be a 0-1 numeric")
+    }    
+  }
+
 #   cat('\nChecking done!\n')
   return(list(models = models,
               models.options = models.options,
@@ -326,7 +336,8 @@
               DataSplit = DataSplit,
               Yweights = Yweights,
               VarImport = VarImport,
-              models.eval.meth = models.eval.meth))
+              models.eval.meth = models.eval.meth,
+              Prevalence = Prevalence))
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -368,7 +379,7 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 .Models.print.modeling.summary <- function( mod.prep.dat, models){
-  cat("\n-=-=-=- ", unlist(strsplit(mod.prep.dat[[1]]$name,'_'))[1], " Modeling Summary -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n")
+  cat("\n\n-=-=-=- ", unlist(strsplit(mod.prep.dat[[1]]$name,'_'))[1], " Modeling Summary -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n")
 
   cat(ncol(mod.prep.dat[[1]]$dataBM)-1, " environmental variables (", colnames(mod.prep.dat[[1]]$dataBM)[-1], ")\n")
 

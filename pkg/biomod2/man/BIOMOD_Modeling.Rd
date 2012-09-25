@@ -12,7 +12,8 @@ BIOMOD_Modeling( data,
                  models.options = NULL, 
                  NbRunEval=1, 
                  DataSplit=100, 
-                 Yweights=NULL, 
+                 Yweights=NULL,
+                 Prevalence=NULL,
                  VarImport=0, 
                  models.eval.meth = c('KAPPA','TSS','ROC'), 
                  SaveObj = TRUE,
@@ -25,7 +26,8 @@ BIOMOD_Modeling( data,
 \item{models.options}{\code{BIOMOD.models.options} object returned by \code{\link[biomod2]{BIOMOD_ModelingOptions}}}
 \item{NbRunEval}{Number of Evaluation run} 
 \item{DataSplit}{\% of data used to calibrate the models, the remaining part will be used for testing }
-\item{Yweights}{response points weights} 
+\item{Yweights}{response points weights}
+\item{Prevalence}{either \code{NULL} (default) or a 0-1 numeric used to build 'weighted response weights'}
 \item{VarImport}{Number of permutation to estimate variable importance}
 \item{models.eval.meth}{vector of names of evaluation metric among 'KAPPA', 'TSS', 'ROC', 'FAR', 'SR', 'ACCURACY', 'BIAS', 'POD', 'CSI' and 'ETS'}
 \item{SaveObj}{keep all results and outputs on hard drive or not (NOTE: strongly recommended)}
@@ -67,9 +69,11 @@ BIOMOD_Modeling( data,
      
    }
   
-  \item{\bold{Yweights}}{
+  \item{\bold{Yweights & Prevalence}}{
   
-    Allows to give more or less weight to some particular observations. If this argument is kept to NULL, each site (presence or absence) has the same weight. In the particular case that pseudo-absence data have been generated \code{\link{BIOMOD_FormatingData}}, weights are calculated in a way to obtain a prevalence of 0.5, meaning that the presences will have the same importance than the absences in the calibration process of the models. 
+    Allows to give more or less weight to some particular observations. If this argument is kept to NULL, each site (presence or absence) has the same weight. In the particular case that pseudo-absence data have been generated \code{\link{BIOMOD_FormatingData}}, weights are calculated in a way to obtain the given prevalence (0.5 if \code{NULL} meaning that the presences will have the same importance than the absences in the calibration process of the models). Automatically created \code{Yweights} will be composed by integers to prevent from some modelling issues.
+    Note that \code{Prevalence} argument will always be ignored if \code{Yweights} are defined.
+    
     
   }
   
@@ -94,12 +98,12 @@ BIOMOD_Modeling( data,
   
   \item{\bold{SaveObj}}{
   
-  If this argument is set to False, it may prevent the evaluation of the \sQuote{ensemble modeled} models in futher steps. We strongly recomand to always keep this argument \code{TRUE} even it asks for free space onto the hard drive.
+  If this argument is set to False, it may prevent the evaluation of the \sQuote{ensemble modelled} models in further steps. We strongly recommend to always keep this argument \code{TRUE} even it asks for free space onto the hard drive.
   }
   
   \item{\bold{rescal.all.models}}{
   
-  Some categorial models have to be rescaled in every case (\sQuote{MARS}, \sQuote{FDA}, \sQuote{ANN}). But It may be interesting to rescal all model computed to ensure that they will produced comparable predictions (0-1000 ladder). That's particulary usefull when you do some ensemble forecasting to remove the scale prediction effect (the more extended projections are, the more they influence ensemble forecasting results). 
+  Some categorical models have to be rescaled in every case (\sQuote{MARS}, \sQuote{FDA}, \sQuote{ANN}). But It may be interesting to rescale all model computed to ensure that they will produced comparable predictions (0-1000 ladder). That's particularly useful when you do some ensemble forecasting to remove the scale prediction effect (the more extended projections are, the more they influence ensemble forecasting results). 
   }
 
 } % end of enumerate
@@ -111,7 +115,7 @@ BIOMOD_Modeling( data,
   See \code{"\link[=BIOMOD.models.out-class]{BIOMOD.models.out}"} for details.
   
   Additional objects are stored out of R in two different directories for memory storage purposes. They are created by the function directly on the root
-  of your working directory set in R ("models" directory). This one contains each calibrated model for each repetition and pseudo-absence run. A hidden folder \file{.DATA_BIOMOD} contains some files (predictions, original dataset copy, pseudo absences choosed...) used by other functions like \code{\link[biomod2]{BIOMOD_Projection}} or \code{\link[biomod2]{BIOMOD_EnsembleModeling}} .
+  of your working directory set in R ("models" directory). This one contains each calibrated model for each repetition and pseudo-absence run. A hidden folder \file{.DATA_BIOMOD} contains some files (predictions, original dataset copy, pseudo absences chosen...) used by other functions like \code{\link[biomod2]{BIOMOD_Projection}} or \code{\link[biomod2]{BIOMOD_EnsembleModeling}} .
   
   The models are currently stored as objects to be read exclusively in R. To load them back (the same stands for all objects stored on the hard disk) 
   use the \code{\link{load}} function (see examples section below). 

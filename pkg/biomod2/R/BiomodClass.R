@@ -1105,7 +1105,7 @@ if( !isGeneric( ".Models.prepare.data" ) ) {
 }
 
 setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
-          function(data, NbRunEval, DataSplit, Yweights=NULL){
+          function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL){
             list.out <- list()
             name <- paste(data@sp.name,'_AllData',sep="")
             xy <- data@coord
@@ -1129,7 +1129,16 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
             }
             
             if(is.null(Yweights)){ # 1 for all points
-              Yweights <- rep(1,length(data@data.species))
+              if(!is.null(Prevalence)){
+                nbPres <- sum(data@data.species, na.rm=TRUE)
+                nbAbs <- length(data@data.species) - nbPres
+                Yweights <- rep(1,length(data@data.species))
+                Yweights[which(data@data.species==0 | is.na(data@data.species))] <- (nbPres * (1-Prevalence)) / (Prevalence * nbAbs) 
+                Yweights = as.integer(Yweights[]*100) # test to remove glm & gam warnings
+              } else{
+                Yweights <- rep(1,length(data@data.species))
+              }
+              
             }
             list.out[[name]] <- list(name=name,
                                    xy=xy,
@@ -1142,7 +1151,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
           })
 
 setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
-          function(data, NbRunEval, DataSplit, Yweights=NULL){
+          function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL){
             list.out <- list()
             for(pa in 1:ncol(data@PA)){
               name <- paste(data@sp.name,"_",colnames(data@PA)[pa],sep="")
@@ -1167,12 +1176,17 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                 eval.xy <- data@eval.coord
               } else{ evalDataBM <- eval.xy <- NULL }
 
-              if(is.null(Yweights)){ # prevalence of 0.5... may be parametrize 
-                Yweights <- data@data.species[data@PA[,pa]]
-                nb.pres <- sum(Yweights, na.rm=T)
-                nb.absences.pos <- (length(Yweights) - nb.pres)
-                Yweights[c(which( Yweights[] == 0 ), which(is.na(Yweights)) )] <- (nb.pres/nb.absences.pos)
-                Yweights = as.integer(Yweights[]*100) # test to remove glm & gam warnings
+              if(is.null(Yweights)){ # prevalence of 0.5... may be parametrize
+                if(is.null(Prevalence)){
+                  cat("\n\t\t\t! Weights where defined to rise a 0.5 prevalence !")
+                  Prevalence = 0.5
+                }
+                nbPres <- sum(data@data.species, na.rm=TRUE)
+                nbAbs <- length(data@data.species) - nbPres
+                Yweights <- rep(1,length(data@data.species[data@PA[,pa]]))
+                Yweights[which(data@data.species[data@PA[,pa]]==0 | is.na(data@data.species[data@PA[,pa]]))] <- (nbPres * (1-Prevalence)) / (Prevalence * nbAbs) 
+                Yweights = as.integer(Yweights[]*100) # test to remove glm & gam warnings                
+                              
               }
               list.out[[name]] <- list(name=name,
                                      xy=xy,

@@ -98,12 +98,6 @@
   mod.prep.dat <- .Models.prepare.data(data, NbRunEval, DataSplit, Yweights, Prevalence, do.full.models)
   rm(data)
   
-  cat("\n***")
-  cat("\n",names(mod.prep.dat))
-  cat("\n",str(mod.prep.dat))
-  readline('pause...')
-  cat("\n***")
-  
   # keeping calibLines
 #   if(NbRunEval > 0){
     calib.lines <- mod.prep.dat[[1]]$calibLines

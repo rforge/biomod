@@ -17,7 +17,8 @@ BIOMOD_Modeling( data,
                  VarImport=0, 
                  models.eval.meth = c('KAPPA','TSS','ROC'), 
                  SaveObj = TRUE,
-                 rescal.all.models = TRUE)
+                 rescal.all.models = TRUE,
+                 do.full.models = TRUE)
 }
 
 \arguments{
@@ -32,6 +33,7 @@ BIOMOD_Modeling( data,
 \item{models.eval.meth}{vector of names of evaluation metric among 'KAPPA', 'TSS', 'ROC', 'FAR', 'SR', 'ACCURACY', 'BIAS', 'POD', 'CSI' and 'ETS'}
 \item{SaveObj}{keep all results and outputs on hard drive or not (NOTE: strongly recommended)}
 \item{rescal.all.models}{if true, all model prediction will be rescaled with a binomial GLM}
+\item{do.full.models}{if true, models calibrated and evaluated with the whole dataset are done }
 }
 
 \details{
@@ -106,6 +108,10 @@ BIOMOD_Modeling( data,
   Some categorical models have to be rescaled in every case (\sQuote{MARS}, \sQuote{FDA}, \sQuote{ANN}). But It may be interesting to rescale all model computed to ensure that they will produced comparable predictions (0-1000 ladder). That's particularly useful when you do some ensemble forecasting to remove the scale prediction effect (the more extended projections are, the more they influence ensemble forecasting results). 
   }
 
+  \item{\bold{do.full.models}}{
+  
+  Building models with all information available may be usefull in some particular cases (i.e. rare species with few presences points). The main drawback of this method is that, if you don't give separated data for models evaluation, your models will be evaluated with the same data that the ones used for calibration. Thats will lead to over-optimistic evaluation scores. Be carefull whith this '_Full' models interpretation.
+  }
 } % end of enumerate
 } % end of detail 
 

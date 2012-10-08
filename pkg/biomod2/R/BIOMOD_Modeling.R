@@ -43,7 +43,8 @@
 #                                KeepPredIndependent=FALSE, 
 #                                DoEnsembleForcasting = TRUE,
                                SaveObj = TRUE,
-                               rescal.all.models = TRUE){
+                               rescal.all.models = TRUE,
+                               do.full.models = TRUE){
   SavePredictions = TRUE
   # 0. loading required libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   .Models.dependencies(silent=TRUE)
@@ -94,9 +95,15 @@
 
   # 3. rearanging data and determining calib and eval data -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-  mod.prep.dat <- .Models.prepare.data(data, NbRunEval, DataSplit, Yweights, Prevalence)
+  mod.prep.dat <- .Models.prepare.data(data, NbRunEval, DataSplit, Yweights, Prevalence, do.full.models)
   rm(data)
-
+  
+  cat("\n***")
+  cat("\n",names(mod.prep.dat))
+  cat("\n",str(mod.prep.dat))
+  readline('pause...')
+  cat("\n***")
+  
   # keeping calibLines
 #   if(NbRunEval > 0){
     calib.lines <- mod.prep.dat[[1]]$calibLines
@@ -125,7 +132,7 @@
                       mod.eval.method = models.eval.meth,
 #                       do.EF = DoEnsembleForcasting,
                       SavePred = SavePredictions,
-                      rescal.models = rescal.all.models,
+                      rescal.models = rescal.all.models
                       )
   # put outputs in good format and save those
 

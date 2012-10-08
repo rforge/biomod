@@ -1105,7 +1105,7 @@ if( !isGeneric( ".Models.prepare.data" ) ) {
 }
 
 setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
-          function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL){
+          function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL, do.full.models=TRUE){
             list.out <- list()
             name <- paste(data@sp.name,'_AllData',sep="")
             xy <- data@coord
@@ -1123,9 +1123,12 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
               calibLines <- matrix(rep(TRUE,length(data@data.species)),ncol=1)
               colnames(calibLines) <- '_Full'
             } else {
-              calibLines <- cbind(.SampleMat(data@data.species, DataSplit, NbRunEval),
-                                  rep(TRUE,length(data@data.species)))
-              colnames(calibLines)[NbRunEval+1] <- '_Full'
+              calibLines <- .SampleMat(data@data.species, DataSplit, NbRunEval)                    
+              if(do.full.models){
+                calibLines <- cbind(calibLines, rep(TRUE,length(data@data.species)))
+                colnames(calibLines)[NbRunEval+1] <- '_Full'
+              }
+              
             }
             
             if(is.null(Yweights)){ # 1 for all points
@@ -1151,7 +1154,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
           })
 
 setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
-          function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL){
+          function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL, do.full.models=TRUE){
             list.out <- list()
             for(pa in 1:ncol(data@PA)){
               name <- paste(data@sp.name,"_",colnames(data@PA)[pa],sep="")
@@ -1164,9 +1167,11 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                 calibLines <- matrix(rep(TRUE,length(data@data.species[data@PA[,pa]])),ncol=1)
                 colnames(calibLines) <- '_Full'
               } else {
-                calibLines <- cbind(.SampleMat(data@data.species[data@PA[,pa]], DataSplit, NbRunEval),
-                                    rep(TRUE,length(data@data.species[data@PA[,pa]])))
-                colnames(calibLines)[NbRunEval+1] <- '_Full'
+                calibLines <- .SampleMat(data@data.species[data@PA[,pa]], DataSplit, NbRunEval)
+                if(do.full.models){
+                  calibLines <- cbind(calibLines, rep(TRUE,length(data@data.species[data@PA[,pa]])))
+                  colnames(calibLines)[NbRunEval+1] <- '_Full'
+                }                
               }
               
               # dealing with evaluation data

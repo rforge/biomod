@@ -116,6 +116,7 @@ setMethod('.transform.outputs', signature(modOut='array'),
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 setMethod('.transform.outputs', signature(modOut='list'), 
   function(modOut, out = 'evaluation', dim.names = NULL){
+
     # check out attr
     if(!(out %in% c('evaluation', 'prediction', 'prediction.eval', 'var.import', 'calib.failure',
                     'models.run', 'EF.prediction', 'EF.PCA.median', 'EF.evaluation' ) )){
@@ -347,9 +348,9 @@ setMethod('.transform.outputs', signature(modOut='list'),
                     })
                   })
                 })
-
-      cf.out <- na.omit(unlist(cf.out))
-      cf.out <- cf.out[!is.null(cf.out)]
+      cf.out <- unlist(cf.out)
+      if(length(cf.out)) cf.out <- na.omit(cf.out)
+      if(length(cf.out)) cf.out <- cf.out[!is.null(cf.out)]
       if(!length(cf.out)) cf.out <- 'none'
       return(cf.out)
     }
@@ -361,9 +362,12 @@ setMethod('.transform.outputs', signature(modOut='list'),
                       return(as.character(modOut[[d1]][[d2]][[d3]][['ModelName']]))
                     })
                   })
-                })  
-      mod.run.out <- na.omit(unlist(mod.run.out))
-      return(mod.run.out[!is.null(mod.run.out)])
+                })
+      mod.run.out <- unlist(mod.run.out)
+      if(length(mod.run.out)) mod.run.out <- na.omit(mod.run.out)
+      if(length(mod.run.out)) mod.run.out <- mod.run.out[!is.null(mod.run.out)]
+      if(!length(mod.run.out)) mod.run.out <- 'none'
+      return(mod.run.out)
     }
     
 

@@ -27,13 +27,13 @@
 # }
 
 .Rescaler5 <-
-function(dataToRescale, ref=NULL, name, original=FALSE)
+function(dataToRescale, ref=NULL, name, original=FALSE, weights=NULL)
 {
 #     #preparing data
 #     #homogenize the format accross original predictions and new projections 
 #     if(!class(dataToRescale)[1]=='RasterLayer'){
-        DataF <- as.data.frame(dataToRescale)         
-        colnames(DataF) <- "DataF"                  
+#         DataF <- as.data.frame(dataToRescale)         
+#         colnames(DataF) <- "DataF"                  
 #     } else{
 #         names(dataToRescale) <-"DataF"
 #         DataF <- stack(dataToRescale) 
@@ -46,11 +46,17 @@ function(dataToRescale, ref=NULL, name, original=FALSE)
       }
 #       Rescaling_GLM = glm(ref~DataF, data=DataF, family="binomial", mustart = rep(0.5,length(ref)))
       ## customised wgts
-      wgts = ref
-      wgts[ref==1] <- (length(ref)-sum(ref,na.rm=TRUE))  / sum(ref,na.rm=TRUE) 
-      wgts[ref!=1] <- 1
+      if(is.null(weights)){
+        weights = ref
+        weights[ref==1] <- (length(ref)-sum(ref,na.rm=TRUE))  / sum(ref,na.rm=TRUE) 
+        weights[ref!=1] <- 1
+        ## transform to integer for warning prevent..
+        weights <- as.integer(weights * 100)
+      }
 
-      Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial(link=probit), x=TRUE, weights=wgts)
+      
+
+      Rescaling_GLM = glm(ref~pred, data=data.frame(ref=as.numeric(ref), pred = as.numeric(dataToRescale)) , family=binomial(link=probit), x=TRUE, weights=weights)
 #       Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial, weights=wgts)
 #       Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial, weights=wgts)
       eval(parse(text=paste("save(Rescaling_GLM, file='", getwd(),"/",
@@ -62,7 +68,7 @@ function(dataToRescale, ref=NULL, name, original=FALSE)
                             "/models/rescaling_models/",name,"_rescaled')", sep="")))
     }
     #make the rescaling prediction
-    RescaledData <- predict(Rescaling_GLM, DataF, type="response")
+    RescaledData <- predict(Rescaling_GLM, data.frame(pred=as.numeric(dataToRescale)), type="response")
   
 #     cat("\n\t\t original range = ", min(DataF) ," - ", max(DataF), "\t rescal ranged = ", min(RescaledData), " - ", max(RescaledData) )
 

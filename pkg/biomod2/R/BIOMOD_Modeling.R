@@ -13,7 +13,7 @@
 #   models.options <- a BIOMOD.models.options object returned by BIOMOD_ModelingOptions() 
 #   NbRunEval <- Nb of Evaluation run 
 #   DataSplit <- % of data used for models calibrations stuff
-#   Yweights <- response points weigths 
+#   Yweights <- response points weights 
 #   VarImport <- Nb of permutation done for variable Importances evaluation 
 #   models.eval.meth <- vector of names of Models evaluation metrix 
 #   SavePredictions <- keep or not array of predictions on hard disk (NOTE: Always TRUE for a posteriori EF)
@@ -283,7 +283,7 @@
   # Check that the weight matrix was entered correctly  
   if(!is.null(Yweights)){
      if(!is.numeric(Yweights))
-        stop("Yweigths must be a numeric vector")
+        stop("Yweights must be a numeric vector")
      if(length(Yweights) != length(data@data.species)) 
        stop("The number of 'Weight' does not match with the input calibration data. 
             Simulation cannot proceed.")
@@ -402,14 +402,14 @@
     EF.algo <- models[models %in% models.options@EF$models.selected]
   }
   if(length(EF.algo)==0) stop('No models available selected for Ensemble forcastiong stuff')
-  # the weigth methods
-  if(models.options@EF$weigth.method == 'all'){
+  # the weight methods
+  if(models.options@EF$weight.method == 'all'){
     EF.weight <- models.eval.meth
   } else {
-    EF.weight <- models.eval.meth[models.eval.meth %in% models.options@EF$weigth.method]
+    EF.weight <- models.eval.meth[models.eval.meth %in% models.options@EF$weight.method]
     cat('\n***', EF.weight)
   }
-  if(length(EF.weight)==0) stop('No weigthing method available selected for Ensemble forcastiong stuff')
+  if(length(EF.weight)==0) stop('No weighting method available selected for Ensemble forcastiong stuff')
   return(list(EF.algo = EF.algo,
             EF.weight = EF.weight))
 }

@@ -16,7 +16,7 @@
                                  Data = X$dataBM,
                                  Options = Options,
                                  calibLines = X$calibLines[,i],
-                                 Yweigths = X$weights,
+                                 Yweights = X$weights,
                                  nam = paste(X$name,colnames(X$calibLines)[i], sep=""),
                                  VarImport = VarImport,
                                  mod.eval.method = mod.eval.method,
@@ -34,7 +34,7 @@
 }
 
 
-.Biomod.Models <- function (Model, Data, Options, calibLines, Yweigths, nam, VarImport = 0, 
+.Biomod.Models <- function (Model, Data, Options, calibLines, Yweights, nam, VarImport = 0, 
                             mod.eval.method = c('ROC','TSS','KAPPA'), evalData = NULL,
                             SavePred = FALSE,
                             xy = NULL, eval.xy = NULL, rescal.models = TRUE){
@@ -42,13 +42,13 @@
   ################################################################################################
   # 1. Print model runing and getting model options =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #               
   # check and get modified args if nececary
-  args <- .Biomod.Models.check(Model, Data, Options, calibLines, Yweigths, mod.eval.method, evalData)
+  args <- .Biomod.Models.check(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData)
   
   if(is.null(args)){ # trouble in input data -> Not Run
     return(0)
   } else {
     Data <- args$Data
-    Yweigths <- args$Yweigths
+    Yweights <- args$Yweights
     evalLines <- args$evalLines
     Type <- args$Type
     criteria <- args$criteria
@@ -89,7 +89,7 @@
                                     head(Data[,-c(1,ncol(Data))]),
                                     'simple', 0),
                         data = Data[calibLines,],
-                        weights = Yweigths,
+                        weights = Yweights,
                         method = Options@CTA$method,
                         cost = cost.tmp,
                         control = eval(Options@CTA$control)) )    
@@ -98,7 +98,7 @@
                                     head(Data[,-c(1,ncol(Data))]),
                                     'simple', 0),
                         data = Data[calibLines,],
-                        weights = Yweigths,
+                        weights = Yweights,
                         method = Options@CTA$method,
                         parms = Options@CTA$parms,
                         cost = cost.tmp,
@@ -151,11 +151,17 @@
         
   if (Model == "GAM"){
     
-    # NOTE : To be able to take into account GAM options and weigths we have to do a eval(parse(...))
+    # NOTE : To be able to take into account GAM options and weights we have to do a eval(parse(...))
     # it's due to GAM implementation ( using of match.call() troubles)
-    gamStart <- eval(parse(text=paste("gam( makeFormula(colnames(Data)[1],head(Data)[,-1], 'simple', 0),",
+    
+    ### Old version
+#     gamStart <- eval(parse(text=paste("gam( makeFormula(colnames(Data)[1],head(Data)[,-1], 'simple', 0),",
+#                           " data = Data[calibLines,], family = ", eval(Options@GAM$family),
+#                           ", weights = Yweights[calibLines])" ,sep="")))
+    
+    gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
                           " data = Data[calibLines,], family = ", eval(Options@GAM$family),
-                          ", weigths = Yweigths[calibLines])" ,sep="")))
+                          ", weights = Yweights[calibLines])" ,sep="")))
 
     model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-1], "s", Options@GAM$spline),
                          data = Data[calibLines,],
@@ -163,6 +169,20 @@
                          direction = "both",
                          trace=Options@GAM$control$trace,
                          control = eval(Options@GAM$control)) ) 
+    
+#     gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
+#                           " data = Data[calibLines,], family = ", eval(Options@GAM$family),
+#                           ", weights = Yweights[calibLines])" ,sep="")))
+# 
+# 
+#     model.sp <- try( step.gam(gamStart, .scope2(Data[1:3,-1],
+#                                                 makeFormula(colnames(Data)[1],head(Data)[,-1], 'quadratic', 0),
+#                                                 "s", Options@GAM$spline),
+#                          data = Data[calibLines,],
+#                          keep = .functionkeep, 
+#                          direction = "both",
+#                          trace=Options@GAM$control$trace,
+#                          control = eval(Options@GAM$control)) )
 
     if( !inherits(model.sp,"try-error") ){ 
       # make prediction
@@ -173,7 +193,8 @@
         g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred[,1]/1000),
                                                    ref = Data[, 1], 
                                                    name = paste(nam,'_',Model,sep=""),
-                                                   original = TRUE) * 1000))    
+                                                   original = TRUE,
+                                                   weights = Yweights) * 1000))    
       }
                                                  
       if(!is.null(evalData)){
@@ -183,9 +204,9 @@
         # rescale or not predictions on evluation data
         if(rescal.models){
           g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred.eval[,1]/1000),
-                                                     ref = evalData[, 1], 
-                                                     name = paste(nam,'_',Model,sep=""),
-                                                     original = TRUE) * 1000))    
+                                                          ref = evalData[, 1], 
+                                                          name = paste(nam,'_',Model,sep=""),
+                                                          original = TRUE) * 1000))    
         }                                    
       }
     }
@@ -198,7 +219,7 @@
                       data = Data[calibLines,], 
                       distribution = Options@GBM$distribution,
                       var.monotone = rep(0, length = ncol(Data)-2), # -2 because of removing of sp and weights
-                      weights = Yweigths,
+                      weights = Yweights,
                       interaction.depth = Options@GBM$interaction.depth,
                       shrinkage = Options@GBM$shrinkage,
                       bag.fraction = Options@GBM$bag.fraction,
@@ -220,7 +241,8 @@
         g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred[,1]/1000),
                                                    ref = Data[, 1], 
                                                    name = paste(nam,'_',Model,sep=""),
-                                                   original = TRUE) * 1000))    
+                                                   original = TRUE,
+                                                   weights = Yweights) * 1000))    
       }
                                                  
       if(!is.null(evalData)){
@@ -231,9 +253,9 @@
         # rescale or not predictions on evluation data
         if(rescal.models){
           g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred.eval[,1]/1000),
-                                                     ref = evalData[, 1], 
-                                                     name = paste(nam,'_',Model,sep=""),
-                                                     original = TRUE) * 1000))    
+                                                          ref = evalData[, 1],
+                                                          name = paste(nam,'_',Model,sep=""),
+                                                          original = TRUE) * 1000))    
         }                                    
       }      
     }
@@ -255,7 +277,7 @@
                       data = Data[calibLines,],
                       family = Options@GLM$family,
                       control = eval(Options@GLM$control),
-                      weights = Yweigths[calibLines],
+                      weights = Yweights[calibLines],
                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
                       model = TRUE)
       
@@ -264,18 +286,18 @@
                           data = Data[calibLines,],
                           direction = "both", trace = FALSE, 
                           k = criteria, 
-                          weights = Yweigths[calibLines],
+                          weights = Yweights[calibLines],
                           steps = 10000,
                           mustart = rep(Options@GLM$mustart, sum(calibLines))) ) 
                           
     } else {
       ## keep the total model      
       model.sp <- try( glm(glm.formula, 
-                      data = cbind(Data[calibLines,],matrix(Yweigths[calibLines], ncol=1, dimnames=list(NULL, "Yweigths"))) ,
+                      data = cbind(Data[calibLines,],matrix(Yweights[calibLines], ncol=1, dimnames=list(NULL, "Yweights"))) ,
                       family = eval(parse(text=call(Options@GLM$family))),
 #                       family = Options@GLM$family,
                       control = eval(Options@GLM$control),
-                      weights = Yweigths,
+                      weights = Yweights,
 #                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
                       model = TRUE) )
     }
@@ -295,7 +317,8 @@
         g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred[,1]/1000),
                                                    ref = Data[, 1], 
                                                    name = paste(nam,'_',Model,sep=""),
-                                                   original = TRUE) * 1000))    
+                                                   original = TRUE,
+                                                   weights = Yweights) * 1000))    
       }
                                                  
       if(!is.null(evalData)){
@@ -305,9 +328,9 @@
         # rescale or not predictions on evluation data
         if(rescal.models){
           g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred.eval[,1]/1000),
-                                                     ref = evalData[, 1], 
-                                                     name = paste(nam,'_',Model,sep=""),
-                                                     original = TRUE) * 1000))
+                                                          ref = evalData[, 1],
+                                                          name = paste(nam,'_',Model,sep=""),
+                                                          original = TRUE) * 1000))
         }                                    
       }
     }
@@ -315,20 +338,23 @@
   } 
         
   if (Model == "MARS"){
+
     model.sp <- try( mars(x = Data[calibLines,2:ncol(Data)],
                      y = Data[calibLines,1],
                      degree = Options@MARS$degree,
                      penalty = Options@MARS$penalty,
                      thresh = Options@MARS$thresh,
                      prune = Options@MARS$prune,
-                     w = Yweigths[calibLines]) )
+                     w = Yweights[calibLines]) )
 
     if( !inherits(model.sp,"try-error") ){
       # prediction are automaticly rescaled
       g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,2:ncol(Data)])),
                                                  ref = Data[, 1], 
                                                  name = paste(nam,'_',Model,sep=""),
-                                                 original = TRUE) * 1000))
+                                                 original = TRUE,
+                                                 weights = NULL#Yweights
+                                                 ) * 1000))
                                                  
       if(!is.null(evalData)){
         g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, evalData[,2:ncol(evalData)])),
@@ -343,15 +369,16 @@
     model.sp <- try(fda(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
                     data = Data[calibLines,],
                     method = eval(parse(text=call(Options@FDA$method))),
-                    weights = Yweigths))
+                    weights = Yweights))
                     
     if( !inherits(model.sp,"try-error") ){
       # prediction are automaticly rescaled
       g.pred <- try(data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,-c(1,ncol(Data))],
-                                                 type = "posterior")[, 2]),
-                                                 ref = as.numeric(Data[, 1]), 
-                                                 name = paste(nam,'_',Model,sep=""),
-                                                 original = TRUE) * 1000)))
+                                                                        type = "posterior")[, 2]),
+                                                     ref = as.numeric(Data[, 1]),
+                                                     name = paste(nam,'_',Model,sep=""),
+                                                     original = TRUE,
+                                                     weights = Yweights) * 1000)))
       
       if( inherits(g.pred,"try-error") ){
         # remove g.pred if not run
@@ -372,23 +399,24 @@
       CV_nnet = .CV.nnet(Input = Data[,2:(ncol(Data)-1)], 
                          Target = Data[calibLines,1], 
                          nbCV = Options@ANN$NbCV, 
-                         W = Yweigths[calibLines])
+                         W = Yweights[calibLines])
       
       model.sp <- try(nnet(formula = makeFormula(colnames(Data)[1],head(Data[,-c(1,ncol(Data))]), 'simple',0),
                        data = Data[calibLines,],
                        size = CV_nnet[1,1],
                        rang = Options@ANN$rang,
                        decay = CV_nnet[1, 2],
-                       weights=Yweigths,
+                       weights=Yweights,
                        maxit = Options@ANN$maxit,
                        trace = FALSE))
 
       if( !inherits(model.sp,"try-error") ){
         # prediction are automaticly rescaled
         g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, Data[,-c(1,ncol(Data))], type = "raw")),
-                                                   ref = Data[,1], 
+                                                   ref = Data[,1],
                                                    name = paste(nam,'_',Model,sep=""),
-                                                   original = TRUE) * 1000))
+                                                   original = TRUE,
+                                                   weights = Yweights) * 1000))
                                                      
         if(!is.null(evalData)){
          g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(predict(model.sp, evalData[,-c(1)], type = "raw")),
@@ -442,7 +470,8 @@
         g.pred <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred[,1]/1000),
                                                    ref = Data[, 1], 
                                                    name = paste(nam,'_',Model,sep=""),
-                                                   original = TRUE) * 1000))    
+                                                   original = TRUE,
+                                                   weights = Yweights) * 1000))    
       }
                                                  
       if(!is.null(evalData)){
@@ -499,7 +528,6 @@
 #         currentDir <- getwd()
 #       }
     
-    
       system(command=paste("java -mx512m -jar maxent.jar environmentallayers=\"",
                            getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Back_swd.csv\" samplesfile=\"",
                            getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Sp_swd.csv\" projectionlayers=\"",
@@ -541,7 +569,8 @@
     g.pred <- data.frame(as.integer(.Rescaler5(g.pred,
                                                ref = Data[,1], 
                                                name = paste(nam,'_',Model,sep=""),
-                                               original = TRUE) * 1000))
+                                               original = TRUE,
+                                               weights = Yweights) * 1000))
 
     if(!is.null(evalData)){
       g.pred.eval <- read.csv(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT", .Platform$file.sep, nam,"_Pred_eval_swd.csv", sep=""))[,3]
@@ -653,7 +682,7 @@
         TempVarImp <- as.data.frame(matrix(data = 0, nrow = 1,ncol = (ncol(Data) - 1 )) )
         colnames(TempVarImp) <- colnames(Data)[-1]
 
-        if (Model %in% c("CTA","ANN","GBM","FDA")){TempVarImp <- TempVarImp[,-ncol(TempVarImp)]} # remove weigths column
+        if (Model %in% c("CTA","ANN","GBM","FDA")){TempVarImp <- TempVarImp[,-ncol(TempVarImp)]} # remove weights column
      
         for (J in 1:(ncol(Data) - 1 )) {
             for (K in 1:VarImport) {
@@ -744,9 +773,11 @@
 }
 
 
-.Biomod.Models.check <- function(Model, Data, Options, calibLines, Yweigths, mod.eval.method, evalData, criteria=NULL, Prev=NULL){
+.Biomod.Models.check <- function(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData, criteria=NULL, Prev=NULL){
   # replace Pseudo absences selected (NA) into true absences (0).. for model computing purpose
-  Data[which(is.na(Data[,1])),1] <- 0
+
+  if(sum(is.na(Data[,1])))
+    Data[which(is.na(Data[,1])),1] <- 0
   
   # Calib Lines checking
   # & Test if there is absences AND presences in data given
@@ -765,6 +796,14 @@
                    presences and absences data given (full model)",sep=""), immediate.=T)
       return(NULL)
     }
+  }
+  
+  # weights checking
+  if(is.null(Yweights)){
+    Yweights <- rep(1,nrow(Data))
+  }
+  if(Model %in% c('GBM','CTA','ANN','FDA')){ # this models required data and weights to be in a same datdaset
+    Data <- cbind(Data,Yweights)
   }
   
   # models options checking and printing
@@ -786,33 +825,25 @@
       cat("\n\tNo stepwise procedure")
     }
       
-    if(is.null(Yweigths)){
-      Yweigths <- rep(1,nrow(Data))
-    } 
-    
   }
                  
     if (Model == "GBM") {
         cat("\nModel=Generalised Boosting Regression \n")
         cat("\t", Options@GBM$n.trees, "maximum different trees and ", Options@GBM$cv.folds,
             " Fold Cross-Validation")
-        if(is.null(Yweigths)) Yweigths <- rep(1,nrow(Data))
-        Data <- cbind(Data,Yweigths) # for rpart computation with weigths
         set.seed(456) # to be able to refind our trees MAY BE BAD
     }
  
     if (Model == "GAM") {
         cat("\nModel=GAM spline \n")
         cat("\t", Options@GAM$spline, " Degrees of smoothing")
-#         if(is.null(Yweigths)) Yweigths <- rep(1,nrow(Data))
-#         Data <- cbind(Data,Yweigths)
+#         if(is.null(Yweights)) Yweights <- rep(1,nrow(Data))
+#         Data <- cbind(Data,Yweights)
     }
  
     if (Model == "CTA") {
         cat("\nModel=Classification tree \n")
         cat("\t", Options@CTA$control$xval, "Fold Cross-Validation")
-        if(is.null(Yweigths)) Yweigths <- rep(1,nrow(Data))
-        Data <- cbind(Data,Yweigths) # for rpart computation with weigths
         set.seed(123) # to be able to refind our trees MAY BE BAD
     }
  
@@ -821,8 +852,6 @@
         cat("\t", Options@ANN$NbCV, "Fold Cross Validation + 3 Repetitions")
 #         cat("\tCalibration and evaluation phase: Nb of cross-validations: ", 
 #             ncol(Ids), "\n")
-        if(is.null(Yweigths)) Yweigths <- rep(1,nrow(Data))
-        Data <- cbind(Data,Yweigths) # for rpart computation with weigths
         set.seed(555) # to be able to refind our trees MAY BE BAD
     }
 
@@ -831,8 +860,6 @@
 
     if (Model == "FDA"){ 
         cat("\nModel=Flexible Discriminant Analysis")
-        if(is.null(Yweigths)) Yweigths <- rep(1,nrow(Data))
-        Data <- cbind(Data,Yweigths) # for rpart computation with weigths
     }
   
     if (Model == "MARS"){ 
@@ -867,7 +894,7 @@
   mod.eval.method <- mod.eval.method[which(mod.eval.method %in% available.eval.meth)]
    
   return(list(Data=Data,
-              Yweigths=Yweigths,
+              Yweights=Yweights,
               evalLines=evalLines,
               criteria=criteria,
               Prev=Prev,

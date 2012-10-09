@@ -442,7 +442,7 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               pres.xy <- coordinates(sp[which(sp@data[,1]==1),])
               
               # to convert longitudinal degrees into metters
-              coef.conversion <- ifelse(grep("longlat",env@crs@projargs), 111319.5, 1)
+              coef.conversion <- ifelse(grepl("longlat",env@crs@projargs), 111319.5, 1)
 #               coef.conversion <- 1
               ## progress bar
               cat("\n")

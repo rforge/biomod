@@ -11,7 +11,7 @@
 
   for(i in 1:ncol(X$calibLines)){ # loop on RunEval
     cat('\n\n-=-=-=--=-=-=-',paste(X$name,colnames(X$calibLines)[i],sep=""),'\n')
-
+    
     res.sp.run[[colnames(X$calibLines)[i]]] <- lapply(Model, .Biomod.Models, 
                                  Data = X$dataBM,
                                  Options = Options,
@@ -42,6 +42,11 @@
   ################################################################################################
   # 1. Print model runing and getting model options =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #               
   # check and get modified args if nececary
+  timing=FALSE  
+  if(timing){
+    t0 <- strptime(format(Sys.time(),"%T"), "%T")
+  }  
+    
   args <- .Biomod.Models.check(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData)
   
   if(is.null(args)){ # trouble in input data -> Not Run
@@ -587,7 +592,11 @@
     }
          
   }
-                      
+
+  if(timing){
+    t1 <- strptime(format(Sys.time(),"%T"), "%T")
+  }
+    
   if (!exists("g.pred")) { # keep the name of uncompleted modelisations
     cat("\n   ! Note : ",paste(nam,'_',Model,sep=''), "failed!\n")
     ListOut$calib.failure = paste(nam,'_',Model,sep='')
@@ -596,6 +605,7 @@
 
   if (exists("g.pred")){
 
+    
     ## Evaluation result stuff
     if(length(mod.eval.method) > 0){
       cat("\n\tEvaluating Model stuff...")
@@ -645,7 +655,11 @@
     rm(list=c('cross.validation', 'g.pred.without.na') )
                                
   } # end evaluation stuff 
-    
+  
+  if(timing){
+    t2 <- strptime(format(Sys.time(),"%T"), "%T")
+  }    
+
   if(exists("g.pred")){ #saving Predictions
     if(SavePred) ListOut$pred <- g.pred[, ]
 
@@ -769,6 +783,13 @@
 
      } # end do Varimp stuff
   
+    if(timing){
+      t3 <- strptime(format(Sys.time(),"%T"), "%T")
+      try(cat(Model,"\t",difftime(t1,t0, units='secs')[[1]],"\t",difftime(t2,t1, units='secs')[[1]],"\t",difftime(t3,t2, units='secs')[[1]],'\n', file="Biomod_Modelling_Timing.txt", append=T ))
+    }
+    
+
+    
   return(ListOut)
 }
 

@@ -68,7 +68,13 @@ function(dataToRescale, ref=NULL, name, original=FALSE, weights=NULL)
                             "/models/rescaling_models/",name,"_rescaled')", sep="")))
     }
     #make the rescaling prediction
-    RescaledData <- predict(Rescaling_GLM, data.frame(pred=as.numeric(dataToRescale)), type="response")
+    if(! inherits(dataToRescale, "Raster")){
+      RescaledData <- predict(Rescaling_GLM, data.frame(pred=as.numeric(dataToRescale)), type="response")
+    } else{
+      cat("\n*** rescaller5 raster rescalling")
+      RescaledData <- predict(dataToRescale, model=Rescaling_GLM, type='response')
+    }
+    
   
 #     cat("\n\t\t original range = ", min(DataF) ," - ", max(DataF), "\t rescal ranged = ", min(RescaledData), " - ", max(RescaledData) )
 

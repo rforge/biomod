@@ -10,7 +10,7 @@ function(respName, explVar, type = 'simple', interaction.level = 0)
   # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
   # 0. Supported Types =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  availableTypes = c("simple", "quadratic", "polynomial")
+  availableTypes = c("simple", "quadratic", "polynomial", "s_smoother")
   
   # 1. Check Given Args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if(!is.character(respName) || length(respName)!=1){
@@ -52,14 +52,26 @@ function(respName, explVar, type = 'simple', interaction.level = 0)
          "polynomial" = {
            for (v in 1:ncol(explVar) ){
              if(is.numeric(explVar[,v])){
-               junk <- c(junk, paste(explVarNames[v],
-                                      "+I(", explVarNames[v],
-                                      "^2)+I(",explVarNames[v],
-                                      "^3)+poly(",explVarNames[v],
-                                      ",2)+poly(",explVarNames[v],
-                                      ",3)",sep="") )
+#                junk <- c(junk, paste(explVarNames[v],
+#                                       "+I(", explVarNames[v],
+#                                       "^2)+I(",explVarNames[v],
+#                                       "^3)+poly(",explVarNames[v],
+#                                       ",2)+poly(",explVarNames[v],
+#                                       ",3)",sep="") )
+                  junk <- c(junk, paste(explVarNames[v],
+                                      "+poly(",explVarNames[v],
+                                      ",3)",sep="") )               
              } else { junk <- c(junk, explVarNames[v]) }
-           } } )
+           } },
+         
+         "s_smoother" = {
+           for (v in 1:ncol(explVar) ){
+             if(is.numeric(explVar[,v])){
+                  junk <- c(junk, paste(explVarNames[v],
+                                      "+s(",explVarNames[v],
+                                      ")",sep="") )               
+             } else { junk <- c(junk, explVarNames[v]) }
+           } })
   
   # interactions
   junk.inter <- NULL

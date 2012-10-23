@@ -21,7 +21,7 @@ setMethod( 'Projection', signature(new.env.data = 'data.frame'),
            do.stack = FALSE){
         
     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-    .Models.dependencies(silent=TRUE)
+    .Models.dependencies(silent=TRUE, models.options=models.options )
   
     # 2. extract model info  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     
@@ -124,7 +124,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
            do.stack = FALSE){
         
     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-    .Models.dependencies(silent=TRUE)
+    .Models.dependencies(silent=TRUE, models.options=models.options)
   
     # 2. extract model info  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     
@@ -215,7 +215,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
       proj.stack <- c() # list of saved files
       for(m.n in models.name){
         
-        proj.ras <- .Projection.do.proj(m.n, env=new.env.data, proj.name=paste("proj_",proj.name, sep=""))
+        proj.ras <- .Projection.do.proj(m.n, env=new.env.data, rescaled.models=rescaled.models, proj.name=paste("proj_",proj.name, sep=""))
         names(proj.ras) <- m.n #names(proj.ras.mod)
 
         # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -275,6 +275,11 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
         gc(reset=TRUE)
       }
       
+    }
+    
+    ## remove MAXENT tmp dir if exists
+    if(file.exists(file.path(sp.name, proj.name, 'MaxentTmpData'))){
+      .Delete.Maxent.WorkDir( file.path(sp.name, proj.name) )
     }
     
     return(invisible(proj.stack))   
@@ -388,7 +393,9 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
     if(model.type == 'MAXENT'){
       if(!is.null(xy)){
         
-        .Prepare.Maxent.Proj.WorkDir(env, xy, proj.name=paste(.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,sep=""))        
+        .Prepare.Maxent.Proj.WorkDir(env, xy, proj.name=paste(.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,sep=""))
+        
+        cat("\t Runing Maxent...")
         
         system(command=paste("java -cp maxent.jar density.Project \"", model.dir,.Platform$file.sep,
                              model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),
@@ -405,6 +412,13 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
     }
           
   })
+
+
+
+
+
+
+
 
 setMethod('.Projection.do.proj', signature(env='RasterStack'),
   function(model.name, env, model.dir = NULL, rescaled.models=TRUE, proj.name=NULL){
@@ -518,20 +532,33 @@ setMethod('.Projection.do.proj', signature(env='RasterStack'),
     }
     
     if(model.type == 'MAXENT'){
-        
+#       if(fromDisk(env)){
+#         if(grepl(".grd", filename(subset(env,1)))){
+# #           print(paste("java -cp maxent.jar density.Project \"", model.dir,.Platform$file.sep,
+# #                              model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),
+# #                              ".lambdas\" ", .extractModelNamesInfo(model.name, info='species'), "/", proj.name ,"/MaxentTmpData/Proj ",.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,"/MaxentTmpData/projMaxent", sep=""))
+#           
+#           system(command=paste("java -cp maxent.jar density.Project \"", model.dir,.Platform$file.sep,
+#                              model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),
+#                              ".lambdas\" ", "projTmp" , " projTmp/maxentOut -grd", sep=""), wait = TRUE)
+#           cat("maxent done")
+#           readline()
+#         }
+#       } 
         .Prepare.Maxent.Proj.Raster.WorkDir(env, proj.name=paste(.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,sep=""))
+        
+        cat("\n\t Runing Maxent...")
         
         system(command=paste("java -cp maxent.jar density.Project \"", model.dir,.Platform$file.sep,
                              model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),
-                             ".lambdas\" ", .extractModelNamesInfo(model.name, info='species'), "/", proj.name ,"/MaxentTmpData/Proj ",.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,"/MaxentTmpData/projMaxent", sep=""), wait = TRUE)        
-
-        proj.ras <- raster(paste( .extractModelNamesInfo(model.name, info='species'), "/", proj.name , "/MaxentTmpData/projMaxent.asc", sep=""))
+                             ".lambdas\" ", .extractModelNamesInfo(model.name, info='species'), "/", proj.name ,"/MaxentTmpData/Proj ",.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,"/MaxentTmpData/projMaxent.grd doclamp=false", sep=""), wait = TRUE) 
+        
+        cat("\n\t Reading Maxent outputs...")
+        proj.ras <- raster(file.path(.extractModelNamesInfo(model.name, info='species'), proj.name , "MaxentTmpData","projMaxent.grd"))
         proj.ras[!is.na(proj.ras[])] <- .Rescaler5(proj.ras[!is.na(proj.ras[])], ref=NULL,
                                                  name=model.name, original=FALSE)
-        .Delete.Maxent.WorkDir(paste(.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,sep=""))
+#         .Delete.Maxent.WorkDir(paste(.extractModelNamesInfo(model.name, info='species'), "/", proj.name ,sep=""))
         return(round(proj.ras*1000))
-    }
-    
-       
+    }   
   })
 

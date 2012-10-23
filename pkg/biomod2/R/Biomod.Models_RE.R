@@ -159,35 +159,63 @@
     # NOTE : To be able to take into account GAM options and weights we have to do a eval(parse(...))
     # it's due to GAM implementation ( using of match.call() troubles)
     
-    ### Old version
-#     gamStart <- eval(parse(text=paste("gam( makeFormula(colnames(Data)[1],head(Data)[,-1], 'simple', 0),",
-#                           " data = Data[calibLines,], family = ", eval(Options@GAM$family),
-#                           ", weights = Yweights[calibLines])" ,sep="")))
+    cat("\n\tUser defined control args building..")
+    user.control.list <- Options@GAM$control
+  
+    if(Options@GAM$algo == 'GAM_gam'){
+      default.control.list <- gam:::gam.control()
+    } else{
+      default.control.list <- mgcv:::gam.control()
+    }
     
-    gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
-                          " data = Data[calibLines,], family = ", eval(Options@GAM$family),
-                          ", weights = Yweights[calibLines])" ,sep="")))
+    control.list <- lapply(names(default.control.list), function(x){
+      if(x %in% names(user.control.list)){
+        return(user.control.list[[x]])
+      } else {
+        return(default.control.list[[x]])
+      }
+    })
+    names(control.list) <- names(default.control.list)
 
-    model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-1], "s", Options@GAM$spline),
-                         data = Data[calibLines,],
-                         keep = .functionkeep, 
-                         direction = "both",
-                         trace=Options@GAM$control$trace,
-                         control = eval(Options@GAM$control)) ) 
+    ### Old version
+    if(Options@GAM$algo == 'GAM_gam'){ ## gam package
+
+      gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
+                            " data = Data[calibLines,], family = ", eval(Options@GAM$family),
+                            ", weights = Yweights[calibLines])" ,sep="")))
+      
+      model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$spline),
+                           data = Data[calibLines,],
+                           keep = .functionkeep, 
+                           direction = "both",
+                           trace=control.list$trace,
+                           control = eval(control.list)) )
+
+    } else { ## mgcv package
+      if(is.null(Options@GLM$myFormula)){
+        gam.formula <- makeFormula(colnames(Data)[1],head(Data[,-ncol(Data)]),Options@GAM$type, Options@GAM$interaction.level)
+      } else{
+        gam.formula <- Options@GLM$myFormula
+      }
+      
+      if (Options@GAM$algo == 'GAM_mgcv'){
+        model.sp <- try(mgcv:::gam(gam.formula, 
+                            data=Data, 
+                            family=Options@GAM$family, 
+                            weights = Yweights,
+                            control = control.list))
+      } else if (Options@GAM$algo == 'BAM_mgcv'){ ## big data.frame gam version
+        model.sp <- try(mgcv:::bam(gam.formula, 
+                            data=Data, 
+                            family=Options@GAM$family,
+                            weights = Yweights,
+                            control = control.list))
+      }
+    }
+
     
-#     gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
-#                           " data = Data[calibLines,], family = ", eval(Options@GAM$family),
-#                           ", weights = Yweights[calibLines])" ,sep="")))
-# 
-# 
-#     model.sp <- try( step.gam(gamStart, .scope2(Data[1:3,-1],
-#                                                 makeFormula(colnames(Data)[1],head(Data)[,-1], 'quadratic', 0),
-#                                                 "s", Options@GAM$spline),
-#                          data = Data[calibLines,],
-#                          keep = .functionkeep, 
-#                          direction = "both",
-#                          trace=Options@GAM$control$trace,
-#                          control = eval(Options@GAM$control)) )
+
+    
 
     if( !inherits(model.sp,"try-error") ){ 
       # make prediction
@@ -286,6 +314,9 @@
                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
                       model = TRUE)
       
+      ## remove warnings
+      warn <- options('warn')                  
+      options(warn=-1)
       model.sp <- try( stepAIC(glmStart, 
                           glm.formula,
                           data = Data[calibLines,],
@@ -294,6 +325,9 @@
                           weights = Yweights[calibLines],
                           steps = 10000,
                           mustart = rep(Options@GLM$mustart, sum(calibLines))) ) 
+                              
+      ## reexec warnings
+      options(warn)
                           
     } else {
       ## keep the total model      
@@ -823,7 +857,8 @@
   if(is.null(Yweights)){
     Yweights <- rep(1,nrow(Data))
   }
-  if(Model %in% c('GBM','CTA','ANN','FDA')){ # this models required data and weights to be in a same datdaset
+  
+  if(Model %in% c('GBM','CTA','ANN','FDA','GAM')){ # this models required data and weights to be in a same datdaset
     Data <- cbind(Data,Yweights)
   }
   
@@ -856,8 +891,9 @@
     }
  
     if (Model == "GAM") {
-        cat("\nModel=GAM spline \n")
-        cat("\t", Options@GAM$spline, " Degrees of smoothing")
+        cat("\nModel=GAM")
+        cat("\n\t",Options@GAM$algo,"algorithm chosen")
+#         cat("\t", Options@GAM$spline, " Degrees of smoothing")
 #         if(is.null(Yweights)) Yweights <- rep(1,nrow(Data))
 #         Data <- cbind(Data,Yweights)
     }

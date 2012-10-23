@@ -83,10 +83,22 @@ Please refer to \code{\link[gbm]{gbm}} help file to get the meaning of this opti
 
 \section{=-=-= GAM =-=-=  (\code{\link[gam]{gam}})}{
   \itemize{
+  
+    \item{algo : either "GAM_mgcv" (default), "GAM_gam" or "BAM_mgcv" defining the chosen GAM function (see \code{\link[mgcv]{gam}}, \code{\link[gam]{gam}} resp. \code{\link[mgcv]{bam}} for more details)}
+    
+    \item{\code{myFormula} : a typical formula object (see example). If not NULL, type and interaction.level args are switched off. 
+    You can choose to either: 
+    \itemize{
+    \item{generate automatically the GLM formula by using the type and interaction.level arguments 
+    type : the smother used to generate the formula. Only "s_smoother" available at time. 
+    interaction.level : integer corresponding to the interaction level between variables considered. Consider that interactions quickly enlarge the number of effective variables used into the GAM. Interaction are not considered if you choosed "GAM_gam" algo}
+    \item{or construct specific formula}
+    }}
+    
     \item{spline : a smooth term in a formula argument to gam (see \code{\link[gam]{s}})}
 %    \item{test : Information criteria for the stepwise selection procedure: AIC for Akaike Information Criteria, and BIC for Bayesian Information Criteria ('AIC' or 'BIC')}  
     \item{family : a description of the error distribution and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \link{family} for details of family functions.) . BIOMOD only runs on presence-absence data so far, so binomial family by default. }
-    \item{control : see \code{\link[gam]{gam.control}}}  
+    \item{control : see \code{\link[mgcv]{gam.control}} or \code{\link[gam]{gam.control}}}  
   }
 
 }

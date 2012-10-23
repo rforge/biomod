@@ -57,8 +57,10 @@
   }
 
   if(!is.null(GAM)){
-    if(!is.null(GAM$spline )) { opt@GAM$spline <- GAM$spline }
-#     if(!is.null(GAM$test )) { opt@GAM$test <- GAM$test }
+    if(!is.null(GAM$algo )) { opt@GAM$algo <- GAM$algo }
+    if(!is.null(GAM$type )) { opt@GAM$type <- GAM$type }
+    if(!is.null(GAM$interaction.level )) { opt@GAM$interaction.level <- GAM$interaction.level }
+    if(!is.null(GAM$myFormula )) { opt@GAM$myFormula <- GAM$myFormula }
     if(!is.null(GAM$family )) { opt@GAM$family <- GAM$family }
     if(!is.null(GAM$control )) { opt@GAM$control <- GAM$control } 
   } 

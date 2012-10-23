@@ -180,6 +180,7 @@
             prediction.kept <- prediction.kept[,models.kept]
             
             prediction.kept <- as.data.frame(prediction.kept)
+            unlink(file.path(modeling.output@sp.name,"proj_Tmp"),recursive = TRUE, force = TRUE)
             cat("\n")
           }
 

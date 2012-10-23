@@ -10,9 +10,15 @@
 # We choose here to create monospecific objects to make all procedures and parallelising easier
 require(sp, quietly=TRUE)
 require(raster, quietly=TRUE)
-require(gam, quietly=TRUE)
-require(rpart, quietly=TRUE)
-require(mda, quietly=TRUE)
+
+# if('mgcv' %in% rownames(installed.packages())){
+#   require(mgcv, quietly=TRUE)
+# } else{
+#   require(gam, quietly=TRUE)
+# }
+# 
+# require(rpart, quietly=TRUE)
+# require(mda, quietly=TRUE)
 
 # 1. The BIOMOD.formated.data -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=- #
 # this object is the basic one
@@ -415,15 +421,19 @@ setClass("BIOMOD.Model.Options",
                                 n.trees = 500,
                                 cv.folds = 5),
                    
-                   GAM = list( spline = 2,
-#                                test = 'AIC',
+                   GAM = list( algo = "GAM_mgcv",
+                               type = "s_smoother",
+                               interaction.level = 0,
+                               myFormula = NULL,
                                family = 'binomial',
-                               control = gam:::gam.control(maxit = 50, bf.maxit = 50)),
+                               control = list(epsilon = 1e-06, trace = FALSE ,maxit = 100)), 
                    
                    CTA = list(method = 'class',
                               parms = 'default',
-                              control = rpart.control(xval = 5, minbucket = 5, minsplit = 5,
-                                                      cp = 0.001, maxdepth = 25),
+#                               control = rpart.control(xval = 5, minbucket = 5, minsplit = 5,
+#                                                       cp = 0.001, maxdepth = 25),
+                              control = list(xval = 5, minbucket = 5, minsplit = 5,
+                                                      cp = 0.001, maxdepth = 25),                              
                               cost = NULL ),
                                                       
                    ANN = list(NbCV = 5,
@@ -487,8 +497,10 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             
             ## GAM options
             cat("\n")
-            cat("\nGAM = list( spline = ", object@GAM$spline, ",", sep="")
-#             cat("\n            test = '", object@GAM$test, "',", sep="")
+            cat("\nGAM = list( algo = '", object@GAM$algo, "',", sep="")
+            cat("\n            type = '", object@GAM$type, "',", sep="")
+            cat("\n            interaction.level = '", object@GAM$interaction.level, "',", sep="")
+            cat("\n            myFormula = '", ifelse(length(object@GAM$myFormula) < 1,'NULL',paste(object@GAM$myFormula[2],object@GAM$myFormula[1],object@GAM$myFormula[3])), ",", sep="")
             cat("\n            family = '", object@GAM$family, "',", sep="")
             cat("\n            control = gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
 
@@ -1097,12 +1109,12 @@ setMethod("getEMbuiltModels", "BIOMOD.EnsembleModeling.out",
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-if( !isGeneric( ".Models.prepare.data" ) ) {
+# if( !isGeneric( ".Models.prepare.data" ) ) {
   setGeneric( ".Models.prepare.data", 
               def = function(data, ...){
                       standardGeneric( ".Models.prepare.data" )
                       } )
-}
+# }
 
 setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
           function(data, NbRunEval, DataSplit, Yweights=NULL, Prevalence=NULL, do.full.models=TRUE){

@@ -80,8 +80,21 @@
   dir.create(paste(getwd(),'/',proj.name,'/MaxentTmpData/Proj', sep=""), showWarnings=FALSE, recursive=TRUE)
   
   # Proj Data
-  for(i in 1:nlayers(Data)){
-    writeRaster(Data[[i]], filename=paste(getwd(),'/',proj.name,'/MaxentTmpData/Proj/',names(Data)[i],'.asc',sep=''),
-                format='ascii', overwrite=TRUE)
+  for(l in names(Data)){
+    if(! file.exists(file.path(proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
+      cat("\n***",l)
+      if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
+        cat("\n coping ascii file")
+        file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
+      } else{
+        cat("\n creating ascii file")
+        writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
+            format='ascii', overwrite=TRUE)        
+      }
+
+    } else{
+      cat("\n", file.path(proj.name,'MaxentTmpData',paste(l,'.asc',sep='')),'already created !')
+    }
+
   }
 }

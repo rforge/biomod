@@ -51,7 +51,7 @@ BIOMOD_Modeling( data,
     The set of models to be calibrated on the data. 10 modeling techniques are currently available: 
     \itemize{
       \item{GLM : Generalized Linear Model (\code{\link[stats]{glm}})}
-      \item{GAM : Generalized Additive Model (\code{\link[gam]{gam}})}
+      \item{GAM : Generalized Additive Model (\code{\link[gam]{gam}}, \code{\link[mgcv]{gam}} or \code{\link[mgcv]{bam}}, see \code{\link[biomod2]{BIOMOD_ModelingOptions} for details on algorithm selection})}
       \item{GBM : Generalized Boosting Model or usually called Boosted Regression Trees (\code{\link[gbm]{gbm}})}
       \item{CTA : Classification Tree Analysis (\code{\link[rpart]{rpart}})}
       \item{ANN : Artificial Neural Network (\code{\link[nnet]{nnet}})}

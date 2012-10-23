@@ -47,7 +47,7 @@
                                do.full.models = TRUE){
   SavePredictions = TRUE
   # 0. loading required libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  .Models.dependencies(silent=TRUE)
+  .Models.dependencies(silent=TRUE, models.options=models.options )
 
   # 1. args checking =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   args <- .Models.check.args(data, models, models.options, NbRunEval, DataSplit,
@@ -196,7 +196,7 @@
 # -=-=-=- Several hidden functions -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 
-.Models.dependencies <- function(silent=TRUE){
+.Models.dependencies <- function(silent=TRUE, models.options = NULL){
   # Loading all required libraries
   cat('\n\nLoading required library...')
   require(nnet, quietly=silent)
@@ -205,7 +205,25 @@
   require(gbm, quietly=silent)
   require(mda, quietly=silent)
   require(randomForest, quietly=silent)
-  require(gam, quietly=silent)
+  
+  if(!is.null(models.options)){
+    if(grepl('mgcv', models.options@GAM$algo)){
+      if("package:gam" %in% search() ) detach(package:gam)
+      require(mgcv, quietly=silent)
+    } else{
+      if("package:mgcv" %in% search() ) detach(package:mgcv)
+      require(gam, quietly=silent)
+    }
+  } else {
+    if('mgcv' %in% rownames(installed.packages())){
+      if("package:gam" %in% search() ) detach(package:gam)
+      require(mgcv, quietly=silent)
+    } else{
+      if("package:mgcv" %in% search() ) detach(package:mgcv)
+      require(gam, quietly=silent)
+    }    
+  }
+
   require(abind, quietly=silent)
 }
 

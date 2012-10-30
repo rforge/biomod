@@ -687,8 +687,10 @@ setMethod("getModelsPrediction", "BIOMOD.models.out",
                 return(obj@models.prediction@val)
               } else{
                 if(obj@models.prediction@link != ''){
-                  load(obj@models.prediction@link)
-                  return(models.prediction)
+#                   load(obj@models.prediction@link)
+#                   return(models.prediction)
+                  
+                  return(get(load(obj@models.prediction@link)))
                 } else{ return(NULL) }
               }              
             } else {
@@ -701,8 +703,9 @@ setMethod("getModelsPrediction", "BIOMOD.models.out",
                 return(mod.pred)
               } else{
                 if(obj@models.prediction@link != ''){
-                  load(obj@models.prediction@link)
-                  mod.pred <- as.data.frame(models.prediction)
+#                   load(obj@models.prediction@link)
+#                   mod.pred <- as.data.frame(models.prediction)
+                  mod.pred <- as.data.frame(get(load(obj@models.prediction@link)))                  
                   names(mod.pred) <- unlist(lapply(strsplit(names(mod.pred),".", fixed=TRUE), 
                                    function(x){
                                      return(paste(obj@sp.name, x[3], x[2], x[1],sep="_"))
@@ -768,8 +771,9 @@ setMethod("getModelsEvaluations", "BIOMOD.models.out",
               return(obj@models.evaluation@val)
             } else{
               if(obj@models.evaluation@link != ''){
-                load(obj@models.evaluation@link)
-                return(models.evaluation)
+#                 load(obj@models.evaluation@link)
+#                 return(models.evaluation)
+                return(get(load(obj@models.evaluation@link)))                
               } else{ return(NA) }
             }
           }
@@ -787,8 +791,9 @@ setMethod("getModelsVarImport", "BIOMOD.models.out",
               return(obj@variables.importances@val)
             } else{
               if(obj@variables.importances@link != ''){
-                load(obj@variables.importances@link)
-                return(variables.importances)
+#                 load(obj@variables.importances@link)
+#                 return(variables.importances)
+                return(get(load(obj@variables.importances@link)))
               } else{ return(NA) }
             }
           }
@@ -806,8 +811,9 @@ setMethod("getModelsOptions", "BIOMOD.models.out",
               return(obj@models.options@val)
             } else{
               if(obj@models.options@link != ''){
-                load(obj@models.options@link)
-                return(models.options)
+#                 load(obj@models.options@link)
+#                 return(models.options)
+                return(get(load(obj@models.options@link)))                
               } else{ return(NA) }
             }
           }

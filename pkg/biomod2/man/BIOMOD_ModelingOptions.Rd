@@ -167,6 +167,7 @@ NOTE: for method and parms, you can give a 'real' value as described in the rpar
 
 \section{=-=-= MAXENT -=  \url{http://www.cs.princeton.edu/~schapire/maxent/}}{
   \itemize{
+    \item{path_to_maxent.jar : character, the link to \pkg{maxent.jar} file (the working directory by default) }
     \item{maximumiterations : integer (default 200), maximum iteration done}
     \item{visible : logical (default FALSE), make the Maxent user interface visible}
     \item{linear : logical (default TRUE), allow linear features to be used}

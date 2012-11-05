@@ -252,9 +252,20 @@
                              == FALSE) ]," is not a availabe model !",sep=""))
   }
   
+  # models.options checking ( peut etre permetre l'utilisation de liste de params )
+  if( !is.null(models.options) && class(models.options) != "BIOMOD.Model.Options" ){
+    stop("models.options argument must be a 'BIOMOD.Model.Options.object' (obtain by runing ... ) ")
+  }
+  
+  if( is.null(models.options)){
+    warning("Models will run with 'defaults' parameters", immediate.=T)
+    # create a default models.options object
+    models.options = new("BIOMOD.Model.Options")
+  }
+  
   # MAXENT specific checking
   if("MAXENT" %in% models){
-    if(!file.exists("maxent.jar")){
+    if(!file.exists(file.path(models.options@MAXENT$path_to_maxent.jar ,"maxent.jar")) ){
       models = models[-which(models=='MAXENT')]
       warning("The maxent.jar file is missing. You need to download this file (http://www.cs.princeton.edu/~schapire/maxent) and put the maxent.jar file in your working directory -> MAXENT was switched off")
     }
@@ -266,17 +277,6 @@
         models = models[-which(models=='MAXENT')]
       }
     } 
-  }
-  
-  # models.options checking ( peut etre permetre l'utilisation de liste de params )
-  if( !is.null(models.options) && class(models.options) != "BIOMOD.Model.Options" ){
-    stop("models.options argument must be a 'BIOMOD.Model.Options.object' (obtain by runing ... ) ")
-  }
-  
-  if( is.null(models.options)){
-    warning("Models will run with 'defaults' parameters", immediate.=T)
-    # create a default models.options object
-    models.options = new("BIOMOD.Model.Options")
   }
   
   # NbRunEval checking (permetre un nb different par espece?)

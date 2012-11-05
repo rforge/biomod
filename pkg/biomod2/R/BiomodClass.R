@@ -453,7 +453,8 @@ setClass("BIOMOD.Model.Options",
                              ntree = 50,
                              mtry = 'default'),
                    
-                   MAXENT = list(maximumiterations = 200,
+                   MAXENT = list(path_to_maxent.jar = getwd(),
+                                 maximumiterations = 200,
                                  visible = FALSE,
                                  linear = TRUE,
                                  quadratic = TRUE,
@@ -540,7 +541,8 @@ setMethod('show', signature('BIOMOD.Model.Options'),
                    
             ## MAXENT options
             cat("\n")
-            cat("\nMAXENT = list( maximumiterations = ", object@MAXENT$maximumiterations, ",", sep="")
+            cat("\nMAXENT = list( path_to_maxent.jar = '", object@MAXENT$path_to_maxent.jar, "',", sep="")
+            cat("\n               maximumiterations = ", object@MAXENT$maximumiterations, ",", sep="")
             cat("\n               visible = ", object@MAXENT$visible, ",", sep="")
             cat("\n               linear = ", object@MAXENT$linear, ",", sep="")
             cat("\n               quadratic = ", object@MAXENT$quadratic, ",", sep="")

@@ -567,7 +567,7 @@
 #         currentDir <- getwd()
 #       }
     
-      system(command=paste("java -mx512m -jar maxent.jar environmentallayers=\"",
+      system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), " environmentallayers=\"",
                            getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Back_swd.csv\" samplesfile=\"",
                            getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Sp_swd.csv\" projectionlayers=\"",
                            gsub(", ",",",toString(list.files(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Pred",sep=""),

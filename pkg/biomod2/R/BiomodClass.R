@@ -499,9 +499,9 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n")
             cat("\nGAM = list( algo = '", object@GAM$algo, "',", sep="")
             cat("\n            type = '", object@GAM$type, "',", sep="")
-            cat("\n            interaction.level = '", object@GAM$interaction.level, "',", sep="")
-            cat("\n            myFormula = '", ifelse(length(object@GAM$myFormula) < 1,'NULL',paste(object@GAM$myFormula[2],object@GAM$myFormula[1],object@GAM$myFormula[3])), ",", sep="")
-            cat("\n            family = '", object@GAM$family, "',", sep="")
+            cat("\n            interaction.level = ", object@GAM$interaction.level, ",", sep="")
+            cat("\n            myFormula = ", ifelse(length(object@GAM$myFormula) < 1,'NULL',paste(object@GAM$myFormula[2],object@GAM$myFormula[1],object@GAM$myFormula[3])), ",", sep="")
+            cat("\n            family = ", object@GAM$family, ",", sep="")
             cat("\n            control = gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
 
             ## CTA options

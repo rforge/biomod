@@ -109,6 +109,7 @@
   }
 
   if(!is.null(MAXENT)){
+    if(!is.null(MAXENT$path_to_maxent.jar )) { opt@MAXENT$path_to_maxent.jar <- MAXENT$path_to_maxent.jar } else {opt@MAXENT$path_to_maxent.jar <- getwd()}
     if(!is.null(MAXENT$maximumiterations )) { opt@MAXENT$maximumiterations <- MAXENT$maximumiterations }
     if(!is.null(MAXENT$visible )) { opt@MAXENT$visible <- MAXENT$visible }
     if(!is.null(MAXENT$linear )) { opt@MAXENT$linear <- MAXENT$linear }
@@ -124,6 +125,8 @@
     if(!is.null(MAXENT$beta_lqp )) { opt@MAXENT$beta_lqp <- MAXENT$beta_lqp }
     if(!is.null(MAXENT$beta_hinge )) { opt@MAXENT$beta_hinge <- MAXENT$beta_hinge }
     if(!is.null(MAXENT$defaultprevalence )) { opt@MAXENT$defaultprevalence <- MAXENT$defaultprevalence }
+  } else{
+    opt@MAXENT$path_to_maxent.jar <- getwd()
   }
 
   return(opt)

@@ -55,27 +55,30 @@ setMethod('predict', signature(object = 'maxent_model'),
             xy <- args$xy # may be NULL
             
             if(inherits(newdata, 'Raster')){            
-              return(predict.maxent_model.RasterStack(object, newdata, proj_name))
+              return(predict.maxent_model.RasterStack(object, newdata, proj_name, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
-              return(predict.maxent_model.data.frame(object, newdata, xy, proj_name))
+              return(predict.maxent_model.data.frame(object, newdata, proj_name, ... ))
             } else{ stop("invalid newdata input") }
             
           })
 
 
-predict.maxent_model.data.frame <- function(object, newdata, xy=NULL, proj_name=NULL, ...){
+predict.maxent_model.data.frame <- function(object, newdata, proj_name, ...){
   args <- list(...)
   rm_tmp_files <- args$rm_tmp_files
+  xy <- args$xy
   
   if( is.null(xy) ){
     if( sum(c('x','y') %in% colnames(newdata) ) == 2 ){
       coor_col <- c( which(colnames(newdata) == 'x'), which(colnames(newdata) == 'y') )
       xy <- newdata[,coor_col]
       newdata <- newdata[,- coor_col]
-    } else { stop("You must give environmental points coordinates")}
+    } else { 
+      xy <- data.frame(x=rep(0,nrow(newdata)), y=rep(0,nrow(newdata)))
+    }
   }
   
-  .Prepare.Maxent.Proj.WorkDir(Data = newdata, xy = xy , proj.name = file.path(object@sp_name,proj_name))
+  .Prepare.Maxent.Proj.WorkDir(Data = newdata, xy = xy , proj_name = file.path(object@sp_name,proj_name))
   
   cat("\n\t\tRuning Maxent...")
   system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
@@ -103,7 +106,7 @@ predict.maxent_model.RasterStack <- function(object, newdata, proj_name=NULL, ..
   args <- list(...)
   rm_tmp_files <- args$rm_tmp_files
   
-  .Prepare.Maxent.Proj.WorkDir(Data = newdata, proj.name = file.path(object@sp_name,proj_name))
+  .Prepare.Maxent.Proj.WorkDir(Data = newdata, proj_name = file.path(object@sp_name,proj_name))
   
   cat("\n\t\tRuning Maxent...")
   system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),

@@ -13,10 +13,10 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   ## make a subselection
   
   ## remove MAXENT and SRE
-  if(sum(grepl('MAXENT',  models.to.load)) > 0){
-    cat("\n   ! MAXENT models can't be load yet ! ")
-    models.to.load <- models.to.load[- which(grepl('MAXENT',  models.to.load))]
-  }
+#   if(sum(grepl('MAXENT',  models.to.load)) > 0){
+#     cat("\n   ! MAXENT models can't be load yet ! ")
+#     models.to.load <- models.to.load[- which(grepl('MAXENT',  models.to.load))]
+#   }
   if(sum(grepl('SRE',  models.to.load)) > 0){
     cat("\n   ! SRE models can't be load yet ! ")
     models.to.load <- models.to.load[- which(grepl('SRE',  models.to.load))]

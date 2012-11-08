@@ -3,8 +3,8 @@
   if(is.null(RunName)) RunName <- colnames(Data)[1]
   if(is.null(species.name)) species.name <- colnames(Data)[1]
   
-  dir.create(paste(getwd(),'/',species.name,'/MaxentTmpData', sep=""), showWarnings=FALSE)
-  dir.create(paste(getwd(),'/',species.name,'/models/',RunName,'_MAXENT',sep=''), showWarnings=FALSE)
+  dir.create(paste(getwd(),'/',species.name,'/MaxentTmpData', sep=""), showWarnings=FALSE, recursive=TRUE)
+  dir.create(paste(getwd(),'/',species.name,'/models/',RunName,'_MAXENT_outputs',sep=''), showWarnings=FALSE, recursive=TRUE)
   
   # Presences Data
   presLines <- which((Data[,1]==1) & calibLines)
@@ -59,42 +59,91 @@
   
 }
 
-.Prepare.Maxent.Proj.WorkDir <- function(Data, xy, proj.name=NULL){
-  cat('\n\tCreating Maxent Temp Proj Data..')
-  
-  if(is.null(proj.name)) proj.name <- colnames(Data)[1]
-  dir.create(paste(getwd(),'/',proj.name,'/MaxentTmpData', sep=""), showWarnings=FALSE)
-  
-  # Proj Data
-  Proj_swd <- cbind(rep("proj",nrow(xy)),xy,Data)
-  colnames(Proj_swd)  <- c("proj","X","Y",colnames(Data))
-  write.table(Proj_swd, file=paste(getwd(),'/',proj.name,"/MaxentTmpData/Proj_swd.csv",sep=""), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
-}
+# Maxent Projection working directory preparation -=-=-=-=-=-=-=- #
 
-.Prepare.Maxent.Proj.Raster.WorkDir <- function(Data, proj.name=NULL){
-  cat('\n\tCreating Maxent Temp Proj Data..')
-  
-  if(is.null(proj.name)){
-    stop("Please refere explicitly a proj name!")
-  }
-  dir.create(paste(getwd(),'/',proj.name,'/MaxentTmpData/Proj', sep=""), showWarnings=FALSE, recursive=TRUE)
-  
-  # Proj Data
-  for(l in names(Data)){
-    if(! file.exists(file.path(proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
-      cat("\n***",l)
-      if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
-        cat("\n coping ascii file")
-        file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
-      } else{
-        cat("\n creating ascii file")
-        writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
-            format='ascii', overwrite=TRUE)        
-      }
+setGeneric(".Prepare.Maxent.Proj.WorkDir", 
+            def = function(Data, ...){
+              standardGeneric( ".Prepare.Maxent.Proj.WorkDir" )
+            } )
 
-    } else{
-      cat("\n", file.path(proj.name,'MaxentTmpData',paste(l,'.asc',sep='')),'already created !')
-    }
 
-  }
-}
+setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='data.frame'),
+          def = function(Data, xy, proj.name=NULL){
+            cat('\n\t\tCreating Maxent Temp Proj Data...')
+            
+            if(is.null(proj.name)) proj.name <- colnames(Data)[1]
+            dir.create(file.path(getwd(),proj.name,'MaxentTmpData'), showWarnings=FALSE, recursive=TRUE)
+            
+            # Proj Data
+            Proj_swd <- cbind(rep("proj",nrow(xy)),xy,Data)
+            colnames(Proj_swd)  <- c("proj","X","Y",colnames(Data))
+            write.table(Proj_swd, file=file.path(getwd(),proj.name,'MaxentTmpData', 'Proj_swd.csv'), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+            })
+
+
+setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
+          def = function(Data, proj.name=NULL){
+            cat('\n\t\tCreating Maxent Temp Proj Data...')
+            
+            if(is.null(proj.name)) proj.name <- colnames(Data)[1]
+            dir.create(file.path(getwd(),proj.name,'MaxentTmpData','Proj'), showWarnings=FALSE, recursive=TRUE)
+            
+            # Proj Data
+            for(l in names(Data)){
+              if(! file.exists(file.path(proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
+                cat("\n\t\t\t>",l ,"\t:\t" )
+                if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
+                  cat("coping ascii file")
+                  file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
+                } else{
+                  cat("creating ascii file")
+                  writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
+                              format='ascii', overwrite=TRUE)        
+                }
+                
+              } else{
+                cat("\n", file.path(proj.name,'MaxentTmpData','', paste(l,'.asc',sep='')),'already created !')
+              }
+              
+            }
+          })
+
+# .Prepare.Maxent.Proj.WorkDir <- function(Data, xy, proj.name=NULL){
+#   cat('\n\tCreating Maxent Temp Proj Data..')
+#   
+#   if(is.null(proj.name)) proj.name <- colnames(Data)[1]
+#   dir.create(paste(getwd(),'/',proj.name,'/MaxentTmpData', sep=""), showWarnings=FALSE)
+#   
+#   # Proj Data
+#   Proj_swd <- cbind(rep("proj",nrow(xy)),xy,Data)
+#   colnames(Proj_swd)  <- c("proj","X","Y",colnames(Data))
+#   write.table(Proj_swd, file=paste(getwd(),'/',proj.name,"/MaxentTmpData/Proj_swd.csv",sep=""), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+# }
+# 
+# .Prepare.Maxent.Proj.Raster.WorkDir <- function(Data, proj.name=NULL){
+#   cat('\n\tCreating Maxent Temp Proj Data..')
+#   
+#   if(is.null(proj.name)){
+#     stop("Please refere explicitly a proj name!")
+#   }
+#   dir.create(paste(getwd(),'/',proj.name,'/MaxentTmpData/Proj', sep=""), showWarnings=FALSE, recursive=TRUE)
+#   
+#   # Proj Data
+#   for(l in names(Data)){
+#     if(! file.exists(file.path(proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
+#       cat("\n***",l)
+#       if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
+#         cat("\n coping ascii file")
+#         file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
+#       } else{
+#         cat("\n creating ascii file")
+#         writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
+#             format='ascii', overwrite=TRUE)        
+#       }
+# 
+#     } else{
+#       cat("\n", file.path(proj.name,'MaxentTmpData',paste(l,'.asc',sep='')),'already created !')
+#     }
+# 
+#   }
+# }

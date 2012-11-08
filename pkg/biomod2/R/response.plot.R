@@ -1,7 +1,7 @@
 `response.plot` <-
 function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="response_curve", ImageSize=480, plot=TRUE){
   
-  cat("\n! Depreciated function, please use response.plot2 instead !")
+  cat("\n! Deprecated function, please use response.plot2 instead !")
   return(TRUE)
 #   if(inherits(Data,"Raster")){
 #     cat("\n   > Extracting raster infos..")
@@ -242,6 +242,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
         if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
         if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
+        if(inherits(mod,'maxent_model')){ proj.tmp <- as.numeric(predict(object=mod,newdata=Data.r.tmp,xy=data.frame(x=rep(0,nrow(Data.r.tmp)), y=rep(0,nrow(Data.r.tmp))), proj_name='RespPlotTmp')) }
         
         # 3. Rescaling stuff
         ## TO DO
@@ -294,6 +295,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
           if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
           if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
           if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
+          if(inherits(mod,'maxent_model')){ proj.tmp <- as.numeric(predict(object=mod,newdata=Data.r.tmp,xy=data.frame(x=rep(0,nrow(Data.r.tmp)), y=rep(0,nrow(Data.r.tmp))), proj_name='RespPlotTmp')) }
           
           # 3. Rescaling stuff
           ## TO DO
@@ -347,9 +349,10 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 .response.plot2.check.arg <- function(models, Data, show.variables, save.file, name, ImageSize, plot, fixed.var.metric, do.bivariate, add.args){
   
   # 1. check add.args
-  if(sum(! (names(add.args) %in% c("nb.pts"))) > 0){
+  if(sum(! (names(add.args) %in% c("nb.pts","xy"))) > 0){
     warning(paste(toString(names(add.args)[which(! (names(add.args) %in% c("nb.pts")))]), " are unknown arguments", sep="" ))
   }
+  
   
   ### check of models args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   if(!is.character(models)){

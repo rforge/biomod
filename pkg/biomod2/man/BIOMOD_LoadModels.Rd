@@ -35,7 +35,7 @@
 }
 
 \note{
-  \code{MAXENT} and \code{SRE} models are not supported yet. They will be automaticly excluded even if they are selected.
+  \code{SRE} models are not supported yet. They will be automaticly excluded even if they are selected.
 }
 
 \value{

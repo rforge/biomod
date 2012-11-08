@@ -66,7 +66,7 @@ myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
                                      expl.var = myExpl,
                                      resp.xy = myRespCoord,
                                      resp.name = myRespName,
-                                     PA.nb.rep = 2,
+                                     PA.nb.rep = 1,
                                      PA.nb.absences = 200,
                                      PA.strategy = 'random')
                                                                      
@@ -75,14 +75,16 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 
 # 3. Running the models 
 myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
-                                       models = c('CTA','RF'), 
+                                       models = c('SRE','RF'), 
                                        models.options = myBiomodOption, 
-                                       NbRunEval=1, 
+                                       NbRunEval=2, 
                                        DataSplit=80, 
                                        Yweights=NULL, 
-                                       VarImport=2, 
+                                       VarImport=0, 
                                        models.eval.meth = c('TSS'),
-                                       SaveObj = TRUE )
+                                       SaveObj = TRUE,
+                                       rescal.all.models = FALSE,
+                                       do.full.models = FALSE)
                                        
 # 4. Creating the ensemble models 
 myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
@@ -90,12 +92,12 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
                                        em.by = 'algo',
                                        eval.metric = c('TSS'),
                                        eval.metric.quality.threshold = c(0.7),
-                                       prob.mean = TRUE,
-                                       prob.cv = TRUE,
-                                       prob.ci = TRUE,
+                                       prob.mean = FALSE,
+                                       prob.cv = FALSE,
+                                       prob.ci = FALSE,
                                        prob.ci.alpha = 0.05,
-                                       prob.median = TRUE,
-                                       committee.averaging = TRUE,
+                                       prob.median = FALSE,
+                                       committee.averaging = FALSE,
                                        prob.mean.weight = TRUE,
                                        prob.mean.weight.decay = 'proportional' )
                                        

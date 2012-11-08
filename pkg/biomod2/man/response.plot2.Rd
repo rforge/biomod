@@ -20,7 +20,7 @@ response.plot2( models,
 }
 
 \arguments{
-  \item{models}{ a character vector specifying the models for which the response curves have to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, FDA and MARS.}
+  \item{models}{ a character vector specifying the models for which the response curves have to be plotted. Compatible with GAM, GBM, GLM, ANN, CTA, RF, FDA, MARS and MAXENT.}
   \item{Data}{ a dataframe containing the variables for which the response curves have to be plotted. They must have the same names as the ones used to calibrate the model. RasterStack are also supported. }
   \item{show.variables}{ the names or the column numbers of 'Data' for selecting the variables to be plotted. By default all columns are taken }
   \item{do.bivariate}{ 'logical', if FALSE (default), the predicted response curves are plotted for every singe variable independently (2-D dimension). If TRUE, the predicted response curves are represented in 3-D for all pairs of variables}

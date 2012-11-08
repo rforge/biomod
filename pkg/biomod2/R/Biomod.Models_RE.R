@@ -558,6 +558,7 @@
                        
   if (Model == "MAXENT"){
     .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy, species.name=colnames(Data)[1])
+    cat("\n Runing Maxent...")
 
     # run MaxEnt:
 #     if(VarImport > 0 ){ # projection on suffle table to be able to compute VarImport latter
@@ -568,11 +569,12 @@
 #       }
     
       system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), " environmentallayers=\"",
-                           getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Back_swd.csv\" samplesfile=\"",
-                           getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Sp_swd.csv\" projectionlayers=\"",
+                           file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Back_swd.csv"),"\" samplesfile=\"",
+                           file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Sp_swd.csv"),"\" projectionlayers=\"",
                            gsub(", ",",",toString(list.files(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Pred",sep=""),
                                                full.names= T))), "\" outputdirectory=\"",
-                           getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT\" outputformat=logistic ",
+                           file.path(getwd(), colnames(Data)[1], "models", paste(nam, "_MAXENT_outputs", sep="")),"\"",
+                           " outputformat=logistic ",
 #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations, 
                            " redoifexists",
                            " visible=", Options@MAXENT$visible,
@@ -590,6 +592,7 @@
                            " beta_hinge=", Options@MAXENT$beta_hinge,
                            " defaultprevalence=", Options@MAXENT$defaultprevalence,
                            " autorun nowarnings notooltips", sep=""), wait = TRUE)
+    
 #     } else{ # classic Run
 #       system(command=paste("java -mx4000m -jar maxent.jar environmentallayers=",
 #                            getwd(),"/MaxentTmpData/Back_swd.csv samplesfile=",
@@ -602,8 +605,15 @@
     
 #     g.pred <- read.csv(paste(getwd(),"/",colnames(Data)[1], "/models/", nam, "_MAXENT/", 
 #                                nam,".csv", sep=""))[,3]
-
-    g.pred <- read.csv(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT", .Platform$file.sep, nam,"_Pred_swd.csv", sep=""))[,3]
+    
+    # create a maxent_model object
+    model.sp <- maxent_model(sp_name =  colnames(Data)[1], 
+                             model_name=paste(nam,'_',Model,sep=""), 
+                             model_output_dir=file.path(getwd(), colnames(Data)[1], "models", paste(nam, "_MAXENT_outputs", sep="")),
+                             model_options=Options@MAXENT)
+    
+    cat("\n Getting predictions...")
+    g.pred <- read.csv(file.path(getwd(), colnames(Data)[1], "models", paste(nam,'_MAXENT_outputs',sep=""), paste(nam,"_Pred_swd.csv", sep="") ) )[,3]
                    
     g.pred <- data.frame(as.integer(.Rescaler5(g.pred,
                                                ref = Data[,1], 
@@ -612,7 +622,7 @@
                                                weights = Yweights) * 1000))
 
     if(!is.null(evalData)){
-      g.pred.eval <- read.csv(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT", .Platform$file.sep, nam,"_Pred_eval_swd.csv", sep=""))[,3]
+      g.pred.eval <- read.csv(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT_outputs", .Platform$file.sep, nam,"_Pred_eval_swd.csv", sep=""))[,3]
                    
       g.pred.eval <- data.frame(as.integer(.Rescaler5(g.pred.eval,
                                                ref = evalData[,1], 
@@ -620,7 +630,7 @@
                                                original = TRUE) * 1000))
                                                       
       file.remove(list.files(path=paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep,
-                                                  "models", .Platform$file.sep, nam, "_MAXENT", .Platform$file.sep, sep=""),
+                                                  "models", .Platform$file.sep, nam, "_MAXENT_outputs", .Platform$file.sep, sep=""),
                                        pattern=paste(nam,"_Pred_eval_swd", sep=""),
                                        full.names=TRUE))
     }
@@ -705,7 +715,7 @@
     ListOut$pred.eval <- g.pred.eval[, ]
   }
                                   
-  if (!(Model %in% c("SRE","MAXENT"))){ # saving Models
+  if (!(Model %in% c("SRE"))){ # saving Models
    eval( parse( text = paste( nam, "_", Model, " = model.sp ", sep = "")))       
     
    eval( parse( text = paste("save(",nam, "_", Model, ",file='", getwd(), .Platform$file.sep,
@@ -717,6 +727,8 @@
      if(exists('best.iter'))
        save(best.iter, file=paste( getwd(), .Platform$file.sep, unlist(strsplit(nam,'_'))[1] , .Platform$file.sep, "models",  .Platform$file.sep, nam, "_", Model,"_best.iter", sep=""), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
    }
+   
+   
       
   } #  end saving Models
 
@@ -795,7 +807,7 @@
               if(Model == "MAXENT"){
                 # we have created all the permutation at model building step
                 var.imp.tmp <- read.csv(paste(getwd(),.Platform$file.sep,colnames(Data)[1], .Platform$file.sep,
-                                              "models", .Platform$file.sep, nam, "_MAXENT", .Platform$file.sep,
+                                              "models", .Platform$file.sep, nam, "_MAXENT_outputs", .Platform$file.sep,
                                               nam, "_", colnames(Data)[J+1], "_", K, "_swd.csv", sep=""))
 
                 TempVarImp[1, J] <- TempVarImp[1, J] + cor(g.pred[,],
@@ -805,7 +817,7 @@
                 # removing useless files from workspace and hardDisk
                 rm(var.imp.tmp)
                 file.remove(list.files(path=paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep,
-                                                  "models", .Platform$file.sep, nam, "_MAXENT", .Platform$file.sep, sep=""),
+                                                  "models", .Platform$file.sep, nam, "_MAXENT_outputs", .Platform$file.sep, sep=""),
                                        pattern=paste(nam,"_",colnames(Data)[J+1],"_",K,"_swd", sep=""),
                                        full.names=TRUE))
               }
@@ -821,9 +833,7 @@
       t3 <- strptime(format(Sys.time(),"%T"), "%T")
       try(cat(Model,"\t",difftime(t1,t0, units='secs')[[1]],"\t",difftime(t2,t1, units='secs')[[1]],"\t",difftime(t3,t2, units='secs')[[1]],'\n', file="Biomod_Modelling_Timing.txt", append=T ))
     }
-    
-
-    
+     
   return(ListOut)
 }
 

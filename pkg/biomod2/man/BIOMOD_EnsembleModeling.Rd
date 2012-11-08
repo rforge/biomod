@@ -181,7 +181,7 @@ myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
                                      expl.var = myExpl,
                                      resp.xy = myRespCoord,
                                      resp.name = myRespName,
-                                     PA.nb.rep = 2,
+                                     PA.nb.rep = 1,
                                      PA.nb.absences = 200,
                                      PA.strategy = 'random')
                                                                      
@@ -197,8 +197,10 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        DataSplit=80, 
                                        Yweights=NULL, 
                                        VarImport=3, 
-                                       models.eval.meth = c('TSS','ROC'),
-                                       SaveObj = TRUE )
+                                       models.eval.meth = c('TSS'),
+                                       SaveObj = TRUE,
+                                       rescal.all.models = FALSE,
+                                       do.full.models = FALSE)
                                        
 # 4. Doing Ensemble Modelling
 myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
@@ -207,11 +209,11 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
                            eval.metric = c('TSS'),
                            eval.metric.quality.threshold = c(0.7),
                            prob.mean = TRUE,
-                           prob.cv = TRUE,
-                           prob.ci = TRUE,
+                           prob.cv = FALSE,
+                           prob.ci = FALSE,
                            prob.ci.alpha = 0.05,
-                           prob.median = TRUE,
-                           committee.averaging = TRUE,
+                           prob.median = FALSE,
+                           committee.averaging = FALSE,
                            prob.mean.weight = TRUE,
                            prob.mean.weight.decay = 'proportional' )   
                                        

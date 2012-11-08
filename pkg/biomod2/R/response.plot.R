@@ -242,7 +242,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
         if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
         if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
-        if(inherits(mod,'maxent_model')){ proj.tmp <- as.numeric(predict(object=mod,newdata=Data.r.tmp,xy=data.frame(x=rep(0,nrow(Data.r.tmp)), y=rep(0,nrow(Data.r.tmp))), proj_name='RespPlotTmp')) }
+        if(inherits(mod,'maxent_model')){ proj.tmp <- as.numeric(predict(object=mod,newdata=Data.r.tmp,xy=data.frame(x=rep(0,nrow(Data.r.tmp)), y=rep(0,nrow(Data.r.tmp))), proj_name='RespPlotTmp', rm_tmp_files=TRUE)) }
         
         # 3. Rescaling stuff
         ## TO DO
@@ -295,7 +295,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
           if(inherits(mod,'fda')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp, type = "posterior")[, 2]) }
           if(inherits(mod,'mars')){ proj.tmp <- as.numeric(predict(mod, Data.r.tmp)) }
           if(inherits(mod,'randomForest')){ proj.tmp <- as.numeric(predict(mod,Data.r.tmp, type='prob')[,'1']) }
-          if(inherits(mod,'maxent_model')){ proj.tmp <- as.numeric(predict(object=mod,newdata=Data.r.tmp,xy=data.frame(x=rep(0,nrow(Data.r.tmp)), y=rep(0,nrow(Data.r.tmp))), proj_name='RespPlotTmp')) }
+          if(inherits(mod,'maxent_model')){ proj.tmp <- as.numeric(predict(object=mod,newdata=Data.r.tmp,xy=data.frame(x=rep(0,nrow(Data.r.tmp)), y=rep(0,nrow(Data.r.tmp))), proj_name='RespPlotTmp', rm_tmp_files=TRUE)) }
           
           # 3. Rescaling stuff
           ## TO DO
@@ -336,6 +336,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 
   # XXX. Close file
   if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
+  
+#   # delete temp files if somes has been created
+#   if(file.exists(file.path(.extractModelNamesInfo(models[1],"specie"),'RespPlotTmp'))){
+#     file.remove(file.path(.extractModelNamesInfo(models[1],"specie"),'RespPlotTmp'), recursive=TRUE, showWarnings=FALSE)
+#   }
   
   if(!do.bivariate){
     invisible(array.mono.out)
@@ -401,6 +406,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   
 
 
+  
   
   # TO DO 
   return(list(models = models,

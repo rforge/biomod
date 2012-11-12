@@ -67,9 +67,11 @@ function(respName, explVar, type = 'simple', interaction.level = 0)
          "s_smoother" = {
            for (v in 1:ncol(explVar) ){
              if(is.numeric(explVar[,v])){
-                  junk <- c(junk, paste(explVarNames[v],
-                                      "+s(",explVarNames[v],
-                                      ")",sep="") )               
+#                   junk <- c(junk, paste(explVarNames[v],
+#                                       "+s(",explVarNames[v],
+#                                       ")",sep="") )               
+               junk <- c(junk, paste("s(",explVarNames[v],
+                                     ")",sep="") )
              } else { junk <- c(junk, explVarNames[v]) }
            } })
   

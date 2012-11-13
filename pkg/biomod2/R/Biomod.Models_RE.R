@@ -185,7 +185,7 @@
                             " data = Data[calibLines,], family = ", eval(Options@GAM$family),
                             ", weights = Yweights[calibLines])" ,sep="")))
       
-      model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$spline),
+      model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
                            data = Data[calibLines,],
                            keep = .functionkeep, 
                            direction = "both",
@@ -195,7 +195,7 @@
     } else { ## mgcv package
       if(is.null(Options@GLM$myFormula)){
         cat("\n\tAutomatic formula generation...")
-        gam.formula <- makeFormula(colnames(Data)[1],head(Data[,-ncol(Data)]),Options@GAM$type, Options@GAM$interaction.level)
+        gam.formula <- makeFormula(colnames(Data)[1],head(Data[,-ncol(Data)]),Options@GAM$type, Options@GAM$interaction.level, k=Options@GAM$k)
       } else{
         gam.formula <- Options@GLM$myFormula
       }

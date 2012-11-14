@@ -772,18 +772,27 @@
               
                 if (Model %in% c("GLM","GAM") ){
                   if(J < ncol(TempDS)){
-                    TempVarImp[1, J] <- TempVarImp[1, J] + cor(g.pred[, 
-                    ], as.integer(as.numeric(.testnull(model.sp, 
-                    Prev, TempDS)) * 1000))                    
+                    if(length(unique(as.numeric(g.pred[,])))>1){
+                      TempVarImp[1, J] <- TempVarImp[1, J] + cor(g.pred[, 
+                      ], as.integer(as.numeric(.testnull(model.sp, 
+                      Prev, TempDS)) * 1000))
+                    } else{
+                      TempVarImp[1, J] <- TempVarImp[1, J] + 0
+                    }
                   }
                 }
 
 
                 if (Model == "GBM"){
                   if(J < ncol(TempDS)){
-                    TempVarImp[1, J] <- TempVarImp[1, J] + cor(g.pred[, 
-                      ], as.integer(as.numeric(predict.gbm(model.sp, 
-                      TempDS, best.iter, type = "response")) * 1000))
+                    if(length(unique(g.pred[,]))>1){
+                      TempVarImp[1, J] <- TempVarImp[1, J] + 
+                        cor(g.pred[,], 
+                            as.integer(as.numeric(predict.gbm(model.sp,TempDS, best.iter, type = "response")) * 1000))                      
+                    } else{
+                      TempVarImp[1, J] <- TempVarImp[1, J] + 0
+                    }
+
                   }
                 }
               

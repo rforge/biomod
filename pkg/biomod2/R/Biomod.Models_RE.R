@@ -762,6 +762,7 @@
                 if (Model == "ANN") {
                   if(J < ncol(TempDS)){
                     set.seed(555)
+                    
                     TempVarImp[1, J] <- TempVarImp[1, J] + cor(g.pred[, 
                       ], as.integer(.Rescaler5(as.numeric(predict(model.sp, 
                       TempDS, type = "raw")), ref = Data[, 1], 

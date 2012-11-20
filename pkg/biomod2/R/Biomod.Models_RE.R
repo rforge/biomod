@@ -12,6 +12,8 @@
   for(i in 1:ncol(X$calibLines)){ # loop on RunEval
     cat('\n\n-=-=-=--=-=-=-',paste(X$name,colnames(X$calibLines)[i],sep=""),'\n')
     
+    cat("\n*** dim(data) = ", dim(X$dataBM))
+    
     res.sp.run[[colnames(X$calibLines)[i]]] <- lapply(Model, .Biomod.Models, 
                                  Data = X$dataBM,
                                  Options = Options,
@@ -409,10 +411,14 @@
   }
         
   if (Model == "FDA") {
-    model.sp <- try(fda(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
-                    data = Data[calibLines,],
-                    method = eval(parse(text=call(Options@FDA$method))),
-                    weights = Yweights))
+#     model.sp <- try(fda(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
+#                     data = Data[calibLines,],
+#                     method = eval(parse(text=call(Options@FDA$method))),
+#                     weights = Yweights))
+    model.sp <- fda(formula = makeFormula(colnames(Data)[1],head(Data)[,-c(1,ncol(Data))], 'simple',0),
+                        data = Data[calibLines,],
+                        method = eval(parse(text=call(Options@FDA$method))),
+                        weights = Yweights)
                     
     if( !inherits(model.sp,"try-error") ){
       # prediction are automaticly rescaled
@@ -595,7 +601,8 @@
                            " beta_lqp=", Options@MAXENT$beta_lqp,
                            " beta_hinge=", Options@MAXENT$beta_hinge,
                            " defaultprevalence=", Options@MAXENT$defaultprevalence,
-                           " autorun nowarnings notooltips", sep=""), wait = TRUE)
+                           " autorun nowarnings notooltips", sep=""), wait = TRUE, intern = FALSE,
+             ignore.stdout = FALSE, ignore.stderr = FALSE)
     
 #     } else{ # classic Run
 #       system(command=paste("java -mx4000m -jar maxent.jar environmentallayers=",
@@ -842,7 +849,7 @@
         }
                                                                
         ListOut$var.import <- sapply(round(as.numeric(1 - (TempVarImp/VarImport)), digits = 3),min,1)
-
+        
      } # end do Varimp stuff
   
     if(timing){

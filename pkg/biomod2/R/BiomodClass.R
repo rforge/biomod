@@ -1165,7 +1165,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
                   Yweights[which(data@data.species==0 | is.na(data@data.species))] <- (nbPres * (1-Prevalence)) / (Prevalence * nbAbs)
                 }
                 
-                Yweights = as.integer(Yweights[]*100) # test to remove glm & gam warnings
+                Yweights = round(Yweights[]) # test to remove glm & gam warnings
               } else{
                 Yweights <- rep(1,length(data@data.species))
               }
@@ -1223,7 +1223,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                 } else{ # code presences as 1
                   Yweights[which(dataBM[,1]==0 | is.na(dataBM[,1]))] <- (nbPres * (1-Prevalence)) / (Prevalence * nbAbsKept)
                 }
-                Yweights = as.integer(Yweights[]*100) # test to remove glm & gam warnings
+                Yweights = round(Yweights[]) # test to remove glm & gam warnings
 #                 cat("\n*** length(Yweights) = ", length(Yweights))
 #                 cat("\n*** length(data@data.species) = ", length(data@data.species))
 #                 cat("\n*** dim(dataBM) = ", dim(dataBM))

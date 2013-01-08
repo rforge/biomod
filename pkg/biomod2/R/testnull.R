@@ -3,7 +3,7 @@ function(object, Prev = 0.5 , dat){
   
   if( is.finite(object$deviance) & is.finite(object$null.deviance)){
     if(object$deviance != object$null.deviance){
-      if(inherits(dat,'raster')){
+      if(inherits(dat,'Raster')){
         pred <- predict(dat, model=object, type='response')
       } else{
         pred <- predict(object, dat, type="response")
@@ -12,7 +12,7 @@ function(object, Prev = 0.5 , dat){
   }
   
   if(!exists('pred')){
-    if(inherits(dat,'raster')){
+    if(inherits(dat,'Raster')){
       pred <- subset(dat,1,drop=TRUE)
       if(Prev < 0.5) pred <- reclassify(x=pred, rcl=c(-Inf,Inf,0))
       if(Prev >= 0.5) pred <- reclassify(x=pred, rcl=c(-Inf,Inf,1))

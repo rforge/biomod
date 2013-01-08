@@ -12,8 +12,6 @@
   for(i in 1:ncol(X$calibLines)){ # loop on RunEval
     cat('\n\n-=-=-=--=-=-=-',paste(X$name,colnames(X$calibLines)[i],sep=""),'\n')
     
-    cat("\n*** dim(data) = ", dim(X$dataBM))
-    
     res.sp.run[[colnames(X$calibLines)[i]]] <- lapply(Model, .Biomod.Models, 
                                  Data = X$dataBM,
                                  Options = Options,
@@ -633,9 +631,10 @@
                                                weights = Yweights) * 1000))
 
     if(!is.null(evalData)){
+
       g.pred.eval <- read.csv(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "models", .Platform$file.sep,  nam, "_MAXENT_outputs", .Platform$file.sep, nam,"_Pred_eval_swd.csv", sep=""))[,3]
-                   
-      g.pred.eval <- data.frame(as.integer(.Rescaler5(g.pred.eval,
+                       
+      g.pred.eval <- data.frame(as.integer(.Rescaler5(as.numeric(g.pred.eval),
                                                ref = evalData[,1], 
                                                name = paste(nam,'eval_',Model,sep=""),
                                                original = TRUE) * 1000))
@@ -644,6 +643,9 @@
                                                   "models", .Platform$file.sep, nam, "_MAXENT_outputs", .Platform$file.sep, sep=""),
                                        pattern=paste(nam,"_Pred_eval_swd", sep=""),
                                        full.names=TRUE))
+      
+      
+      
     }
          
   }
@@ -682,6 +684,7 @@
     rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
     
     if(exists('g.pred.eval')){
+   
       ## Check no NA in g.pred to avoid evaluation failures
       if(sum(is.na(g.pred)) > 0 ){
         g.pred.eval.without.na <- data.frame(g.pred.eval[-which(is.na(g.pred.eval)),1])
@@ -689,7 +692,7 @@
       } else {
         g.pred.eval.without.na <- data.frame(g.pred.eval[,1])
       }
-      
+        
       true.evaluation <- sapply(mod.eval.method,
                                 function(x){
                                   return( Find.Optim.Stat(Stat = x,
@@ -697,6 +700,7 @@
                                                           Obs = evalData[,1],
                                                           Fixed.thresh = cross.validation["Cutoff",x]) )
                                 })
+      
       
 #       rownames(true.evaluation) <- c("Evaluating.data","Cutoff","Sensitivity", "Specificity")
       

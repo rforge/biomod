@@ -193,11 +193,11 @@
                            control = eval(control.list)) )
 
     } else { ## mgcv package
-      if(is.null(Options@GLM$myFormula)){
+      if(is.null(Options@GAM$myFormula)){
         cat("\n\tAutomatic formula generation...")
         gam.formula <- makeFormula(colnames(Data)[1],head(Data[,-ncol(Data)]),Options@GAM$type, Options@GAM$interaction.level, k=Options@GAM$k)
       } else{
-        gam.formula <- Options@GLM$myFormula
+        gam.formula <- Options@GAM$myFormula
       }
       
       if (Options@GAM$algo == 'GAM_mgcv'){

@@ -924,14 +924,14 @@ setGeneric("getProjection",
 setMethod("getProjection", "BIOMOD.projection.out",
           function(obj, model = NULL, as.data.frame = FALSE){
             if(!as.data.frame & is.null(model)){
-              if(obj@proj@inMemory ){
+#               if(obj@proj@inMemory ){
                 return(obj@proj@val)
-              } else{
-                if(obj@proj@link != ''){
-                  load(obj@proj@link)
-                  return(proj)
-                } else{ return(NA) }
-              }            
+#               } else{
+#                 if(obj@proj@link != ''){
+#                   load(obj@proj@link)
+#                   return(proj)
+#                 } else{ return(NA) }
+#               }            
             } else if(as.data.frame){
               if(obj@proj@inMemory ){
                 proj <- as.data.frame(obj@proj@val)

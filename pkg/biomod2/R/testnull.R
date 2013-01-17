@@ -4,7 +4,7 @@ function(object, Prev = 0.5 , dat){
   if( is.finite(object$deviance) & is.finite(object$null.deviance)){
     if(object$deviance != object$null.deviance){
       if(inherits(dat,'Raster')){
-        pred <- predict(dat, model=object, type='response')
+        pred <- predict(object = dat, model=object, type="response")
       } else{
         pred <- predict(object, dat, type="response")
       }
@@ -22,7 +22,6 @@ function(object, Prev = 0.5 , dat){
     }
     
   }
-
     return(pred)
 }
 

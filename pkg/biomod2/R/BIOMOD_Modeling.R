@@ -252,6 +252,20 @@
                              == FALSE) ]," is not a availabe model !",sep=""))
   }
   
+  categorial_var <- unlist(sapply(colnames(myBiomodData@data.env.var), function(x){if(is.factor(data@data.env.var[,x])) return(x) else return(NULL)} ))
+  
+  if(length(categorial_var)){
+    if("SRE" %in% models){
+      models <- models[-which(models=="SRE")]
+      cat("\n\t! SRE was switch off because of categorical variables !")
+    }
+    if("MARS" %in% models){
+      models <- models[-which(models=="MARS")]
+      cat("\n\t! MARS was switch off because of categorical variables !")
+    }
+    
+  }
+  
   # models.options checking ( peut etre permetre l'utilisation de liste de params )
   if( !is.null(models.options) && class(models.options) != "BIOMOD.Model.Options" ){
     stop("models.options argument must be a 'BIOMOD.Model.Options.object' (obtain by runing ... ) ")

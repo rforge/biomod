@@ -438,17 +438,21 @@
   
   # SRE models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "SRE"){
-    model.bm <- new("SRE_biomod2_model",
-                    extremal_conditions = sre(Response = Data[calibLines,1],
-                                              Explanatory = Data[calibLines,expl_var_names],
-                                              NewData = NULL, 
-                                              Quant = Options@SRE$quant,
-                                              return_extremcond=TRUE),
-                    model_name = model_name,
-                    model_class = 'SRE',
-                    model_options = Options@SRE,
-                    resp_name = resp_name,
-                    expl_var_names = expl_var_names)   
+    model.sp <- try(sre(Response = Data[calibLines,1],
+                        Explanatory = Data[calibLines,expl_var_names],
+                        NewData = NULL, 
+                        Quant = Options@SRE$quant,
+                        return_extremcond=TRUE))
+    
+    if( !inherits(model.sp,"try-error") ){
+      model.bm <- new("SRE_biomod2_model",
+                      extremal_conditions = model.sp,
+                      model_name = model_name,
+                      model_class = 'SRE',
+                      model_options = Options@SRE,
+                      resp_name = resp_name,
+                      expl_var_names = expl_var_names)
+    }
   }
   # end SRE models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   

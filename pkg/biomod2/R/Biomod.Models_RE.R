@@ -60,6 +60,8 @@
     expl_var_names <- args$expl_var_names
   }
   
+  categorial_var <- unlist(sapply(expl_var_names, function(x){if(is.factor(Data[,x])) return(x) else return(NULL)} ))
+  
   model_name <- paste(nam,'_',Model,sep="")
   
   
@@ -467,7 +469,10 @@
                                                            full.names= T))), "\" outputdirectory=\"",
                          file.path(getwd(), colnames(Data)[1], "models", paste(nam, "_MAXENT_outputs", sep="")),"\"",
                          " outputformat=logistic ",
-                         #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations, 
+                         #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations,
+                         ifelse(length(categorial_var), 
+                                paste(" togglelayertype=",categorial_var, collapse=" ",sep=""), 
+                                ""),
                          " redoifexists",
                          " visible=", Options@MAXENT$visible,
                          " linear=", Options@MAXENT$linear,

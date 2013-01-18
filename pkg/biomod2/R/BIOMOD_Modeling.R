@@ -252,7 +252,7 @@
                              == FALSE) ]," is not a availabe model !",sep=""))
   }
   
-  categorial_var <- unlist(sapply(colnames(myBiomodData@data.env.var), function(x){if(is.factor(data@data.env.var[,x])) return(x) else return(NULL)} ))
+  categorial_var <- unlist(sapply(colnames(data@data.env.var), function(x){if(is.factor(data@data.env.var[,x])) return(x) else return(NULL)} ))
   
   if(length(categorial_var)){
     if("SRE" %in% models){

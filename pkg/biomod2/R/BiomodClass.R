@@ -117,10 +117,17 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
           
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
   function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
+    categorial_var <- names(env)[is.factor(env)]
+    
     # take the same eval environemental variables than calibrating ones 
     if(!is.null(eval.sp)){
       if(is.null(eval.env)){
         eval.env <- as.data.frame(extract(env,eval.xy))
+        if(length(categorial_var)){
+          for(cat_var in categorial_var){
+            eval.env[,cat_var] <- as.factor(eval.env[,cat_var])
+          }
+        }
       }
     }
     
@@ -130,6 +137,13 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
       xy <- as.data.frame(coordinates(env))
       env <- as.data.frame(extract(env,xy))
     }
+    
+    if(length(categorial_var)){
+      for(cat_var in categorial_var){
+        env[,cat_var] <- as.factor(env[,cat_var])
+      }
+    }
+    
     BFD <- BIOMOD.formated.data(sp,env,xy,sp.name,eval.sp, eval.env, eval.xy, na.rm=na.rm)
     .bmCat('Done')
     return(BFD)
@@ -231,11 +245,18 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                      PA.sre.quant = 0.025,
                                      na.rm=TRUE){
   
+  if(inherits(env,'Raster')) categorial_var <- names(env)[is.factor(env)] else categorial_var <- NULL
+  
   # take the same eval environemental variables than calibrating ones 
   if(!is.null(eval.sp)){
     if(is.null(eval.env)){
       if(inherits(env,'Raster')){
         eval.env <- as.data.frame(extract(env,eval.xy))
+        if(length(categorial_var)){
+          for(cat_var in categorial_var){
+            eval.env[,cat_var] <- as.factor(eval.env[,cat_var])
+          }
+        }
       } else{
         stop("No evaluation explanatory variable given")
       }
@@ -260,7 +281,14 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                           distMin = PA.dist.min, 
                                           distMax = PA.dist.max,
                                           quant.SRE = PA.sre.quant )
+    
   if(!is.null(pa.data.tmp)){
+    
+    if(length(categorial_var)){
+      for(cat_var in categorial_var){
+        pa.data.tmp$env[,cat_var] <- as.factor(pa.data.tmp$env[,cat_var])
+      }
+    }
     
     if(na.rm){
       rowToRm <- unique(unlist(lapply(pa.data.tmp$env,function(x){return(which(is.na(x)))})))

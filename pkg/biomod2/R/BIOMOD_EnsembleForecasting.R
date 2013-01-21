@@ -444,7 +444,7 @@
         if(output.format == '.RData'){
           save(list=ef.bin.obj.name, 
                file = file.path(projection.output@sp.name, paste("proj_", projection.output@proj.names, sep=""), 
-                                paste(ef.obj.name, output.format, sep="" )),
+                                paste(ef.bin.obj.name, output.format, sep="" )),
                compress = compress)
         } else {
           cat("\n\t\t> Writing", paste(ef.bin.obj.name, output.format, sep="" ), "on hard drive...")

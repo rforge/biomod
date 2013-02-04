@@ -72,7 +72,6 @@
                   pred.eval = NULL,
                   calib.failure = NULL)
   
-  
   # CTA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "CTA") {
     
@@ -529,6 +528,7 @@
   
   # rescale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   if(rescal.models){
+    cat("\n\tModel scaling...")
     model.bm@scaling_model <- .scaling_model(g.pred/1000, Data[, 1], prevalence=0.5)
     g.pred <- predict(model.bm, Data[,expl_var_names], on_0_1000=TRUE)
   }
@@ -718,7 +718,7 @@
   # never rescal SRE
   if(Model == "SRE") rescal.models <- FALSE
   # always rescal ANN, FDA, MARS
-  if(Model %in% c("ANN", "FDA", "MARS") ) rescal.models <- FALSE
+  if(Model %in% c("ANN", "FDA", "MARS") ) rescal.models <- TRUE
   
   
   # models options checking and printing

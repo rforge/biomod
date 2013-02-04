@@ -235,13 +235,13 @@ myBiomodEF <- BIOMOD_EnsembleForecasting(
 ###################################################
 ### code chunk number 19: EnsembleForecasting_loading_res
 ###################################################
-load("Myocastor/proj_t2050/Myocastor_PA1_AllRun_EM.TSS")
-Myocastor_PA1_AllRun_EM.TSS
+proj_t2050_Myocastor_PA1_Full_AllAlgos_EMbyTSS <- stack("Myocastor/proj_t2050/proj_t2050_Myocastor_PA1_Full_AllAlgos_EMbyTSS.grd")
+proj_t2050_Myocastor_PA1_Full_AllAlgos_EMbyTSS
 
 
 ###################################################
 ### code chunk number 20: EnsembleForecasting_plotting_res
 ###################################################
-plot(Myocastor_PA1_AllRun_EM.TSS)
+plot(proj_t2050_Myocastor_PA1_Full_AllAlgos_EMbyTSS)
 
 

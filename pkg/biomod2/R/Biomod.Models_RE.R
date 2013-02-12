@@ -16,7 +16,7 @@
                                                       Data = X$dataBM,
                                                       Options = Options,
                                                       calibLines = X$calibLines[,i],
-                                                      Yweights = X$weights,
+                                                      Yweights = X$Yweights,
                                                       nam = paste(X$name,colnames(X$calibLines)[i], sep=""),
                                                       VarImport = VarImport,
                                                       mod.eval.method = mod.eval.method,
@@ -71,6 +71,7 @@
                   pred = NULL,
                   pred.eval = NULL,
                   calib.failure = NULL)
+
   
   # CTA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "CTA") {

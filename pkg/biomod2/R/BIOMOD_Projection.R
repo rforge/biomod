@@ -37,10 +37,14 @@
   clamping.level <- args$clamping.levels # remove all cells where at least clamping.level variables are out of their calibrating range
   clamping.value <- args$clamping.value # reference value for clamped cells 
   output.format <- args$output.format # raster output format
+  keep.in.memory <- args$keep.in.memory # store results on memory or only on hard drive
   
   if(is.null(silent)) silent <- FALSE
   if(is.null(do.stack)) do.stack <- TRUE
   if(is.null(clamping.value)) clamping.value <- -1
+  if(is.null(keep.in.memory)) keep.in.memory <- TRUE
+  
+  if(!do.stack | !keep.in.memory) rasterOptions(todisk=TRUE)
   
   if(is.null(output.format)){
     if(!inherits(new.env,"Raster"))
@@ -147,7 +151,8 @@
     proj <- DF_to_ARRAY(proj)
   }
   
-  proj_out@proj@val <- proj
+  if( keep.in.memory)
+    proj_out@proj@val <- proj
   
   ## save projections
   assign(x = paste("proj_",proj.name, "_", modeling.output@sp.name, sep=""),
@@ -236,16 +241,22 @@
 #   }
   
   proj_out@type <- class(proj_out@proj@val)
-  if(do.stack){
+  
+  if(keep.in.memory)
     proj_out@proj@inMemory <- TRUE
+  else proj_out@proj@inMemory <- FALSE
+  
+  if(do.stack){
     proj_out@proj@link <- file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), 
                                 paste("proj_",proj.name, "_", modeling.output@sp.name, output.format, sep="") )    
   } else{
-    proj_out@proj@inMemory <- FALSE
     proj_out@proj@link <-file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections")
   }
 
-  
+  # save a copy of output object without value to be lighter
+  assign(paste(modeling.output@sp.name,".", proj.name, ".projection.out", sep=""), free(proj_out))
+  save(list = paste(modeling.output@sp.name,".", proj.name, ".projection.out", sep=""),
+       file = file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), paste(modeling.output@sp.name,".", proj.name, ".projection.out", sep="")))
   
 #   # 3. Removing Maxent Tmp Data
 #   if(file.exists(paste(modeling.output@sp.name, "/proj_", proj.name,'/MaxentTmpData/',sep=''))){
@@ -359,7 +370,7 @@
       
   ## do.stack
   if(class(new.env) != 'RasterStack'){
-    do.stack <- TRUE
+    # do.stack <- TRUE
   } else{
     if(do.stack){
       # test if there is memory enough to work with RasterStack

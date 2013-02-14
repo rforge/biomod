@@ -952,14 +952,18 @@ setGeneric("getProjection",
 setMethod("getProjection", "BIOMOD.projection.out",
           function(obj, model = NULL, as.data.frame = FALSE){
             if(!as.data.frame & is.null(model)){
-#               if(obj@proj@inMemory ){
+              if(obj@proj@inMemory ){
                 return(obj@proj@val)
-#               } else{
-#                 if(obj@proj@link != ''){
-#                   load(obj@proj@link)
-#                   return(proj)
-#                 } else{ return(NA) }
-#               }            
+              } else {
+                if( grepl(".RData", obj@proj@link) ){
+                  return(get(load(obj@proj@link)))
+                } else if(grepl(".grd", obj@proj@link) | grepl(".img", obj@proj@link)){
+                  return(stack(obj@proj@link))
+                } else {
+                  cat("\n!! You have to load your projection by yourself !!")
+                  return(NA) 
+                }
+              } 
             } else if(as.data.frame){
               if(obj@proj@inMemory ){
                 proj <- as.data.frame(obj@proj@val)
@@ -1023,7 +1027,25 @@ setMethod('show', signature('BIOMOD.projection.out'),
             .bmCat()
           })
 
-           
+setGeneric("free",
+           function(object){
+             standardGeneric("free")
+           })
+
+setMethod(f='free', 
+                 signature='BIOMOD.projection.out',
+                 definition = function(object){
+                   if(inherits(object@proj,"BIOMOD.stored.array")){
+                     object@proj@val = array()
+                   } else if(inherits(object@proj,"BIOMOD.stored.raster.stack")){
+                     object@proj@val = stack()
+                   } else{
+                     object@proj@val = NULL
+                   }
+                   object@proj@inMemory = FALSE
+                   
+                   return(object)
+                 })
 
 ####################################################################################################
 ### BIOMOD Storing Ensemble Modeling Objects #######################################################

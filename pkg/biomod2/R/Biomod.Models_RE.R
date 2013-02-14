@@ -561,11 +561,13 @@
       g.pred.without.na <- g.pred
     }
     
+    #Precision = max( (max(g.pred.without.na[evalLines]) - min(g.pred.without.na[evalLines]) ) / 50 , 1) # max 50 steps
+    
     cross.validation <- sapply(mod.eval.method,
                                Find.Optim.Stat,
                                Fit = g.pred.without.na[evalLines],
-                               Obs = Data[evalLines,1],
-                               Precision = 5)
+                               Obs = Data[evalLines,1])#,Precision = Precision)
+    
     rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
     
     if(exists('g.pred.eval')){

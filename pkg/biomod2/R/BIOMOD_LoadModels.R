@@ -12,16 +12,7 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   
   ## make a subselection
   
-  ## remove MAXENT and SRE
-#   if(sum(grepl('MAXENT',  models.to.load)) > 0){
-#     cat("\n   ! MAXENT models can't be load yet ! ")
-#     models.to.load <- models.to.load[- which(grepl('MAXENT',  models.to.load))]
-#   }
-#   if(sum(grepl('SRE',  models.to.load)) > 0){
-#     cat("\n   ! SRE models can't be load yet ! ")
-#     models.to.load <- models.to.load[- which(grepl('SRE',  models.to.load))]
-#   }
-  
+
   if(!is.null(add.args$models)){
     model.to.load.tmp <- c()
     for(mod in add.args$models){
@@ -86,8 +77,8 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   ## check additional args values
   ### models names
   if(!is.null(add.args$models)){
-    if(sum(add.args$models %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='models') != length(add.args$models)) ){
-      stop(paste("models argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed), info='models'), sep="") )
+    if(sum(add.args$models %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='models') ) != length(add.args$models) ){
+      stop(paste("models argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed, info='models')), sep="") )
     }
   }
   

@@ -70,8 +70,9 @@ setGeneric(".Prepare.Maxent.Proj.WorkDir",
 setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='data.frame'),
           def = function(Data, xy, proj_name=NULL){
             cat('\n\t\tCreating Maxent Temp Proj Data...')
-            
-            if(is.null(proj_name)) proj_name <- colnames(Data)[1]
+            if(is.null(xy)) xy <- matrix(1,nrow=nrow(Data), ncol=2, dimnames=list(NULL, c("X","Y")))
+    
+            if(is.null(proj_name)) proj_name <- format(Sys.time(), "%s")
             dir.create(file.path(getwd(),proj_name,'MaxentTmpData'), showWarnings=FALSE, recursive=TRUE)
             
             # Proj Data

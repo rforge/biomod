@@ -40,7 +40,7 @@
                             xy = NULL, eval.xy = NULL, rescal.models = TRUE){
   
   ################################################################################################
-  # 1. Print model runing and getting model options =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #               
+  # 1. Print model running and getting model options =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #               
   # check and get modified args if nececary
   args <- .Biomod.Models.check(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData, rescal.models)
   
@@ -464,7 +464,7 @@
     .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy, species.name=colnames(Data)[1])
     
     # run MaxEnt:
-    cat("\n Runing Maxent...")  
+    cat("\n Running Maxent...")  
     system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), " environmentallayers=\"",
                          file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Back_swd.csv"),"\" samplesfile=\"",
                          file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Sp_swd.csv"),"\" projectionlayers=\"",
@@ -626,7 +626,7 @@
         TempDS[, vari] <- sample(TempDS[, vari])
         
         if(Model != "MAXENT"){
-          ## do projection on suffled dataset
+          ## make projection on suffled dataset
           shuffled.pred <- predict(model.bm, TempDS, on_0_1000=TRUE)
         } else{
           ## for MAXENT, we have created all the permutation at model building step

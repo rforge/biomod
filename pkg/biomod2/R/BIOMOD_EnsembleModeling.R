@@ -160,7 +160,7 @@
           if(em.by %in% c("PA_dataset",'PA_dataset+algo','PA_dataset+repet')){
             prediction.kept <- as.data.frame(getModelsPrediction(modeling.output, as.data.frame = TRUE)[,models.kept])
           } else{ ## redo prediction on full data.set
-            cat("\n   ! Models projection for whole zonation required...")
+            cat("\n   ! Models projections for whole zonation required...")
             prediction.kept <- BIOMOD_Projection(modeling.output = modeling.output,
                                           new.env = getModelsInputData(modeling.output)@data.env.var,
                                           proj.name = 'Tmp',
@@ -486,7 +486,7 @@
 #     stop("model.names must be a character vector")
 #   }
 #   if(!is.character(info) | length(info) != 1 | !(info %in% c('species', 'data.set', 'models', 'run.eval')) ){
-#     stop("info must be 'specie', 'data.set', 'models' or 'run.eval'")
+#     stop("info must be 'species', 'data.set', 'models' or 'run.eval'")
 #   }
 #                 
 #   info.tmp <- as.data.frame(strsplit(model.names, "_"))

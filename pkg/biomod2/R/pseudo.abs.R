@@ -60,7 +60,7 @@ function(sp, env, nb.repet=1, strategy='random', distMin=0, distMax=NULL, nb.poi
   }
   
   if(!(inherits(sp, 'SpatialPoints'))){
-    stop("specie input must be a SpatialPointsDataFrame object")
+    stop("species input must be a SpatialPointsDataFrame object")
   }
   
   # 2. env input checking

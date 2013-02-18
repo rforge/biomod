@@ -706,7 +706,7 @@ setClass("BIOMOD.models.out",
 setMethod('show', signature('BIOMOD.models.out'),
           function(object){
             .bmCat("'BIOMOD.models.out")
-            cat("\nSpecie modelised :", object@sp.name, fill=.Options$width)
+            cat("\nSpecies modeled :", object@sp.name, fill=.Options$width)
             cat("\nConsidered variables :", object@expl.var.names, fill=.Options$width)
             
             cat("\n\nComputed Models : ", object@models.computed, fill=.Options$width)
@@ -977,7 +977,7 @@ setMethod("getProjection", "BIOMOD.projection.out",
                 } else if(grepl(".grd", obj@proj@link) | grepl(".img", obj@proj@link)){
                   return(stack(obj@proj@link))
                 } else {
-                  cat("\n!! You have to load your projection by yourself !!")
+                  cat("\n!! You have to load your projections by yourself !!")
                   return(NA) 
                 }
               } 
@@ -1017,7 +1017,7 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
               
             } else if(class(x@proj) == "BIOMOD.stored.array"){
               if(ncol(x@xy.coord) != 2){
-                cat("\n ! Impossible to plot projection because xy coordinates are not available !")
+                cat("\n ! Impossible to plot projections because xy coordinates are not available !")
               } else {
                 if(is.null(str.grep)){
                   multiple.plot(Data = getProjection(x,as.data.frame=T), coor = x@xy.coord)

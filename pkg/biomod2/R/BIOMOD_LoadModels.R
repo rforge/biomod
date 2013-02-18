@@ -116,7 +116,7 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
     stop("model.names must be a character vector")
   }
   if(!is.character(info) | length(info) != 1 | !(info %in% c('species', 'data.set', 'models', 'run.eval')) ){
-    stop("info must be 'specie', 'data.set', 'models' or 'run.eval'")
+    stop("info must be 'species', 'data.set', 'models' or 'run.eval'")
   }
                 
   info.tmp <- as.data.frame(strsplit(model.names, "_"))

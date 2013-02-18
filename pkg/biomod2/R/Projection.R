@@ -408,7 +408,7 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
 #         
 #         .Prepare.Maxent.Proj.WorkDir(env, xy, proj.name=file.path(.extractModelNamesInfo(model.name, info='species'), proj.name ))
 #         
-#         cat("\t Runing Maxent...")
+#         cat("\t Running Maxent...")
 #         
 #         system(command=paste("java -cp ", file.path(models.options@MAXENT$path_to_maxent.jar, "maxent.jar"), " density.Project \"", model.dir,.Platform$file.sep,
 #                              model.name, .Platform$file.sep ,sub("_MAXENT","",model.name),

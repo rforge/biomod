@@ -15,7 +15,7 @@
 
 
 # NOTE :
-#   It would be nice to add done projection to input Biomod.models.object
+#   It would be nice to add done projections to input Biomod.models.object
 #   .BIOMOD_Projection.check.args <- may be reorder variables if necessary
 
 ####################################################################################################
@@ -125,7 +125,7 @@
 
   }
   
-  # 2. Doing projection -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+  # 2. Making projections -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   
   proj <- lapply(selected.models, function(mod.name){
     cat("\n\t> Projecting",mod.name,"...")

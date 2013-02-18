@@ -674,7 +674,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   
   .Prepare.Maxent.Proj.WorkDir(Data = newdata, proj_name = file.path(object@resp_name,temp_workdir))
   
-  cat("\n\t\tRuning Maxent...")
+  cat("\n\t\tRunning Maxent...")
   system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
@@ -736,7 +736,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   
   .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , proj_name = file.path(object@resp_name,temp_workdir))
   
-  cat("\n\t\tRuning Maxent...")
+  cat("\n\t\tRunning Maxent...")
   system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 

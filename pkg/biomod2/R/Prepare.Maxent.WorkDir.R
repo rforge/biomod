@@ -12,7 +12,7 @@
   Sp_swd <- cbind(rep(RunName,length(presLines)),
                       xy[presLines,],
                       Data[presLines,2:ncol(Data)])
-  colnames(Sp_swd) <- c('specie','X','Y',colnames(Data)[2:ncol(Data)])
+  colnames(Sp_swd) <- c('species','X','Y',colnames(Data)[2:ncol(Data)])
   write.table(Sp_swd, file=paste(getwd(),'/',species.name,"/MaxentTmpData/Sp_swd.csv",sep=""), quote=FALSE, row.names=FALSE, sep=",")
   
   # Background Data

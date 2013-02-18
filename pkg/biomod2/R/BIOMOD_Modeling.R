@@ -75,7 +75,7 @@
   
   # 2. creating simulation directories =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #  
   # create the directories in which various objects will be stored (models, predictions and 
-  # projection). The projection directories are created in the Projection() function.
+  # projections). Projections' directories are created in the Projection() function.
   .Models.prepare.workdir(data@sp.name, models, SavePredictions)
   
   
@@ -117,7 +117,7 @@
   # 4. Print modelling summary in console -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   .Models.print.modeling.summary(mod.prep.dat, models)
   
-  # 5. Runing models -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  # 5. Running models -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
   # loop on PA
   modeling.out <- lapply(mod.prep.dat,.Biomod.Models.loop,
@@ -238,7 +238,7 @@
                              "BIOMOD.formated.data.PA",
                              "BIOMOD.formated.data.indep",
                              "BIOMOD.formated.data.PA.indep") )){
-    stop( "data argument mut be a 'BIOMOD.formated.data' (obtain by runing Initial.State function) ")
+    stop( "data argument mut be a 'BIOMOD.formated.data' (obtain by running Initial.State function) ")
   }
   
   # models checking
@@ -269,7 +269,7 @@
   
   # models.options checking ( peut etre permetre l'utilisation de liste de params )
   if( !is.null(models.options) && class(models.options) != "BIOMOD.Model.Options" ){
-    stop("models.options argument must be a 'BIOMOD.Model.Options.object' (obtain by runing ... ) ")
+    stop("models.options argument must be a 'BIOMOD.Model.Options.object' (obtained by running ... ) ")
   }
   
   if( is.null(models.options)){

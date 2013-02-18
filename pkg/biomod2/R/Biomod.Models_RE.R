@@ -280,12 +280,11 @@
     } else {
       ## keep the total model      
       model.sp <- try( glm(glm.formula, 
-                           data = cbind(Data[calibLines,],matrix(Yweights[calibLines], ncol=1, dimnames=list(NULL, "Yweights"))) ,
-                           family = eval(parse(text=call(Options@GLM$family))),
-                           #                       family = Options@GLM$family,
+                           data = cbind(Data[calibLines,],matrix(Yweights[calibLines], ncol=1, dimnames=list(NULL, "Yweights"))),
+                           family = Options@GLM$family,
                            control = eval(Options@GLM$control),
                            weights = Yweights,
-                           #                       mustart = rep(Options@GLM$mustart, sum(calibLines)),
+                           mustart = rep(Options@GLM$mustart, sum(calibLines)),
                            model = TRUE) )
     }             
     
@@ -739,8 +738,10 @@
     } else if(Options@GLM$test == "BIC"){
       criteria <- log(ncol(Data))
       cat("\n\tStepwise procedure using BIC criteria")     
-    } else {#if(Options@GLM$test == "none"){
+    } else if(Options@GLM$test == "none"){
+      criteria <- 0
       cat("\n\tNo stepwise procedure")
+      cat("\n\t! You might be confronted to models convergence issues !")
     }
     
   }
@@ -798,7 +799,7 @@
   #         Prev <- sum(DataBIOMOD[, i + Biomod.material$NbVar])/nrow(DataBIOMOD)
   ## not exactly same as before
   if (Model == "GLM" | Model == "GAM"){ 
-    Prev <- sum(Data[,1])/length(Data[,1])
+    Prev <- sum(Data[,1], na.rm=T)/length(Data[,1])
   }
   
   # Evaluation Check

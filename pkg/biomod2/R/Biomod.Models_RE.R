@@ -284,7 +284,7 @@
                            family = Options@GLM$family,
                            control = eval(Options@GLM$control),
                            weights = Yweights,
-                           mustart = rep(Options@GLM$mustart, sum(calibLines)),
+#                            mustart = rep(Options@GLM$mustart, sum(calibLines)),
                            model = TRUE) )
     }             
     

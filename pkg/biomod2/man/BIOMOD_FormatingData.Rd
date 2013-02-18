@@ -23,6 +23,7 @@ BIOMOD_FormatingData(resp.var,
                      PA.dist.min = 0,
                      PA.dist.max = NULL,
                      PA.sre.quant = 0.025,
+                     PA.table = NULL,
                      na.rm = TRUE)
 }
 
@@ -46,13 +47,15 @@ BIOMOD_FormatingData(resp.var,
   
   \item{PA.nb.absences}{ number of pseudo-absence selected for each repetition (when PA.nb.rep > 0) of the selection (true absences included)}
   
-  \item{PA.strategy}{ strategy for selecting the Pseudo Absences (must be \sQuote{random}, \sQuote{SRE} or \sQuote{disk})}
+  \item{PA.strategy}{ strategy for selecting the Pseudo Absences (must be \sQuote{random}, \sQuote{SRE}, \sQuote{disk} or \sQuote{user.defined})}
   
   \item{PA.dist.min}{minimal distance to presences for \sQuote{disk} Pseudo Absences selection}
   
   \item{PA.dist.max}{maximal distance to presences for \sQuote{disk} Pseudo Absences selection}
   
   \item{PA.sre.quant}{quantile used for \sQuote{SRE} Pseudo Absences selection}
+  
+  \item{PA.table}{a \code{matrix} (or a \code{data.frame}) having as many rows than \code{resp.var} values. Each column  correspund to a Pseudo-absences selection. It contains \code{TRUE} or \code{FALSE} indicating which values of \code{resp.var} will be considered to build models. It must be used with \sQuote{user.defined} \code{PA.strategy}.}
   
   \item{na.rm}{locical, if TRUE, all points having one or several missing value for environmental data will be removed from analyse }
 }

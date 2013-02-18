@@ -118,6 +118,7 @@
   .Models.print.modeling.summary(mod.prep.dat, models)
   
   # 5. Runing models -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  
   # loop on PA
   modeling.out <- lapply(mod.prep.dat,.Biomod.Models.loop,
                       Model = models,

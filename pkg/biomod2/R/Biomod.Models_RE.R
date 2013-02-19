@@ -1,4 +1,5 @@
 .Biomod.Models.loop <- function(X,
+                                modeling.id,
                                 Model,
                                 Options,
                                 VarImport, 
@@ -12,7 +13,7 @@
   for(i in 1:ncol(X$calibLines)){ # loop on RunEval
     cat('\n\n-=-=-=--=-=-=-',paste(X$name,colnames(X$calibLines)[i],sep=""),'\n')
     
-    res.sp.run[[colnames(X$calibLines)[i]]] <- lapply(Model, .Biomod.Models, 
+    res.sp.run[[colnames(X$calibLines)[i]]] <- lapply(Model, .Biomod.Models,
                                                       Data = X$dataBM,
                                                       Options = Options,
                                                       calibLines = na.omit(X$calibLines[,i]),
@@ -24,7 +25,8 @@
                                                       SavePred = T,#SavePred,
                                                       xy = X$xy,
                                                       eval.xy = X$eval.xy,
-                                                      rescal.models = rescal.models)
+                                                      rescal.models = rescal.models,
+                                                      modeling.id = modeling.id)
     
     names(res.sp.run[[colnames(X$calibLines)[i]]]) <- Model
     
@@ -37,7 +39,7 @@
 .Biomod.Models <- function (Model, Data, Options, calibLines, Yweights, nam, VarImport = 0, 
                             mod.eval.method = c('ROC','TSS','KAPPA'), evalData = NULL,
                             SavePred = FALSE,
-                            xy = NULL, eval.xy = NULL, rescal.models = TRUE){
+                            xy = NULL, eval.xy = NULL, rescal.models = TRUE, modeling.id = ''){
   
   ################################################################################################
   # 1. Print model running and getting model options =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #               
@@ -461,7 +463,7 @@
   
   # MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "MAXENT"){
-    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy, species.name=colnames(Data)[1])
+    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy, species.name=resp_name, modeling.id=modeling.id)
     
     # run MaxEnt:
     cat("\n Running Maxent...")  
@@ -470,7 +472,7 @@
                          file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Sp_swd.csv"),"\" projectionlayers=\"",
                          gsub(", ",",",toString(list.files(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Pred",sep=""),
                                                            full.names= T))), "\" outputdirectory=\"",
-                         file.path(getwd(), colnames(Data)[1], "models", paste(nam, "_MAXENT_outputs", sep="")),"\"",
+                         file.path(getwd(), resp_name, "models", modeling.id, paste(model_name, "_outputs", sep="")),"\"",
                          " outputformat=logistic ",
                          #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations,
                          ifelse(length(categorial_var), 
@@ -496,7 +498,7 @@
     
     
     model.bm <- new("MAXENT_biomod2_model",
-                    model_output_dir=file.path(resp_name, "models", paste(model_name, "_outputs", sep="")),
+                    model_output_dir=file.path(resp_name, "models", modeling.id, paste(model_name, "_outputs", sep="")),
                     model_name = model_name,
                     model_class = 'MAXENT',
                     model_options = Options@MAXENT,
@@ -662,13 +664,12 @@
   
   
   # Model saving step =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  eval( parse( text = paste( nam, "_", Model, " <- model.bm ", sep = "")))
-  
-  eval( parse( text = paste("save(",nam, "_", Model, ",file='", getwd(), .Platform$file.sep,
-                            unlist(strsplit(nam,'_'))[1] , .Platform$file.sep, "models", .Platform$file.sep,
-                            nam, "_", Model, "', compress='",
-                            ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'),
-                            "')", sep = "")))  
+  assign(x=paste( nam, Model, sep = "_"), 
+         value= model.bm)
+  save(list=paste( nam, Model, sep = "_"),
+       file=file.path(resp_name, "models", modeling.id, paste( nam, Model, sep = "_")),
+       compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+
   # End model saving step =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
   

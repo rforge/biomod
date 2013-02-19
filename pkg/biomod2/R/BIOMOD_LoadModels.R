@@ -10,50 +10,60 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   models.to.load <- bm.out@models.computed
   envir <- parent.frame()
   
-  ## make a subselection
   
+  if(!is.null(add.args$full.name)){
+    models.to.load <- add.args$full.name
+  } else{ ## make a subselection
+    if(!is.null(add.args$models)){
+      model.to.load.tmp <- c()
+      for(mod in add.args$models){
+        if(sum(grepl(mod,  models.to.load)) > 0){
+          model.to.load.tmp <- c(model.to.load.tmp, grep(mod, models.to.load, value=TRUE))
+        }
+      }
+      models.to.load <-  model.to.load.tmp
+    }
+    
+    if(!is.null(add.args$run.eval)){
+      model.to.load.tmp <- c()
+      for(re in add.args$run.eval){
+        if(sum(grepl(re,  models.to.load)) > 0){
+          model.to.load.tmp <- c(model.to.load.tmp, grep(re, models.to.load, value=TRUE))
+        }
+      }
+      models.to.load <-  model.to.load.tmp
+    }
+    
+    if(!is.null(add.args$data.set)){
+      model.to.load.tmp <- c()
+      for(ds in add.args$data.set){
+        if(sum(grepl(ds,  models.to.load)) > 0){
+          model.to.load.tmp <- c(model.to.load.tmp, grep(ds, models.to.load, value=TRUE))
+        }
+      }
+      models.to.load <-  model.to.load.tmp
+    }    
+    
+  }
 
-  if(!is.null(add.args$models)){
-    model.to.load.tmp <- c()
-    for(mod in add.args$models){
-      if(sum(grepl(mod,  models.to.load)) > 0){
-        model.to.load.tmp <- c(model.to.load.tmp, grep(mod, models.to.load, value=TRUE))
-      }
-    }
-    models.to.load <-  model.to.load.tmp
-  }
-  
-  if(!is.null(add.args$run.eval)){
-    model.to.load.tmp <- c()
-    for(re in add.args$run.eval){
-      if(sum(grepl(re,  models.to.load)) > 0){
-        model.to.load.tmp <- c(model.to.load.tmp, grep(re, models.to.load, value=TRUE))
-      }
-    }
-    models.to.load <-  model.to.load.tmp
-  }
-  
-  if(!is.null(add.args$data.set)){
-    model.to.load.tmp <- c()
-    for(ds in add.args$data.set){
-      if(sum(grepl(ds,  models.to.load)) > 0){
-        model.to.load.tmp <- c(model.to.load.tmp, grep(ds, models.to.load, value=TRUE))
-      }
-    }
-    models.to.load <-  model.to.load.tmp
-  }
-  
   if(length(models.to.load) == 0){
     cat("\n   ! No models computed matched, No models loaded !")
     return(NULL)
   }
   
-  
-  for(mtl in models.to.load){
-    load(file=paste(bm.out@sp.name, .Platform$file.sep, "models", .Platform$file.sep, mtl,sep=""),envir=envir)
+  if(!is.null(add.args$as) & length(models.to.load)==1){
+    assign(x=add.args$as, 
+           value=get(load(file=file.path(bm.out@sp.name, "models", bm.out@modeling.id, models.to.load))),
+           envir=envir)
+    invisible(TRUE)
+  } else {
+    for(mtl in models.to.load){
+      load(file=file.path(bm.out@sp.name, "models", bm.out@modeling.id, mtl),envir=envir)
+    }
+    
+    return(models.to.load)
   }
-  
-  return(models.to.load)
+
   
 }
 
@@ -62,7 +72,7 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
     stop("bm.out arg must be a BIOMOD.models.out object")
   }
   
-  available.args <- c("models", "run.eval", "data.set", "path")
+  available.args <- c("models", "run.eval", "data.set", "path", "as", "full.name")
   given.args <- names(add.args)
   
   ## is all additional args are known ?
@@ -104,6 +114,14 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   } else{
     add.args$path = "."
   }
+  
+  ### full.name
+  if(!is.null(add.args$full.name)){
+    if(sum(!(add.args$full.name %in% bm.out@models.computed)) > 0){
+      stop("full.name arg must be one of : ", toString(bm.out@models.computed))
+    }
+  }
+  
   
   return(list(add.args = add.args))
   

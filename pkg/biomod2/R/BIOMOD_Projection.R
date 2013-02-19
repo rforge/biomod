@@ -86,7 +86,12 @@
               expl.var.names = modeling.output@expl.var.names,
               models.projected = selected.models,
               rescaled.models = modeling.output@rescal.all.models,
-              xy.coord = xy.new.env)
+              xy.coord = xy.new.env,
+              modeling.object.id = modeling.output@modeling.id)
+  
+  # add link to biomod2 modeling object
+  proj_out@modeling.object@link = modeling.output@link
+  
   
   # adapting the proj slot to projection data type (e.g. rasterStack, array)
 #   if(!do.stack){
@@ -130,8 +135,9 @@
   proj <- lapply(selected.models, function(mod.name){
     cat("\n\t> Projecting",mod.name,"...")
     ## load biomod model
-    mod <- get(load(file.path(modeling.output@sp.name, "models", mod.name)))
-    rm(list=mod.name)
+    BIOMOD_LoadModels(modeling.output, full.name=mod.name, as="mod")
+#     mod <- get(load(file.path(modeling.output@sp.name, "models", mod.name)))
+#     rm(list=mod.name)
     if(!do.stack){
       dir.create(file.path(modeling.output@sp.name,paste("proj_", proj.name, sep=""), "individual_projections"), 
                  showWarnings = FALSE, recursive = TRUE, mode = "0777")
@@ -324,7 +330,7 @@
   }
   
   # check that given models exits
-  files.check <- paste(modeling.output@sp.name,'/models/',selected.models,sep='')
+  files.check <- paste(modeling.output@sp.name,'/models/',modeling.output@modeling.id,"/",selected.models,sep='')
   not.checked.files <- c(grep('MAXENT', files.check), grep('SRE', files.check))
   if(length(not.checked.files) > 0){files.check <- files.check[-not.checked.files]}
   missing.files <- files.check[!file.exists(files.check)]

@@ -673,7 +673,8 @@ setClass("BIOMOD.stored.models.options",
          })
 
 setClass("BIOMOD.models.out",
-         representation(sp.name = 'character',
+         representation(modeling.id = 'character', 
+                        sp.name = 'character',
                         expl.var.names = 'character',
                         models.computed = 'character',
                         models.failed = 'character',
@@ -685,8 +686,10 @@ setClass("BIOMOD.models.out",
                         models.prediction.eval = 'BIOMOD.stored.array',
                         formated.input.data = 'BIOMOD.stored.formated.data',
                         calib.lines = 'BIOMOD.stored.array',
-                        models.options = 'BIOMOD.stored.models.options'),
-         prototype(sp.name='',
+                        models.options = 'BIOMOD.stored.models.options',
+                        link = 'character'),
+         prototype(modeling.id = as.character(format(Sys.time(), "%s")),
+                   sp.name='',
                    expl.var.names = '',
                    models.computed='',
                    models.failed='',
@@ -698,14 +701,24 @@ setClass("BIOMOD.models.out",
                    models.prediction.eval = new('BIOMOD.stored.array'),
                    formated.input.data = new('BIOMOD.stored.formated.data'),
                    calib.lines = new('BIOMOD.stored.array'),
-                   models.options = new('BIOMOD.stored.models.options')),
+                   models.options = new('BIOMOD.stored.models.options'),
+                   link=''),
          validity = function(object){
            return(TRUE)
            })
 
+setClass("BIOMOD.stored.models.out",
+         contains = "BIOMOD.stored.data",
+         representation(val = 'BIOMOD.models.out'),
+         prototype(val = NULL),
+         validity = function(object){
+           return(TRUE)
+         })
+
 setMethod('show', signature('BIOMOD.models.out'),
           function(object){
-            .bmCat("'BIOMOD.models.out")
+            .bmCat("BIOMOD.models.out")
+            cat("\nModeling id :", object@modeling.id, fill=.Options$width)
             cat("\nSpecies modeled :", object@sp.name, fill=.Options$width)
             cat("\nConsidered variables :", object@expl.var.names, fill=.Options$width)
             
@@ -947,6 +960,8 @@ setClass("BIOMOD.projection.out",
                         expl.var.names = 'character',
                         models.projected = 'character',
                         rescaled.models = 'logical',
+                        modeling.object = 'BIOMOD.stored.data',
+                        modeling.object.id = 'character',
                         type = 'character',
                         proj = 'BIOMOD.stored.data',
                         xy.coord = 'matrix'),
@@ -955,6 +970,7 @@ setClass("BIOMOD.projection.out",
                    expl.var.names='',
                    models.projected='',
                    rescaled.models=TRUE,
+                   modeling.object.id='',
                    type='',
                    xy.coord = matrix()),
          validity = function(object){
@@ -1039,6 +1055,7 @@ setMethod('show', signature('BIOMOD.projection.out'),
             cat("\nsp.name :", object@sp.name, fill=.Options$width)
             cat("\nexpl.var.names :", object@expl.var.names, fill=.Options$width)
             cat("\n")
+            cat("\nmodeling id :", object@modeling.object.id ,"(",object@modeling.object@link ,")", fill=.Options$width)
             cat("\nmodels projected :", toString(object@models.projected), fill=.Options$width)
 
             .bmCat()

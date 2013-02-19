@@ -18,7 +18,8 @@ BIOMOD_Modeling( data,
                  models.eval.meth = c('KAPPA','TSS','ROC'), 
                  SaveObj = TRUE,
                  rescal.all.models = TRUE,
-                 do.full.models = TRUE)
+                 do.full.models = TRUE,
+                 modeling.id = as.character(format(Sys.time(), '\%s')) )
 }
 
 \arguments{
@@ -34,6 +35,7 @@ BIOMOD_Modeling( data,
 \item{SaveObj}{keep all results and outputs on hard drive or not (NOTE: strongly recommended)}
 \item{rescal.all.models}{if true, all model prediction will be rescaled with a binomial GLM}
 \item{do.full.models}{if true, models calibrated and evaluated with the whole dataset are done }
+\item{modeling.id}{character, the ID (=name) of modeling procedure. A random number by default. }
 }
 
 \details{

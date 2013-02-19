@@ -55,7 +55,7 @@
             eval.metric.quality.threshold = eval.metric.quality.threshold,
             em.ci.alpha = prob.ci.alpha)
   
-  EM@models.out.obj@link <- paste(modeling.output@sp.name,"/",modeling.output@sp.name,".models.out",sep="")
+  EM@models.out.obj@link <- file.path(modeling.output@sp.name,paste(modeling.output@sp.name,".", modeling.output@modeling.id,".models.out",sep="") )
   
   # 2. doing Ensemble modeling
   

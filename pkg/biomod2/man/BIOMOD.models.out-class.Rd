@@ -25,6 +25,7 @@ The BIOMOD.models.out objects are created, used and returned by BIOMOD functions
 
 BIOMOD.models.out objects
   \describe{
+    \item{\code{modeling.id}:}{ "character", id of modeling procedure}
     \item{\code{sp.name}:}{ "character", species name }
     \item{\code{expl.var.names}:}{ "character", explanatory variables names }
     \item{\code{has.evaluation.data}:}{"logical", is some data are reserved for evaluating models?}
@@ -38,6 +39,7 @@ BIOMOD.models.out objects
     \item{\code{calib.lines}:}{ "BIOMOD.stored.array", calibrations and evaluation lines selected for each run }
     \item{\code{models.options}:}{ "BIOMOD.stored.models.options", options used to build each model }
     \item{\code{rescal.all.models}:}{"logical", is all models rescaling done?}
+    \item{\code{link}:}{'character', the path to object hard drive copy}
   }
 
 }

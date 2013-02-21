@@ -15,6 +15,15 @@
       
       # get customed index file
       new.index <- system.file("doc/html/00Index.html",package='biomod2')
+      
+      # update version number
+      pkg.version <- read.dcf(file=system.file("DESCRIPTION", package='biomod2'),
+               fields="Version")
+      
+      indexTmp <- readLines(new.index)
+      indexTmp[grepl("version ",indexTmp)] <- paste("version ", pkg.version, sep="")
+      cat(indexTmp, sep="\n", file=new.index, append=FALSE)
+      
       # and replace it
       file.copy(from=new.index,to=old.index,overwrite=TRUE)
     }

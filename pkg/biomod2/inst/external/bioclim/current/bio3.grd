@@ -1,27 +1,27 @@
 [general] 
 creator=R package 'raster' 
-created= 2012-06-21 16:31:28 
+created= 2013-02-20 14:35:42 
 [georeference] 
-nrows= 45 
-ncols= 108 
+nrows= 47 
+ncols= 120 
 xmin= -180 
-ymin= -60 
-xmax= 180.000018775 
-ymax= 90.000007823 
-projection= +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 
+ymin= -57.499992177 
+xmax= 180 
+ymax= 83.500007823 
+projection= +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
 [data] 
 datatype= FLT4S 
 byteorder= little 
 nbands= 1 
 bandorder= BIL 
 categorical= FALSE 
-minvalue= 103.2 
-maxvalue= 22261.0075 
+minvalue= 10.1944431428001 
+maxvalue= 92 
 nodatavalue= -3.4e+38 
 [legend] 
 legendtype=  
 values=  
 color=  
 [description] 
-layername= bio_4 
+layername= bio3 
 history=  

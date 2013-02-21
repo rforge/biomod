@@ -6,6 +6,7 @@
 	* vignettes and help files update (thanks Sam P. & Signe N.)
 	* save link between modeling and projection objects
 	* add pROC package dependencie
+	* add a modeling cleaner that remove modeling objects from both memory and hard drive: RemoveProperly()
 
 
 2.0.11 (2013-02-18)

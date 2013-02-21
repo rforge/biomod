@@ -781,6 +781,8 @@ setMethod("getModelsPrediction", "BIOMOD.models.out",
           )
 
 
+
+
 setGeneric("getModelsPredictionEval",
            function(obj,...){
              standardGeneric("getModelsPredictionEval")
@@ -926,6 +928,27 @@ setMethod("getModelsBuiltModels", "BIOMOD.models.out",
             return(obj@models.computed)
           }
           )
+
+
+setGeneric("RemoveProperly",
+           function(obj,obj.name=deparse(substitute(obj))){
+             standardGeneric("RemoveProperly")
+           })
+
+setMethod("RemoveProperly", "BIOMOD.models.out",
+          function(obj, obj.name=deparse(substitute(obj))){
+            cat("\n\t> Removing .BIOMOD_DATA files...")
+            unlink(file.path(obj@sp.name, ".BIOMOD_DATA", obj@modeling.id), recursive=T, force=TRUE)
+            cat("\n\t> Removing models...")
+            unlink(file.path(obj@sp.name, "models", obj@modeling.id), recursive=T, force=TRUE)
+            cat("\n\t> Removing object hard drive copy...")
+            unlink(obj@link, recursive=T, force=TRUE)
+            cat("\n\t> Removing object from memory...")
+            rm(list=obj.name,envir=sys.frame(-2))
+            cat("\nCompleted!")
+          })
+
+
 ####################################################################################################
 ### BIOMOD Storing Projection Objects ##############################################################
 ####################################################################################################

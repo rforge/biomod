@@ -106,7 +106,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        models = c('CTA','RF'), 
                                        models.options = myBiomodOption, 
                                        models.eval.meth ='TSS',
-                                       rescal.all.models=FALSE)
+                                       scal.all.models=FALSE)
 
 
 # 4.1 Projection on current environemental conditions

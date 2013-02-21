@@ -6,7 +6,7 @@
                                 mod.eval.method,
                                 SavePred,
                                 xy=NULL,
-                                rescal.models = TRUE){
+                                scal.models = TRUE){
   cat("\n\n-=-=-=- Run : ",X$name, '\n')
   res.sp.run <- list()
   
@@ -25,7 +25,7 @@
                                                       SavePred = T,#SavePred,
                                                       xy = X$xy,
                                                       eval.xy = X$eval.xy,
-                                                      rescal.models = rescal.models,
+                                                      scal.models = scal.models,
                                                       modeling.id = modeling.id)
     
     names(res.sp.run[[colnames(X$calibLines)[i]]]) <- Model
@@ -39,12 +39,12 @@
 .Biomod.Models <- function (Model, Data, Options, calibLines, Yweights, nam, VarImport = 0, 
                             mod.eval.method = c('ROC','TSS','KAPPA'), evalData = NULL,
                             SavePred = FALSE,
-                            xy = NULL, eval.xy = NULL, rescal.models = TRUE, modeling.id = ''){
+                            xy = NULL, eval.xy = NULL, scal.models = TRUE, modeling.id = ''){
   
   ################################################################################################
   # 1. Print model running and getting model options =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #               
   # check and get modified args if nececary
-  args <- .Biomod.Models.check(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData, rescal.models)
+  args <- .Biomod.Models.check(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData, scal.models)
   
   if(is.null(args)){ # trouble in input data -> Not Run
     return(0)
@@ -57,7 +57,7 @@
     Prev <- args$Prev
     mod.eval.method <- args$mod.eval.method
     evalData <- args$evalData
-    rescal.models <- args$rescal.models
+    scal.models <- args$scal.models
     resp_name <- args$resp_name
     expl_var_names <- args$expl_var_names
   }
@@ -528,8 +528,8 @@
     ListOut$ModelName <- model_name
   }
   
-  # rescale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  if(rescal.models){
+  # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+  if(scal.models){
     cat("\n\tModel scaling...")
     model.bm@scaling_model <- .scaling_model(g.pred/1000, Data[, 1], prevalence=0.5)
     g.pred <- predict(model.bm, Data[,expl_var_names], on_0_1000=TRUE)
@@ -633,7 +633,7 @@
         } else{
           ## for MAXENT, we have created all the permutation at model building step
           shuffled.pred <- round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam, vari, run, "swd.csv", sep="_")))[,3])*1000)
-          ## rescal suffled.pred if necessary
+          ## scal suffled.pred if necessary
           if(length(getScalingModel(model.bm))){
             shuffled.pred <- round(.testnull(object = getScalingModel(model.bm), Prev = 0.5 , dat = data.frame(pred = shuffled.pred/1000) ) *1000)
             #               shuffled.pred <- round(as.numeric(predict(getScalingModel(model.bm), shuffled.pred/1000))*1000)
@@ -679,7 +679,7 @@
 }
 
 
-.Biomod.Models.check <- function(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData, rescal.models, criteria=NULL, Prev=NULL){
+.Biomod.Models.check <- function(Model, Data, Options, calibLines, Yweights, mod.eval.method, evalData, scal.models, criteria=NULL, Prev=NULL){
   # get species and expanatory variables names
   resp_name <- colnames(Data)[1]
   expl_var_names <- colnames(Data)[-1]
@@ -717,11 +717,11 @@
     Data <- cbind(Data,Yweights)
   }
   
-  # rescaling parameter checking
-  # never rescal SRE
-  if(Model == "SRE") rescal.models <- FALSE
-  # always rescal ANN, FDA, MARS
-  if(Model %in% c("ANN", "FDA", "MARS") ) rescal.models <- TRUE
+  # scaling parameter checking
+  # never scal SRE
+  if(Model == "SRE") scal.models <- FALSE
+  # always scal ANN, FDA, MARS
+  if(Model %in% c("ANN", "FDA", "MARS") ) scal.models <- TRUE
   
   
   # models options checking and printing
@@ -821,7 +821,7 @@
               Prev=Prev,
               mod.eval.method=mod.eval.method,
               evalData=evalData,
-              rescal.models=rescal.models,
+              scal.models=scal.models,
               resp_name=resp_name,
               expl_var_names=expl_var_names))
   

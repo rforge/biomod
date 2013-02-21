@@ -35,13 +35,13 @@
   silent <- args$silent # echo advancement or not
   do.stack <- args$do.stack # store output in a lone stack
   clamping.level <- args$clamping.levels # remove all cells where at least clamping.level variables are out of their calibrating range
-  clamping.value <- args$clamping.value # reference value for clamped cells 
+#   clamping.value <- args$clamping.value # reference value for clamped cells 
   output.format <- args$output.format # raster output format
   keep.in.memory <- args$keep.in.memory # store results on memory or only on hard drive
   
   if(is.null(silent)) silent <- FALSE
   if(is.null(do.stack)) do.stack <- TRUE
-  if(is.null(clamping.value)) clamping.value <- -1
+#   if(is.null(clamping.value)) clamping.value <- -1
   if(is.null(keep.in.memory)) keep.in.memory <- TRUE
   
   if(!do.stack | !keep.in.memory) rasterOptions(todisk=TRUE)
@@ -85,7 +85,7 @@
               sp.name =  modeling.output@sp.name,
               expl.var.names = modeling.output@expl.var.names,
               models.projected = selected.models,
-              rescaled.models = modeling.output@rescal.all.models,
+              scaled.models = modeling.output@scal.all.models,
               xy.coord = xy.new.env,
               modeling.object.id = modeling.output@modeling.id)
   

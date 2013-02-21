@@ -40,7 +40,7 @@
                                VarImport=0, 
                                models.eval.meth = c('KAPPA','TSS','ROC'), 
                                SaveObj = TRUE,
-                               rescal.all.models = TRUE,
+                               scal.all.models = TRUE,
                                do.full.models = TRUE,
                                modeling.id=as.character(format(Sys.time(), "%s"))){
   
@@ -66,7 +66,7 @@
                     modeling.id = modeling.id,
                     expl.var.names = colnames(data@data.env.var),
                     has.evaluation.data = data@has.data.eval,
-                    rescal.all.models = rescal.all.models)
+                    scal.all.models = scal.all.models)
 
 #   #To keep track of Yweights state at origin (user's input)
 #     if(NbRepPA!=0 && is.null(Yweights)) Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
@@ -124,7 +124,7 @@
                           VarImport = VarImport, 
                           mod.eval.method = models.eval.meth,
                           SavePred = SaveObj,
-                          rescal.models = rescal.all.models
+                          scal.models = scal.all.models
                           )
   # put outputs in good format and save those
 
@@ -379,10 +379,10 @@
   cat("\nCreating suitable Workdir...\n")
   dir.create(sp.name, showWarnings=FALSE, recursive=TRUE)
   dir.create(file.path(sp.name,".BIOMOD_DATA",modeling.id), showWarnings=FALSE, recursive=TRUE)
-  dir.create(file.path(sp.name, "models",modeling.id,"rescaling_models"), showWarnings=FALSE, recursive=T)
+  dir.create(file.path(sp.name, "models",modeling.id,"scaling_models"), showWarnings=FALSE, recursive=T)
 
 #   if(sum(models.list %in% c('MARS', 'FDA', 'ANN')) > 0 ){
-#     dir.create(paste(getwd(),"/",sp.name, "/models/rescaling_models", sep=""), showWarnings=FALSE, recursive=T)
+#     dir.create(paste(getwd(),"/",sp.name, "/models/scaling_models", sep=""), showWarnings=FALSE, recursive=T)
 #   }
 }
 

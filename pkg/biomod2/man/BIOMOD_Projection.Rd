@@ -38,7 +38,7 @@ BIOMOD_Projection(modeling.output,
 
 \item{build.clamping.mask}{ if TRUE, a clamping mask will be saved on hard drive different (see details)}
 
-\item{...}{ Additional arguments }
+\item{...}{ Additional arguments (see details section) }
 }
 
 
@@ -49,7 +49,10 @@ If \code{build.clamping.mask} is set to \code{TRUE} a file (same type than \code
 
 \ldots may be :
 \itemize{
-  \item{\code{do.stack}: }{logical. return and save projection in a lone \code{RasterStack} if it's possible.}
+  \item{\code{silent}:}{logical, if TRUE, console outputs are turned off}
+  \item{\code{do.stack}: }{logical, if TRUE, attempt to save all projections in a unique object {i.e \code{RasterStack}}. If FALSE or if objects are too heavy to be load all together in memory, projections will be stored into separated files.}
+  \item{\code{keep.in.memory}:}{logical, if FALSE only the link pointing to a hard drive copy of projections are stored in output object. That can be usefull to prevent memory issues.}
+  \item{\code{output.format}:}{whether \sQuote{.Rdata}, \sQuote{.grd} or \sQuote{.img} defining projections sving format (on hard drive). If \code{new.env} argument is under table format (\code{data.frame} or \code{matrix}), the only choice you have is \sQuote{.Rdata} }
 }
 
 }

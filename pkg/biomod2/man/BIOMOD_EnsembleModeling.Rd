@@ -94,7 +94,7 @@ BIOMOD_EnsembleModeling( modeling.output,
         
         \item{\bold{Coefficient of variation of Probabilities (\code{prob.cv}) }}{
         
-          This ensemble-model corresponds to the coefficient of variation (i.e. sd / mean) of the probabilities over the selected models. This model is not rescaled. It will be evaluated like all other ensemble-models although this interpretation is obviously different. CV is a measure of uncertainty rather a measure of probability of occurrence. If the CV gets a high evaluation score it means that the uncertainty is high where the species is observed (which might not be a good feature of the models). The lower is the score, the better are the models. CV is a nice complement to the mean probability. 
+          This ensemble-model corresponds to the coefficient of variation (i.e. sd / mean) of the probabilities over the selected models. This model is not scaled. It will be evaluated like all other ensemble-models although this interpretation is obviously different. CV is a measure of uncertainty rather a measure of probability of occurrence. If the CV gets a high evaluation score it means that the uncertainty is high where the species is observed (which might not be a good feature of the models). The lower is the score, the better are the models. CV is a nice complement to the mean probability. 
         }
       
         \item{\bold{Confidence interval (\code{prob.ci} & \code{prob.ci.alpha}) }}{
@@ -205,7 +205,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        VarImport=3, 
                                        models.eval.meth = c('TSS'),
                                        SaveObj = TRUE,
-                                       rescal.all.models = FALSE,
+                                       scal.all.models = FALSE,
                                        do.full.models = FALSE)
                                        
 # 4. Doing Ensemble Modelling

@@ -32,7 +32,7 @@ setClass('biomod2_model',
                    model_variables_importance = matrix()),
          validity = function(object){
            
-           # check that rescaler is a glm if it is defined
+           # check that scaler is a glm if it is defined
            if(length(object@scaling_model)) 
              if(sum(! ( c("glm", "lm") %in% class(object@scaling_model) ) ) > 0) 
                return(FALSE)
@@ -45,7 +45,7 @@ setMethod('show', signature('biomod2_model'),
             .bmCat("'biomod2_model'")
             cat("\n\t model name :", object@model_name, fill=.Options$width)
             cat("\n\t model class :", object@model_class, fill=.Options$width)
-            cat("\n\t This model", ifelse(length(object@scaling_model), "has", "does'nt have"),"its own rescaler", fill=.Options$width)
+            cat("\n\t This model", ifelse(length(object@scaling_model), "has", "does'nt have"),"its own scaler", fill=.Options$width)
             
             cat("\n")
             cat("\n\t response modelled :", object@resp_name, fill=.Options$width)

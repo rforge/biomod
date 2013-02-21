@@ -94,7 +94,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        VarImport=0, 
                                        models.eval.meth = c('TSS'),
                                        SaveObj = TRUE,
-                                       rescal.all.models = FALSE,
+                                       scal.all.models = FALSE,
                                        do.full.models = FALSE)
                                        
 # 4. Creating the ensemble models 

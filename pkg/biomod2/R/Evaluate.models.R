@@ -27,7 +27,7 @@ Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Precision = 5, Fixed.thresh = NUL
       
       calcStat <- sapply(lapply(valToTest, function(x){return(table(Fit>x,Obs))} ), calculate.stat, stat=Stat)
       
-      # rescal on 0-1 ladder.. 1 is the best
+      # scal on 0-1 ladder.. 1 is the best
       calcStat <- 1 - abs(StatOptimum - calcStat)
       
       best.stat <- max(calcStat, na.rm=T)

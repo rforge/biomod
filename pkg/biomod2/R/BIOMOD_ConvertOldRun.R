@@ -43,7 +43,7 @@ BIOMOD_ConvertOldRun <- function(savedObj, path = NULL){
     models.out <- new('BIOMOD.models.out',
                       sp.name = sp.name,
                       expl.var.names = Biomod.material$VarNames,
-                      scal.all.models = FALSE)
+                      rescal.all.models = FALSE)
     
     #   3.1 BIOMOD.formated.data creation
     cat("\n\tBIOMOD.formated.data creation")

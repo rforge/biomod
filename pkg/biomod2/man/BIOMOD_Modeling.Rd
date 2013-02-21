@@ -17,7 +17,7 @@ BIOMOD_Modeling( data,
                  VarImport=0, 
                  models.eval.meth = c('KAPPA','TSS','ROC'), 
                  SaveObj = TRUE,
-                 scal.all.models = TRUE,
+                 rescal.all.models = TRUE,
                  do.full.models = TRUE,
                  modeling.id = as.character(format(Sys.time(), '\%s')) )
 }
@@ -33,7 +33,7 @@ BIOMOD_Modeling( data,
 \item{VarImport}{Number of permutation to estimate variable importance}
 \item{models.eval.meth}{vector of names of evaluation metric among 'KAPPA', 'TSS', 'ROC', 'FAR', 'SR', 'ACCURACY', 'BIAS', 'POD', 'CSI' and 'ETS'}
 \item{SaveObj}{keep all results and outputs on hard drive or not (NOTE: strongly recommended)}
-\item{scal.all.models}{if true, all model prediction will be scaled with a binomial GLM}
+\item{rescal.all.models}{if true, all model prediction will be scaled with a binomial GLM}
 \item{do.full.models}{if true, models calibrated and evaluated with the whole dataset are done }
 \item{modeling.id}{character, the ID (=name) of modeling procedure. A random number by default. }
 }
@@ -105,7 +105,7 @@ BIOMOD_Modeling( data,
   If this argument is set to False, it may prevent the evaluation of the \sQuote{ensemble modelled} models in further steps. We strongly recommend to always keep this argument \code{TRUE} even it asks for free space onto the hard drive.
   }
   
-  \item{\bold{scal.all.models}}{
+  \item{\bold{rescal.all.models}}{
   
   Some categorical models have to be scaled in every case (\sQuote{MARS}, \sQuote{FDA}, \sQuote{ANN}). But It may be interesting to scale all model computed to ensure that they will produced comparable predictions (0-1000 ladder). That's particularly useful when you do some ensemble forecasting to remove the scale prediction effect (the more extended projections are, the more they influence ensemble forecasting results). 
   }

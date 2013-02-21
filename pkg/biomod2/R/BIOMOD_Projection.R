@@ -85,7 +85,7 @@
               sp.name =  modeling.output@sp.name,
               expl.var.names = modeling.output@expl.var.names,
               models.projected = selected.models,
-              scaled.models = modeling.output@scal.all.models,
+              scaled.models = modeling.output@rescal.all.models,
               xy.coord = xy.new.env,
               modeling.object.id = modeling.output@modeling.id)
   

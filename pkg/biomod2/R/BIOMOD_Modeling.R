@@ -40,7 +40,7 @@
                                VarImport=0, 
                                models.eval.meth = c('KAPPA','TSS','ROC'), 
                                SaveObj = TRUE,
-                               scal.all.models = TRUE,
+                               rescal.all.models = TRUE,
                                do.full.models = TRUE,
                                modeling.id=as.character(format(Sys.time(), "%s"))){
   
@@ -66,7 +66,7 @@
                     modeling.id = modeling.id,
                     expl.var.names = colnames(data@data.env.var),
                     has.evaluation.data = data@has.data.eval,
-                    scal.all.models = scal.all.models)
+                    rescal.all.models = rescal.all.models)
 
 #   #To keep track of Yweights state at origin (user's input)
 #     if(NbRepPA!=0 && is.null(Yweights)) Yweights <- matrix(NA, nc=Biomod.material$NbSpecies, nr=nrow(DataBIOMOD))
@@ -124,7 +124,7 @@
                           VarImport = VarImport, 
                           mod.eval.method = models.eval.meth,
                           SavePred = SaveObj,
-                          scal.models = scal.all.models
+                          scal.models = rescal.all.models
                           )
   # put outputs in good format and save those
 
@@ -359,7 +359,13 @@
   if(!is.null(Prevalence)){
     if(!is.numeric(Prevalence) | Prevalence>=1 | Prevalence <=0){
       stop("Prevalence must be a 0-1 numeric")
-    }    
+    } else {
+      # update MAXENT default prevalence
+      if("MAXENT" %in% models){
+        cat("\n\t MAXENT defaultprevalence option was updated to fit with modeling prevalence (i.e",Prevalence,")")
+        models.options@MAXENT$defaultprevalence = Prevalence
+      }
+    }
   }
 
 #   cat('\nChecking done!\n')

@@ -41,11 +41,13 @@ Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Precision = 5, Fixed.thresh = NUL
       specificity <- (true.neg * 100)/sum(misc[,'0'])
       sensibility <- (true.pos * 100)/sum(misc[,'1'])
     } else{
-      best.stat <- .somers2(Fit, Obs)["C"]
-      Cut <- .CutOff.Optimised(Obs, Fit)
-      cutoff <- Cut[1]
-      sensibility <- Cut[2]
-      specificity <- Cut[3]
+      require(pROC,quietly=T)
+      roc1 <- roc(Obs, Fit, percent=T)
+      roc1.out <- coords(roc1, "best", ret=c("threshold", "sens", "spec"))
+      best.stat <- as.numeric(auc(roc1))/100
+      cutoff <- as.numeric(roc1.out["threshold"])
+      sensibility <- as.numeric(roc1.out["sensitivity"])
+      specificity <- as.numeric(roc1.out["specificity"])
     }
   #}
   return(cbind(best.stat,cutoff,sensibility,specificity))

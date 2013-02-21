@@ -75,8 +75,9 @@ BIOMOD_Modeling( data,
   
   \item{\bold{Yweights & Prevalence}}{
   
-    Allows to give more or less weight to some particular observations. If this argument is kept to NULL, each site (presence or absence) has the same weight. In the particular case that pseudo-absence data have been generated \code{\link{BIOMOD_FormatingData}}, weights are calculated in a way to obtain the given prevalence (0.5 if \code{NULL} meaning that the presences will have the same importance than the absences in the calibration process of the models). Automatically created \code{Yweights} will be composed by integers to prevent from some modelling issues.
-    Note that \code{Prevalence} argument will always be ignored if \code{Yweights} are defined.
+    Allows to give more or less weight to some particular observations. If these arguments is kept to NULL (\code{Yweights = NULL}, \code{Prevalence = NULL}), each observation (presence or absence) has the same weight (independent of the number of presences and absences). If \code{Prevalence = 0.5} absences will be weighted equally to the presences (i.e. the weighted sum of presence equals the weighted sum of absences). If prevalence is set below or above 0.5 absences or presences are given more weight, respectively.
+In the particular case that pseudo-absence data have been generated \code{BIOMOD_FormatingData} (\code{PA.nb.rep > 0}), weights are by default (\code{Prevalence = NULL}) calculated such that prevalence is 0.5, meaning that the presences will have the same importance as the absences in the calibration process of the models. Automatically created \code{Yweights} will be composed of integers to prevent different modelling issues. 
+Note that the \code{Prevalence} argument will always be ignored if \code{Yweights} are defined. 
     
     
   }

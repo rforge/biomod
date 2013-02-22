@@ -9,7 +9,7 @@
 \usage{
 BIOMOD_EnsembleModeling( modeling.output,
                          chosen.models = 'all',
-                         em.by = 'PA_dataset+repet',
+                         em.by = 'all',
                          eval.metric = 'all',
                          eval.metric.quality.threshold = NULL,
                          prob.mean = TRUE,

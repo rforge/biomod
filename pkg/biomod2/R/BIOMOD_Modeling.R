@@ -189,7 +189,7 @@
        file=models.out@link)
   
 
-  cat("\n-=-=-=- Done -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n")
+  .bmCat("Done")
   return(models.out)
 }
 
@@ -416,17 +416,18 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 .Models.print.modeling.summary <- function( mod.prep.dat, models){
-  cat("\n\n-=-=-=- ", unlist(strsplit(mod.prep.dat[[1]]$name,'_'))[1], " Modeling Summary -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n")
+  cat("\n\n")
+  .bmCat(paste(unlist(strsplit(mod.prep.dat[[1]]$name,'_'))[1], "Modeling Summary"))
 
-  cat(ncol(mod.prep.dat[[1]]$dataBM)-1, " environmental variables (", colnames(mod.prep.dat[[1]]$dataBM)[-1], ")\n")
+  cat("\n",ncol(mod.prep.dat[[1]]$dataBM)-1, " environmental variables (", colnames(mod.prep.dat[[1]]$dataBM)[-1], ")")
 
-  cat("Number of evaluation repetitions :" , ncol(mod.prep.dat[[1]]$calibLines), "\n")
+  cat("\nNumber of evaluation repetitions :" , ncol(mod.prep.dat[[1]]$calibLines))
 
-  cat("Models selected :", models, "\n")
+  cat("\nModels selected :", models, "\n")
 
-  cat("Total number of model runs :",ncol(mod.prep.dat[[1]]$calibLines) * length(models) * length(mod.prep.dat),"\n")
+  cat("\nTotal number of model runs :",ncol(mod.prep.dat[[1]]$calibLines) * length(models) * length(mod.prep.dat),"\n")
   
-  cat("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n")
+  .bmCat()
 }
   
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #

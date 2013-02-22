@@ -18,7 +18,7 @@ BIOMOD_EnsembleForecasting( projection.output,
 \arguments{
   \item{projection.output}{a \code{"\link[=BIOMOD.projection.out-class]{BIOMOD.projection.out}"} returned by \code{\link[biomod2]{BIOMOD_Projection}} }
   \item{EM.output}{ a \code{"\link[=BIOMOD.EnsembleModeling.out-class]{BIOMOD.EnsembleModeling.out}"} returned by \code{\link[biomod2]{BIOMOD_EnsembleModeling}}}
-  \item{total.consensus}{Logical. If TRUE, an optional projection averaging all ensemble-models projections will be built }
+  \item{total.consensus}{Deprecated, construct ensemble-models setting \code{em.by} argument to \code{'all'} to get total consensus-models}
   \item{binary.meth}{vector specifying the names of evaluation metrics and associated thresholds to transform the probabilities of presence into presence and absence (binary transformation).  }
   \item{filtered.meth}{vector specifying the names of evaluation metrics and associated thresholds to transform into 0 the probabilities of presence lower than the thresholds.}
   \item{\ldots}{ further arguments (see details)}

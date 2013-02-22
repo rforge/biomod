@@ -129,7 +129,7 @@
   
   # 1. Checking input params class
   available.types <- c( 'numeric', 'data.frame', 'matrix', 
-                        'RasterLayer', 'RasterStack', 'RasterBrick',
+                        'RasterLayer', 'RasterStack',
                         'SpatialPointsDataFrame', 'SpatialPoints')
   ###### resp.var
   if(!(class(resp.var) %in% available.types)){

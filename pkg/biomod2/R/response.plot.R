@@ -102,11 +102,10 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     par(mar = c(0.1, 0.1, 0.1, 0.1))
     plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
     polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col="#f5fcba",border=NA)
-    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves for ", .extractModelNamesInfo(models[1],"species"), "'s ", .extractModelNamesInfo(models[1],"models"),sep=""),  ,col="#4c57eb")
+    text(x=0.5, y=0.8, pos=1, cex=1.6, labels=paste("Response curves for ", get(models[1])@resp_name, "'s ",  get(models[1])@model_class,sep=""),  ,col="#4c57eb")
     par(mar = c(2,2,3.5,1))      
   } 
 
-  
   
   if(!do.bivariate){  
     for(vari in show.variables){
@@ -186,7 +185,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
             facetcol <- cut(zfacet, nbcol)
             
     				persp(x=pts.tmp1,y=pts.tmp2,z=proj.tmp, xlab = vari1, ylab=vari2, zlab="pred", theta = 30, phi = 30,
-              expand = 0.5, col = color[facetcol], ltheta = 120, shade = 0.25, ticktype = "simple", main = paste(.extractModelNamesInfo(model,"data.set"), " ", .extractModelNamesInfo(model,"run.eval") ,sep=""), cex.main = 0.9, cex.axis=0.7)
+              expand = 0.5, col = color[facetcol], ltheta = 120, shade = 0.25, ticktype = "simple", main = paste(.extractModelNamesInfo(get(model)@model_name,"data.set"), " ", .extractModelNamesInfo(get(model)@model_name,"run.eval") ,sep=""), cex.main = 0.9, cex.axis=0.7)
     			}
           
         }        
@@ -198,8 +197,8 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if(save.file=="pdf" | save.file=="jpeg" | save.file=="tiff" | save.file=="postscript") dev.off()
   
   # delete temp files if somes has been created
-  if(file.exists(file.path(.extractModelNamesInfo(models[[1]],"species"),'RespPlotTmp'))){
-     unlink(path.expand(file.path(.extractModelNamesInfo(models[[1]],"species"),'RespPlotTmp')), recursive=TRUE, force=TRUE)
+  if(file.exists(file.path(get(models[1])@resp_name,'RespPlotTmp'))){
+     unlink(path.expand(file.path(get(models[1])@resp_name,'RespPlotTmp')), recursive=TRUE, force=TRUE)
   }
   
   if(!do.bivariate){
@@ -223,11 +222,25 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
   if(!is.character(models)){
     stop("models must be a character vector of models names")
   }
+  
+  mod_names <- NULL
   for(mod in models){
     if(!exists(mod)){
       stop("you need to load the models selected!")
     }
+    
+    if(!inherits(get(mod), 'biomod2_model')){
+      
+      # create a biomod2 modeling object
+      mod_tmp <- .Construct.default.biomod2.modeling.obj(get(mod))
+      assign(mod_tmp@model_name, mod_tmp, envir = parent.frame(n = 1))
+      mod_names <- c(mod_names, mod_tmp@model_name)
+    } else{
+      mod_names <- c(mod_names, mod)
+    }
   }
+  
+  models <- mod_names
   
   ### defining the number split in each variables range =-=-=-=-=- #
   if(!is.null(add.args$nb.pts)){
@@ -282,6 +295,91 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 }
 
 ###
-# list of supported additional arguments  
-# - nb.pts  
 
+.Construct.default.biomod2.modeling.obj <- function(mod){
+  
+  ## ANN ##
+  if(sum(!(c("nnet.formula", "nnet") %in% class(mod))) == 0){
+    return(new("ANN_biomod2_model",
+        model = mod,
+        model_name = paste(as.character(mod$terms[[2]]),"_AllData_Full_ANN", sep=""),
+        model_class = 'ANN',
+        resp_name = as.character(mod$terms[[2]]),
+        expl_var_names = as.character(mod$terms[[3]])))
+  }
+  
+  
+  ## CTA ##
+  if(sum(!(c("rpart") %in% class(mod)) == 0 )){
+    return(new("CTA_biomod2_model",
+               model = mod,
+               model_name = paste(as.character(mod$terms[[2]]),"_AllData_Full_CTA", sep=""),
+               model_class = 'CTA',
+               resp_name = as.character(mod$terms[[2]]),
+               expl_var_names = as.character(mod$terms[[3]])))
+  }  
+  
+  ## FDA ##
+  if(sum(!(c("fda") %in% class(mod)) == 0 )){
+    return(new("FDA_biomod2_model",
+               model = mod,
+               model_name = paste(as.character(mod$terms[[2]]),"_AllData_Full_FDA", sep=""),
+               model_class = 'FDA',
+               resp_name = as.character(mod$terms[[2]]),
+               expl_var_names = as.character(mod$terms[[3]])))
+  }
+  
+  ## GAM ##
+  if(sum(!(c("gam") %in% class(mod)) == 0 )){
+    return(new("GAM_biomod2_model",
+               model = mod,
+               model_subclass = ifelse(mod$method=="glm.fit","GAM_gam","GAM_mgcv"),
+               model_name = paste(as.character(mod$terms[[2]]),"_AllData_Full_GAM", sep=""),
+               model_class = 'GAM',
+               resp_name = as.character(mod$terms[[2]]),
+               expl_var_names = as.character(mod$terms[[3]])))
+  }
+  
+  ## GBM ##
+  if(sum(!(c("gbm") %in% class(mod)) == 0 )){
+    return(new("GBM_biomod2_model",
+               model = mod,
+               model_name = paste(as.character(mod$Terms[[2]]),"_AllData_Full_GBM", sep=""),
+               model_class = 'GBM',
+               resp_name = as.character(mod$Terms[[2]]),
+               expl_var_names = as.character(mod$Terms[[3]])))
+  }
+  
+  ## GLM ##
+  if(sum(!(c("glm", "lm") %in% class(mod)) == 0 )){
+    return(new("GLM_biomod2_model",
+               model = mod,
+               model_name = paste(as.character(mod$terms[[2]]),"_AllData_Full_GLM", sep=""),
+               model_class = 'GLM',
+               resp_name = as.character(mod$terms[[2]]),
+               expl_var_names = as.character(mod$terms[[3]])))
+  }
+  
+  ## MARS ##
+  if(sum(!(c("mars") %in% class(mod)) == 0 )){
+    return(new("MARS_biomod2_model",
+               model = mod,
+               model_name ="species_AllData_Full_MARS",
+               model_class = 'MARS',
+               resp_name = "species",
+               expl_var_names = as.character(colnames(mod$factor))))
+  }
+  
+  ## RF ##
+  if(sum(!(c("randomForest") %in% class(mod)) == 0 )){
+    return(new("RF_biomod2_model",
+               model = mod,
+               model_name =paste(as.character(mod$terms[[2]]),"_AllData_Full_RF", sep=""),
+               model_class = 'RF',
+               resp_name = as.character(mod$terms[[2]]),
+               expl_var_names = as.character(mod$terms[[3]])))
+  }
+  
+  stop("Unknown model class")
+  
+}

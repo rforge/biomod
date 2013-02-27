@@ -1,3 +1,7 @@
+2.1.9 (2013-02-27)
+	* one var modeling supported
+	* new options for response curves ploting (col, lty, data_species...)
+
 2.1.8 (2013-02-25)
   * response plot supports now formal models
 

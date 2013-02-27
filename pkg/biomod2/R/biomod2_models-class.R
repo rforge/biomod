@@ -544,7 +544,7 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(.testnull(object = getFormalModel(object), Prev = 0.5 , dat = as.data.frame(newdata)))
+  proj <- as.numeric(.testnull(object = getFormalModel(object), Prev = 0.5 , dat = newdata[,,drop=FALSE]))
   
   if(length(getScalingModel(object))){
     proj <- data.frame(pred = proj)

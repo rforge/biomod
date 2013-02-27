@@ -78,7 +78,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
         cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
         BFD@coord <- BFD@coord[-rowToRm,]
         BFD@data.species <- BFD@data.species[-rowToRm]
-        BFD@data.env.var <- BFD@data.env.var[-rowToRm,]
+        BFD@data.env.var <- BFD@data.env.var[-rowToRm,,drop=FALSE]
       }
       if(BFD@has.data.eval){
         rowToRm <- unique(unlist(lapply(BFD@eval.data.env.var,function(x){return(which(is.na(x)))})))
@@ -86,7 +86,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
           cat("\n\t\t\t! Some NAs have been automaticly removed from your evaluation data")
           BFD@eval.coord <- BFD@eval.coord[-rowToRm,]
           BFD@eval.data.species <- BFD@eval.data.species[-rowToRm]
-          BFD@eval.data.env.var <- BFD@eval.data.env.var[-rowToRm,]
+          BFD@eval.data.env.var <- BFD@eval.data.env.var[-rowToRm,,drop=FALSE]
         }      
       }
       
@@ -911,6 +911,8 @@ setMethod("getModelsInputData", "BIOMOD.models.out",
               return(getModelsInputData(obj)@data.env.var)
             } else if(subinfo == 'expl.var.names'){
               return(obj@expl.var.names)
+            } else if(subinfo == 'resp.var'){
+              return(getModelsInputData(obj)@data.species)
             } else{
               stop("Unknow subinfo tag")
             }
@@ -1244,7 +1246,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
             
             # dealing with evaluation data
             if(data@has.data.eval){
-              evalDataBM <- data.frame(cbind(data@eval.data.species,data@eval.data.env.var))
+              evalDataBM <- data.frame(cbind(data@eval.data.species,data@eval.data.env.var[,,drop=FALSE]))
               colnames(evalDataBM)[1] <- data@sp.name
               eval.xy <- data@eval.coord
             } else{ evalDataBM <- eval.xy <- NULL }
@@ -1303,7 +1305,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
               resp <- data@data.species[data@PA[,pa]] # response variable (with pseudo absences selected)
               resp[is.na(resp)] <- 0
               dataBM <- data.frame(cbind(resp,
-                                         data@data.env.var[data@PA[,pa],]))
+                                         data@data.env.var[data@PA[,pa],,drop=FALSE]))
               colnames(dataBM)[1] <- data@sp.name
                 
               if(NbRunEval == 0){ # take all available data

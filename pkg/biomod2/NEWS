@@ -1,5 +1,8 @@
+2.1.9 (2013-02-28)
+	* possibility to indicate manualy which data should be used for calibration (resp. for validation) of models within BIOMOD_Modeling
+
 2.1.9 (2013-02-27)
-	* one var modeling supported
+	* one var modeling supported (thanks Anne O.)
 	* new options for response curves ploting (col, lty, data_species...)
 
 2.1.8 (2013-02-25)

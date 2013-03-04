@@ -49,9 +49,9 @@ BIOMOD_FormatingData(resp.var,
   
   \item{PA.strategy}{ strategy for selecting the Pseudo Absences (must be \sQuote{random}, \sQuote{SRE}, \sQuote{disk} or \sQuote{user.defined})}
   
-  \item{PA.dist.min}{minimal distance to presences for \sQuote{disk} Pseudo Absences selection}
+  \item{PA.dist.min}{minimal distance to presences for \sQuote{disk} Pseudo Absences selection (in meters if the explanatory is a not projected raster (+proj=longlat) and in map units (typically also meters) when it is projected or when explanatory variables are stored within table )}
   
-  \item{PA.dist.max}{maximal distance to presences for \sQuote{disk} Pseudo Absences selection}
+  \item{PA.dist.max}{maximal distance to presences for \sQuote{disk} Pseudo Absences selection(in meters if the explanatory is a not projected raster (+proj=longlat) and in map units (typically also meters) when it is projected or when explanatory variables are stored within table ) }
   
   \item{PA.sre.quant}{quantile used for \sQuote{SRE} Pseudo Absences selection}
   

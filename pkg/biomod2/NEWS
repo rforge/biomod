@@ -1,5 +1,6 @@
-2.1.11 (2013-03-04)
+2.1.12 (2013-03-04)
 	* add rasterVis dependency for nicer biomod2 plots
+	* PA.dist.min and PA.dist.max are now defined in meters  when you work with unprojected rasters in disk pseudo absences selection
 
 2.1.9 (2013-02-28)
 	* possibility to indicate manualy which data should be used for calibration (resp. for validation) of models within BIOMOD_Modeling

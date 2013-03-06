@@ -1325,9 +1325,9 @@ setMethod("getEMeval", "BIOMOD.EnsembleModeling.out",
               lout <- list()
               for(mod in model){
                 if(is.null(met)){
-                  lout[[mod]] <- obj@em.res[[mod]]$em.cross.validation
+                  lout[[mod]] <- obj@em.res[[mod]]$em.cross.validation[,,,drop=F]
                 } else if(!is.null(meth)){
-                  lout[[mod]] <- (obj@em.res[[mod]]$em.cross.validation[met,,])
+                  lout[[mod]] <- (obj@em.res[[mod]]$em.cross.validation[met,,,drop=F])
                 } 
               }
               return(lout)

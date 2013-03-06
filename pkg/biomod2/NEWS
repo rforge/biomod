@@ -1,3 +1,6 @@
+2.1.13 (2013-03-06)
+	* Add ProbDensFunc() function to package to produce nice plots that show inter-models variability
+
 2.1.12 (2013-03-04)
 	* add rasterVis dependency for nicer biomod2 plots
 	* PA.dist.min and PA.dist.max are now defined in meters  when you work with unprojected rasters in disk pseudo absences selection

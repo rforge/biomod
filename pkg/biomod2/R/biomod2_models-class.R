@@ -88,7 +88,7 @@ setClass('ANN_biomod2_model',
          prototype(model_class = 'ANN'),
          validity = function(object){
            # check model class
-           if(sum(! ( c("nnet.formula", "nnet") %in% class(object@model) ) ) > 0) return(FALSE)
+           if(sum(! ( c("nnet") %in% class(object@model) ) ) > 0) return(FALSE)
            return(TRUE)
            })
 
@@ -777,7 +777,7 @@ setClass('RF_biomod2_model',
          prototype(model_class = 'RF'),
          validity = function(object){
            # check model class
-           if(sum(! ( c("randomForest.formula", "randomForest") %in% class(object@model) ) ) > 0) return(FALSE)
+           if(sum(! ( c("randomForest") %in% class(object@model) ) ) > 0) return(FALSE)
            return(TRUE)
          })
 

@@ -328,24 +328,25 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
 .Construct.default.biomod2.modeling.obj <- function(mod){
   
   ## ANN ##
-  if(sum(!(c("nnet.formula", "nnet") %in% class(mod))) == 0){
+  if(sum(!(c("nnet") %in% class(mod))) == 0){
     return(new("ANN_biomod2_model",
-        model = mod,
-        model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),
-        model_class = 'ANN',
-        resp_name = as.character(mod$terms[[2]]),
-        expl_var_names = as.character(mod$terms[[3]])))
+      model = mod,
+      model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),      
+      model_class = 'ANN', 
+      resp_name = ifelse(is.null(mod$terms[[2]]), "",as.character(mod$terms[[2]])), 
+      expl_var_names = as.character(mod$terms[[3]])))
   }
   
   
   ## CTA ##
   if(sum(!(c("rpart") %in% class(mod)) == 0 )){
+    
     return(new("CTA_biomod2_model",
                model = mod,
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_CTA", sep=""),
                model_class = 'CTA',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = as.character(mod$terms[[3]])))
+               expl_var_names = attr(RP.pruned$terms,"term.labels")))
   }  
   
   ## FDA ##

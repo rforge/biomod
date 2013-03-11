@@ -475,14 +475,14 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               cat("\n   > Pseudo absences are selected in explanatory variables")
               
               # create a mask
-              dist.mask <- raster::subset(env,1, drop=TRUE)
+              dist.mask <- raster:::subset(env,1, drop=TRUE)
               dist.mask[] <- NA
               
               pres.xy <- coordinates(sp[which(sp@data[,1]==1),])
               dist.mask[cellFromXY(dist.mask,pres.xy)] <- 1
               
               dist.mask <- distance(dist.mask)
-              dist.mask <- mask(dist.mask, raster::subset(env,1, drop=TRUE))
+              dist.mask <- mask(dist.mask, raster:::subset(env,1, drop=TRUE))
               
               if(is.null(distMax)) distMax <- Inf
               mask <- reclassify(dist.mask, c(-Inf,distMin,NA ,distMin, distMax,-1, distMax,Inf,NA))
@@ -542,7 +542,7 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
 #               cat("\n   > Pseudo absences are selected in explanatory variables")
 #               
 #               # create a mask
-#               mask <- maskInside <- maskOutside <- reclassify(raster::subset(env,1), c(-Inf,Inf,0))
+#               mask <- maskInside <- maskOutside <- reclassify(raster:::subset(env,1), c(-Inf,Inf,0))
 #               pres.xy <- coordinates(sp[which(sp@data[,1]==1),])
 #               
 #               # to convert longitudinal degrees into metters

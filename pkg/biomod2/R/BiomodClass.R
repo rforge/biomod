@@ -158,7 +158,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
     
     if(is.null(xy)) xy <- as.data.frame(coordinates(env))
       
-    data.mask = reclassify(raster::subset(env,1,drop=T), c(-Inf,Inf,-1))
+    data.mask = reclassify(raster:::subset(env,1,drop=T), c(-Inf,Inf,-1))
     data.mask[cellFromXY(data.mask,xy[which(sp==1),])] <- 1
     data.mask[cellFromXY(data.mask,xy[which(sp==0),])] <- 0
     data.mask <- stack(data.mask)
@@ -369,7 +369,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
     if(inherits(env,'Raster')){
       
       ## create data.mask for ploting
-      data.mask.tmp <- reclassify(raster::subset(env,1), c(-Inf,Inf,-1))
+      data.mask.tmp <- reclassify(raster:::subset(env,1), c(-Inf,Inf,-1))
       data.mask <- stack(data.mask.tmp)
       xy_pres <- pa.data.tmp$xy[which(pa.data.tmp$sp==1),]
       xy_abs <- pa.data.tmp$xy[which(pa.data.tmp$sp==0),]
@@ -1172,7 +1172,7 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
                             at=my.labs.at)))
                 
               } else if(length(grep(str.grep, x@models.projected,value=T))>0){
-                levelplot(raster::subset(getProjection(x), grep(str.grep, x@models.projected,value=T)),
+                levelplot(raster:::subset(getProjection(x), grep(str.grep, x@models.projected,value=T)),
                           at=my.at, margin=T, col.regions=my.col,
                           main=paste(x@sp.name,x@proj.names,"projections"),
                           colorkey=list(labels=list(

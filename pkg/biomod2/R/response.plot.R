@@ -346,7 +346,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_CTA", sep=""),
                model_class = 'CTA',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = attr(RP.pruned$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }  
   
   ## FDA ##

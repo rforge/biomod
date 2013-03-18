@@ -185,7 +185,7 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 
 # 3. Doing Modelisation
 
-myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData, 
+myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
                                        models = c('SRE','RF'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=2, 
@@ -197,7 +197,7 @@ myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        modeling.id="test")
                                        
 ## print a summary of modeling stuff
-myBiomomodModelOut
+myBiomodModelOut
                                        
                                     
 }

@@ -111,7 +111,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
 
 # 4.1 Projection on current environemental conditions
 
-myBiomomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
+myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
                                           new.env = myExpl,
                                           proj.name = 'current',
                                           selected.models = 'all',

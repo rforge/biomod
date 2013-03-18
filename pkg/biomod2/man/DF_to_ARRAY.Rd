@@ -72,7 +72,7 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 
 # 3. Doing Modelisation
 
-myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData, 
+myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
                                        models = c('SRE','RF'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=1, 
@@ -85,7 +85,7 @@ myBiomomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        
 # 4 Projection on current environemental conditions
 
-myBiomomodProjection <- BIOMOD_Projection(modeling.output = myBiomomodModelOut,
+myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
                                           new.env = data.frame(myExpl),
                                           proj.name = 'current',
                                           selected.models = 'all')
@@ -93,7 +93,7 @@ myBiomomodProjection <- BIOMOD_Projection(modeling.output = myBiomomodModelOut,
 
 
 # 5. Get projection under data.frame format
-myProjDF <- getProjection(myBiomomodProjection, as.data.frame=TRUE)
+myProjDF <- getProjection(myBiomodProjection, as.data.frame=TRUE)
 class(myProjDF)
 dim(myProjDF)
 dimnames(myProjDF)

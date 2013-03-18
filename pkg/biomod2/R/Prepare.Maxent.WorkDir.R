@@ -1,7 +1,8 @@
-.Prepare.Maxent.WorkDir <- function(Data, xy, calibLines, RunName=NULL, VarImport=0, evalData=NULL, evalxy=NULL, species.name=NULL, modeling.id='' ){
+.Prepare.Maxent.WorkDir <- function(Data, xy, calibLines=NULL, RunName=NULL, VarImport=0, evalData=NULL, evalxy=NULL, species.name=NULL, modeling.id='' ){
   cat('\n\tCreating Maxent Temp Proj Data..')
   if(is.null(RunName)) RunName <- colnames(Data)[1]
   if(is.null(species.name)) species.name <- colnames(Data)[1]
+  if(is.null(calibLines)) calibLines <- rep(T,nrow(Data))
   
   dir.create(file.path(species.name,'MaxentTmpData'), showWarnings=FALSE, recursive=TRUE)
   dir.create(file.path(species.name,'models',modeling.id, paste(RunName,'_MAXENT_outputs',sep='')), showWarnings=FALSE, recursive=TRUE)

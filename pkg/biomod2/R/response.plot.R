@@ -333,7 +333,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       model = mod,
       model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),      
       model_class = 'ANN', 
-      resp_name = ifelse(is.null(mod$terms[[2]]), "",as.character(mod$terms[[2]])), 
+      resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])), 
       expl_var_names = as.character(mod$terms[[3]])))
   }
   
@@ -406,7 +406,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model = mod,
                model_name =paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_RF", sep=""),
                model_class = 'RF',
-               resp_name = as.character(mod$terms[[2]]),
+               resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])),
                expl_var_names = as.character(mod$terms[[3]])))
   }
   

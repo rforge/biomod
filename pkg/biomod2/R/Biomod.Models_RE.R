@@ -555,18 +555,18 @@
     ## Check no NA in g.pred to avoid evaluation failures
     na_cell_id <- which(is.na(g.pred))
     if(length(na_cell_id)){
-      g.pred.without.na <- g.pred[-na_cell_id]
+#       g.pred.without.na <- g.pred[-na_cell_id]
       evalLines <- evalLines[!(evalLines %in% na_cell_id)]
       cat('\n\tNote : some NA occurs in predictions')
-    } else {
-      g.pred.without.na <- g.pred
-    }
+    } #else {
+#       g.pred.without.na <- g.pred
+#     }
     
     #Precision = max( (max(g.pred.without.na[evalLines]) - min(g.pred.without.na[evalLines]) ) / 50 , 1) # max 50 steps
     
     cross.validation <- sapply(mod.eval.method,
                                Find.Optim.Stat,
-                               Fit = g.pred.without.na[evalLines],
+                               Fit = g.pred[evalLines],
                                Obs = Data[evalLines,1])#,Precision = Precision)
     
     rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
@@ -605,7 +605,7 @@
     model.bm@model_evaluation <- cross.validation
     
     ## remove useless objects
-    rm(list=c('cross.validation', 'g.pred.without.na') )
+    rm(list=c('cross.validation') )
   }                           
   # End evaluation stuff =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= # 
   
@@ -669,6 +669,7 @@
   save(list=paste( nam, Model, sep = "_"),
        file=file.path(resp_name, "models", modeling.id, paste( nam, Model, sep = "_")),
        compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+  
 
   # End model saving step =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   

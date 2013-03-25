@@ -137,38 +137,38 @@
     # NOTE : To be able to take into account GAM options and weights we have to do a eval(parse(...))
     # it's due to GAM implementation ( using of match.call() troubles)
     
-    cat("\n\tUser defined control args building..")
-    user.control.list <- Options@GAM$control
-    
-    if(Options@GAM$algo == 'GAM_gam'){
-      default.control.list <- gam:::gam.control()
-    } else{
-      default.control.list <- mgcv:::gam.control()
-    }
-    
-    control.list <- lapply(names(default.control.list), function(x){
-      if(x %in% names(user.control.list)){
-        return(user.control.list[[x]])
-      } else {
-        return(default.control.list[[x]])
-      }
-    })
-    names(control.list) <- names(default.control.list)
+#     cat("\n\tUser defined control args building..")
+#     user.control.list <- Options@GAM$control
+#     
+#     if(Options@GAM$algo == 'GAM_gam'){
+#       default.control.list <- gam:::gam.control()
+#     } else{
+#       default.control.list <- mgcv:::gam.control()
+#     }
+#     
+#     control.list <- lapply(names(default.control.list), function(x){
+#       if(x %in% names(user.control.list)){
+#         return(user.control.list[[x]])
+#       } else {
+#         return(default.control.list[[x]])
+#       }
+#     })
+#     names(control.list) <- names(default.control.list)
     
     ### Old version
     if(Options@GAM$algo == 'GAM_gam'){ ## gam package
       cat('\n\t> GAM (gam) modelling...')
       
       gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
-                                        " data = Data[calibLines,], family = ", eval(Options@GAM$family),
+                                        " data = Data[calibLines,], family = ", Options@GAM$family$family,"(link = '",Options@GAM$family$link,"')",#eval(Options@GAM$family),
                                         ", weights = Yweights[calibLines])" ,sep="")))
       
       model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
                                 data = Data[calibLines,],
                                 keep = .functionkeep, 
                                 direction = "both",
-                                trace=control.list$trace,
-                                control = eval(control.list)) )
+                                trace=TRUE,#Options@GAM$control$trace,
+                                control = Options@GAM$control))#eval(control.list)) )
       
     } else { ## mgcv package
       if(is.null(Options@GAM$myFormula)){
@@ -181,17 +181,18 @@
       if (Options@GAM$algo == 'GAM_mgcv'){
         cat('\n\t> GAM (mgcv) modelling...')
         model.sp <- try(mgcv:::gam(gam.formula, 
-                                   data=Data, 
-                                   family=Options@GAM$family, 
+                                   data= Data, 
+                                   family= Options@GAM$family, 
                                    weights = Yweights,
-                                   control = control.list))
+                                   control = Options@GAM$control))
+
       } else if (Options@GAM$algo == 'BAM_mgcv'){ ## big data.frame gam version
         cat('\n\t> BAM (mgcv) modelling...')
         model.sp <- try(mgcv:::bam(gam.formula, 
                                    data=Data, 
                                    family=Options@GAM$family,
                                    weights = Yweights,
-                                   control = control.list))
+                                   control = Options@GAM$control))
       }
     }
     
@@ -219,15 +220,17 @@
                         var.monotone = rep(0, length = ncol(Data)-2), # -2 because of removing of sp and weights
                         weights = Yweights,
                         interaction.depth = Options@GBM$interaction.depth,
+                        n.minobsinnode = Options@GBM$n.minobsinnode,
                         shrinkage = Options@GBM$shrinkage,
                         bag.fraction = Options@GBM$bag.fraction,
                         train.fraction = Options@GBM$train.fraction,
                         n.trees = Options@GBM$n.trees,
-                        verbose = FALSE,
+                        verbose = Options@GBM$verbose,
+#                         class.stratify.cv = Options@GBM$class.stratify.cv,
                         cv.folds = Options@GBM$cv.folds))
     
     if( !inherits(model.sp,"try-error") ){
-      best.iter <- try(gbm.perf(model.sp, method = "cv", plot.it = FALSE)) 
+      best.iter <- try(gbm.perf(model.sp, method = Options@GBM$perf.method , plot.it = FALSE)) 
       
       model.bm <- new("GBM_biomod2_model",
                       model = model.sp,
@@ -402,7 +405,9 @@
                                    #mtry = ifelse(Options@RF$ntree == 'default', round((ncol(Data)-1)/2), Options@RF$ntree ),
                                    importance = FALSE,
                                    norm.votes = TRUE,
-                                   strata = factor(c(0,1))) )      
+                                   strata = factor(c(0,1)),
+                                   nodesize = Options@RF$nodesize,
+                                   maxnodes = Options@RF$maxnodes) )      
     } else {
       model.sp <- try(randomForest(formula = makeFormula(resp_name,head(Data), 'simple',0),
                                    data = Data[calibLines,],
@@ -410,7 +415,9 @@
                                    mtry = Options@RF$mtry,
                                    importance = FALSE,
                                    norm.votes = TRUE,
-                                   strata = factor(c(0,1))) )
+                                   strata = factor(c(0,1)),
+                                   nodesize = Options@RF$nodesize,
+                                   maxnodes = Options@RF$maxnodes) )
     }
     
     

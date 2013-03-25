@@ -14,16 +14,21 @@
 #   expl.var <- Explanatory Variable as matrix, data.frame, sp.point.data.frame or rasterStack
 #   resp.xy <- coordiantes of reponse points (2 column matrix)
 #   resp.name <- name of considered specie
+#   eval.resp.var <- independent response variable for models evaluations
+#   eval.expl.var <- independent explanatory variable for models evaluations
+#   eval.resp.xy <- independent response variable coordinates variable for models evaluations
 #   PA.nb.rep <- Nb of Pseudo Absences Run to compute
 #   PA.nb.absences <- Nb of Absences selected (true absences are counted in)
-#   PA.strategy <- Pseudo Absences startegy
-#   PA.distances <- Pseudo Absences minimum distance between pres and selected absences
+#   PA.strategy <- Pseudo Absences strategy
+#   PA.dist.min <- If strategy is 'disk' : Pseudo Absences minimum distance between pres and selected absences (in metters if explanatory is georeferenced or in resp.xy units in all other cases)
+#   PA.dist.man <- If strategy is 'disk' : Pseudo Absences maximum distance between pres and selected absences (in metters if explanatory is georeferenced or in resp.xy units in all other cases)
+# 
+#   PA.sre.quant <- If strategy is 'sre' : the quantile use for sre calculation
+#   PA.table <- If strategy is 'user.defined' : a boolean data.frame indiacating which points of resp.var should be sonsidered in each PA run.
+#   na.rm <- if True na are automatically removed
 
 # OUTPUT : 
 #   a BIOMOD.formated.data object that will be given to BIOMOD_Modeling function
-
-# NOTE : 
-#   Independents dataset no considered yet !
 
 ####################################################################################################
 

@@ -557,25 +557,35 @@ setClass("BIOMOD.Model.Options",
                                interaction.level = 0,
                                myFormula = NULL,
                                test = 'AIC',
-                               family = 'binomial',
+                               family = binomial(link='logit'),
                                mustart = 0.5,
                                control = glm.control(maxit = 50)),
                    
                    GBM = list(  distribution = 'bernoulli',
+                                n.trees = 1000,
                                 interaction.depth = 7,
+                                n.minobsinnode = 5,
                                 shrinkage = 0.001,
                                 bag.fraction = 0.5,
                                 train.fraction = 1,
-                                n.trees = 500,
-                                cv.folds = 5),
+                                cv.folds = 3,
+                                keep.data = FALSE,
+                                verbose = FALSE,
+#                                 class.stratify.cv = 'bernoulli',
+                                perf.method = 'cv'),
                    
                    GAM = list( algo = "GAM_mgcv",
                                type = "s_smoother",
                                k = NULL,
                                interaction.level = 0,
                                myFormula = NULL,
-                               family = 'binomial',
-                               control = list(epsilon = 1e-06, trace = FALSE ,maxit = 100)), 
+                               family = binomial(link='logit'),
+                               control = list(epsilon = 1e-06, trace = FALSE ,maxit = 100),
+                               method = "GCV.Cp",
+                               optimizer=c("outer","newton"),
+                               select=FALSE,
+                               knots=NULL,
+                               paraPen=NULL), 
                    
                    CTA = list(method = 'class',
                               parms = 'default',
@@ -599,8 +609,10 @@ setClass("BIOMOD.Model.Options",
                                prune = TRUE),
                    
                    RF = list(do.classif = TRUE,
-                             ntree = 50,
-                             mtry = 'default'),
+                             ntree = 500,
+                             mtry = 'default',
+                             nodesize = 5,
+                             maxnodes= NULL),
                    
                    MAXENT = list(path_to_maxent.jar = getwd(),
                                  maximumiterations = 200,
@@ -619,7 +631,212 @@ setClass("BIOMOD.Model.Options",
                                  beta_hinge = -1.0,
                                  defaultprevalence = 0.5)
                    
-                   ))
+                   ),
+         validity = function(object){
+           test <- TRUE
+           ## GLM ##
+           if(!(object@GLM$type %in% c('simple','quadratic','polynomial','user.defined'))){ cat("\nGLM$type must be 'simple',  'quadratic', 'polynomial' or 'user.defined'"); test <- FALSE}
+           if(!is.numeric(object@GLM$interaction.level)){ cat("\nGLM$interaction.level must be a integer"); test <- FALSE } else{
+             if(object@GLM$interaction.level < 0 | object@GLM$interaction.level%%1!=0){ cat("\nGLM$interaction.level must be a positive integer"); test <- FALSE }
+           }
+           if(!is.null(object@GLM$myFormula)) if(class(object@GLM$myFormula) != "formula"){ cat("\nGLM$myFormula must be NULL or a formula object"); test <- FALSE }
+           if(!(object@GLM$test %in% c('AIC','BIC','none'))){ cat("\nGLM$test must be 'AIC','BIC' or 'none'"); test <- FALSE}
+           fam <- 'none'
+           if(class(object@GLM$family) != "family"){ cat("\nGLM$family must be a valid family object"); test <- FALSE }
+           if(!is.list(object@GLM$control)){cat("\nGLM$control must be a list like that returned by glm.control"); test <- FALSE}
+           
+           
+           ## GBM ##
+           if(! object@GBM$distribution %in% c("bernoulli","huberized", "multinomial", "adaboost")){cat("\nGBM$distribution must be 'bernoulli', 'huberized', 'multinomial'or  'adaboost'") }
+
+           if(!is.numeric(object@GBM$n.trees)){ cat("\nGBM$n.trees must be a integer"); test <- FALSE } else{
+             if(object@GBM$n.trees < 0 | floor(object@GBM$n.trees) != object@GBM$n.trees){ cat("\nGBM$n.trees must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@GBM$interaction.depth)){ cat("\nGBM$interaction.depth must be a integer"); test <- FALSE } else{
+             if(object@GBM$interaction.depth < 0 | object@GBM$interaction.depth%%1!=0){ cat("\nGBM$interaction.depth must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@GBM$n.minobsinnode)){ cat("\nGBM$n.minobsinnode must be a integer"); test <- FALSE } else{
+             if(object@GBM$n.minobsinnode < 0 | object@GBM$n.minobsinnode%%1!=0){ cat("\nGBM$n.minobsinnode must positive "); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@GBM$shrinkage)){ cat("\nGBM$shrinkage must be a numeric"); test <- FALSE } else{
+             if(object@GBM$shrinkage < 0 ){ cat("\nGBM$shrinkage must positive "); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@GBM$bag.fraction)){ cat("\nGBM$bag.fraction must be a numeric"); test <- FALSE } else{
+             if(object@GBM$bag.fraction < 0 | object@GBM$bag.fraction > 1){ cat("\nGBM$bag.fraction must be a 0 to 1 numeric"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@GBM$train.fraction)){ cat("\nGBM$train.fraction must be a numeric"); test <- FALSE } else{
+             if(object@GBM$train.fraction < 0 | object@GBM$train.fraction > 1){ cat("\nGBM$train.fraction must be a 0 to 1 numeric"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@GBM$cv.folds)){ cat("\nGBM$cv.folds must be a integer"); test <- FALSE } else{
+             if(object@GBM$cv.folds < 0 | object@GBM$cv.folds%%1!=0){ cat("\nGBM$cv.folds must be a positive integer"); test <- FALSE }
+           }
+            
+           if(!is.logical(object@GBM$keep.data)){ cat("\nGBM$keep.data must be a logical"); test <- FALSE }
+           
+           if(!is.logical(object@GBM$verbose)){ cat("\nGBM$verbose must be a logical"); test <- FALSE }
+
+#            if(! object@GBM$class.stratify.cv %in% c("bernoulli", "multinomial")){cat("\nGBM$class.stratify.cv must be 'bernoulli' or 'multinomial'") }
+           
+           if(! object@GBM$perf.method %in% c('OOB', 'test', 'cv')){cat("\nGBM$perf.method must be 'OOB', 'test' or 'cv'"); test <- FALSE }
+           
+           
+           ## GAM ##
+           if(! object@GAM$algo %in% c('GAM_mgcv','GAM_gam', 'BAM_mgcv')){cat("\nGAM$algo must be 'GAM_mgcv','GAM_gam' or  'BAM_mgcv'"); test <- FALSE }
+           
+           if(! object@GAM$type %in% c('s_smoother','s', 'lo', 'te')){cat("\nGAM$type must be c('s_smoother','s', 'lo' or 'te'"); test <- FALSE }
+
+           if(! is.null(object@GAM$k)){
+             if(! is.numeric(object@GAM$k)  ){ cat("\nGAM$k must be a integer"); test <- FALSE } else{
+               if(object@GAM$k < -1 | object@GAM$k%%1!=0){ cat("\nGAM$k must be > -1"); test <- FALSE }
+             }
+           }
+
+           
+           if(!is.numeric(object@GAM$interaction.level)){ cat("\nGAM$interaction.level must be a integer"); test <- FALSE } else{
+             if(object@GAM$interaction.level < 0 | object@GAM$interaction.level%%1!=0){ cat("\nGAM$interaction.level must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.null(object@GAM$myFormula)) if(class(object@GAM$myFormula) != "formula"){ cat("\nGAM$myFormula must be NULL or a formula object"); test <- FALSE }
+           
+           if(class(object@GAM$family) != "family"){ cat("\nGAM$family must be a valid family object"); test <- FALSE }
+           
+           if(!is.list(object@GAM$control)){cat("\nGAM$control must be a list like that returned by gam.control"); test <- FALSE}
+           if(! object@GAM$method %in% c('GCV.Cp','GACV.Cp','REML', 'P-REML', 'ML', 'P-ML')){cat("\nGAM$method must be 'GCV.Cp','GACV.Cp','REML', 'P-REML', 'ML'or 'P-ML'"); test <- FALSE}
+           
+           if(sum(! object@GAM$optimizer %in% c('perf','outer', 'newton', 'bfgs', 'optim', 'nlm', 'nlm.fd')) > 0 ){cat("\nGAM$optimizer bad definition (see ?mgcv::gam)") ; test <- FALSE}
+           
+           if(!is.logical(object@GAM$select)){ cat("\nGAM$select must be a logical"); test <- FALSE }
+
+#            knots=NULL,
+#            paraPen=NULL
+           
+           
+           ## CTA ##
+           if(! object@CTA$method %in% c( 'anova', 'poisson', 'class', 'exp')){cat("\nCTA$method must be 'anova', 'poisson', 'class' or 'exp'"); test <- FALSE }
+           
+           #parms = 'default',
+
+           if(!is.list(object@CTA$control)){cat("\nCTA$control must be a list like that returned by rpart.control"); test <- FALSE}                           
+           if(length(object@CTA$cost)){
+             if(!is.numeric(object@CTA$cost)){cat("\nCTA$cost must be a non negative cost vector"); test <- FALSE}
+           }
+           
+           
+           
+           ## ANN ##
+           if(!is.numeric(object@ANN$NbCV)){ cat("\nANN$NbCV must be a integer"); test <- FALSE } else{
+             if(object@ANN$NbCV < 0 | object@ANN$NbCV%%1!=0){ cat("\nANN$NbCV must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@ANN$rang)){ cat("\nANN$rang must be a numeric"); test <- FALSE } else{
+             if(object@ANN$rang < 0 ){ cat("\nANN$rang must be positive"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@ANN$maxit)){ cat("\nANN$maxit must be a integer"); test <- FALSE } else{
+             if(object@ANN$maxit < 0 | object@ANN$maxit%%1!=0){ cat("\nANN$maxit must be a positive integer"); test <- FALSE }
+           }
+           
+           
+           
+           ## FDA ##
+           if(! object@FDA$method %in% c( 'polyreg', 'mars', 'bruto')){cat("\nFDA$method must be 'polyreg', 'mars' or 'bruto'"); test <- FALSE }
+           
+           
+           
+           ## SRE ##
+           if(!is.numeric(object@SRE$quant)){ cat("\nSRE$quant must be a numeric"); test <- FALSE } else{
+             if(object@SRE$quant >= 0.5 | object@SRE$quant < 0){ cat("\nSRE$quant must between 0 and 0.5"); test <- FALSE }
+           }
+           
+           
+           
+           ## MARS ##
+           if(!is.numeric(object@MARS$degree)){ cat("\nMARS$degree must be a integer"); test <- FALSE } else{
+             if(object@MARS$degree < 0 | object@MARS$degree%%1!=0){ cat("\nMARS$degree must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@MARS$penalty)){ cat("\nMARS$penalty must be a integer"); test <- FALSE } else{
+             if(object@MARS$penalty < 0 | object@MARS$penalty%%1!=0){ cat("\nMARS$penalty must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.numeric(object@MARS$thresh)){ cat("\nMARS$thresh must be a numeric"); test <- FALSE } else{
+             if(object@MARS$thresh < 0 ){ cat("\nMARS$thresh must be positive"); test <- FALSE }
+           }
+           
+           if(!is.logical(object@MARS$prune)){ cat("\nMARS$prune must be a logical"); test <- FALSE }
+           
+           
+           
+           ## RF ##
+           if(!is.logical(object@RF$do.classif)){ cat("\nRF$do.classif must be a logical"); test <- FALSE }
+           
+           if(!is.numeric(object@RF$ntree)){ cat("\nRF$ntree must be a integer"); test <- FALSE } else{
+             if(object@RF$ntree < 0 | object@RF$ntree%%1!=0){ cat("\nRF$ntree must be a positive integer"); test <- FALSE }
+           }
+           
+           if( object@RF$mtry != 'default'){
+             if(!is.numeric(object@RF$mtry)){ cat("\nRF$mtry must be a integer"); test <- FALSE } else{
+               if(object@RF$mtry < 0 | object@RF$mtry%%1!=0){ cat("\nRF$mtry must be a positive integer"); test <- FALSE }
+             }
+           }
+           
+           if(!is.numeric(object@RF$nodesize)){ cat("\nRF$nodesize must be a integer"); test <- FALSE } else{
+             if(object@RF$nodesize < 0 | object@RF$nodesize%%1!=0){ cat("\nRF$nodesize must be a positive integer"); test <- FALSE }
+           }
+           
+           if(length(object@RF$maxnodes)){
+             if(!is.numeric(object@RF$maxnodes)){ cat("\nRF$maxnodes must be a integer"); test <- FALSE } else{
+               if(object@RF$maxnodes < 0 | object@RF$maxnodes%%1!=0){ cat("\nRF$maxnodes must be a positive integer"); test <- FALSE }
+             }             
+           }
+
+           
+           
+           ## MAXENT ##
+           if(!is.character(object@MAXENT$path_to_maxent.jar)){ cat("\nMAXENT$path_to_maxent.jar must be a character"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$maximumiterations)){ cat("\nMAXENT$maximumiterations must be a integer"); test <- FALSE } else{
+             if(object@MAXENT$maximumiterations < 0 | object@MAXENT$maximumiterations%%1!=0){ cat("\nMAXENT$maximumiterations must be a positive integer"); test <- FALSE }
+           }
+           
+           if(!is.logical(object@MAXENT$visible)){ cat("\nMAXENT$visible must be a logical"); test <- FALSE }
+           
+           if(!is.logical(object@MAXENT$linear)){ cat("\nMAXENT$linear must be a logical"); test <- FALSE }
+           
+           if(!is.logical(object@MAXENT$quadratic)){ cat("\nMAXENT$quadratic must be a logical"); test <- FALSE }
+           
+           if(!is.logical(object@MAXENT$product)){ cat("\nMAXENT$product must be a logical"); test <- FALSE }
+           
+           if(!is.logical(object@MAXENT$threshold)){ cat("\nMAXENT$threshold must be a logical"); test <- FALSE }
+           
+           if(!is.logical(object@MAXENT$hinge)){ cat("\nMAXENT$hinge must be a logical"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$lq2lqptthreshold)){ cat("\nMAXENT$lq2lqptthreshold must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$l2lqthreshold)){ cat("\nMAXENT$l2lqthreshold must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$lq2lqptthreshold)){ cat("\nMAXENT$lq2lqptthreshold must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$hingethreshold)){ cat("\nMAXENT$hingethreshold must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$beta_threshold)){ cat("\nMAXENT$beta_threshold must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$beta_categorical)){ cat("\nMAXENT$beta_categorical must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$beta_lqp)){ cat("\nMAXENT$beta_lqp must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$beta_hinge)){ cat("\nMAXENT$beta_hinge must be a numeric"); test <- FALSE }
+           
+           if(!is.numeric(object@MAXENT$defaultprevalence)){ cat("\nMAXENT$defaultprevalence must be a numeric"); test <- FALSE }
+                    
+           return(test)
+         })
 
 setMethod('show', signature('BIOMOD.Model.Options'),
           function(object){
@@ -631,19 +848,24 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n            interaction.level = ", object@GLM$interaction.level, ",", sep="")
             cat("\n            myFormula = ",  ifelse(length(object@GLM$myFormula) < 1,'NULL',paste(object@GLM$myFormula[2],object@GLM$myFormula[1],object@GLM$myFormula[3])), ",", sep="")
             cat("\n            test = '", object@GLM$test, "',", sep="")
-            cat("\n            family = '", object@GLM$family, "',", sep="")
+            cat("\n            family = ", object@GLM$family$family,"(link = '",object@GLM$family$link,"'),", sep="")
             cat("\n            mustart = ", object@GLM$mustart, ",", sep="")
             cat("\n            control = glm.control(", .print.control(object@GLM$control), ") ),", sep="", fill=.Options$width)
             
             ## GBM options
             cat("\n")
             cat("\nGBM = list( distribution = '", object@GBM$distribution, "',", sep="")
+            cat("\n            n.trees = ", object@GBM$n.trees, ",", sep="")
             cat("\n            interaction.depth = ", object@GBM$interaction.depth, ",", sep="")
+            cat("\n            n.minobsinnode = ", object@GBM$n.minobsinnode, ",", sep="")
             cat("\n            shrinkage = ", object@GBM$shrinkage, ",", sep="")
             cat("\n            bag.fraction = ", object@GBM$bag.fraction, ",", sep="")
             cat("\n            train.fraction = ", object@GBM$train.fraction, ",", sep="")
-            cat("\n            n.trees = ", object@GBM$n.trees, ",", sep="")
-            cat("\n            cv.folds = ", object@GBM$cv.folds, "),", sep="")
+            cat("\n            cv.folds = ", object@GBM$cv.folds, ",", sep="")
+            cat("\n            keep.data = ", object@GBM$keep.data, ",", sep="")
+            cat("\n            verbose = ", object@GBM$verbose, ",", sep="")
+#             cat("\n            class.stratify.cv = '", object@GBM$class.stratify.cv, "',", sep="")
+            cat("\n            perf.method = '", object@GBM$perf.method, "'),", sep="")
             
             ## GAM options
             cat("\n")
@@ -652,15 +874,26 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n            k = ", ifelse(length(object@GAM$k) < 1,'NULL',object@GAM$k), ",", sep="")
             cat("\n            interaction.level = ", object@GAM$interaction.level, ",", sep="")
             cat("\n            myFormula = ", ifelse(length(object@GAM$myFormula) < 1,'NULL',paste(object@GAM$myFormula[2],object@GAM$myFormula[1],object@GAM$myFormula[3])), ",", sep="")
-            cat("\n            family = '", object@GAM$family, "',", sep="")
-            cat("\n            control = gam.control(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
+            cat("\n            family = ", object@GAM$family$family,"(link = '",object@GAM$family$link,"'),", sep="")
+            
+            if(object@GAM$algo=='GAM_mgcv'){
+              cat("\n            method = '", object@GAM$method, "',", sep="")
+              cat("\n            optimizer = c('", paste(object@GAM$optimizer,collapse="','"), "'),", sep="")
+              cat("\n            select = ", object@GAM$select, ",", sep="")
+              cat("\n            knots = ",  ifelse(length(object@GLM$knots) < 1,'NULL',"'user.defined'"), ",", sep="")
+              cat("\n            paraPen = ",  ifelse(length(object@GLM$paraPen) < 1,'NULL',"'user.defined'"), ",", sep="")
+            }
+            
+            cat("\n            control = list(", .print.control(object@GAM$control), ") ),", sep="", fill=.Options$width)
+            
+            
 
             ## CTA options
             cat("\n")
             cat("\nCTA = list( method = '", object@CTA$method, "',", sep="")
             cat("\n            parms = '", object@CTA$parms, "',", sep="")
             cat("\n            cost = ", ifelse(length(object@CTA$cost)<1,'NULL',object@CTA$cost), ",", sep="")
-            cat("\n            control = rpart.control(", .print.control(object@CTA$control), ") ),", sep="", fill=.Options$width)
+            cat("\n            control = list(", .print.control(object@CTA$control), ") ),", sep="", fill=.Options$width)
             
             ## ANN options
             cat("\n")
@@ -687,7 +920,9 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n")
             cat("\nRF = list( do.classif = ", object@RF$do.classif, ",", sep="")
             cat("\n           ntree = ", object@RF$ntree, ",", sep="")
-            cat("\n           mtry = '", object@RF$mtry, "'),", sep="")
+            cat("\n           mtry = '", object@RF$mtry, "',", sep="")
+            cat("\n           nodesize = ", object@RF$nodesize, ",", sep="")
+            cat("\n           maxnodes = ", ifelse(length(object@RF$maxnodes) < 1,'NULL',object@RF$maxnodes), "),", sep="")
                    
             ## MAXENT options
             cat("\n")
@@ -715,8 +950,17 @@ setMethod('show', signature('BIOMOD.Model.Options'),
   out <-  paste(names(ctrl)[1], " = ", ctrl[[1]], sep="")
   
   if(length(ctrl) > 1){
-    for (i in 2:length(ctrl)){
-      out <- c(out, paste(", ", names(ctrl)[i], " = ", ctrl[[i]], sep=""))
+    i=2
+    while(i <= length(ctrl)){
+      if(is.list(ctrl[[i]])){
+        out <- c(out, paste(", ", names(ctrl)[i], " = list(",
+                            paste(names(ctrl[[i]]), "=",unlist(ctrl[[i]]), sep="", collapse=", "),")", sep=""))
+#         i <- i+length(ctrl[[i]])
+        i <- i+1
+      } else {
+        out <- c(out, paste(", ", names(ctrl)[i], " = ", ctrl[[i]], sep=""))
+        i <- i+1
+      }
     }    
   }
 #   return(toString(out))

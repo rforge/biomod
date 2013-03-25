@@ -404,7 +404,7 @@
   cat("\nCreating suitable Workdir...\n")
   dir.create(sp.name, showWarnings=FALSE, recursive=TRUE)
   dir.create(file.path(sp.name,".BIOMOD_DATA",modeling.id), showWarnings=FALSE, recursive=TRUE)
-  dir.create(file.path(sp.name, "models",modeling.id,"scaling_models"), showWarnings=FALSE, recursive=T)
+  dir.create(file.path(sp.name, "models",modeling.id), showWarnings=FALSE, recursive=T)
 
 #   if(sum(models.list %in% c('MARS', 'FDA', 'ANN')) > 0 ){
 #     dir.create(paste(getwd(),"/",sp.name, "/models/scaling_models", sep=""), showWarnings=FALSE, recursive=T)

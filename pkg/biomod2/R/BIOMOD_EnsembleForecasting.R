@@ -49,6 +49,7 @@
         if(projection.output@type == 'RasterStack'){
           ef.mean <- raster:::mean(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp)))
+          names(ef.mean) <- "ef.mean"
         } else if(projection.output@type == 'array'){
           ef.mean <- rowMeans(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
         } else if(projection.output@type == 'character'){ 
@@ -83,6 +84,7 @@
         if(projection.output@type == 'RasterStack'){
           ef.cv <- round(raster:::cv(raster:::subset(getProjection(projection.output), 
                                                  getEMkeptModels(EM.output, em.comp))), digits=2)
+          names(ef.cv) <- "ef.cv"
         } else if(projection.output@type == 'array'){
           ef.sd <- apply(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)],1,sd)
           if(!exists('ef.mean')){
@@ -159,12 +161,14 @@
         if(projection.output@type == 'RasterStack'){
           if(!exists('ef.mean')){
             ef.mean <- raster:::mean(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)))
+            names(ef.mean) <- "ef.mean"
           }
           if(!exists('ef.sd')){
             ef.sd <- calc(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
+            names(ef.sd) <- "ef.sd"
           }
-          ef.ci.inf <- round(ef.mean - qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
-          ef.ci.inf <- reclassify(ef.ci.inf, c(-Inf,0,0))
+          ef.ci.inf <- ef.mean -  (ef.sd * (qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp)))) )
+          ef.ci.inf <- reclassify(round(ef.ci.inf), c(-Inf,0,0))
         } else if(projection.output@type == 'array'){
           if(!exists('ef.mean')){
             ef.mean <- mean(getProjection(projection.output, as.data.frame = TRUE)[,getEMkeptModels(EM.output, em.comp)])
@@ -230,7 +234,7 @@
           if(!exists('ef.sd')){
             ef.sd <- calc(raster:::subset(getProjection(projection.output), getEMkeptModels(EM.output, em.comp)), sd)
           }
-          ef.ci.sup <- round(ef.mean + qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) * ef.sd)
+          ef.ci.sup <- round(ef.mean + ef.sd *  ( qt(1-EM.output@em.ci.alpha/2, df = length(getEMkeptModels(EM.output, em.comp)) + 1 ) / sqrt(length(getEMkeptModels(EM.output, em.comp))) ) )
           ef.ci.sup <- reclassify(ef.ci.sup, c(1000,+Inf,1000))
         } else if(projection.output@type == 'array'){
           if(!exists('ef.mean')){

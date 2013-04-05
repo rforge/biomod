@@ -118,7 +118,7 @@ for(sp.n in sp.names){
                   prob.mean.weight.decay = 'proportional' )
   
   ### Make projections on current variable
-  myBiomomodProj <- BIOMOD_Projection(
+  myBiomodProj <- BIOMOD_Projection(
                       modeling.output = myBiomodModelOut,
                       new.env = myExpl,
                       proj.name = 'current',
@@ -130,7 +130,7 @@ for(sp.n in sp.names){
   
   ### Make ensemble-models projections on current variable
   myBiomodEF <- BIOMOD_EnsembleForecasting( 
-                  projection.output = myBiomomodProj,
+                  projection.output = myBiomodProj,
                   EM.output = myBiomodEM,
                   binary.meth = 'TSS')
 }
@@ -228,7 +228,7 @@ MyBiomodSF <- function(sp.n){
     prob.mean.weight.decay = 'proportional' )
   
   ### Make projections on current variable
-  myBiomomodProj <- BIOMOD_Projection(
+  myBiomodProj <- BIOMOD_Projection(
     modeling.output = myBiomodModelOut,
     new.env = myExpl,
     proj.name = 'current',
@@ -240,7 +240,7 @@ MyBiomodSF <- function(sp.n){
   
   ### Make ensemble-models projections on current variable
   myBiomodEF <- BIOMOD_EnsembleForecasting( 
-    projection.output = myBiomomodProj,
+    projection.output = myBiomodProj,
     EM.output = myBiomodEM,
     binary.meth = 'TSS')
                         

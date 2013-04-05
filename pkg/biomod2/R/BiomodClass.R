@@ -340,16 +340,18 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
       }
     }
     
+    
     if(na.rm){
       rowToRm <- unique(unlist(lapply(pa.data.tmp$env,function(x){return(which(is.na(x)))})))
       if(length(rowToRm)){
         cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
         pa.data.tmp$xy <- pa.data.tmp$xy[-rowToRm,]
         pa.data.tmp$sp <- pa.data.tmp$sp[-rowToRm]
-        pa.data.tmp$env <- pa.data.tmp$env[-rowToRm,]
-        pa.data.tmp$pa.tab <- pa.data.tmp$pa.tab[-rowToRm,]
+        pa.data.tmp$env <- pa.data.tmp$env[-rowToRm,,drop=FALSE]
+        pa.data.tmp$pa.tab <- pa.data.tmp$pa.tab[-rowToRm,,drop=FALSE]
       }      
     }
+    
     
     # data counting
 #     pa.data.tmp$data.counting <- apply(pa.data.tmp$pa.tab,2,function(x){nbPres <- sum(pa.data.tmp$sp[x],na.rm=T) ; return(c(nbPres,sum(x)-nbPres))})
@@ -412,6 +414,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
       data.mask <- stack()
     }
     
+
       
     BFDP <- new('BIOMOD.formated.data.PA',
                 sp.name = BFD@sp.name,

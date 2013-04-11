@@ -288,14 +288,12 @@
     if(!file.exists(file.path(models.options@MAXENT$path_to_maxent.jar ,"maxent.jar")) ){
       models = models[-which(models=='MAXENT')]
       warning("The maxent.jar file is missing. You need to download this file (http://www.cs.princeton.edu/~schapire/maxent) and put the maxent.jar file in your working directory -> MAXENT was switched off")
-    }
-    if(!.check.java.installed()){
+    } else if(!.check.java.installed()){
       models = models[-which(models=='MAXENT')]
-    } else{
-      if(nrow(data@coord)==1){ # no coordinates
-        warning("You must give XY coordinates if you want to run MAXENT -> MAXENT was switched off")
-        models = models[-which(models=='MAXENT')]
-      }
+    } else if(nrow(data@coord)==1){
+     # no coordinates
+      warning("You must give XY coordinates if you want to run MAXENT -> MAXENT was switched off")
+      models = models[-which(models=='MAXENT')]
     } 
   }
   

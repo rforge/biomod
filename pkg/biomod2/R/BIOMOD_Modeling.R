@@ -280,7 +280,8 @@
   if( is.null(models.options)){
     warning("Models will run with 'defaults' parameters", immediate.=T)
     # create a default models.options object
-    models.options = new("BIOMOD.Model.Options")
+    models.options <- BIOMOD_ModelingOptions() # MAXENT = list( path_to_maxent.jar = getwd()) 
+    
   }
   
   # MAXENT specific checking

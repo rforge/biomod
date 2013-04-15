@@ -682,7 +682,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj"), " ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.grd") , 
-                       " doclamp=false visible=false autorun nowarnings notooltips", sep=""), wait = TRUE)
+                       " doclamp=false visible=false autorun nowarnings notooltips", sep=""), wait = TRUE, intern=TRUE)
   
   cat("\n\t\tReading Maxent outputs...")
   proj <- raster(file.path(object@resp_name, temp_workdir , "MaxentTmpData","projMaxent.grd"))
@@ -744,7 +744,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj_swd.csv"), " ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.asc") , 
-                       " doclamp=false", sep=""), wait = TRUE)
+                       " doclamp=false", sep=""), wait = TRUE, intern=TRUE)
   
   cat("\n\t\tReading Maxent outputs...")
   proj <- as.numeric(read.asciigrid(file.path(object@resp_name, temp_workdir , "MaxentTmpData", "projMaxent.asc"))@data[,1])

@@ -500,7 +500,7 @@
                          " beta_lqp=", Options@MAXENT$beta_lqp,
                          " beta_hinge=", Options@MAXENT$beta_hinge,
                          " defaultprevalence=", Options@MAXENT$defaultprevalence,
-                         " autorun nowarnings notooltips", sep=""), wait = TRUE, intern = FALSE,
+                         " autorun nowarnings notooltips", sep=""), wait = TRUE, intern = TRUE,
            ignore.stdout = FALSE, ignore.stderr = FALSE)
     
     

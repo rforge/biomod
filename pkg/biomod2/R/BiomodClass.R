@@ -142,7 +142,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
           
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
   function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-    categorial_var <- names(env)[is.factor(env)]
+    categorial_var <- names(env)[raster::is.factor(env)]
     
     # take the same eval environemental variables than calibrating ones 
     if(!is.null(eval.sp)){
@@ -294,7 +294,10 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                      PA.table = NULL,
                                      na.rm=TRUE){
   
-  if(inherits(env,'Raster')) categorial_var <- names(env)[is.factor(env)] else categorial_var <- NULL
+  if(inherits(env,'Raster')){
+    categorial_var <- names(env)[raster::is.factor(env)]
+  }  else categorial_var <- NULL
+  
   
   # take the same eval environemental variables than calibrating ones 
   if(!is.null(eval.sp)){
@@ -1683,7 +1686,6 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                 } else {
                   calibLines <- asub(DataSplitTable,pa,3,drop=TRUE)
                 }
-                cat("\n***", dim(calibLines))
                 colnames(calibLines) <- paste('_RUN',1:ncol(calibLines), sep='')
                 calibLines[which(!data@PA[,pa]),] <- NA
               } else{

@@ -7,7 +7,7 @@
 # This file defines the BIOMOD objects and all their methods 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-# We choose here to create monospecific objects to make all procedures and parallelising easier
+# We choose here to create monospecific objects to make all ppROC:::rocedures and parallelising easier
 require(sp, quietly=TRUE)
 require(raster, quietly=TRUE)
 require(rasterVis, quietly=TRUE)
@@ -142,7 +142,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
           
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
   function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-    categorial_var <- names(env)[raster::is.factor(env)]
+    categorial_var <- names(env)[raster:::is.factor(env)]
     
     # take the same eval environemental variables than calibrating ones 
     if(!is.null(eval.sp)){
@@ -295,7 +295,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                      na.rm=TRUE){
   
   if(inherits(env,'Raster')){
-    categorial_var <- names(env)[raster::is.factor(env)]
+    categorial_var <- names(env)[raster:::is.factor(env)]
   }  else categorial_var <- NULL
   
   

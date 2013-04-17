@@ -335,7 +335,7 @@
         stop("Yweights must be a numeric vector")
      if(length(Yweights) != length(data@data.species)) 
        stop("The number of 'Weight' does not match with the input calibration data. 
-            Simulation cannot proceed.")
+            Simulation cannot ppROC:::roceed.")
   }
   
   # Defining evaluation runs.

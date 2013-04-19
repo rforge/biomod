@@ -743,13 +743,13 @@
     
     if(Options@GLM$test == "AIC"){
       criteria <- 2
-      cat("\n\tStepwise ppROC:::rocedure using AIC criteria")      
+      cat("\n\tStepwise procedure using AIC criteria")      
     } else if(Options@GLM$test == "BIC"){
       criteria <- log(ncol(Data))
-      cat("\n\tStepwise ppROC:::rocedure using BIC criteria")     
+      cat("\n\tStepwise procedure using BIC criteria")     
     } else if(Options@GLM$test == "none"){
       criteria <- 0
-      cat("\n\tNo stepwise ppROC:::rocedure")
+      cat("\n\tNo stepwise procedure")
       cat("\n\t! You might be confronted to models convergence issues !")
     }
     

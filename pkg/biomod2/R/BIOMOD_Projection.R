@@ -380,7 +380,7 @@
   } else{
     if(do.stack){
       # test if there is memory enough to work with RasterStack
-      do.stack = canPpROC:::rocessInMemory( raster:::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
+      do.stack = canProcessInMemory( raster:::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
       if (!do.stack){ 
         cat("\n   ! Results will be saved as individual RasterLayers because of a lack of memory !")
       }

@@ -7,7 +7,7 @@
 # This file defines the BIOMOD objects and all their methods 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-# We choose here to create monospecific objects to make all ppROC:::rocedures and parallelising easier
+# We choose here to create monospecific objects to make all procedures and parallelising easier
 require(sp, quietly=TRUE)
 require(raster, quietly=TRUE)
 require(rasterVis, quietly=TRUE)

@@ -167,7 +167,7 @@
                                 data = Data[calibLines,],
                                 keep = .functionkeep, 
                                 direction = "both",
-                                trace=TRUE,#Options@GAM$control$trace,
+                                trace= Options@GAM$control$trace,
                                 control = Options@GAM$control))#eval(control.list)) )
       
     } else { ## mgcv package
@@ -652,7 +652,7 @@
         }
         
         ## test if differences exist between the 2 vectors
-        if(sum( g.pred != shuffled.pred ) == 0){
+        if(sum( g.pred != shuffled.pred, na.rm=T) == 0){
           VarImpTable[run,vari] <- 0
         } else {
           ## calculate correlation between vectors as proxy for variables importance

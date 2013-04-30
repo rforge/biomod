@@ -126,8 +126,10 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
     for(vari in show.variables){
     	if(plot) {
         if(on_0_1000) ylim <- c(0,1000) else ylim <- c(0,1) 
+        
+        if(is.factor(Data[,vari])) xlim <- c(1,length(levels(Data[,vari]))) else xlim=c(min(Data[,vari], na.rm=T), max(Data[,vari], na.rm=T))
 
-        plot(0,0,col="white",xlim=c(min(Data[,vari]), max(Data[,vari])), ylim=ylim, main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
+        plot(0,0,col="white",xlim=xlim, ylim=ylim, main=vari, ann=TRUE, bty="o",xaxs="r", xaxt="s")
   			rug(Data[ ,vari])
         
         # define color vector
@@ -141,9 +143,11 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
         mod <- get(model)
 
         # 2. make projections
-        pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
+        if(is.factor(Data[,vari])) pts.tmp <- levels(Data[,vari]) else pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
+        
         
         Data.r.tmp <- Data.r
+        if(is.factor(Data[,vari])) Data.r.tmp <- Data.r.tmp[1:length(levels(Data[,vari])),]
         Data.r.tmp[,vari] <- pts.tmp
         
         proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000)

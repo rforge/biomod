@@ -71,7 +71,7 @@ Here the detailed list of modifiable parameters. They correspond to the traditio
 Please refer to \code{\link[gbm]{gbm}} help file to get the meaning of this options.
   \itemize{
     \item{ \code{distribution} (default \code{'bernoulli'})}
-    \item{ \code{n.trees} (default \code{1000})}
+    \item{ \code{n.trees} (default \code{2500})}
     \item{ \code{interaction.depth} (default \code{7})}
     \item{ \code{n.minobsinnode} (default \code{5})}
     \item{ \code{shrinkage} (default \code{0.001})}

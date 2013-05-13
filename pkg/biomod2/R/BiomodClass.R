@@ -568,7 +568,7 @@ setClass("BIOMOD.Model.Options",
                                control = glm.control(maxit = 50)),
                    
                    GBM = list(  distribution = 'bernoulli',
-                                n.trees = 1000,
+                                n.trees = 2500,
                                 interaction.depth = 7,
                                 n.minobsinnode = 5,
                                 shrinkage = 0.001,

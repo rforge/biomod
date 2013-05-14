@@ -144,7 +144,7 @@
       filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections", paste("proj_", proj.name, "_", mod.name,ifelse(output.format==".RData",".grd",output.format), sep="") )
     } else { filename=NULL }
     
-    return(predict(mod, new.env, on_0_1000=TRUE, filename=filename))
+    return(predict(mod, new.env, on_0_1000=TRUE, filename=filename, temp_workdir=paste("proj_",proj.name, sep="")))
   })
   
   # 2b. Puting outputs in the right format =-=-=-=-=-=-=-=-=-=-=-= #

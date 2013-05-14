@@ -475,11 +475,11 @@
     # run MaxEnt:
     cat("\n Running Maxent...")  
     system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), " environmentallayers=\"",
-                         file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Back_swd.csv"),"\" samplesfile=\"",
-                         file.path(getwd(), colnames(Data)[1], "MaxentTmpData", "Sp_swd.csv"),"\" projectionlayers=\"",
-                         gsub(", ",",",toString(list.files(paste(getwd(), .Platform$file.sep, colnames(Data)[1], .Platform$file.sep, "MaxentTmpData", .Platform$file.sep, "Pred",sep=""),
+                         file.path(resp_name,"models",modeling.id, "MaxentTmpData", "Back_swd.csv"),"\" samplesfile=\"",
+                         file.path(resp_name,"models",modeling.id, "MaxentTmpData", "Sp_swd.csv"),"\" projectionlayers=\"",
+                         gsub(", ",",",toString(list.files(file.path(resp_name,"models",modeling.id,"MaxentTmpData", "Pred"),
                                                            full.names= T))), "\" outputdirectory=\"",
-                         file.path(getwd(), resp_name, "models", modeling.id, paste(model_name, "_outputs", sep="")),"\"",
+                         file.path(resp_name, "models", modeling.id, paste(model_name, "_outputs", sep="")),"\"",
                          " outputformat=logistic ",
                          #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations,
                          ifelse(length(categorial_var), 

@@ -4,7 +4,7 @@
   if(is.null(species.name)) species.name <- colnames(Data)[1]
   if(is.null(calibLines)) calibLines <- rep(T,nrow(Data))
   
-  dir.create(file.path(species.name,'MaxentTmpData'), showWarnings=FALSE, recursive=TRUE)
+  dir.create(file.path(species.name,'models',modeling.id,'MaxentTmpData'), showWarnings=FALSE, recursive=TRUE)
   dir.create(file.path(species.name,'models',modeling.id, paste(RunName,'_MAXENT_outputs',sep='')), showWarnings=FALSE, recursive=TRUE)
   
   # Presences Data
@@ -14,20 +14,20 @@
                       xy[presLines,],
                       Data[presLines,2:ncol(Data),drop=FALSE])
   colnames(Sp_swd) <- c('species','X','Y',colnames(Data)[2:ncol(Data)])
-  write.table(Sp_swd, file=paste(getwd(),'/',species.name,"/MaxentTmpData/Sp_swd.csv",sep=""), quote=FALSE, row.names=FALSE, sep=",")
+  write.table(Sp_swd, file=file.path(species.name,'models',modeling.id,"MaxentTmpData","Sp_swd.csv"), quote=FALSE, row.names=FALSE, sep=",")
   
   # Background Data
   # keep only 0 of calib lines
   Back_swd <- cbind(rep("background",length(absLines)),xy[absLines,],Data[absLines,2:ncol(Data),drop=FALSE])
   colnames(Back_swd)  <- c("background",colnames(Back_swd)[-1])
-  write.table(Back_swd, file=paste(getwd(),'/',species.name,"/MaxentTmpData/Back_swd.csv",sep=""), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+  write.table(Back_swd, file=file.path(species.name,'models',modeling.id,"MaxentTmpData","Back_swd.csv"), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
   
   # Prediction Data
-  dir.create(paste(getwd(),'/',species.name,'/MaxentTmpData/Pred', sep=""), showWarnings=FALSE)
+  dir.create(file.path(species.name,'models',modeling.id,'MaxentTmpData','Pred'), showWarnings=FALSE, recursive=TRUE)
   
   Pred_swd <- cbind(rep("predict",nrow(xy)),xy,Data[,2:ncol(Data),drop=FALSE])
   colnames(Pred_swd)  <- c("predict",colnames(Back_swd)[-1])
-  write.table(Pred_swd, file=paste(getwd(),'/',species.name,"/MaxentTmpData/Pred/Pred_swd.csv",sep=""), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+  write.table(Pred_swd, file=file.path(species.name,'models',modeling.id,"MaxentTmpData","Pred","Pred_swd.csv"), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
   
   # dealing with variable importances stuff
   if( VarImport > 0){
@@ -36,7 +36,7 @@
         proj_tmp <- Pred_swd
         proj_tmp[,1] <- rep(paste(vari,'_',vi,sep=""),nrow(proj_tmp))
         proj_tmp[,vari] <- sample(proj_tmp[,vari])
-        write.table(proj_tmp, file=paste(getwd(),'/',species.name,"/MaxentTmpData/Pred/",vari,'_',vi,"_swd.csv",sep=""), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+        write.table(proj_tmp, file=file.path(species.name,'models',modeling.id,"MaxentTmpData","Pred",paste(vari,'_',vi,"_swd.csv",sep="")), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
       }
   }
   
@@ -44,20 +44,17 @@
   if(!is.null(evalData)){
     Pred_eval_swd <- cbind(rep("predictEval",nrow(evalxy)),evalxy,evalData[,2:ncol(evalData),drop=FALSE])
     colnames(Pred_eval_swd)  <- c("predict",colnames(Back_swd)[-1])
-    write.table(Pred_eval_swd, file=paste(getwd(),'/',species.name,"/MaxentTmpData/Pred/Pred_eval_swd.csv",sep=""), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+    write.table(Pred_eval_swd, file=file.path(species.name,'models',modeling.id,"MaxentTmpData","Pred","Pred_eval_swd.csv"), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
   }
 }
 
-.Delete.Maxent.WorkDir <- function(species.name=NULL){
+.Delete.Maxent.WorkDir <- function(species.name=".", modeling.id=".", proj.name=NULL){
   cat('\n\tRemoving Maxent Temp Data..')
-#   system('rm -rf MaxentTmpData')
-  
-  if(is.null(species.name)){
-    unlink('MaxentTmpData', recursive = TRUE, force = TRUE)
-  } else{
-     unlink(paste(species.name,"/MaxentTmpData", sep=""), recursive = TRUE, force = TRUE)
+  if (length(proj.name)){
+    unlink(file.path(species.name, proj.name, "MaxentTmpData"),recursive = TRUE, force = TRUE)
+  } else {
+    unlink(file.path(species.name, "models", modeling.id, "MaxentTmpData"),recursive = TRUE, force = TRUE)
   }
-  
 }
 
 # Maxent Projection working directory preparation -=-=-=-=-=-=-=- #
@@ -69,42 +66,42 @@ setGeneric(".Prepare.Maxent.Proj.WorkDir",
 
 
 setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='data.frame'),
-          def = function(Data, xy, proj_name=NULL){
+          def = function(Data, xy, species.name =".", proj.name="."){
             cat('\n\t\tCreating Maxent Temp Proj Data...')
             if(is.null(xy)) xy <- matrix(1,nrow=nrow(Data), ncol=2, dimnames=list(NULL, c("X","Y")))
     
-            if(is.null(proj_name)) proj_name <- format(Sys.time(), "%s")
-            dir.create(file.path(getwd(),proj_name,'MaxentTmpData'), showWarnings=FALSE, recursive=TRUE)
+#             if(is.null(proj.name))proj.name <- format(Sys.time(), "%s")
+            dir.create(file.path(species.name,proj.name,'MaxentTmpData','Proj'), showWarnings=FALSE, recursive=TRUE)
             
             # Proj Data
             Proj_swd <- cbind(rep("proj",nrow(xy)),xy,Data)
             colnames(Proj_swd)  <- c("proj","X","Y",colnames(Data))
-            write.table(Proj_swd, file=file.path(getwd(),proj_name,'MaxentTmpData', 'Proj_swd.csv'), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
+            write.table(Proj_swd, file=file.path(species.name,proj.name,'MaxentTmpData', 'Proj_swd.csv'), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
             })
 
 
 setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
-          def = function(Data, proj_name=NULL){
+          def = function(Data, species.name =".",proj.name="."){
             cat('\n\t\tCreating Maxent Temp Proj Data...')
             
-            if(is.null(proj_name)) proj_name <- colnames(Data)[1]
-            dir.create(file.path(getwd(),proj_name,'MaxentTmpData','Proj'), showWarnings=FALSE, recursive=TRUE)
+#             if(is.null(proj.name))proj.name <- colnames(Data)[1]
+            dir.create(file.path(species.name,proj.name,'MaxentTmpData','Proj'), showWarnings=FALSE, recursive=TRUE)
             
             # Proj Data
             for(l in names(Data)){
-              if(! file.exists(file.path(proj_name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
+              if(! file.exists(file.path(species.name,proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
                 cat("\n\t\t\t>",l ,"\t:\t" )
                 if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
                   cat("coping ascii file")
-                  file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(proj_name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
+                  file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
                 } else{
                   cat("creating ascii file")
-                  writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(proj_name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
+                  writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
                               format='ascii', overwrite=TRUE)        
                 }
                 
               } else{
-                cat("\n", file.path(proj_name,'MaxentTmpData','', paste(l,'.asc',sep='')),'already created !')
+                cat("\n", file.path(species.name,proj.name,'MaxentTmpData','', paste(l,'.asc',sep='')),'already created !')
               }
               
             }

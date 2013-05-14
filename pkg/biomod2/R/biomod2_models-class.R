@@ -674,7 +674,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  .Prepare.Maxent.Proj.WorkDir(Data = newdata, proj_name = file.path(object@resp_name,temp_workdir))
+  .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
   
   cat("\n\t\tRunning Maxent...")
   system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
@@ -705,7 +705,8 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
-      unlink(x=file.path(object@resp_name, temp_workdir), recursive=TRUE, force=TRUE )
+#       unlink(x=file.path(object@resp_name, temp_workdir), recursive=TRUE, force=TRUE )
+      .Delete.Maxent.WorkDir(species.name = object@resp_name, proj.name = temp_workdir)
     }
   }
   
@@ -736,7 +737,8 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   ## no xy needed for models projections
   xy <- NULL
   
-  .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , proj_name = file.path(object@resp_name,temp_workdir))
+  .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, proj.name = temp_workdir)
+#   .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
   
   cat("\n\t\tRunning Maxent...")
   system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
@@ -751,7 +753,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
-      unlink(file.path(object@resp_name, temp_workdir),recursive=TRUE,force=TRUE)
+      .Delete.Maxent.WorkDir(species.name = object@resp_name, proj.name = temp_workdir)
     }
   }
 

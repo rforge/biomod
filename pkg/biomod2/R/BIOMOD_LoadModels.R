@@ -89,6 +89,8 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   if(!is.null(add.args$models)){
     if(sum(add.args$models %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='models') ) != length(add.args$models) ){
       stop(paste("models argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed, info='models')), sep="") )
+    } else{
+      add.args$models = paste("_", add.args$models, sep="")
     }
   }
   
@@ -96,6 +98,8 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   if(!is.null(add.args$run.eval)){
     if(sum(add.args$run.eval %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='run.eval') != length(add.args$run.eval)) ){
       stop(paste("run.eval argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed), info='run.eval'), sep="") )
+    } else{
+      add.args$run.eval = paste("_", add.args$run.eval, "_", sep="")
     }
   }
   
@@ -103,6 +107,8 @@ BIOMOD_LoadModels <- function(bm.out, ... ){
   if(!is.null(add.args$data.set)){
     if(sum(add.args$data.set %in% .extractModelNamesInfo(model.names=bm.out@models.computed, info='data.set') != length(add.args$data.set)) ){
       stop(paste("data.set argument must be one of ", toString(.extractModelNamesInfo(model.names=bm.out@models.computed), info='data.set'), sep="") )
+    } else{
+      add.args$data.set = paste("_", add.args$data.set, "_", sep="")
     }
   }
   

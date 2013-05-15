@@ -161,7 +161,9 @@ function(sp, env, nb.repet=1, strategy='random', distMin=0, distMax=NULL, nb.poi
 
   if(inherits(data, 'SpatialPoints')){ return(sum(is.na(data@data))) }
   
-  if(inherits(data, 'Raster')){ return( sum(na.omit(data[]) == -1) )}
+#   if(inherits(data, 'Raster')){ cat("\n\t***") ; return( sum(na.omit(data[]) == -1) )}
+  
+  if(inherits(data, 'Raster')){ return(sum(data[] == -1, na.rm=T)) }
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -245,9 +247,8 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
               cat("\n   > Pseudo absences are selected in explanatory variables")
               # create a mask
               mask <- raster:::subset(env, 1, drop=TRUE)
-#               mask <- reclassify(mask, c(-Inf,Inf,-1))
-              mask[!is.na(mask[])] <- -1
-              
+              mask <- raster:::reclassify(mask, c(-Inf,Inf,-1))
+
               # remove presences and true absences from our raster
               mask[cellFromXY(mask,coordinates(sp))] <- NA
               
@@ -259,10 +260,17 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
                 cat("\n   > All availables cells have been selected (", nb.points, "pseudo absences selected )")
               }
               
+              
               # select cells into raster
               pa.tab.tmp <- matrix(NA, ncol=nb.repet, nrow=nb.points)
               for( j in 1:ncol(pa.tab.tmp)){
-                pa.tab.tmp[,j] <- sampleRandom(x=mask, size=nb.points, cells=T)[,"cell"]
+                SR <- sampleRandom(x=mask, size=nb.points, cells=T, na.rm=T)[,"cell", drop=T]
+                ## repeat sampling until haing the right number of points
+                ## NOTE: it's a bit tricky way to process becaus some points shoul appe several times
+                while(length(SR)<nb.points){
+                  SR <- c(SR, sampleRandom(x=mask, size=nb.points-length(SR), cells=T, na.rm=T)[,"cell", drop=T])
+                }
+                pa.tab.tmp[,j] <- SR
               }
               
               # puting cells in good format
@@ -337,7 +345,7 @@ setMethod('sre.pseudo.abs.selection', signature(env="SpatialPointsDataFrame"),
             mask <- sre(Response = sp, Explanatory = env, NewData = env@data, Quant = quant.SRE)
             
             # removing cells in envelops, presences and absences
-            mask[mask[] == 0] <- NA
+            mask[mask == 0] <- NA
             mask[which(as.vector(sp@data)==1),1] <- 1
             mask[which(as.vector(sp@data)==0),1] <- 0
 
@@ -376,11 +384,11 @@ setMethod('sre.pseudo.abs.selection', signature(env="RasterStack"),
             mask <- sre(Response = sp, Explanatory = env, NewData = env, Quant = quant.SRE) 
             
             # removing cells in envelops, presences and absences
-            mask[mask[]==1] <- NA
+            mask[mask==1] <- NA
             mask[cellFromXY(mask,coordinates(sp)[which(as.vector(sp@data)==1),])] <- NA
             mask[cellFromXY(mask,coordinates(sp)[which(as.vector(sp@data)==0),])] <- NA
             
-            mask <- reclassify(mask, c(-Inf,Inf,-1))
+            mask <- raster:::reclassify(mask, c(-Inf,Inf,-1))
             
             # checking of nb candidates
             nb.cells <- .nb.available.pa.cells(mask)
@@ -393,9 +401,15 @@ setMethod('sre.pseudo.abs.selection', signature(env="RasterStack"),
             # select cells into raster
             pa.tab.tmp <- matrix(NA, ncol=nb.repet, nrow=nb.points)
             for( j in 1:ncol(pa.tab.tmp)){
-              pa.tab.tmp[,j] <- sampleRandom(x=mask, size=nb.points, cells=T)[,"cell"]
+              SR <- sampleRandom(x=mask, size=nb.points, cells=T, na.rm=T)[,"cell", drop=T]
+              ## repeat sampling until haing the right number of points
+              ## NOTE: it's a bit tricky way to process becaus some points shoul appe several times
+              while(length(SR)<nb.points){
+                SR <- c(SR, sampleRandom(x=mask, size=nb.points-length(SR), cells=T, na.rm=T)[,"cell", drop=T])
+              }
+              pa.tab.tmp[,j] <- SR
             }
-            
+
             # puting cells in good format
             selected.cells <- sort(unique(as.vector(pa.tab.tmp)))
             pa.tab <- matrix(FALSE, ncol = nb.repet, nrow = length(selected.cells))

@@ -3,7 +3,7 @@
 ### Add SpatialDataFrame Response Case
 
 sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.025, return_extremcond=FALSE){
-
+  
   # 1. Checking of input arguments validity
   args <- .check.params.sre(Response, Explanatory, NewData, Quant)
   
@@ -12,6 +12,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
   NewData <- args$NewData
   Quant <- args$Quant
   rm("args")
+  
   
   # 2. Determining suitables conditions and make the projection
   lout <- list()
@@ -32,10 +33,11 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
     nb.resp <- nlayers(Response)
     resp.names <- names(Response)
     for(j in 1:nb.resp){
-      occ.pts <- raster:::subset(Response,j)
-      occ.pts[occ.pts != 1] <- NA
+      occ.pts <- raster:::subset(Response,j, drop=T)
+      x.ooc.pts <- which(occ.pts != 1)
+      occ.pts[x.ooc.pts] <- rep(NA, length(x.ooc.pts))
       extrem.cond <- quantile(raster:::mask(Explanatory, occ.pts), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
-      
+            
       if(!return_extremcond)
         lout[[j]] <- .sre.projection(NewData, extrem.cond)
     }
@@ -50,16 +52,20 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
         extrem.cond <- t(apply(as.data.frame(Explanatory[occ.pts,]), 2, 
                            quantile, probs = c(0 + Quant, 1 - Quant), na.rm = TRUE))
       } else { if(inherits(Explanatory, 'Raster')){
-        maskTmp <- raster:::subset(Explanatory,1)
-        maskTmp <- reclassify(maskTmp, c(-Inf,Inf,NA))
+        maskTmp <- raster:::subset(Explanatory,1, drop=T)
+#         maskTmp <- reclassify(maskTmp, c(-Inf,Inf,NA))
+        maskTmp[] <- NA
         maskTmp[cellFromXY(maskTmp, coordinates(Response)[occ.pts,])] <- 1
-        extrem.cond <- quantile(raster:::mask(Explanatory, maskTmp), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
+#         cat("\n*** sum(!is.na(maskTmp[])=",sum(!is.na(maskTmp[])))
+        
+        
+        extrem.cond <- quantile(raster:::mask(Explanatory, maskTmp), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)      
       } else { if(inherits(Explanatory, 'SpatialPoints')){
         ## May be good to check corespondances of Response and Explanatory variables
         extrem.cond <- t(apply(as.data.frame(Explanatory[occ.pts,]), 2, 
                    quantile, probs = c(0 + Quant, 1 - Quant), na.rm = TRUE))
       } else { stop("Unsuported case!") } } }
-      
+       
       if(!return_extremcond)
         lout[[j]] <- .sre.projection(NewData, extrem.cond)
     }
@@ -163,6 +169,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
       
 .sre.projection <- function(NewData, ExtremCond){
+  
   if(is.data.frame(NewData)|is.matrix(NewData)){
     out <- rep(1,nrow(NewData))
     for(j in 1:ncol(NewData)){

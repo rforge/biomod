@@ -34,7 +34,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
     resp.names <- names(Response)
     for(j in 1:nb.resp){
       occ.pts <- raster:::subset(Response,j, drop=T)
-      x.ooc.pts <- which(occ.pts != 1)
+      x.ooc.pts <- Which(occ.pts != 1, cells=TRUE, na.rm=T)
       occ.pts[x.ooc.pts] <- rep(NA, length(x.ooc.pts))
       extrem.cond <- quantile(raster:::mask(Explanatory, occ.pts), probs = c(0 + Quant, 1 - Quant), na.rm = TRUE)
             

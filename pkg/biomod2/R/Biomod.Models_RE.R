@@ -123,7 +123,9 @@
                       model_class = 'CTA',
                       model_options = Options@CTA,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # end CTA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -205,7 +207,9 @@
                       model_subclass = Options@GAM$algo,
                       model_options = Options@GAM,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # end GAM models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -239,7 +243,9 @@
                       n.trees_optim = best.iter,
                       model_options = Options@GBM,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
       
     }
   }
@@ -298,13 +304,17 @@
       cat("\n\tselected formula : ")
       print(model.sp$formula, useSource=FALSE)
       
+      
+      
       model.bm <- new("GLM_biomod2_model",
                       model = model.sp,
                       model_name = model_name,
                       model_class = 'GLM',
                       model_options = Options@GLM,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   } 
   # end GLM models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- # 
@@ -330,7 +340,9 @@
                       model_class = 'MARS',
                       model_options = Options@MARS,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # end MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -352,7 +364,9 @@
                       model_class = 'FDA',
                       model_options = Options@FDA,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # end FDA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -382,7 +396,9 @@
                       model_class = 'ANN',
                       model_options = Options@ANN,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # ANN models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -435,7 +451,9 @@
                       model_class = 'RF',
                       model_options = Options@RF,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # end RF models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -459,7 +477,9 @@
                       model_class = 'SRE',
                       model_options = Options@SRE,
                       resp_name = resp_name,
-                      expl_var_names = expl_var_names)
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     }
   }
   # end SRE models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -510,7 +530,9 @@
                     model_class = 'MAXENT',
                     model_options = Options@MAXENT,
                     resp_name = resp_name,
-                    expl_var_names = expl_var_names)
+                    expl_var_names = expl_var_names,
+                    expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
+                    expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
     
     # for MAXENT predicitons are calculated in the same time than models building to save time.
     cat("\n Getting predictions...")

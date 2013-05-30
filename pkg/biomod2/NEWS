@@ -1,3 +1,7 @@
+2.1.32 (2013-05-30)
+	* weights for user defined pseudo-absences are now supported (thanks to Rui F.)
+	* deal with unknown factors predictions (thanks to Denis M.)
+
 2.1.13 (2013-03-06)
 	* Add ProbDensFunc() function to package to produce nice plots that show inter-models variability
 

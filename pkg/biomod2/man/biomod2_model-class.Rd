@@ -11,6 +11,9 @@
 \alias{getFormalModel,biomod2_model-method}
 \alias{getScalingModel}
 \alias{getScalingModel,biomod2_model-method}
+\alias{check_data_range}
+\alias{get_var_range}
+\alias{get_var_type}
 
 
 \alias{ANN_biomod2_model-class}

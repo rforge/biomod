@@ -9,6 +9,14 @@
 # of biomod2 using objects defined there will be biomod2_2.x.x
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
+# setClass('biomod2_expl_var',
+#          representation(name = 'character',
+#                         type = 'character',
+#                         range = 'vector'),
+#          prototype(name="unknow",
+#                    type="unknow",
+#                    range=vector()))
+
 
 # Formal Class =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 setClass('biomod2_model',
@@ -19,6 +27,8 @@ setClass('biomod2_model',
                         scaling_model = 'ANY',
                         resp_name = 'character',
                         expl_var_names = 'character',
+                        expl_var_type = 'character',
+                        expl_var_range = 'list',
                         model_evaluation = 'matrix',
                         model_variables_importance = 'matrix'),
          prototype(model_name = 'mySpecies_DataSet_RunName_myModelClass',
@@ -28,6 +38,8 @@ setClass('biomod2_model',
                    scaling_model = list(),
                    resp_name = 'mySpecies',
                    expl_var_names = 'myRespVar',
+                   expl_var_type = 'unknown',
+                   expl_var_range = list(),
                    model_evaluation = matrix(),
                    model_variables_importance = matrix()),
          validity = function(object){
@@ -49,7 +61,11 @@ setMethod('show', signature('biomod2_model'),
             
             cat("\n")
             cat("\n\t response modelled :", object@resp_name, fill=.Options$width)
-            cat("\n\t explanatory variables used:", object@expl_var_names, fill=.Options$width)
+            cat("\n\n\t explanatory variables used:", fill=.Options$width)
+            cat("\n\t", "name", "\t", "type", "\t", "range", fill=.Options$width)
+            for(i in 1: length(object@expl_var_names)){
+              cat("\n\t", object@expl_var_names[i],"\t", object@expl_var_type[i], "\t", object@expl_var_range[[i]], fill=.Options$width)
+            }
             
             cat("\n")
             cat("\n\t NOTE : ")
@@ -80,6 +96,110 @@ setMethod('getScalingModel', signature('biomod2_model'),
             return(object@scaling_model)
           })
 
+# Fuction to get variables ranges
+get_var_type <- function(data){
+    return(sapply(data,class))
+}
+
+get_var_range <- function(data){
+  get_range <- function(x){
+    if(is.numeric(x)){
+      return(c(min=min(x,na.rm=T), max=max(x,na.rm=T)))
+    }
+    if(is.factor(x)){
+      return(levels(x))
+    }
+  }
+  xx <- lapply(data,get_range)
+  names(xx) <- names(data)
+  return(xx)
+}
+
+# Function to check new data range compatibility with calibrating data #
+check_data_range <- function(model, new_data){
+  # get calibration data caracteristics
+  expl_var_names <- model@expl_var_names
+  expl_var_type <- model@expl_var_type
+  expl_var_range <- model@expl_var_range
+  
+  if(inherits(new_data, "Raster")){ ## raster data case =-=-=-=-=-=-=- #
+    # check var names compatibility
+    nd_expl_var_names <- names(new_data)
+    if(sum(!(expl_var_names %in% nd_expl_var_names) ) > 0 ){
+      stop("calibration and projections variables names mismatch")
+    }
+    # reorder the stack
+    new_data <- raster:::subset(new_data,expl_var_names)
+    # check var types compatibility (factors)
+    expl_var_fact <- (expl_var_type=='factor')
+    nd_expl_var_fact <- is.factor(new_data)
+    if(sum(! (expl_var_fact==nd_expl_var_fact))>0){
+      stop("calibration and projections variables class mismatch")
+    }
+    # check var range compatibility
+    ### remove all new factors
+    if(sum(expl_var_fact)>0){ ## there are factorial variables
+      for(fact_var_id in which(expl_var_fact)){
+        ## check if new factors occurs
+        nd_levels <- levels(raster:::subset(new_data,fact_var_id))[[1]]
+        nd_levels <- as.character(nd_levels[,ncol(nd_levels)])
+        names(nd_levels) <- levels(raster:::subset(new_data,fact_var_id))[[1]]$ID
+        cd_levels <- as.character(unlist(expl_var_range[[fact_var_id]]))
+        
+        ## detect new levels
+        new_levels <- nd_levels[!(nd_levels %in% cd_levels)]
+        
+        if(length(new_levels)){
+          for(n_l in new_levels){
+            # remove points where out of range factors have been detected
+            new_data[subset(new_data,fact_var_id)[]==as.numeric(names(nd_levels)[which(nd_levels==n_l)])] <- NA
+          }
+          warning(paste(nd_expl_var_names[fact_var_id]," new levels have been removed from dataset (",toString(new_levels),")",sep=""))
+        }
+      }
+    }
+    ## convert data to be sure to get RasterStack output
+#     new_data <- stack(new_data)
+  } else{ ## table data case -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+    # check var names compatibility
+    nd_expl_var_names <- colnames(new_data)
+    if(sum(!(expl_var_names %in% nd_expl_var_names) ) > 0 ){
+      stop("calibration and projections variables names mismatch")
+    }
+    # reorder the stack
+    new_data <- new_data[,expl_var_names]
+    # check var types compatibility (factors)
+    expl_var_fact <- (expl_var_type=='factor')
+    nd_expl_var_fact <- sapply(new_data,is.factor)
+    
+    if(sum(! (expl_var_fact==nd_expl_var_fact))>0){
+      stop("calibration and projections variables class mismatch")
+    }
+    # check var range compatibility
+    ### remove all new factors
+    if(sum(expl_var_fact)>0){ ## there are factorial variables
+      for(fact_var_id in which(expl_var_fact)){
+        ## check if new factors occurs
+        nd_levels <- levels(new_data[,fact_var_id])
+        cd_levels <- as.character(unlist(expl_var_range[[fact_var_id]]))
+        
+        ## detect new levels
+        new_levels <- nd_levels[!(nd_levels %in% cd_levels)]
+        
+        if(length(new_levels)){
+          # remove points where out of range factors have been detected
+#           new_data <- new_data[- which(new_data[,fact_var_id] %in% new_levels),]
+          new_data[which(new_data[,fact_var_id] %in% new_levels),] <- NA
+          warning(paste(nd_expl_var_names[fact_var_id]," new levels have been removed from dataset (",toString(new_levels),")",sep=""))
+        }
+      }
+    }
+  }
+  
+  return(new_data)
+}
+
+
 # ANN Class -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 setClass('ANN_biomod2_model',
@@ -98,6 +218,9 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
             args <- list(...)
             
             if( ! ("package:nnet" %in% search()) ){ require(nnet,quietly=TRUE) }
+            
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
             
             if(inherits(newdata, 'Raster')){            
               return(.predict.ANN_biomod2_model.RasterStack(object, newdata, ... ))
@@ -177,6 +300,9 @@ setMethod('predict', signature(object = 'CTA_biomod2_model'),
             
             if( ! ("package:rpart" %in% search()) ){ require(rpart,quietly=TRUE) }
             
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
+            
             if(inherits(newdata, 'Raster')){            
               return(.predict.CTA_biomod2_model.RasterStack(object, newdata, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
@@ -254,6 +380,9 @@ setMethod('predict', signature(object = 'FDA_biomod2_model'),
             args <- list(...)
             
             if( ! ("package:mda" %in% search()) ){ require(mda,quietly=TRUE) }
+            
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
             
             if(inherits(newdata, 'Raster')){            
               return(.predict.FDA_biomod2_model.RasterStack(object, newdata, ... ))
@@ -349,6 +478,9 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
               if( ! ("package:gam" %in% search()) ){ require(gam,quietly=TRUE) }
             }
             
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
+            
             if(inherits(newdata, 'Raster')){            
               return(.predict.GAM_biomod2_model.RasterStack(object, newdata, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
@@ -426,6 +558,9 @@ setMethod('predict', signature(object = 'GBM_biomod2_model'),
             
             if( ! ("package:gbm" %in% search()) ){ require(gbm,quietly=TRUE) }
             
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
+            
             if(inherits(newdata, 'Raster')){            
               return(.predict.GBM_biomod2_model.RasterStack(object, newdata, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
@@ -501,6 +636,9 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
             args <- list(...)
             
             if( ! ("package:stats" %in% search()) ){ require(stats,quietly=TRUE) }
+            
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
             
             if(inherits(newdata, 'Raster')){            
               return(.predict.GLM_biomod2_model.RasterStack(object, newdata, ... ))
@@ -578,6 +716,9 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
             
             if( ! ("package:mda" %in% search()) ){ require(mda,quietly=TRUE) }
             
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
+            
             if(inherits(newdata, 'Raster')){            
               return(.predict.MARS_biomod2_model.RasterStack(object, newdata, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
@@ -651,6 +792,9 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
           function(object, newdata, ...){
             
             args <- list(...)
+            
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
             
             if(inherits(newdata, 'Raster')){            
               return(.predict.MAXENT_biomod2_model.RasterStack(object, newdata, ... ))
@@ -790,6 +934,9 @@ setMethod('predict', signature(object = 'RF_biomod2_model'),
             
             if( ! ("package:randomForest" %in% search()) ){ require(randomForest,quietly=TRUE) }
             
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
+            
             if(inherits(newdata, 'Raster')){            
               return(.predict.RF_biomod2_model.RasterStack(object, newdata, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
@@ -861,6 +1008,9 @@ setMethod('predict', signature(object = 'SRE_biomod2_model'),
           function(object, newdata, ...){
             
             args <- list(...)
+            
+            ## data checking
+            newdata <- check_data_range(model=object, new_data=newdata)
             
             if(inherits(newdata, 'Raster')){            
               return(.predict.SRE_biomod2_model.RasterStack(object, newdata, ... ))

@@ -147,6 +147,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
     # take the same eval environemental variables than calibrating ones 
     if(!is.null(eval.sp)){
       if(is.null(eval.env)){
+#         eval.env_levels <- levels(eval.env)
         eval.env <- as.data.frame(extract(env,eval.xy))
         if(length(categorial_var)){
           for(cat_var in categorial_var){
@@ -164,11 +165,16 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
     data.mask <- stack(data.mask)
     names(data.mask) <- sp.name
     
-    env <- as.data.frame(extract(env,xy))
+#     env_levels <- levels(env)
+    env <- as.data.frame(extract(env,xy, factors=T))
+    
     
     if(length(categorial_var)){
       for(cat_var in categorial_var){
         env[,cat_var] <- as.factor(env[,cat_var])
+#         cat("\n***",which(colnames(env)==cat_var))
+#         
+#         levels(env[,cat_var]) <- env_levels[[which(colnames(env)==cat_var)]][[1]][,ncol(env_levels[[which(colnames(env)==cat_var)]][[1]])]
       }
     }
     

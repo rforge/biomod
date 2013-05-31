@@ -168,7 +168,7 @@
                                           xy.new.env = getModelsInputData(modeling.output)@coord,
                                           selected.models = models.kept,
                                           compress = 'xz',
-                                          clamping.mask = F,
+                                          build.clamping.mask = F,
                                           do.stack=T, silent = T)@proj@val
             
             # transform array into data.frame

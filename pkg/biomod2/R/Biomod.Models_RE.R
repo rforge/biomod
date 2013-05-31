@@ -540,28 +540,38 @@
   }
   # end MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
-  
-  
   # make prediction =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if((Model != "MAXENT"))
     g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))
   
+  # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+  if(scal.models){
+    cat("\n\tModel scaling...")
+    model.bm@scaling_model <- try(.scaling_model(g.pred/1000, Data[, 1], prevalence=0.5))
+    g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))
+  }
+  
   # check predictions existance and stop execution if not ok -=-=- #
-  if (inherits(g.pred,"try-error")) { 
+  test_pred_ok <- TRUE
+  if (inherits(g.pred,"try-error")) { # model calibration or prdiction failed
+    test_pred_ok <- FALSE
+    cat("\n*** inherits(g.pred,'try-error')")
+  } else if (sum(!is.na(g.pred))<=1){ # only NA predicted
+    test_pred_ok <- FALSE
+    cat("\n*** only NA predicted")
+  } else if(length(unique(na.omit(g.pred))) <=1){ # single value predicted
+    test_pred_ok <- FALSE
+    cat("\n*** single value predicted")
+  }
+  
+  if(test_pred_ok){
+    # keep the model name
+    ListOut$ModelName <- model_name
+  } else{
     # keep the name of uncompleted modelisations
     cat("\n   ! Note : ", model_name, "failed!\n")
     ListOut$calib.failure = model_name
     return(ListOut)
-  } else {
-    # keep the model name
-    ListOut$ModelName <- model_name
-  }
-  
-  # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  if(scal.models){
-    cat("\n\tModel scaling...")
-    model.bm@scaling_model <- .scaling_model(g.pred/1000, Data[, 1], prevalence=0.5)
-    g.pred <- predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE)
   }
   
   # make prediction on evaluation data =-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -658,13 +668,13 @@
         
         if(Model != "MAXENT"){
           ## make projection on suffled dataset
-          shuffled.pred <- predict(model.bm, TempDS, on_0_1000=TRUE)
+          shuffled.pred <- try(predict(model.bm, TempDS, on_0_1000=TRUE))
         } else{
           ## for MAXENT, we have created all the permutation at model building step
-          shuffled.pred <- round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam, vari, run, "swd.csv", sep="_")))[,3])*1000)
+          shuffled.pred <- try(round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam, vari, run, "swd.csv", sep="_")))[,3])*1000) )
           ## scal suffled.pred if necessary
           if(length(getScalingModel(model.bm))){
-            shuffled.pred <- round(.testnull(object = getScalingModel(model.bm), Prev = 0.5 , dat = data.frame(pred = shuffled.pred/1000) ) *1000)
+            shuffled.pred <- try( round(.testnull(object = getScalingModel(model.bm), Prev = 0.5 , dat = data.frame(pred = shuffled.pred/1000) ) *1000) )
             #               shuffled.pred <- round(as.numeric(predict(getScalingModel(model.bm), shuffled.pred/1000))*1000)
           }
           ## remove useless files on hard drive
@@ -674,19 +684,37 @@
         }
         
         ## test if differences exist between the 2 vectors
-        if(sum( g.pred != shuffled.pred, na.rm=T) == 0){
+        # check predictions existance and stop execution if not ok -=-=- #
+        test_shuffled.pred_ok <- TRUE
+        if (inherits(shuffled.pred,"try-error")) { # model calibration or prdiction failed
+          test_shuffled.pred_ok <- FALSE
+        } else if (sum(!is.na(shuffled.pred))<=1){ # only NA predicted
+          test_shuffled.pred_ok <- FALSE
+        } else if(length(unique(na.omit(shuffled.pred))) <=1){ # single value predicted
+          test_shuffled.pred_ok <- FALSE
+        } else if(length(shuffled.pred)!= length(g.pred)){
+          test_shuffled.pred_ok <- FALSE
+        }
+        
+        if(!test_shuffled.pred_ok){
+          cat("\n   ! Note : ", model_name, "variable importance for",vari,run,"failed!\n")
           VarImpTable[run,vari] <- 0
-        } else {
-          ## calculate correlation between vectors as proxy for variables importance
-          VarImpTable[run,vari] <- 1 - max(round(cor(x=g.pred, y=shuffled.pred, use="pairwise.complete.obs", method="pearson"),digits=3),0)
-        }      
+        } else{
+          if(sum( g.pred != shuffled.pred, na.rm=T) == 0){
+            VarImpTable[run,vari] <- 0
+          } else {
+            ## calculate correlation between vectors as proxy for variables importance
+            VarImpTable[run,vari] <- 1 - max(round(cor(x=g.pred, y=shuffled.pred, use="pairwise.complete.obs", method="pearson"),digits=3),0,na.rm=T)
+          } 
+        }
+     
       }
     }
     
     ## store results
     model.bm@model_variables_importance <- VarImpTable
     ## we stored only the mean of variables importance run
-    ListOut$var.import <- round(apply(VarImpTable, 2, mean),digits=3)
+    ListOut$var.import <- round(apply(VarImpTable, 2, mean, na.rm=T),digits=3)
   }
   # End Variables Importance -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
@@ -701,9 +729,6 @@
   
 
   # End model saving step =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  
-  
-  
   
   return(ListOut)
 }

@@ -354,10 +354,17 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
       rowToRm <- unique(unlist(lapply(pa.data.tmp$env,function(x){return(which(is.na(x)))})))
       if(length(rowToRm)){
         cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
-        pa.data.tmp$xy <- pa.data.tmp$xy[-rowToRm,]
-        pa.data.tmp$sp <- pa.data.tmp$sp[-rowToRm]
+        pa.data.tmp$xy <- pa.data.tmp$xy[-rowToRm,,drop=FALSE]
+        pa.data.tmp$sp <- pa.data.tmp$sp[-rowToRm, ,drop=FALSE]
         pa.data.tmp$env <- pa.data.tmp$env[-rowToRm,,drop=FALSE]
         pa.data.tmp$pa.tab <- pa.data.tmp$pa.tab[-rowToRm,,drop=FALSE]
+        cat("\n***\n")
+        cat("\ndim(xy) <-", dim(pa.data.tmp$xy))
+        cat("\nclass(sp) <- ", class(pa.data.tmp$sp))
+        cat("\ndim(sp) <-", dim(pa.data.tmp$sp))
+        cat("\ndim(env) <-", dim(pa.data.tmp$env))
+        cat("\ndim(pa.tab) <-", dim(pa.data.tmp$pa.tab))
+        
       }      
     }
     

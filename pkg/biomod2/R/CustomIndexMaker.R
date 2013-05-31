@@ -64,6 +64,6 @@
       packageStartupMessage("Customed index built!")
     }
     
-    packageStartupMessage(paste(pkgname, RFver, "loaded."))
+    packageStartupMessage(paste(pkgname, RFver, "loaded.\n\nType browseVignettes(package='biomod2') to access directly biomod2 vignettes."))
   }
 }

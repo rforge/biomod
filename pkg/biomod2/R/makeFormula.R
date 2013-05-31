@@ -46,7 +46,7 @@ function(respName, explVar, type = 'simple', interaction.level = 0, ...)
 #                junk <- c(junk, paste(explVarNames[v], "+I(", explVarNames[v], 
 #                                       "^2)+I(",explVarNames[v],"^3)", sep="") )
                 junk <- paste(junk, paste(explVarNames[v], "+I(", explVarNames[v], 
-                                      "^2)", sep=""), collapse=" + " )
+                                      "^2)", sep=""), sep=" + " )
              } else { junk <- paste(junk, explVarNames[v], sep=" + ") }
            } },
 

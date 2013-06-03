@@ -132,7 +132,7 @@ check_data_range <- function(model, new_data){
     new_data <- raster:::subset(new_data,expl_var_names)
     # check var types compatibility (factors)
     expl_var_fact <- (expl_var_type=='factor')
-    nd_expl_var_fact <- is.factor(new_data)
+    nd_expl_var_fact <- is.factor(new_data)  
     if(sum(! (expl_var_fact==nd_expl_var_fact))>0){
       stop("calibration and projections variables class mismatch")
     }
@@ -171,7 +171,6 @@ check_data_range <- function(model, new_data){
     # check var types compatibility (factors)
     expl_var_fact <- (expl_var_type=='factor')
     nd_expl_var_fact <- sapply(new_data,is.factor)
-    
     if(sum(! (expl_var_fact==nd_expl_var_fact))>0){
       stop("calibration and projections variables class mismatch")
     }

@@ -338,7 +338,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
       model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),      
       model_class = 'ANN', 
       resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])), 
-      expl_var_names = as.character(mod$terms[[3]])))
+      expl_var_names = attr(glm1$terms,"term.labels")))
   }
   
   
@@ -360,7 +360,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_FDA", sep=""),
                model_class = 'FDA',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = as.character(mod$terms[[3]])))
+               expl_var_names = attr(glm1$terms,"term.labels")))
   }
   
   ## GAM ##
@@ -371,7 +371,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GAM", sep=""),
                model_class = 'GAM',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = as.character(mod$terms[[3]])))
+               expl_var_names = attr(glm1$terms,"term.labels")))
   }
   
   ## GBM ##
@@ -381,7 +381,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model_name = paste(as.character(mod$Terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GBM", sep=""),
                model_class = 'GBM',
                resp_name = as.character(mod$Terms[[2]]),
-               expl_var_names = as.character(mod$Terms[[3]])))
+               expl_var_names = attr(glm1$terms,"term.labels")))
   }
   
   ## GLM ##
@@ -391,7 +391,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GLM", sep=""),
                model_class = 'GLM',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = as.character(mod$terms[[3]])))
+               expl_var_names = attr(glm1$terms,"term.labels")))
   }
   
   ## MARS ##
@@ -411,7 +411,7 @@ function(model, Data, show.variables=seq(1:ncol(Data)), save.file="no", name="re
                model_name =paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_RF", sep=""),
                model_class = 'RF',
                resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])),
-               expl_var_names = as.character(mod$terms[[3]])))
+               expl_var_names = attr(glm1$terms,"term.labels")))
   }
   
   stop("Unknown model class")

@@ -545,7 +545,7 @@
     g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))
   
   # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-  if(scal.models){
+  if(scal.models & !inherits(g.pred,'try-error')){
     cat("\n\tModel scaling...")
     model.bm@scaling_model <- try(.scaling_model(g.pred/1000, Data[, 1], prevalence=0.5))
     g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))

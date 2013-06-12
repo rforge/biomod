@@ -593,7 +593,7 @@ setClass("BIOMOD.Model.Options",
 #                                 class.stratify.cv = 'bernoulli',
                                 perf.method = 'cv'),
                    
-                   GAM = list( algo = "GAM_mgcv",
+                   GAM = list( algo = "GAM_gam",
                                type = "s_smoother",
                                k = NULL,
                                interaction.level = 0,

@@ -1,3 +1,8 @@
+﻿2.1.37 (2013-06-12)
+	* change (temporally?) gam default package from 'mgcv' to 'gam' to deal with memory (cache) over-consuming (Thanks to Burke G.)
+	* update of response.plot2 function (optimization + deal with factorial variables)
+
+
 2.1.32 (2013-05-30)
 	* weights for user defined pseudo-absences are now supported (thanks to Rui F.)
 	* deal with unknown factors predictions (thanks to Denis M.)
@@ -10,11 +15,11 @@
 	* PA.dist.min and PA.dist.max are now defined in meters  when you work with unprojected rasters in disk pseudo absences selection
 
 2.1.9 (2013-02-28)
-	* possibility to indicate manualy which data should be used for calibration (resp. for validation) of models within BIOMOD_Modeling
+	* possibility to indicate manually which data should be used for calibration (resp. for validation) of models within BIOMOD_Modeling
 
 2.1.9 (2013-02-27)
 	* one var modeling supported (thanks Anne O.)
-	* new options for response curves ploting (col, lty, data_species...)
+	* new options for response curves plotting (col, lty, data_species...)
 
 2.1.8 (2013-02-25)
   * response plot supports now formal models
@@ -22,17 +27,17 @@
 2.1.0 (2013-02-21)
   * MAJOR RELEASE
 	* CRAN SUBMISION
-	* add of a modelling.id arg (BIOMOD_Modeling) for prevent from no wanted models overwriting and facilitate models tests and comparisions (thanks Frank B.)
+	* add of a modelling.id arg (BIOMOD_Modeling) for prevent from no wanted models overwriting and facilitate models tests and comparisons (thanks Frank B.)
 	* change of biomod2 dataset
 	* vignettes and help files update (thanks Sam P. & Signe N.)
 	* save link between modeling and projection objects
-	* add pROC package dependencie
+	* add pROC package dependency
 	* add a modeling cleaner that remove modeling objects from both memory and hard drive: RemoveProperly()
 
 
 2.0.11 (2013-02-18)
 	* possibility to consider a user.defined pseudo absences selection (thanks to Signe N.)
-	* possibility to swith off stepwise glm selection (thanks Frank B.)
+	* possibility to switch off stepwise glm selection (thanks Frank B.)
 
 2.0.9 (2013-02-15)
 	* automatic save on hard drive of BIOMOD_Projection outputs

@@ -88,7 +88,7 @@ Please refer to \code{\link[gbm]{gbm}} help file to get the meaning of this opti
 \section{=-=-= GAM =-=-=  (\code{\link[gam]{gam}} or \code{\link[mgcv]{gam}})}{
   \itemize{
   
-    \item{algo : either "GAM_mgcv" (default), "GAM_gam" or "BAM_mgcv" defining the chosen GAM function (see \code{\link[mgcv]{gam}}, \code{\link[gam]{gam}} resp. \code{\link[mgcv]{bam}} for more details)}
+    \item{algo : either "GAM_gam" (default), "GAM_mgcv" or "BAM_mgcv" defining the chosen GAM function (see \code{\link[mgcv]{gam}}, \code{\link[gam]{gam}} resp. \code{\link[mgcv]{bam}} for more details)}
     
     \item{\code{myFormula} : a typical formula object (see example). If not NULL, type and interaction.level args are switched off. 
     You can choose to either: 

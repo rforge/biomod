@@ -109,7 +109,7 @@
     
   # 1.c creating output directory
   dir.create(file.path(modeling.output@sp.name,paste("proj_", proj.name, sep="")), 
-             showWarnings = FALSE, recursive = TRUE, mode = "0777")
+             showWarnings = FALSE, recursive = TRUE, mode = "777")
   
   # 1.c Define the clamping mask
   if(build.clamping.mask){
@@ -140,7 +140,7 @@
 #     rm(list=mod.name)
     if(!do.stack){
       dir.create(file.path(modeling.output@sp.name,paste("proj_", proj.name, sep=""), "individual_projections"), 
-                 showWarnings = FALSE, recursive = TRUE, mode = "0777")
+                 showWarnings = FALSE, recursive = TRUE, mode = "777")
       filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections", paste("proj_", proj.name, "_", mod.name,ifelse(output.format==".RData",".grd",output.format), sep="") )
     } else { filename=NULL }
     

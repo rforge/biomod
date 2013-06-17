@@ -124,8 +124,8 @@
                       model_options = Options@CTA,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # end CTA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -208,8 +208,8 @@
                       model_options = Options@GAM,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # end GAM models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -244,8 +244,8 @@
                       model_options = Options@GBM,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
       
     }
   }
@@ -313,8 +313,8 @@
                       model_options = Options@GLM,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   } 
   # end GLM models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- # 
@@ -341,8 +341,8 @@
                       model_options = Options@MARS,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # end MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -365,8 +365,8 @@
                       model_options = Options@FDA,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # end FDA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -397,8 +397,8 @@
                       model_options = Options@ANN,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # ANN models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -452,8 +452,8 @@
                       model_options = Options@RF,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # end RF models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -478,8 +478,8 @@
                       model_options = Options@SRE,
                       resp_name = resp_name,
                       expl_var_names = expl_var_names,
-                      expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                      expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     }
   }
   # end SRE models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -531,8 +531,8 @@
                     model_options = Options@MAXENT,
                     resp_name = resp_name,
                     expl_var_names = expl_var_names,
-                    expl_var_type = get_var_type(Data[calibLines,expl_var_names]),
-                    expl_var_range = get_var_range(Data[calibLines,expl_var_names]))
+                    expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                    expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     
     # for MAXENT predicitons are calculated in the same time than models building to save time.
     cat("\n Getting predictions...")

@@ -1261,9 +1261,9 @@ setMethod("getModelsInputData", "BIOMOD.models.out",
                 return(obj@formated.input.data@val)
               } else{
                 if(obj@formated.input.data@link != ''){
-                  load(obj@formated.input.data@link)
+                  data <- get(load(obj@formated.input.data@link))
                   return(data)
-                } else{ return(NA) }
+                } else{ cat("\n***"); return(NA) }
               }              
             } else if(subinfo == 'MinMax'){
               return(apply(getModelsInputData(obj)@data.env.var,2, function(x){
@@ -1382,10 +1382,24 @@ setMethod("getProjection", "BIOMOD.projection.out",
                 if( grepl(".RData", obj@proj@link) ){
                   return(get(load(obj@proj@link)))
                 } else if(grepl(".grd", obj@proj@link) | grepl(".img", obj@proj@link)){
-                  return(stack(obj@proj@link))
+                  return(raster::stack(obj@proj@link))
                 } else {
-                  cat("\n!! You have to load your projections by yourself !!")
-                  return(NA) 
+                  filesToLoad <- list.files(path=sub("/individual_projections","", bm_proj@proj@link), full.names=T)
+                  toMatch <- c('.grd$','.img$')
+                  filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)  
+                  if(length(filesToLoad)){
+                    return(raster::stack(filesToLoad[1]))
+                  } else {
+                    filesToLoad <- list.files(path=bm_proj@proj@link, full.names=T)
+                    toMatch <- c('.grd$','.img$')
+                    filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
+                    toMatch <- bm_proj@models.projected
+                    filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
+                    proj <- raster::stack(filesToLoad)
+                    toMatch <- c(bm_proj@proj@link,".img$",'.grd$', .Platform$file.sep)
+                    names(proj) <- gsub(pattern=paste(toMatch,collapse="|"), "", filesToLoad)
+                    return(proj)
+                  }   
                 }
               } 
             } else if(as.data.frame){

@@ -1,3 +1,13 @@
+3.0.0 (2013-07-01)
+	* major realeases!
+	* ensemble models are now biomod2 models objects (should be predicted, evaluated, and you can do variables importance) the same way than all formal biomod2 models.
+	* possibility to produce ensemble models response plot.
+	* ensemble forecasting output is now a biomod2_preojection object: should be plotted...
+	* ensemble forecasting is now doable without doing previous projections (even if it is still advised). Can work with raw explanatory variables.
+	* getter and setter function have been renamed
+	* new variable_importance function.
+	* ...
+
 ﻿2.1.37 (2013-06-12)
 	* change (temporally?) gam default package from 'mgcv' to 'gam' to deal with memory (cache) over-consuming (Thanks to Burke G.)
 	* update of response.plot2 function (optimization + deal with factorial variables)

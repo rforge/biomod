@@ -93,7 +93,7 @@ myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
 
 
 # 5. Get projection under data.frame format
-myProjDF <- getProjection(myBiomodProjection, as.data.frame=TRUE)
+myProjDF <- get_predictions(myBiomodProjection, as.data.frame=TRUE)
 class(myProjDF)
 dim(myProjDF)
 dimnames(myProjDF)

@@ -9,15 +9,6 @@
 # of biomod2 using objects defined there will be biomod2_2.x.x
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-# setClass('biomod2_expl_var',
-#          representation(name = 'character',
-#                         type = 'character',
-#                         range = 'vector'),
-#          prototype(name="unknow",
-#                    type="unknow",
-#                    range=vector()))
-
-
 # Formal Class =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 setClass('biomod2_model',
          representation(model_name = 'character',
@@ -69,29 +60,29 @@ setMethod('show', signature('biomod2_model'),
             
             cat("\n")
             cat("\n\t NOTE : ")
-            cat("\n\t\t You can access 'formal' model with getFormalModel function")
-            cat(ifelse(length(object@scaling_model), "\n\t\t You can access scaling model with getScalingModel function\n", "\n"))
+            cat("\n\t\t You can access 'formal' model with get_formal_model function")
+            cat(ifelse(length(object@scaling_model), "\n\t\t You can access scaling model with get_scaling_model function\n", "\n"))
 
             .bmCat()
           })
 
 # Models getters -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-setGeneric( "getFormalModel", 
+setGeneric( "get_formal_model", 
             def = function(object){
-              standardGeneric( "getFormalModel" )
+              standardGeneric( "get_formal_model" )
             } )
 
-setMethod('getFormalModel', signature('biomod2_model'),
+setMethod('get_formal_model', signature('biomod2_model'),
           function(object){
             return(object@model)
           })
 
-setGeneric( "getScalingModel", 
+setGeneric( "get_scaling_model", 
             def = function(object){
-              standardGeneric( "getScalingModel" )
+              standardGeneric( "get_scaling_model" )
             } )
 
-setMethod('getScalingModel', signature('biomod2_model'),
+setMethod('get_scaling_model', signature('biomod2_model'),
           function(object){
             return(object@scaling_model)
           })
@@ -240,11 +231,11 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
   set.seed(555)
-  proj <- predict(newdata, getFormalModel(object), type="raw")
+  proj <- predict(newdata, get_formal_model(object), type="raw")
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -266,11 +257,11 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
   set.seed(555)
-  proj <- as.numeric( predict(getFormalModel(object), newdata, type="raw") )
+  proj <- as.numeric( predict(get_formal_model(object), newdata, type="raw") )
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -321,11 +312,11 @@ setMethod('predict', signature(object = 'CTA_biomod2_model'),
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
   set.seed(123) # to be able to refind our trees MAY BE BAD
-  proj <- predict(newdata, model=getFormalModel(object), type='prob', index=2)
+  proj <- predict(newdata, model=get_formal_model(object), type='prob', index=2)
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -347,11 +338,11 @@ setMethod('predict', signature(object = 'CTA_biomod2_model'),
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
   set.seed(123)
-  proj <- as.numeric(predict(getFormalModel(object), as.data.frame(newdata),type="prob")[,2])
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata),type="prob")[,2])
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -401,11 +392,11 @@ setMethod('predict', signature(object = 'FDA_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- predict(newdata, model=getFormalModel(object), type='posterior', index=2)
+  proj <- predict(newdata, model=get_formal_model(object), type='posterior', index=2)
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -426,11 +417,11 @@ setMethod('predict', signature(object = 'FDA_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(predict(getFormalModel(object), as.data.frame(newdata),type = "posterior")[,2])
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata),type = "posterior")[,2])
 
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -498,11 +489,11 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- .testnull(object = getFormalModel(object), Prev = 0.5 , dat = newdata)
+  proj <- .testnull(object = get_formal_model(object), Prev = 0.5 , dat = newdata)
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -523,11 +514,11 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(.testnull(object = getFormalModel(object), Prev = 0.5 , dat = as.data.frame(newdata)))
+  proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = as.data.frame(newdata)))
 
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -578,11 +569,11 @@ setMethod('predict', signature(object = 'GBM_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- predict(newdata, model=getFormalModel(object), n.trees = object@n.trees_optim, type = "response")
+  proj <- predict(newdata, model=get_formal_model(object), n.trees = object@n.trees_optim, type = "response")
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -603,11 +594,11 @@ setMethod('predict', signature(object = 'GBM_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(predict(getFormalModel(object), as.data.frame(newdata), n.trees = object@n.trees_optim, type = "response"))
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata), n.trees = object@n.trees_optim, type = "response"))
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -657,11 +648,11 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- .testnull(object = getFormalModel(object), Prev = 0.5 , dat = newdata)
+  proj <- .testnull(object = get_formal_model(object), Prev = 0.5 , dat = newdata)
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -682,11 +673,11 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(.testnull(object = getFormalModel(object), Prev = 0.5 , dat = newdata[,,drop=FALSE]))
+  proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = newdata[,,drop=FALSE]))
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -736,11 +727,11 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- predict(newdata, model=getFormalModel(object))
+  proj <- predict(newdata, model=get_formal_model(object))
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -761,11 +752,11 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(predict(getFormalModel(object), as.data.frame(newdata)))
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata)))
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -789,7 +780,7 @@ setClass('MAXENT_biomod2_model',
          })
 
 setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
-          function(object, newdata, ...){
+          function(object, newdata, silent=TRUE, ...){
             
             args <- list(...)
             
@@ -797,15 +788,15 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
             newdata <- check_data_range(model=object, new_data=newdata)
             
             if(inherits(newdata, 'Raster')){            
-              return(.predict.MAXENT_biomod2_model.RasterStack(object, newdata, ... ))
+              return(.predict.MAXENT_biomod2_model.RasterStack(object, newdata, silent=TRUE, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
-              return(.predict.MAXENT_biomod2_model.data.frame(object, newdata, ... ))
+              return(.predict.MAXENT_biomod2_model.data.frame(object, newdata, silent=TRUE, ... ))
             } else{ stop("invalid newdata input") }
             
           })
 
 
-.predict.MAXENT_biomod2_model.RasterStack <- function(object, newdata,  ...){
+.predict.MAXENT_biomod2_model.RasterStack <- function(object, newdata, silent=TRUE,  ...){
   args <- list(...)
   filename <- args$filename
   overwrite <- args$overwrite
@@ -818,29 +809,35 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
+  .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir, silent=TRUE )
   
-  cat("\n\t\tRunning Maxent...")
-  system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
+  # checking maxent.jar is present
+  path_to_maxent.jar <- file.path(object@model_options$path_to_maxent.jar, "maxent.jar")
+  if(!file.exists(path_to_maxent.jar)){
+    path_to_maxent.jar <- getwd()
+  }
+  
+  if(!silent) cat("\n\t\tRunning Maxent...")
+  system(command=paste("java -cp ", path_to_maxent.jar,
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj"), " ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.grd") , 
                        " doclamp=false visible=false autorun nowarnings notooltips", sep=""), wait = TRUE, intern=TRUE)
   
-  cat("\n\t\tReading Maxent outputs...")
+  if(!silent) cat("\n\t\tReading Maxent outputs...")
   proj <- raster(file.path(object@resp_name, temp_workdir , "MaxentTmpData","projMaxent.grd"))
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
 
   if(on_0_1000) proj <- round(proj*1000)
   
   # save raster on hard drive ?
   if(!is.null(filename)){
-    cat("\n\t\tWriting projection on hard drive...")
+    if(!silent) cat("\n\t\tWriting projection on hard drive...")
     writeRaster(proj, filename=filename, overwrite=overwrite)
     proj <- raster(filename)
   } else if(!inMemory(proj)){
@@ -857,7 +854,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   return(proj)
 }
 
-.predict.MAXENT_biomod2_model.data.frame <- function(object, newdata, ...){
+.predict.MAXENT_biomod2_model.data.frame <- function(object, newdata, silent=TRUE, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
   temp_workdir <- args$temp_workdir
@@ -881,29 +878,35 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   ## no xy needed for models projections
   xy <- NULL
   
-  .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, proj.name = temp_workdir)
+  .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, proj.name = temp_workdir, silent=T)
 #   .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
   
-  cat("\n\t\tRunning Maxent...")
-  system(command=paste("java -cp ", file.path(object@model_options$path_to_maxent.jar, "maxent.jar"),
+  # checking maxent.jar is present
+  path_to_maxent.jar <- file.path(object@model_options$path_to_maxent.jar, "maxent.jar")
+  if(!file.exists(path_to_maxent.jar)){
+    path_to_maxent.jar <- getwd()
+  }
+  
+  if(!silent) cat("\n\t\tRunning Maxent...")
+  system(command=paste("java -cp ", path_to_maxent.jar,
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj_swd.csv"), " ", 
                        file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.asc") , 
                        " doclamp=false", sep=""), wait = TRUE, intern=TRUE)
   
-  cat("\n\t\tReading Maxent outputs...")
+  if(!silent) cat("\n\t\tReading Maxent outputs...")
   proj <- as.numeric(read.asciigrid(file.path(object@resp_name, temp_workdir , "MaxentTmpData", "projMaxent.asc"))@data[,1])
   
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
-      .Delete.Maxent.WorkDir(species.name = object@resp_name, proj.name = temp_workdir)
+      .Delete.Maxent.WorkDir(species.name = object@resp_name, temp_workdir = file.path(object@resp_name, temp_workdir), silent=T)
     }
   }
 
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -954,11 +957,11 @@ setMethod('predict', signature(object = 'RF_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- predict(newdata, model=getFormalModel(object), type='prob', index=2)
+  proj <- predict(newdata, model=get_formal_model(object), type='prob', index=2)
   
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     names(proj) <- "pred"
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -979,11 +982,11 @@ setMethod('predict', signature(object = 'RF_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(predict(getFormalModel(object), as.data.frame(newdata), type='prob')[,'1'])
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata), type='prob')[,'1'])
 
-  if(length(getScalingModel(object))){
+  if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
-    proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
+    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
   }
   
   if(on_0_1000) proj <- round(proj*1000)
@@ -1054,5 +1057,479 @@ setMethod('predict', signature(object = 'SRE_biomod2_model'),
   if(on_0_1000) proj <- round(proj*1000)
   
   return(proj)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EM parent Class =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('biomod2_ensemble_model',
+         representation(modeling.id='character'), ##maybe some additional args should be added here
+         contains = 'biomod2_model',
+         prototype(model_class = 'EM'),
+         validity = function(object){
+           return(TRUE)
+         })
+
+# EMmean Class -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('EMmean_biomod2_model',
+         representation(),
+         contains = 'biomod2_ensemble_model',
+         prototype(model_class = 'EMmean'),
+         validity = function(object){
+           return(TRUE)
+         })
+
+setMethod('predict', signature(object = 'EMmean_biomod2_model'),
+          function(object, newdata=NULL, formal_predictions=NULL, ...){
+            
+            args <- list(...)
+            
+            ## data checking
+            if(length(newdata)) newdata <- check_data_range(model=object, new_data=newdata)
+            
+            ## check if models are formal loaded
+            if(is.character(object@model)){
+              model_tmp <- lapply(object@model, function(x){
+                return(get(load(file.path(object@resp_name, "models", object@modeling.id, x))))
+              })
+              names(model_tmp) <- object@model
+              object@model <- model_tmp
+            }
+            
+            if(inherits(newdata, 'Raster') | inherits(formal_predictions, 'Raster')){            
+              return(.predict.EMmean_biomod2_model.RasterStack(object, newdata, formal_predictions, ... ))
+            } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix') | inherits(formal_predictions, 'data.frame') | inherits(formal_predictions, 'matrix')){
+              return(.predict.EMmean_biomod2_model.data.frame(object, newdata, formal_predictions, ... ))
+            } else{ stop("invalid newdata input") }
+            
+          })
+
+.predict.EMmean_biomod2_model.RasterStack <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+  }
+  
+  return(round(raster:::mean(formal_predictions)))
+}
+
+.predict.EMmean_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- sapply(object@model, predict, newdata=newdata, on_0_1000=TRUE)
+  }
+  
+  return(round(rowMeans(formal_predictions, na.rm=T)))
+}
+
+
+
+
+
+
+
+# EMmedian Class -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('EMmedian_biomod2_model',
+         representation(),
+         contains = 'biomod2_ensemble_model',
+         prototype(model_class = 'EMmedian'),
+         validity = function(object){
+           return(TRUE)
+         })
+
+setMethod('predict', signature(object = 'EMmedian_biomod2_model'),
+          function(object, newdata=NULL, formal_predictions=NULL, ...){
+            
+            args <- list(...)
+            
+            ## data checking
+            if(length(newdata)) newdata <- check_data_range(model=object, new_data=newdata)
+            
+            ## check if models are formal loaded
+            if(is.character(object@model)){
+              model_tmp <- lapply(object@model, function(x){
+                return(get(load(file.path(object@resp_name, "models", object@modeling.id, x))))
+              })
+              names(model_tmp) <- object@model
+              object@model <- model_tmp
+            }
+            
+            if(inherits(newdata, 'Raster') | inherits(formal_predictions, 'Raster')){            
+              return(.predict.EMmedian_biomod2_model.RasterStack(object, newdata, formal_predictions, ... ))
+            } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix') | inherits(formal_predictions, 'data.frame') | inherits(formal_predictions, 'matrix')){
+              return(.predict.EMmedian_biomod2_model.data.frame(object, newdata, formal_predictions, ... ))
+            } else{ stop("invalid newdata input") }
+            
+          })
+
+.predict.EMmedian_biomod2_model.RasterStack <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+  }
+
+  return(round(calc(formal_predictions, median)))
+}
+
+.predict.EMmedian_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- sapply(object@model, predict, newdata=newdata, on_0_1000=TRUE)
+  }
+  
+  return(round(apply(formal_predictions, 1, median, na.rm=T)))
+}
+
+
+
+
+
+
+
+
+# EMcv Class -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('EMcv_biomod2_model',
+         representation(),
+         contains = 'biomod2_ensemble_model',
+         prototype(model_class = 'EMmedian'),
+         validity = function(object){
+           return(TRUE)
+         })
+
+setMethod('predict', signature(object = 'EMcv_biomod2_model'),
+          function(object, newdata=NULL, formal_predictions=NULL, ...){
+            
+            args <- list(...)
+            
+            ## data checking
+            if(length(newdata)) newdata <- check_data_range(model=object, new_data=newdata)
+            
+            ## check if models are formal loaded
+            if(is.character(object@model)){
+              model_tmp <- lapply(object@model, function(x){
+                return(get(load(file.path(object@resp_name, "models", object@modeling.id, x))))
+              })
+              names(model_tmp) <- object@model
+              object@model <- model_tmp
+            }
+            
+            if(inherits(newdata, 'Raster') | inherits(formal_predictions, 'Raster')){            
+              return(.predict.EMcv_biomod2_model.RasterStack(object, newdata, formal_predictions, ... ))
+            } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix') | inherits(formal_predictions, 'data.frame') | inherits(formal_predictions, 'matrix')){
+              return(.predict.EMcv_biomod2_model.data.frame(object, newdata, formal_predictions, ... ))
+            } else{ stop("invalid newdata input") }
+            
+          })
+
+.predict.EMcv_biomod2_model.RasterStack <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  mean_prediction <- args$mean_prediction
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+  }
+ 
+  return(round(raster:::cv(formal_predictions, na.rm=TRUE, aszero=TRUE), digits=0))
+}
+
+.predict.EMcv_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+#   mean_prediction <- args$mean_prediction # mean of predictions should be given for time saving
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- sapply(object@model, predict, newdata=newdata, on_0_1000=TRUE)
+  }
+  
+#   if(is.null(mean_prediction)){
+#     # calculate mean of predictions
+#     mean_prediction <- round(rowMeans(formal_predictions, na.rm=T))
+#   }
+#   # transforming 0 into Inf to produce null cv where mean is null 
+#   mean_prediction[mean_prediction==0] <- Inf
+#   
+#   # calculate cv of formal models predictions
+#   sd_prediction <- apply(formal_predictions,1,sd, na.rm=T)
+#   
+#   return(round(sd_prediction / mean_prediction, 2))
+  return(round(apply(formal_predictions, 1, cv, na.rm=T, aszero=T)))
+  
+}
+
+
+
+
+
+
+
+
+# EMci Class -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('EMci_biomod2_model',
+         representation(alpha = 'numeric',
+                        side = 'character'),
+         contains = 'biomod2_ensemble_model',
+         prototype(model_class = 'EMci',
+                   alpha = 0.05,
+                   side = 'superior'),
+         validity = function(object){
+           if(!(object@side %in% c('inferior','superior'))) stop("side arg should be 'inferior' or 'superior")
+           return(TRUE)
+         })
+
+setMethod('predict', signature(object = 'EMci_biomod2_model'),
+          function(object, newdata=NULL, formal_predictions=NULL, ...){
+            
+            args <- list(...)
+            
+            ## data checking
+            if(length(newdata)) newdata <- check_data_range(model=object, new_data=newdata)
+            
+            ## check if models are formal loaded
+            if(is.character(object@model)){
+              model_tmp <- lapply(object@model, function(x){
+                return(get(load(file.path(object@resp_name, "models", object@modeling.id, x))))
+              })
+              names(model_tmp) <- object@model
+              object@model <- model_tmp
+            }
+            
+            if(inherits(newdata, 'Raster') | inherits(formal_predictions, 'Raster')){            
+              return(.predict.EMci_biomod2_model.RasterStack(object, newdata, formal_predictions, ... ))
+            } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix') | inherits(formal_predictions, 'data.frame') | inherits(formal_predictions, 'matrix')){
+              return(.predict.EMci_biomod2_model.data.frame(object, newdata, formal_predictions, ... ))
+            } else{ stop("invalid newdata input") }
+            
+          })
+
+.predict.EMci_biomod2_model.RasterStack <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  mean_prediction <- args$mean_prediction # mean of predictions should be given for time saving
+  sd_prediction <- args$sd_prediction # mean of predictions should be given for time saving
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+  }
+  
+  if(is.null(mean_prediction)){
+    mean_prediction <- round(raster:::mean(formal_predictions))
+  }
+  
+  if(is.null(sd_prediction)){
+    sd_prediction <- calc(formal_predictions, sd)
+  }
+  
+  ci_prediction <- switch(object@side,
+                          inferior = mean_prediction -  (sd_prediction * (qt((1-object@alpha/2), df = length(object@model) + 1 ) / sqrt(length(object@model))) ),
+                          superior = mean_prediction +  (sd_prediction * (qt((1-object@alpha/2), df = length(object@model) + 1 ) / sqrt(length(object@model))) ))
+    
+  # reclassify prediction to prevent from out of bounds prediction
+  ci_prediction <- reclassify(round(ci_prediction), c(-Inf,0,0, 1000,Inf,1000))
+  
+  return(ci_prediction)
+}
+
+.predict.EMci_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  mean_prediction <- args$mean_prediction # mean of predictions should be given for time saving
+  sd_prediction <- args$sd_prediction # mean of predictions should be given for time saving
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- sapply(object@model, predict, newdata=newdata, on_0_1000=TRUE)
+  }
+  
+  if(is.null(mean_prediction)){
+    # calculate mean of predictions
+    mean_prediction <- round(rowMeans(formal_predictions, na.rm=T))
+  }
+  
+  if(is.null(sd_prediction)){
+    # calculate cv of formal models predictions
+    sd_prediction <- apply(formal_predictions,1,sd, na.rm=T)
+  }
+  
+  ci_prediction <- switch(object@side,
+                          inferior = mean_prediction -  (sd_prediction * (qt((1-object@alpha/2), df = length(object@model) + 1 ) / sqrt(length(object@model))) ),
+                          superior = mean_prediction +  (sd_prediction * (qt((1-object@alpha/2), df = length(object@model) + 1 ) / sqrt(length(object@model))) ))
+  # reclassify prediction to prevent from out of bounds prediction
+  ci_prediction <- round(ci_prediction)
+  ci_prediction[ci_prediction > 1000] <- 1000
+  ci_prediction[ci_prediction < 0] <- 0
+
+  return(ci_prediction)
+}
+
+
+
+
+
+
+
+# EMca Class -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('EMca_biomod2_model',
+         representation(tresholds = 'numeric'),
+         contains = 'biomod2_ensemble_model',
+         prototype(model_class = 'EMca'),
+         validity = function(object){
+           return(TRUE)
+         })
+
+setMethod('predict', signature(object = 'EMca_biomod2_model'),
+          function(object, newdata=NULL, formal_predictions=NULL, ...){
+            
+            args <- list(...)
+            
+            ## data checking
+            if(length(newdata)) newdata <- check_data_range(model=object, new_data=newdata)
+            
+            ## check if models are formal loaded
+            if(is.character(object@model)){
+              model_tmp <- lapply(object@model, function(x){
+                return(get(load(file.path(object@resp_name, "models", object@modeling.id, x))))
+              })
+              names(model_tmp) <- object@model
+              object@model <- model_tmp
+            }
+            
+            if(inherits(newdata, 'Raster') | inherits(formal_predictions, 'Raster')){            
+              return(.predict.EMca_biomod2_model.RasterStack(object, newdata, formal_predictions, ... ))
+            } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix') | inherits(formal_predictions, 'data.frame') | inherits(formal_predictions, 'matrix')){
+              return(.predict.EMca_biomod2_model.data.frame(object, newdata, formal_predictions, ... ))
+            } else{ stop("invalid newdata input") }
+            
+          })
+
+.predict.EMca_biomod2_model.RasterStack <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+  }
+  
+  return(round(raster:::mean(BinaryTransformation(formal_predictions, object@tresholds), na.rm=T) * 1000))
+}
+
+.predict.EMca_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- sapply(object@model, predict, newdata=newdata, on_0_1000=TRUE)
+  }
+  
+  return(round(apply(as.data.frame(BinaryTransformation(formal_predictions, object@tresholds)), 1, mean, na.rm=T)*1000))
+}
+
+# EMwmean Class =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+setClass('EMwmean_biomod2_model',
+         representation(penalization_scores='numeric'),
+         contains = 'biomod2_ensemble_model',
+         prototype(model_class = 'EMwmean'),
+         validity = function(object){
+           return(TRUE)
+         })
+
+setMethod('predict', signature(object = 'EMwmean_biomod2_model'),
+          function(object, newdata=NULL, formal_predictions=NULL, ...){
+            
+            args <- list(...)
+            
+            ## data checking
+            if(length(newdata)) newdata <- check_data_range(model=object, new_data=newdata)
+            
+            ## check if models are formal loaded
+            if(is.character(object@model)){
+              model_tmp <- lapply(object@model, function(x){
+                return(get(load(file.path(object@resp_name, "models", object@modeling.id, x))))
+              })
+              names(model_tmp) <- object@model
+              object@model <- model_tmp
+            }
+            
+            if(inherits(newdata, 'Raster') | inherits(formal_predictions, 'Raster')){            
+              return(.predict.EMwmean_biomod2_model.RasterStack(object, newdata, formal_predictions, ... ))
+            } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix') | inherits(formal_predictions, 'data.frame') | inherits(formal_predictions, 'matrix')){
+              return(.predict.EMwmean_biomod2_model.data.frame(object, newdata, formal_predictions, ... ))
+            } else{ stop("invalid newdata input") }
+            
+          })
+
+.predict.EMwmean_biomod2_model.RasterStack <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+  }
+  
+  return(round(sum(formal_predictions * object@penalization_scores)))
+}
+
+.predict.EMwmean_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
+  args <- list(...)
+  
+  #formal_predictions <- args$formal_predictions
+  
+  if(is.null(formal_predictions)){
+    # make prediction of all models required
+    formal_predictions <- sapply(object@model, predict, newdata=newdata, on_0_1000=TRUE)
+  }
+  
+  return(round(as.vector(as.matrix(formal_predictions) %*% object@penalization_scores)))
 }
 

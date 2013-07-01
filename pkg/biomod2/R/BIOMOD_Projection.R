@@ -114,7 +114,7 @@
   # 1.c Define the clamping mask
   if(build.clamping.mask){
     if(!silent) cat("\n\t> Building clamping mask\n")
-    MinMax <- getModelsInputData(modeling.output,'MinMax')
+    MinMax <- get_formal_data(modeling.output,'MinMax')
     
     assign(x = paste("proj_",proj.name,"_",modeling.output@sp.name,"_ClampingMask",sep=""),
            value = .build.clamping.mask(new.env, MinMax) )
@@ -144,7 +144,7 @@
       filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections", paste("proj_", proj.name, "_", mod.name,ifelse(output.format==".RData",".grd",output.format), sep="") )
     } else { filename=NULL }
     
-    return(predict(mod, new.env, on_0_1000=TRUE, filename=filename, temp_workdir=paste("proj_",proj.name, sep="")))
+    return(predict(mod, new.env, on_0_1000=TRUE, filename=filename, temp_workdir=paste("proj_",proj.name,"maxentWDtmp", format(Sys.time(), "%s"), sep="")))
   })
   
   # 2b. Puting outputs in the right format =-=-=-=-=-=-=-=-=-=-=-= #
@@ -165,6 +165,7 @@
          value = proj)
   
   if(output.format == '.RData'){
+    
     save(list = paste("proj_",proj.name, "_", modeling.output@sp.name, sep=""), 
          file = file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name, output.format ,sep="")), compress=compress)     
   } else {
@@ -185,7 +186,7 @@
         PA.run   <- .extractModelNamesInfo(model.names=mod, info='data.set')
         eval.run <- .extractModelNamesInfo(model.names=mod, info='run.eval')
         algo.run <- .extractModelNamesInfo(model.names=mod, info='models')
-        thresholds[eval.meth,mod] <- getModelsEvaluations(modeling.output)[eval.meth,"Cutoff",algo.run,eval.run,PA.run]
+        thresholds[eval.meth,mod] <- get_evaluations(modeling.output)[eval.meth,"Cutoff",algo.run,eval.run,PA.run]
       }
     } else{
       thresholds <- array(0,dim=c(length(eval.meth),dim(proj)[-1]) , 
@@ -194,7 +195,7 @@
         PA.run   <- .extractModelNamesInfo(model.names=mod, info='data.set')
         eval.run <- .extractModelNamesInfo(model.names=mod, info='run.eval')
         algo.run <- .extractModelNamesInfo(model.names=mod, info='models')
-        thresholds[eval.meth,algo.run,eval.run,PA.run] <- getModelsEvaluations(modeling.output)[eval.meth,"Cutoff",algo.run,eval.run,PA.run]
+        thresholds[eval.meth,algo.run,eval.run,PA.run] <- get_evaluations(modeling.output)[eval.meth,"Cutoff",algo.run,eval.run,PA.run]
       }
     }
     
@@ -343,7 +344,7 @@
       
   # The binaries  and filtering transformations
   if(!is.null(binary.meth) | !is.null(filtered.meth)){
-    models.evaluation <- getModelsEvaluations(modeling.output)
+    models.evaluation <- get_evaluations(modeling.output)
     if(is.null(models.evaluation)){
       warning("Binary and/or Filtred transformations of projection not ran because of models
               evaluation informations missing")

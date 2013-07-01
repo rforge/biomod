@@ -490,7 +490,7 @@
   
   # MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "MAXENT"){
-    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport, evalData, eval.xy, species.name=resp_name, modeling.id=modeling.id)
+    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport = 0, evalData, eval.xy, species.name=resp_name, modeling.id=modeling.id)
     
     # run MaxEnt:
     cat("\n Running Maxent...")  
@@ -653,69 +653,78 @@
   
   # Variables Importance -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (VarImport > 0){ # do Varimp stuff
-    # Create data.frame vhere corelation between predictions with and without permutation will be 
-    # stored
-    
-    cat("\n\tEvaluating Predictor Contributions...", "\n")
-    VarImpTable <- matrix(data = 0, nrow = VarImport, ncol = length(expl_var_names))
-    dimnames(VarImpTable) <- list(paste('rand', 1:VarImport, sep=""), expl_var_names)
-    
-    for(vari in expl_var_names){
-      for (run in 1:VarImport) {
-        ## create a new dataset with interest variable suffled
-        TempDS <- Data[, expl_var_names,drop=FALSE]
-        TempDS[, vari] <- sample(TempDS[, vari])
-        
-        if(Model != "MAXENT"){
-          ## make projection on suffled dataset
-          shuffled.pred <- try(predict(model.bm, TempDS, on_0_1000=TRUE))
-        } else{
-          ## for MAXENT, we have created all the permutation at model building step
-          shuffled.pred <- try(round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam, vari, run, "swd.csv", sep="_")))[,3])*1000) )
-          ## scal suffled.pred if necessary
-          if(length(getScalingModel(model.bm))){
-            shuffled.pred <- try( round(.testnull(object = getScalingModel(model.bm), Prev = 0.5 , dat = data.frame(pred = shuffled.pred/1000) ) *1000) )
-            #               shuffled.pred <- round(as.numeric(predict(getScalingModel(model.bm), shuffled.pred/1000))*1000)
-          }
-          ## remove useless files on hard drive
-          file.remove(list.files(path=model.bm@model_output_dir,
-                                 pattern=paste(nam, vari, run, "swd", sep="_"),
-                                 full.names=TRUE))
-        }
-        
-        ## test if differences exist between the 2 vectors
-        # check predictions existance and stop execution if not ok -=-=- #
-        test_shuffled.pred_ok <- TRUE
-        if (inherits(shuffled.pred,"try-error")) { # model calibration or prdiction failed
-          test_shuffled.pred_ok <- FALSE
-        } else if (sum(!is.na(shuffled.pred))<=1){ # only NA predicted
-          test_shuffled.pred_ok <- FALSE
-        } else if(length(unique(na.omit(shuffled.pred))) <=1){ # single value predicted
-          test_shuffled.pred_ok <- FALSE
-        } else if(length(shuffled.pred)!= length(g.pred)){
-          test_shuffled.pred_ok <- FALSE
-        }
-        
-        if(!test_shuffled.pred_ok){
-          cat("\n   ! Note : ", model_name, "variable importance for",vari,run,"failed!\n")
-          VarImpTable[run,vari] <- 0
-        } else{
-          if(sum( g.pred != shuffled.pred, na.rm=T) == 0){
-            VarImpTable[run,vari] <- 0
-          } else {
-            ## calculate correlation between vectors as proxy for variables importance
-            VarImpTable[run,vari] <- 1 - max(round(cor(x=g.pred, y=shuffled.pred, use="pairwise.complete.obs", method="pearson"),digits=3),0,na.rm=T)
-          } 
-        }
-     
-      }
-    }
-    
-    ## store results
-    model.bm@model_variables_importance <- VarImpTable
+    cat("\n\t\t\tEvaluating Predictor Contributions...", "\n")
+    variables.importance <- variables_importance(model.bm, Data[, expl_var_names,drop=FALSE], nb_rand=VarImport)
+    model.bm@model_variables_importance <- variables.importance$mat
     ## we stored only the mean of variables importance run
-    ListOut$var.import <- round(apply(VarImpTable, 2, mean, na.rm=T),digits=3)
+    ListOut$var.import <- round(apply(variables.importance$mat, 2, mean, na.rm=T),digits=3)
+    ## remove useless objects
+    rm(list=c('variables.importance') )
   }
+#   if (VarImport > 0){ # do Varimp stuff
+#     # Create data.frame vhere corelation between predictions with and without permutation will be 
+#     # stored
+#     
+#     cat("\n\tEvaluating Predictor Contributions...", "\n")
+#     VarImpTable <- matrix(data = 0, nrow = VarImport, ncol = length(expl_var_names))
+#     dimnames(VarImpTable) <- list(paste('rand', 1:VarImport, sep=""), expl_var_names)
+#     
+#     for(vari in expl_var_names){
+#       for (run in 1:VarImport) {
+#         ## create a new dataset with interest variable suffled
+#         TempDS <- Data[, expl_var_names,drop=FALSE]
+#         TempDS[, vari] <- sample(TempDS[, vari])
+#         
+#         if(Model != "MAXENT"){
+#           ## make projection on suffled dataset
+#           shuffled.pred <- try(predict(model.bm, TempDS, on_0_1000=TRUE))
+#         } else{
+#           ## for MAXENT, we have created all the permutation at model building step
+#           shuffled.pred <- try(round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam, vari, run, "swd.csv", sep="_")))[,3])*1000) )
+#           ## scal suffled.pred if necessary
+#           if(length(getScalingModel(model.bm))){
+#             shuffled.pred <- try( round(.testnull(object = getScalingModel(model.bm), Prev = 0.5 , dat = data.frame(pred = shuffled.pred/1000) ) *1000) )
+#             #               shuffled.pred <- round(as.numeric(predict(getScalingModel(model.bm), shuffled.pred/1000))*1000)
+#           }
+#           ## remove useless files on hard drive
+#           file.remove(list.files(path=model.bm@model_output_dir,
+#                                  pattern=paste(nam, vari, run, "swd", sep="_"),
+#                                  full.names=TRUE))
+#         }
+#         
+#         ## test if differences exist between the 2 vectors
+#         # check predictions existance and stop execution if not ok -=-=- #
+#         test_shuffled.pred_ok <- TRUE
+#         if (inherits(shuffled.pred,"try-error")) { # model calibration or prdiction failed
+#           test_shuffled.pred_ok <- FALSE
+#         } else if (sum(!is.na(shuffled.pred))<=1){ # only NA predicted
+#           test_shuffled.pred_ok <- FALSE
+#         } else if(length(unique(na.omit(shuffled.pred))) <=1){ # single value predicted
+#           test_shuffled.pred_ok <- FALSE
+#         } else if(length(shuffled.pred)!= length(g.pred)){
+#           test_shuffled.pred_ok <- FALSE
+#         }
+#         
+#         if(!test_shuffled.pred_ok){
+#           cat("\n   ! Note : ", model_name, "variable importance for",vari,run,"failed!\n")
+#           VarImpTable[run,vari] <- 0
+#         } else{
+#           if(sum( g.pred != shuffled.pred, na.rm=T) == 0){
+#             VarImpTable[run,vari] <- 0
+#           } else {
+#             ## calculate correlation between vectors as proxy for variables importance
+#             VarImpTable[run,vari] <- 1 - max(round(cor(x=g.pred, y=shuffled.pred, use="pairwise.complete.obs", method="pearson"),digits=3),0,na.rm=T)
+#           } 
+#         }
+#      
+#       }
+#     }
+#     
+#     ## store results
+#     model.bm@model_variables_importance <- VarImpTable
+#     ## we stored only the mean of variables importance run
+#     ListOut$var.import <- round(apply(VarImpTable, 2, mean, na.rm=T),digits=3)
+#   }
   # End Variables Importance -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   
   

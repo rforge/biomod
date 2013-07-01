@@ -48,13 +48,17 @@
   }
 }
 
-.Delete.Maxent.WorkDir <- function(species.name=".", modeling.id=".", proj.name=NULL){
-  cat('\n\tRemoving Maxent Temp Data..')
-  if (length(proj.name)){
+.Delete.Maxent.WorkDir <- function(species.name=".", modeling.id=".", proj.name=NULL, temp_workdir=NULL, silent=FALSE){
+  if(!silent) cat('\n\tRemoving Maxent Temp Data..')
+  
+  if(length(temp_workdir)){
+    unlink(temp_workdir,recursive = TRUE, force = TRUE)
+  } else if (length(proj.name)){
     unlink(file.path(species.name, proj.name, "MaxentTmpData"),recursive = TRUE, force = TRUE)
   } else {
     unlink(file.path(species.name, "models", modeling.id, "MaxentTmpData"),recursive = TRUE, force = TRUE)
   }
+  
 }
 
 # Maxent Projection working directory preparation -=-=-=-=-=-=-=- #
@@ -66,8 +70,8 @@ setGeneric(".Prepare.Maxent.Proj.WorkDir",
 
 
 setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='data.frame'),
-          def = function(Data, xy, species.name =".", proj.name="."){
-            cat('\n\t\tCreating Maxent Temp Proj Data...')
+          def = function(Data, xy, species.name =".", proj.name=".", silent=FALSE){
+            if(!silent) cat('\n\t\tCreating Maxent Temp Proj Data...')
             if(is.null(xy)) xy <- matrix(1,nrow=nrow(Data), ncol=2, dimnames=list(NULL, c("X","Y")))
     
 #             if(is.null(proj.name))proj.name <- format(Sys.time(), "%s")
@@ -81,8 +85,8 @@ setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='data.frame'),
 
 
 setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
-          def = function(Data, species.name =".",proj.name="."){
-            cat('\n\t\tCreating Maxent Temp Proj Data...')
+          def = function(Data, species.name =".",proj.name=".", silent=FALSE){
+            if(!silent) cat('\n\t\tCreating Maxent Temp Proj Data...')
             
 #             if(is.null(proj.name))proj.name <- colnames(Data)[1]
             dir.create(file.path(species.name,proj.name,'MaxentTmpData','Proj'), showWarnings=FALSE, recursive=TRUE)
@@ -90,18 +94,18 @@ setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
             # Proj Data
             for(l in names(Data)){
               if(! file.exists(file.path(species.name,proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
-                cat("\n\t\t\t>",l ,"\t:\t" )
+                if(!silent) cat("\n\t\t\t>",l ,"\t:\t" )
                 if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
-                  cat("coping ascii file")
+                  if(!silent) cat("coping ascii file")
                   file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
                 } else{
-                  cat("creating ascii file")
+                  if(!silent) cat("creating ascii file")
                   writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
                               format='ascii', overwrite=TRUE)        
                 }
                 
               } else{
-                cat("\n", file.path(species.name,proj.name,'MaxentTmpData','', paste(l,'.asc',sep='')),'already created !')
+                if(!silent) cat("\n", file.path(species.name,proj.name,'MaxentTmpData','', paste(l,'.asc',sep='')),'already created !')
               }
               
             }

@@ -3,24 +3,32 @@
 
 \title{ Ensemble projections of species over space and time }
 \description{
-This function use projections of \sQuote{individual models} and ensemble models from code{\link[biomod2]{BIOMOD_EnsembleModeling}} to build an ensemble of species' projections over space and time.
+This function use projections of \sQuote{individual models} and ensemble models from \code{\link[biomod2]{BIOMOD_EnsembleModeling}} to build an ensemble of species' projections over space and time.
 }
 \usage{
-BIOMOD_EnsembleForecasting( projection.output,
-                            EM.output,
-                            total.consensus = FALSE,
+BIOMOD_EnsembleForecasting( EM.output,
+                            projection.output = NULL,
+                            new.env = NULL,
+                            xy.new.env = NULL,
+                            selected.models = 'all',
+                            proj.name = NULL,
                             binary.meth = NULL,
                             filtered.meth = NULL,
+                            compress = 'xz',
                             ...)
 }
 
 
 \arguments{
-  \item{projection.output}{a \code{"\link[=BIOMOD.projection.out-class]{BIOMOD.projection.out}"} returned by \code{\link[biomod2]{BIOMOD_Projection}} }
   \item{EM.output}{ a \code{"\link[=BIOMOD.EnsembleModeling.out-class]{BIOMOD.EnsembleModeling.out}"} returned by \code{\link[biomod2]{BIOMOD_EnsembleModeling}}}
-  \item{total.consensus}{Deprecated, construct ensemble-models setting \code{em.by} argument to \code{'all'} to get total consensus-models}
+  \item{projection.output}{a \code{"\link[=BIOMOD.projection.out-class]{BIOMOD.projection.out}"} returned by \code{\link[biomod2]{BIOMOD_Projection}} }
+  \item{new.env}{ a \code{RasterStack} or a \code{data.frame} object containing explanatory data for the studied area. Needed only if \code{projection.output} is \code{NULL}. Prefer to use \code{"\link[=BIOMOD.projection.out-class]{BIOMOD.projection.out}"} if you have ever done the calculations.}
+  \item{xy.new.env}{the matching coordinates of \code{new.env} if \code{new.env} is defined and if it is a \code{data.frame}}
+  \item{selected.models}{ if not 'all', a character vector containing a subset of ensemble-models you want make projacion}
+  \item{proj.name}{the projection name (results will be saved within proj_proj.name directory). Only needed if \code{projection.output} is \code{NULL} }
   \item{binary.meth}{vector specifying the names of evaluation metrics and associated thresholds to transform the probabilities of presence into presence and absence (binary transformation).  }
   \item{filtered.meth}{vector specifying the names of evaluation metrics and associated thresholds to transform into 0 the probabilities of presence lower than the thresholds.}
+  \item{compress}{the compression level for hard drive saved objects. (see \code{\link{save}})}
   \item{\ldots}{ further arguments (see details)}
 }
 
@@ -99,7 +107,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        
 # 4. Creating the ensemble models 
 myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
-                                       chosen.models = grep('_RF', getModelsBuiltModels(myBiomodModelOut), value=TRUE),
+                                       chosen.models = grep('_RF', get_built_models(myBiomodModelOut), value=TRUE),
                                        em.by = 'algo',
                                        eval.metric = c('TSS'),
                                        eval.metric.quality.threshold = c(0.7),
@@ -116,7 +124,7 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
 myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
                                         new.env = myExpl,
                                         proj.name = 'current',
-                                        selected.models = grep('_RF', getModelsBuiltModels(myBiomodModelOut), value=TRUE),
+                                        selected.models = grep('_RF', get_built_models(myBiomodModelOut), value=TRUE),
                                         compress = 'NULL',
                                         build.clamping.mask = FALSE)
                                           

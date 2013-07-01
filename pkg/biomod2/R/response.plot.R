@@ -354,7 +354,7 @@
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),      
                model_class = 'ANN', 
                resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])), 
-               expl_var_names = attr(glm1$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }
   
   
@@ -376,7 +376,7 @@
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_FDA", sep=""),
                model_class = 'FDA',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = attr(glm1$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }
   
   ## GAM ##
@@ -387,7 +387,7 @@
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GAM", sep=""),
                model_class = 'GAM',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = attr(glm1$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }
   
   ## GBM ##
@@ -397,7 +397,7 @@
                model_name = paste(as.character(mod$Terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GBM", sep=""),
                model_class = 'GBM',
                resp_name = as.character(mod$Terms[[2]]),
-               expl_var_names = attr(glm1$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }
   
   ## GLM ##
@@ -407,7 +407,7 @@
                model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GLM", sep=""),
                model_class = 'GLM',
                resp_name = as.character(mod$terms[[2]]),
-               expl_var_names = attr(glm1$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }
   
   ## MARS ##
@@ -427,7 +427,7 @@
                model_name =paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_RF", sep=""),
                model_class = 'RF',
                resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])),
-               expl_var_names = attr(glm1$terms,"term.labels")))
+               expl_var_names = attr(mod$terms,"term.labels")))
   }
   
   stop("Unknown model class")

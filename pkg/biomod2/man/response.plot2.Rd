@@ -125,22 +125,22 @@ myGLMs <- BIOMOD_LoadModels(myBiomodModelOut, models='GLM')
 
 # 4.2 plot 2D response plots
 myRespPlot2D <- response.plot2(models  = myGLMs,
-                               Data = getModelsInputData(myBiomodModelOut,'expl.var'), 
-                               show.variables= getModelsInputData(myBiomodModelOut,'expl.var.names'),
+                               Data = get_predictions(myBiomodModelOut,'expl.var'), 
+                               show.variables= get_predictions(myBiomodModelOut,'expl.var.names'),
                                do.bivariate = FALSE,
                                fixed.var.metric = 'median',
                                col = c("blue", "red"),
                                legend = TRUE,
-                               data_species = getModelsInputData(myBiomodModelOut,'resp.var'))
+                               data_species = get_predictions(myBiomodModelOut,'resp.var'))
 
 # 4.2 plot 3D response plots
 ## here only for a lone model (i.e "VulpesVulpes_PA1_AllData_GLM")
 myRespPlot3D <- response.plot2(models  = myGLMs[1],
-                               Data = getModelsInputData(myBiomodModelOut,'expl.var'), 
-                               show.variables= getModelsInputData(myBiomodModelOut,'expl.var.names'),
+                               Data = get_predictions(myBiomodModelOut,'expl.var'), 
+                               show.variables= get_predictions(myBiomodModelOut,'expl.var.names'),
                                do.bivariate = TRUE,
                                fixed.var.metric = 'median',
-                               data_species = getModelsInputData(myBiomodModelOut,'resp.var'))
+                               data_species = get_predictions(myBiomodModelOut,'resp.var'))
 
 ### all the values used to produce this plot are stored into the returned object
 ### you can redo plots by yourself and customised them

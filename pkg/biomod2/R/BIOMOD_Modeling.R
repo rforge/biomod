@@ -147,11 +147,12 @@
     # save model variables importances
     if(VarImport > 0 ){
       variables.importances <- .transform.outputs(modeling.out, out='var.import')
+
       ## trick to put appropriate dimnames
-      vi.dim.names <- dimnames(variables.importances)
-      vi.dim.names[[1]] <- models.out@expl.var.names
-      dimnames(variables.importances) <- vi.dim.names
-      rm('vi.dim.names')
+#       vi.dim.names <- dimnames(variables.importances)
+#       vi.dim.names[[1]] <- models.out@expl.var.names
+#       dimnames(variables.importances) <- vi.dim.names
+#       rm('vi.dim.names')
     
       save(variables.importances, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"variables.importance"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
       models.out@variables.importances@inMemory <- TRUE

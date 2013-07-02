@@ -657,7 +657,7 @@
     variables.importance <- variables_importance(model.bm, Data[, expl_var_names,drop=FALSE], nb_rand=VarImport)
     model.bm@model_variables_importance <- variables.importance$mat
     ## we stored only the mean of variables importance run
-    ListOut$var.import <- round(apply(variables.importance$mat, 2, mean, na.rm=T),digits=3)
+    ListOut$var.import <- round(rowMeans(variables.importance$mat, na.rm=T),digits=3)
     ## remove useless objects
     rm(list=c('variables.importance') )
   }

@@ -550,14 +550,33 @@ setMethod('plot', signature(x='BIOMOD.formated.data.PA'),
           function(x,coord=NULL,col=NULL){
             if(nlayers(x@data.mask)>0){
               
-              ## define the breaks of the color key
-              my.at <- seq(-1.5,1.5,by=1)
-              ## the labels will be placed vertically centered
-              my.labs.at <- seq(-1,1,by=1)
-              ## define the labels
-              my.lab = c("undifined","absences","presences")
+              ## check that there is some undefined areas to prevent from strange plotting issues
+              if(min(cellStats(x@data.mask,min)) == -1){ # there is undifined area
+                ## define the breaks of the color key
+                my.at <- seq(-1.5,1.5,by=1)
+                ## the labels will be placed vertically centered
+                my.labs.at <- seq(-1,1,by=1)
+                ## define the labels
+                my.lab <- c("undifined","absences","presences")
+                ## define colors
+                my.col.regions = c("lightgrey","red4","green4")
+                ## defined cuts
+                my.cuts <- 2
+              } else{ # no undefined area.. remove it from plot 
+                ## define the breaks of the color key
+                my.at <- seq(-0.5,1.5,by=1)
+                ## the labels will be placed vertically centered
+                my.labs.at <- seq(0,1,by=1)
+                ## define the labels
+                my.lab <- c("absences","presences")
+                ## define colors
+                my.col.regions = c("red4","green4")
+                ## defined cuts
+                my.cuts <- 1
+              }
               
-              levelplot(x@data.mask, at=my.at, margin=T, col.regions=c("lightgrey","red4","green4"),
+              
+              levelplot(x@data.mask, at=my.at, cuts=my.cuts, margin=T, col.regions=my.col.regions,
                         main=paste(x@sp.name,"datasets"),
                         colorkey=list(labels=list(
                           labels=my.lab,

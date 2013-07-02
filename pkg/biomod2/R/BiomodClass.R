@@ -200,7 +200,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
           
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
   function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-    categorial_var <- names(env)[raster:::is.factor(env)]
+    categorial_var <- names(env)[raster::is.factor(env)]
     
     # take the same eval environemental variables than calibrating ones 
     if(!is.null(eval.sp)){
@@ -217,7 +217,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
     
     if(is.null(xy)) xy <- as.data.frame(coordinates(env))
       
-    data.mask = reclassify(raster:::subset(env,1,drop=T), c(-Inf,Inf,-1))
+    data.mask = reclassify(raster::subset(env,1,drop=T), c(-Inf,Inf,-1))
     data.mask[cellFromXY(data.mask,xy[which(sp==1),])] <- 1
     data.mask[cellFromXY(data.mask,xy[which(sp==0),])] <- 0
     data.mask <- stack(data.mask)
@@ -378,7 +378,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
                                      na.rm=TRUE){
   
   if(inherits(env,'Raster')){
-    categorial_var <- names(env)[raster:::is.factor(env)]
+    categorial_var <- names(env)[raster::is.factor(env)]
   }  else categorial_var <- NULL
   
   
@@ -464,7 +464,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
     if(inherits(env,'Raster')){
       
       ## create data.mask for ploting
-      data.mask.tmp <- reclassify(raster:::subset(env,1), c(-Inf,Inf,-1))
+      data.mask.tmp <- reclassify(raster::subset(env,1), c(-Inf,Inf,-1))
       data.mask <- stack(data.mask.tmp)
       xy_pres <- pa.data.tmp$xy[which(pa.data.tmp$sp==1),]
       xy_abs <- pa.data.tmp$xy[which(pa.data.tmp$sp==0),]
@@ -1445,7 +1445,7 @@ setMethod("get_predictions", "BIOMOD.projection.out",
             if (length(models_selected)){
               proj <- load_stored_object(obj@proj)
               if(inherits(proj,'Raster')){
-                proj <- raster:::subset(proj,models_selected,drop=FALSE)
+                proj <- raster::subset(proj,models_selected,drop=FALSE)
               } else {
                 proj <- proj[,.extractModelNamesInfo(model.names=models_selected,info='models'),
                              .extractModelNamesInfo(model.names=models_selected,info='run.eval'),

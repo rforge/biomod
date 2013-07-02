@@ -123,7 +123,7 @@
     model.tmp <- NULL
     BIOMOD_LoadModels(EM.output, full.name=em.comp, as='model.tmp')
     if(inherits(formal_pred,'Raster')){
-      ef.tmp <- predict(model.tmp, formal_predictions = raster:::subset(formal_pred, subset=model.tmp@model, drop=FALSE))
+      ef.tmp <- predict(model.tmp, formal_predictions = raster::subset(formal_pred, subset=model.tmp@model, drop=FALSE))
     } else {
       ef.tmp <- predict(model.tmp, formal_predictions = formal_pred[,model.tmp@model, drop=FALSE])
     }
@@ -131,7 +131,7 @@
     
     if(inherits(ef.tmp,'Raster')){
       if(do.stack){
-        if(length(ef.out)) ef.out <- stack(ef.out,ef.tmp) else ef.out <- raster:::stack(ef.tmp)
+        if(length(ef.out)) ef.out <- stack(ef.out,ef.tmp) else ef.out <- raster::stack(ef.tmp)
       } else {
         file_name_tmp <- file.path(indiv_proj_dir,paste(em.comp,output.format,sep=""))
         if(output.format== '.Rdata'){

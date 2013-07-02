@@ -120,7 +120,7 @@ check_data_range <- function(model, new_data){
       stop("calibration and projections variables names mismatch")
     }
     # reorder the stack
-    new_data <- raster:::subset(new_data,expl_var_names)
+    new_data <- raster::subset(new_data,expl_var_names)
     # check var types compatibility (factors)
     expl_var_fact <- (expl_var_type=='factor')
     nd_expl_var_fact <- is.factor(new_data)  
@@ -132,9 +132,9 @@ check_data_range <- function(model, new_data){
     if(sum(expl_var_fact)>0){ ## there are factorial variables
       for(fact_var_id in which(expl_var_fact)){
         ## check if new factors occurs
-        nd_levels <- levels(raster:::subset(new_data,fact_var_id))[[1]]
+        nd_levels <- levels(raster::subset(new_data,fact_var_id))[[1]]
         nd_levels <- as.character(nd_levels[,ncol(nd_levels)])
-        names(nd_levels) <- levels(raster:::subset(new_data,fact_var_id))[[1]]$ID
+        names(nd_levels) <- levels(raster::subset(new_data,fact_var_id))[[1]]$ID
         cd_levels <- as.character(unlist(expl_var_range[[fact_var_id]]))
         
         ## detect new levels
@@ -1133,10 +1133,10 @@ setMethod('predict', signature(object = 'EMmean_biomod2_model'),
   
   if(is.null(formal_predictions)){
     # make prediction of all models required
-    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+    formal_predictions <- raster::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
   }
   
-  return(round(raster:::mean(formal_predictions)))
+  return(round(raster::mean(formal_predictions)))
 }
 
 .predict.EMmean_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
@@ -1199,7 +1199,7 @@ setMethod('predict', signature(object = 'EMmedian_biomod2_model'),
   
   if(is.null(formal_predictions)){
     # make prediction of all models required
-    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+    formal_predictions <- raster::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
   }
 
   return(round(calc(formal_predictions, median)))
@@ -1267,10 +1267,10 @@ setMethod('predict', signature(object = 'EMcv_biomod2_model'),
   
   if(is.null(formal_predictions)){
     # make prediction of all models required
-    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+    formal_predictions <- raster::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
   }
  
-  return(round(raster:::cv(formal_predictions, na.rm=TRUE, aszero=TRUE), digits=0))
+  return(round(raster::cv(formal_predictions, na.rm=TRUE, aszero=TRUE), digits=0))
 }
 
 .predict.EMcv_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
@@ -1353,11 +1353,11 @@ setMethod('predict', signature(object = 'EMci_biomod2_model'),
   
   if(is.null(formal_predictions)){
     # make prediction of all models required
-    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+    formal_predictions <- raster::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
   }
   
   if(is.null(mean_prediction)){
-    mean_prediction <- round(raster:::mean(formal_predictions))
+    mean_prediction <- round(raster::mean(formal_predictions))
   }
   
   if(is.null(sd_prediction)){
@@ -1454,10 +1454,10 @@ setMethod('predict', signature(object = 'EMca_biomod2_model'),
   
   if(is.null(formal_predictions)){
     # make prediction of all models required
-    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+    formal_predictions <- raster::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
   }
   
-  return(round(raster:::mean(BinaryTransformation(formal_predictions, object@tresholds), na.rm=T) * 1000))
+  return(round(raster::mean(BinaryTransformation(formal_predictions, object@tresholds), na.rm=T) * 1000))
 }
 
 .predict.EMca_biomod2_model.data.frame <- function(object, newdata=NULL, formal_predictions=NULL, ... ){
@@ -1514,7 +1514,7 @@ setMethod('predict', signature(object = 'EMwmean_biomod2_model'),
   
   if(is.null(formal_predictions)){
     # make prediction of all models required
-    formal_predictions <- raster:::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
+    formal_predictions <- raster::stack(lapply(object@model, predict, newdata=newdata, on_0_1000=TRUE))
   }
   
   return(round(sum(formal_predictions * object@penalization_scores)))

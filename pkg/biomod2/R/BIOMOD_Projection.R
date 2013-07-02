@@ -240,7 +240,7 @@
 #   if(!is.null(clamping.level)){
 #     cat("\n   > clamping projections...")
 #     if(inherits(proj_out@proj@val, 'Raster')){
-#       proj_out@proj@val <- raster:::stack(reclassify(proj_out@proj@val * reclassify( (- 1 * (clampMask)), c(-0.5,0.5,1)), c(-Inf,0,clamped.value) ))
+#       proj_out@proj@val <- raster::stack(reclassify(proj_out@proj@val * reclassify( (- 1 * (clampMask)), c(-0.5,0.5,1)), c(-Inf,0,clamped.value) ))
 #     } else{
 #       proj_out@proj@val[which(clampMask > 0),,,] <- clamped.value
 #     }
@@ -381,7 +381,7 @@
   } else{
     if(do.stack){
       # test if there is memory enough to work with RasterStack
-      do.stack = canProcessInMemory( raster:::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
+      do.stack = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
       if (!do.stack){ 
         cat("\n   ! Results will be saved as individual RasterLayers because of a lack of memory !")
       }
@@ -425,22 +425,22 @@
 
 .build.clamping.mask <- function(env, MinMax){
   if(inherits(env,'Raster')){ # raster case 
-    env <- raster:::stack(env)
-    env <- raster:::subset(env,names(MinMax))
+    env <- raster::stack(env)
+    env <- raster::subset(env,names(MinMax))
     
     # create an empty mask
-#     clamp.mask <- reclassify( raster:::subset(env,1, drop=TRUE), c(-Inf,Inf,0) )
-    clamp.mask <- ref.mask <- raster:::subset(env,1, drop=TRUE)
+#     clamp.mask <- reclassify( raster::subset(env,1, drop=TRUE), c(-Inf,Inf,0) )
+    clamp.mask <- ref.mask <- raster::subset(env,1, drop=TRUE)
     clamp.mask[!is.na(clamp.mask[])] <- 0
     ref.mask[!is.na(clamp.mask[])] <- 1
     
     for(e.v in names(MinMax)){
 
       if(!is.null(MinMax[[e.v]]$min)){ # numeric variable
-        clamp.mask <- clamp.mask + ( BinaryTransformation(raster:::subset(env, e.v, drop=TRUE), MinMax[[e.v]]$max ) +  (ref.mask - BinaryTransformation(raster:::subset(env, e.v, drop=TRUE), MinMax[[e.v]]$min )) )
+        clamp.mask <- clamp.mask + ( BinaryTransformation(raster::subset(env, e.v, drop=TRUE), MinMax[[e.v]]$max ) +  (ref.mask - BinaryTransformation(raster::subset(env, e.v, drop=TRUE), MinMax[[e.v]]$min )) )
         
       } else if(!is.null(MinMax[[e.v]]$levels)){ # factorial variable
-        clamp.mask <- clamp.mask + (raster:::subset(env, e.v, drop=TRUE) %in% MinMax[[e.v]]$levels)
+        clamp.mask <- clamp.mask + (raster::subset(env, e.v, drop=TRUE) %in% MinMax[[e.v]]$levels)
       }
     }
   } else if(is.data.frame(env) | is.matrix(env) | is.numeric(env)){ # matrix and data.frame case

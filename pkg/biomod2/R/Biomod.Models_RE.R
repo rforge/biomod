@@ -143,9 +143,9 @@
 #     user.control.list <- Options@GAM$control
 #     
 #     if(Options@GAM$algo == 'GAM_gam'){
-#       default.control.list <- gam:::gam.control()
+#       default.control.list <- gam::gam.control()
 #     } else{
-#       default.control.list <- mgcv:::gam.control()
+#       default.control.list <- mgcv::gam.control()
 #     }
 #     
 #     control.list <- lapply(names(default.control.list), function(x){
@@ -182,7 +182,7 @@
       
       if (Options@GAM$algo == 'GAM_mgcv'){
         cat('\n\t> GAM (mgcv) modelling...')
-        model.sp <- try(mgcv:::gam(gam.formula, 
+        model.sp <- try(mgcv::gam(gam.formula, 
                                    data= Data, 
                                    family= Options@GAM$family, 
                                    weights = Yweights,
@@ -190,7 +190,7 @@
 
       } else if (Options@GAM$algo == 'BAM_mgcv'){ ## big data.frame gam version
         cat('\n\t> BAM (mgcv) modelling...')
-        model.sp <- try(mgcv:::bam(gam.formula, 
+        model.sp <- try(mgcv::bam(gam.formula, 
                                    data=Data, 
                                    family=Options@GAM$family,
                                    weights = Yweights,

@@ -184,7 +184,7 @@
   }
       
   if(inherits(expl.var, 'Raster')){
-    expl.var <- raster:::stack(expl.var)
+    expl.var <- raster::stack(expl.var)
   }
     
   if(inherits(expl.var, 'SpatialPoints')){
@@ -309,7 +309,7 @@
     }
         
     if(inherits(eval.expl.var, 'Raster')){
-      eval.expl.var <- raster:::stack(eval.expl.var)
+      eval.expl.var <- raster::stack(eval.expl.var)
     }
       
     if(inherits(eval.expl.var, 'SpatialPoints')){

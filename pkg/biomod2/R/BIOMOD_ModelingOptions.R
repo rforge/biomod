@@ -117,14 +117,14 @@
     
     if(is.null(GAM$control )) {
       if(opt@GAM$algo == 'GAM_gam'){
-        opt@GAM$control <- gam:::gam.control()
-      } else{ opt@GAM$control <- mgcv:::gam.control() }
+        opt@GAM$control <- gam::gam.control()
+      } else{ opt@GAM$control <- mgcv::gam.control() }
     } else{
       user.control.list <- GAM$control
       if(opt@GAM$algo == 'GAM_gam'){
-        default.control.list <- gam:::gam.control()
+        default.control.list <- gam::gam.control()
       } else{
-        default.control.list <- mgcv:::gam.control()
+        default.control.list <- mgcv::gam.control()
       }
       
       control.list <- lapply(names(default.control.list), function(x){
@@ -146,10 +146,10 @@
     if(!is.null(GAM$paraPen )) { opt@GAM$paraPen <- GAM$paraPen } 
   } else{
     if(opt@GAM$algo == 'GAM_gam'){
-      opt@GAM$control <- gam:::gam.control()
+      opt@GAM$control <- gam::gam.control()
       opt@GAM$k <- 4
     } else{ 
-      opt@GAM$control <- mgcv:::gam.control()
+      opt@GAM$control <- mgcv::gam.control()
       opt@GAM$k <- -1
     }
   }

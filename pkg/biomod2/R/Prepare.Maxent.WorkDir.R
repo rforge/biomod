@@ -95,12 +95,12 @@ setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
             for(l in names(Data)){
               if(! file.exists(file.path(species.name,proj.name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
                 if(!silent) cat("\n\t\t\t>",l ,"\t:\t" )
-                if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
+                if(grepl(".asc", filename(raster::subset(Data,l,drop=TRUE)) ) ){
                   if(!silent) cat("coping ascii file")
-                  file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
+                  file.copy(filename(raster::subset(Data,l,drop=TRUE)), file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
                 } else{
                   if(!silent) cat("creating ascii file")
-                  writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
+                  writeRaster(raster::subset(Data,l,drop=TRUE), filename=file.path(species.name,proj.name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
                               format='ascii', overwrite=TRUE)        
                 }
                 
@@ -135,12 +135,12 @@ setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
 #   for(l in names(Data)){
 #     if(! file.exists(file.path(proj_name,'MaxentTmpData','Proj',paste(l,'.asc',sep='')))){
 
-#       if(grepl(".asc", filename(raster:::subset(Data,l,drop=TRUE)) ) ){
+#       if(grepl(".asc", filename(raster::subset(Data,l,drop=TRUE)) ) ){
 #         cat("\n coping ascii file")
-#         file.copy(filename(raster:::subset(Data,l,drop=TRUE)), file.path(proj_name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
+#         file.copy(filename(raster::subset(Data,l,drop=TRUE)), file.path(proj_name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')))
 #       } else{
 #         cat("\n creating ascii file")
-#         writeRaster(raster:::subset(Data,l,drop=TRUE), filename=file.path(proj_name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
+#         writeRaster(raster::subset(Data,l,drop=TRUE), filename=file.path(proj_name,'MaxentTmpData', 'Proj' ,paste(l,'.asc',sep='')),
 #             format='ascii', overwrite=TRUE)        
 #       }
 # 

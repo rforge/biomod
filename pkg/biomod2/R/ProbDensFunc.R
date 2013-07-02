@@ -34,7 +34,7 @@
     
     # oppen the divice if filename
     if(length(filename)){
-      switch(tools:::file_ext(filename),
+      switch(tools::file_ext(filename),
              pdf = pdf(filename),
              jpeg = jpeg(filename),
              tiff = tiff(filename),
@@ -211,8 +211,8 @@
   
   # check saving options
   if(!is.null(filename)){
-    if( ! (tools:::file_ext(filename) %in% c("pdf","jpeg","tiff","eps","png"))){
-      filename <- paste(tools:::file_path_sans_ext(filename),".pdf",sep="")
+    if( ! (tools::file_ext(filename) %in% c("pdf","jpeg","tiff","eps","png"))){
+      filename <- paste(tools::file_path_sans_ext(filename),".pdf",sep="")
       cat("\n\t! 'filename' extension unknown => outputs will be stored in :", filename)
     }
   }

@@ -231,7 +231,8 @@
                         n.trees = Options@GBM$n.trees,
                         verbose = Options@GBM$verbose,
 #                         class.stratify.cv = Options@GBM$class.stratify.cv,
-                        cv.folds = Options@GBM$cv.folds))
+                        cv.folds = Options@GBM$cv.folds))#,
+                        #n.cores=1)) ## to prevent from parallel issues
     
     if( !inherits(model.sp,"try-error") ){
       best.iter <- try(gbm.perf(model.sp, method = Options@GBM$perf.method , plot.it = FALSE)) 
@@ -576,7 +577,7 @@
   
   # make prediction on evaluation data =-=-=-=-=-=-=-=-=-=-=-=-=-= #
   if(!is.null(evalData)){                                              
-    g.pred.eval <- predict(model.bm, evalData[,expl_var_names,drop=FALSE], on_0_1000=TRUE)     
+    g.pred.eval <- try(predict(model.bm, evalData[,expl_var_names,drop=FALSE], on_0_1000=TRUE)) 
   }
   
   # save predictions -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #

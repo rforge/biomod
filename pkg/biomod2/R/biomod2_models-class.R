@@ -814,7 +814,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   # checking maxent.jar is present
   path_to_maxent.jar <- file.path(object@model_options$path_to_maxent.jar, "maxent.jar")
   if(!file.exists(path_to_maxent.jar)){
-    path_to_maxent.jar <- getwd()
+    path_to_maxent.jar <-  file.path(getwd(), "maxent.jar")
   }
   
   if(!silent) cat("\n\t\tRunning Maxent...")
@@ -884,7 +884,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   # checking maxent.jar is present
   path_to_maxent.jar <- file.path(object@model_options$path_to_maxent.jar, "maxent.jar")
   if(!file.exists(path_to_maxent.jar)){
-    path_to_maxent.jar <- getwd()
+    path_to_maxent.jar <-  file.path(getwd(), "maxent.jar")
   }
   
   if(!silent) cat("\n\t\tRunning Maxent...")

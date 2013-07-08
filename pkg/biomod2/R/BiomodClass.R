@@ -1250,7 +1250,7 @@ setClass("BIOMOD.stored.models.out",
 setMethod("get_predictions", "BIOMOD.models.out",
           function(obj, as.data.frame = FALSE, evaluation = FALSE){
             # check evaluation data avialability
-            if( evaluation & (! myBiomomodModelOut@has.evaluation.data) ){
+            if( evaluation & (! obj@has.evaluation.data) ){
               warning("calibration data returned because no evaluation data available")
               evaluation = FALSE
             }

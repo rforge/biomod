@@ -40,7 +40,7 @@
                                VarImport=0, 
                                models.eval.meth = c('KAPPA','TSS','ROC'), 
                                SaveObj = TRUE,
-                               rescal.all.models = TRUE,
+                               rescal.all.models = FALSE,
                                do.full.models = TRUE,
                                modeling.id=as.character(format(Sys.time(), "%s")),
                                ...){

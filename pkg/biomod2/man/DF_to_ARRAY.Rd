@@ -1,24 +1,27 @@
 \name{DF_to_ARRAY}
 \alias{DF_to_ARRAY}
+\alias{LIST_to_ARRAY}
 
-\title{Convert a biomod2 data.frame into array }
+\title{Convert a biomod2 data.frame (or list) into array }
 
-\description{ DF_to_ARRAY is an internal \pkg{biomod2} function that can be useful to help users to transform a standard \pkg{biomod2} \code{data.frame} output into the standard \code{array} one.
+\description{ DF_to_ARRAY  and LIST_to_ARRAY are \pkg{biomod2} internal functions that can be useful to help users to transform a standard \pkg{biomod2} \code{data.frame} or \code{list} output into the standard \code{array} one.
 }
 
 \usage{
 DF_to_ARRAY(df)
+LIST_to_ARRAY(ll)
 }
 
 
 
 \arguments{
   \item{df}{  a standard \pkg{biomod2} \code{data.frame} output }
+  \item{ll}{  a standard \pkg{biomod2} \code{list} output (e.g \code{evaluate} function output )}
 }
 
 
 \details{
-This function can be useful when you want to re-convert \pkg{biomod2} \code{data.frame} (e.g. projections) into their initial \code{array} format (see \code{\link[biomod2]{BIOMOD_Projection}} for further details) 
+This functions can be useful when you want to re-convert \pkg{biomod2} \code{data.frame} or \code{list} (e.g. projections, evaluations) into their initial \code{array} format (see \code{\link[biomod2]{BIOMOD_Projection}} for further details) 
 }
 
 

@@ -1,3 +1,7 @@
+3.0.2 (2013-07-23)
+	* new fonctions to evaluate a-posteriori models quality
+	* remove weights for models scaling and set it FALSE by default
+
 3.0.0 (2013-07-01)
 	* major realeases!
 	* ensemble models are now biomod2 models objects (should be predicted, evaluated, and you can do variables importance) the same way than all formal biomod2 models.

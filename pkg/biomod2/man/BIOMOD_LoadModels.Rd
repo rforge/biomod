@@ -87,11 +87,10 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 # 3. Doing Modelisation
 
 myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
-                                       models = c('SRE','RF'), 
+                                       models = c('RF'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=2, 
                                        DataSplit=70, 
-                                       Prevalence=0.5,
                                        models.eval.meth = c('TSS'),
                                        SaveObj = TRUE,
                                        do.full.models = FALSE)

@@ -1344,7 +1344,7 @@ setMethod("get_formal_data", "BIOMOD.models.out",
                 } else{ cat("\n***"); return(NA) }
               }              
             } else if(subinfo == 'MinMax'){
-              return(apply(get_formal_data(obj)@data.env.var,2, function(x){
+              return(apply(get_formal_data(obj, "expl.var"),2, function(x){
                   if(is.numeric(x)){
                     return( list(min = min(x,na.rm=T), max = max(x, na.rm=T) ) )
                   } else if(is.factor(x)){

@@ -93,10 +93,10 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 
 # 3. Running the models 
 myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
-                                       models = c('SRE','RF'), 
+                                       models = c('RF'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=2, 
-                                       DataSplit=80, 
+                                       DataSplit=60, 
                                        Yweights=NULL, 
                                        VarImport=0, 
                                        models.eval.meth = c('TSS'),
@@ -110,13 +110,13 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
                                        em.by = 'algo',
                                        eval.metric = c('TSS'),
                                        eval.metric.quality.threshold = c(0.7),
-                                       prob.mean = FALSE,
+                                       prob.mean = TRUE,
                                        prob.cv = FALSE,
                                        prob.ci = FALSE,
                                        prob.ci.alpha = 0.05,
                                        prob.median = FALSE,
                                        committee.averaging = FALSE,
-                                       prob.mean.weight = TRUE,
+                                       prob.mean.weight = FALSE,
                                        prob.mean.weight.decay = 'proportional' )
                                        
 # 5. Individual models projections on current environmental conditions

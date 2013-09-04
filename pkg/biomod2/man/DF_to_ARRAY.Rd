@@ -83,8 +83,9 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        DataSplit=70, 
                                        Yweights=NULL, 
                                        VarImport=0, 
-                                       models.eval.meth = c('TSS'),
-                                       SaveObj = F )
+                                       models.eval.meth = c('ROC'),
+                                       rescal.all.models = FALSE,
+                                       do.full.models = FALSE)
                                        
                                        
 # 4 Projection on current environemental conditions

@@ -189,9 +189,8 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        models.options = myBiomodOption, 
                                        NbRunEval=2, 
                                        DataSplit=80, 
-                                       Prevalence=0.5, 
                                        VarImport=0, 
-                                       models.eval.meth = c('TSS','ROC'),
+                                       models.eval.meth = c('ROC'),
                                        do.full.models=FALSE,
                                        modeling.id="test")
                                        

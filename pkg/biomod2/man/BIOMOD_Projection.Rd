@@ -111,11 +111,10 @@ myBiomodOption <- BIOMOD_ModelingOptions()
 # 3. Doing Modelisation
 
 myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
-                                       models = c('CTA','RF'), 
+                                       models = c('SRE','RF'), 
                                        models.options = myBiomodOption, 
-                                       NbRunEval=2, 
-                                       DataSplit=80, 
-                                       Prevalence=0.5,
+                                       NbRunEval=1, 
+                                       DataSplit=70,
                                        models.eval.meth = c('TSS'),
                                        do.full.models = FALSE)
 
@@ -127,8 +126,8 @@ myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
                                           proj.name = 'current',
                                           selected.models = 'all',
                                           binary.meth = 'TSS',
-                                          compress = 'xz',
-                                          build.clamping.mask = TRUE)
+                                          compress = 'NULL',
+                                          build.clamping.mask = FALSE)
 
 \dontrun{
 # 4.2 Projection on future environemental conditions

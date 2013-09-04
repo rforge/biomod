@@ -146,7 +146,6 @@ Wilfried Thuiller, Damien Georges, Robin Engler
 }
 
 \examples{
-
 # species occurrences
 DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
                                     package="biomod2"))

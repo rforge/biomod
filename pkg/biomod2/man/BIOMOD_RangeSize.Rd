@@ -121,11 +121,11 @@ myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
 
 # 4.2 Projection on future environemental conditions
 
-myExplFuture = raster::stack(system.file("external/bioclim/future/bio3.grd",package="biomod2"),
-                             system.file("external/bioclim/future/bio4.grd",package="biomod2"),
-                             system.file("external/bioclim/future/bio7.grd",package="biomod2"),
-                             system.file("external/bioclim/future/bio11.grd",package="biomod2"),
-                             system.file("external/bioclim/future/bio12.grd",package="biomod2"))
+myExplFuture = stack(system.file("external/bioclim/future/bio3.grd",package="biomod2"),
+                     system.file("external/bioclim/future/bio4.grd",package="biomod2"),
+                     system.file("external/bioclim/future/bio7.grd",package="biomod2"),
+                     system.file("external/bioclim/future/bio11.grd",package="biomod2"),
+                     system.file("external/bioclim/future/bio12.grd",package="biomod2"))
 
 myBiomodProjectionFuture <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
                                               new.env = myExplFuture,

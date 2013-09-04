@@ -208,7 +208,7 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:nnet" %in% search()) ){ require(nnet,quietly=TRUE) }
+#             if( ! ("package:nnet" %in% search()) ){ require(nnet,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)
@@ -289,7 +289,7 @@ setMethod('predict', signature(object = 'CTA_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:rpart" %in% search()) ){ require(rpart,quietly=TRUE) }
+#             if( ! ("package:rpart" %in% search()) ){ require(rpart,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)
@@ -370,7 +370,7 @@ setMethod('predict', signature(object = 'FDA_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:mda" %in% search()) ){ require(mda,quietly=TRUE) }
+#             if( ! ("package:mda" %in% search()) ){ require(mda,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)
@@ -461,7 +461,7 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
             args <- list(...)
             if(object@model_subclass %in% c("GAM_mgcv","BAM_mgcv")){
               if( ("package:gam" %in% search()) ){ detach("package:gam")}
-              if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
+#               if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
             }
             
             if(object@model_subclass == "GAM_gam"){
@@ -547,7 +547,7 @@ setMethod('predict', signature(object = 'GBM_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:gbm" %in% search()) ){ require(gbm,quietly=TRUE) }
+#             if( ! ("package:gbm" %in% search()) ){ require(gbm,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)
@@ -626,7 +626,7 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:stats" %in% search()) ){ require(stats,quietly=TRUE) }
+#             if( ! ("package:stats" %in% search()) ){ require(stats,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)
@@ -705,7 +705,7 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:mda" %in% search()) ){ require(mda,quietly=TRUE) }
+#             if( ! ("package:mda" %in% search()) ){ require(mda,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)
@@ -935,7 +935,7 @@ setMethod('predict', signature(object = 'RF_biomod2_model'),
             
             args <- list(...)
             
-            if( ! ("package:randomForest" %in% search()) ){ require(randomForest,quietly=TRUE) }
+#             if( ! ("package:randomForest" %in% search()) ){ require(randomForest,quietly=TRUE) }
             
             ## data checking
             newdata <- check_data_range(model=object, new_data=newdata)

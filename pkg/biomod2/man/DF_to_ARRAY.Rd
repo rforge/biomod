@@ -34,6 +34,7 @@ A standard \pkg{biomod2} \code{array} output.
 
 \seealso{ \code{\link[biomod2]{BIOMOD_Projection}} }
 \examples{
+
 # species occurrences
 DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
                                     package="biomod2"), row.names = 1)
@@ -51,7 +52,7 @@ myRespXY <- DataSpecies[,c("X_WGS84","Y_WGS84")]
 
 # Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
 myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
-                             package="biomod2"),
+                     package="biomod2"),
                 system.file( "external/bioclim/current/bio4.grd", 
                              package="biomod2"), 
                 system.file( "external/bioclim/current/bio7.grd", 
@@ -60,7 +61,7 @@ myExpl = stack( system.file( "external/bioclim/current/bio3.grd",
                              package="biomod2"), 
                 system.file( "external/bioclim/current/bio12.grd", 
                              package="biomod2"))
-
+                             
 # Keep only points where we have info                       
 myExpl <- extract(myExpl, myRespXY)
 
@@ -79,11 +80,11 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        models = c('SRE','RF'), 
                                        models.options = myBiomodOption, 
                                        NbRunEval=1, 
-                                       DataSplit=80, 
+                                       DataSplit=70, 
                                        Yweights=NULL, 
-                                       VarImport=3, 
+                                       VarImport=0, 
                                        models.eval.meth = c('TSS'),
-                                       SaveObj = TRUE )
+                                       SaveObj = F )
                                        
                                        
 # 4 Projection on current environemental conditions

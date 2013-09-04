@@ -243,16 +243,17 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
 )
 
 # 1.3 Other Functions
-if( !isGeneric( "plot" ) ) {
-  setGeneric( "plot", 
-              def = function(x, ...){
-  	                  standardGeneric( "plot" )
-                      } )
-}
+# if( !isGeneric( "plot" ) ) {
+#   setGeneric( "plot", 
+#               def = function(x, ...){
+#   	                  standardGeneric( "plot" )
+#                       } )
+# }
 
-setMethod('plot', signature(x='BIOMOD.formated.data'),
+setMethod('plot', signature(x='BIOMOD.formated.data', y="missing"),
           function(x,coord=NULL,col=NULL){
             if(nlayers(x@data.mask)>0){
+              require(rasterVis)
               
               ## check that there is some undefined areas to prevent from strange plotting issues
               if(min(cellStats(x@data.mask,min)) == -1){ # there is undifined area
@@ -546,9 +547,10 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
 
 
 # 2.3 other functions
-setMethod('plot', signature(x='BIOMOD.formated.data.PA'),
+setMethod('plot', signature(x='BIOMOD.formated.data.PA', y="missing"),
           function(x,coord=NULL,col=NULL){
             if(nlayers(x@data.mask)>0){
+              require(rasterVis)
               
               ## check that there is some undefined areas to prevent from strange plotting issues
               if(min(cellStats(x@data.mask,min)) == -1){ # there is undifined area
@@ -1492,7 +1494,7 @@ setMethod("get_predictions", "BIOMOD.projection.out",
           })
 
 # 2.3 other functions
-setMethod('plot', signature(x='BIOMOD.projection.out'),
+setMethod('plot', signature(x='BIOMOD.projection.out', y="missing"),
           function(x,col=NULL, str.grep=NULL){
             models_selected <- x@models.projected 
             if(length(str.grep)){
@@ -1504,6 +1506,8 @@ setMethod('plot', signature(x='BIOMOD.projection.out'),
             
             
             if(class(x@proj) == "BIOMOD.stored.raster.stack"){
+              require(rasterVis)
+              
               ## define the breaks of the color key
               my.at <- seq(0,1000,by=100)
               ## the labels will be placed vertically centered

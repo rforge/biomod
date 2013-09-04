@@ -205,32 +205,32 @@
 .Models.dependencies <- function(silent=TRUE, models.options = NULL){
   # Loading all required libraries
   cat('\n\nLoading required library...')
-  require(nnet, quietly=silent)
-  require(rpart, quietly=silent)
-  require(MASS, quietly=silent)
-  require(gbm, quietly=silent)
-  require(mda, quietly=silent)
-  require(randomForest, quietly=silent)
-  
-  if(!is.null(models.options)){
-    if(grepl('mgcv', models.options@GAM$algo)){
-      if("package:gam" %in% search() ) detach(package:gam)
-      require(mgcv, quietly=silent)
-    } else{
-      if("package:mgcv" %in% search() ) detach(package:mgcv)
-      require(gam, quietly=silent)
-    }
-  } else {
-    if('mgcv' %in% rownames(installed.packages())){
-      if("package:gam" %in% search() ) detach(package:gam)
-      require(mgcv, quietly=silent)
-    } else{
-      if("package:mgcv" %in% search() ) detach(package:mgcv)
-      require(gam, quietly=silent)
-    }    
-  }
-
-  require(abind, quietly=silent)
+#   require(nnet, quietly=silent)
+#   require(rpart, quietly=silent)
+#   require(MASS, quietly=silent)
+#   require(gbm, quietly=silent)
+#   require(mda, quietly=silent)
+#   require(randomForest, quietly=silent)
+#   
+#   if(!is.null(models.options)){
+#     if(grepl('mgcv', models.options@GAM$algo)){
+#       if("package:gam" %in% search() ) detach(package:gam)
+#       require(mgcv, quietly=silent)
+#     } else{
+#       if("package:mgcv" %in% search() ) detach(package:mgcv)
+#       require(gam, quietly=silent)
+#     }
+#   } else {
+#     if('mgcv' %in% rownames(installed.packages())){
+#       if("package:gam" %in% search() ) detach(package:gam)
+#       require(mgcv, quietly=silent)
+#     } else{
+#       if("package:mgcv" %in% search() ) detach(package:mgcv)
+#       require(gam, quietly=silent)
+#     }    
+#   }
+# 
+#   require(abind, quietly=silent)
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #

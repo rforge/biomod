@@ -71,7 +71,7 @@ ProbDensFunc(initial,
   
   # Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
   myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
-                               package="biomod2"),
+                       package="biomod2"),
                   system.file( "external/bioclim/current/bio4.grd", 
                                package="biomod2"), 
                   system.file( "external/bioclim/current/bio7.grd", 
@@ -79,8 +79,8 @@ ProbDensFunc(initial,
                   system.file( "external/bioclim/current/bio11.grd", 
                                package="biomod2"), 
                   system.file( "external/bioclim/current/bio12.grd", 
-                               package="biomod2"))
-  
+                             package="biomod2"))
+    
   # 1. Formatting Data
   myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
                                        expl.var = myExpl,

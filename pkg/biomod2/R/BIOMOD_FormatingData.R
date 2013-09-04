@@ -159,7 +159,7 @@
     if(!is.null(resp.xy)){
       cat("\n      ! XY coordinates of response variable will be ignored because spatial response object is given.")
     }
-    resp.xy <- data.matrix(coordinates(resp.var))
+    resp.xy <- data.matrix(sp::coordinates(resp.var))
     if(class(resp.var) == 'SpatialPointsDataFrame'){
       resp.var <- resp.var@data
     } else{
@@ -284,7 +284,7 @@
       if(!is.null(eval.resp.xy)){
         cat("\n      ! XY coordinates of response variable will be ignored because spatial response object is given.")
       }
-      eval.resp.xy <- data.matrix(coordinates(eval.resp.var))
+      eval.resp.xy <- data.matrix(sp::coordinates(eval.resp.var))
       if(class(eval.resp.var) == 'SpatialPointsDataFrame'){
         eval.resp.var <- eval.resp.var@data
       } else{

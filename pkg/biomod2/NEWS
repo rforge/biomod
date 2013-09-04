@@ -1,3 +1,8 @@
+3.1-1 (2013-09-04)
+	* limitation of package dependencies
+	* fairely definition of package namespace
+	* add functions to update biomod2 objects from a version to the current one
+
 3.0.2 (2013-07-23)
 	* new fonctions to evaluate a-posteriori models quality
 	* remove weights for models scaling and set it FALSE by default

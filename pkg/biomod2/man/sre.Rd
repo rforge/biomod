@@ -7,7 +7,11 @@
   The SRE performs a simple analysis of within which range of each variable the data is recorded and renders predictions.
 }
 \usage{
-sre(Response = NULL, Explanatory = NULL, NewData = NULL, Quant=0.025, return_extremcond = FALSE)
+sre(Response = NULL, 
+    Explanatory = NULL, 
+    NewData = NULL, 
+    Quant=0.025, 
+    return_extremcond = FALSE)
 }
 
 \arguments{

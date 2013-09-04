@@ -225,14 +225,17 @@ myBiomodOptions <- BIOMOD_ModelingOptions(
                                   myFormula = NULL,
                                   test = 'BIC',
                                   family = 'binomial',
-                                  control = glm.control(epsilon = 1e-08, maxit = 1000, trace = FALSE) ))
+                                  control = glm.control(epsilon = 1e-08, 
+                                              maxit = 1000, 
+                                              trace = FALSE) ))
                                   
 # check changes was done
 myBiomodOptions
 
 # you can prefer to establish your own GLM formula
 myBiomodOptions <- BIOMOD_ModelingOptions(
-                        GLM = list(myFormula = formula("Sp277 ~ bio3 + log(bio10) + poly(bio16,2) + bio19 + bio3:bio19")))
+                    GLM = list( myFormula = formula("Sp277 ~ bio3 + 
+                    log(bio10) + poly(bio16,2) + bio19 + bio3:bio19")))
 
 # check changes was done
 myBiomodOptions

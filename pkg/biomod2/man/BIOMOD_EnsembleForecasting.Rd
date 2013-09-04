@@ -105,28 +105,32 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                        do.full.models = FALSE)
                                        
 # 4. Creating the ensemble models 
-myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
-                                       chosen.models = grep('_RF', get_built_models(myBiomodModelOut), value=TRUE),
-                                       em.by = 'algo',
-                                       eval.metric = c('TSS'),
-                                       eval.metric.quality.threshold = c(0.7),
-                                       prob.mean = TRUE,
-                                       prob.cv = FALSE,
-                                       prob.ci = FALSE,
-                                       prob.ci.alpha = 0.05,
-                                       prob.median = FALSE,
-                                       committee.averaging = FALSE,
-                                       prob.mean.weight = FALSE,
-                                       prob.mean.weight.decay = 'proportional' )
+myBiomodEM <- BIOMOD_EnsembleModeling( 
+                 modeling.output = myBiomodModelOut,
+                 chosen.models = grep('_RF', get_built_models(myBiomodModelOut), 
+                                  value=TRUE),
+                 em.by = 'algo',
+                 eval.metric = c('TSS'),
+                 eval.metric.quality.threshold = c(0.7),
+                 prob.mean = TRUE,
+                 prob.cv = FALSE,
+                 prob.ci = FALSE,
+                 prob.ci.alpha = 0.05,
+                 prob.median = FALSE,
+                 committee.averaging = FALSE,
+                 prob.mean.weight = FALSE,
+                 prob.mean.weight.decay = 'proportional' )
                                        
 # 5. Individual models projections on current environmental conditions
-myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
-                                        new.env = myExpl,
-                                        proj.name = 'current',
-                                        selected.models = grep('_RF', get_built_models(myBiomodModelOut), value=TRUE),
-                                        compress = 'NULL',
-                                        build.clamping.mask = FALSE)
-                                          
+myBiomodProjection <- BIOMOD_Projection(
+                        modeling.output = myBiomodModelOut,
+                        new.env = myExpl,
+                        proj.name = 'current',
+                        selected.models = grep('_RF', get_built_models(
+                                                myBiomodModelOut), value=TRUE),
+                        compress = 'NULL',
+                        build.clamping.mask = FALSE)
+                          
 
 # 4. Creating the ensemble projections
 BIOMOD_EnsembleForecasting( projection.output = myBiomodProjection,

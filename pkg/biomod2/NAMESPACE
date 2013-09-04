@@ -152,6 +152,7 @@ export(
 	randomise_data,
 	response.plot2,
 	sre,
+	update_objects,
 	variables_importance
 )
 
@@ -193,6 +194,10 @@ export(
 	get_var_type,
 	response.plot,
 	SampleMat2
+	#test_slots,
+	#update.objects_BIOMOD.formated.data,
+	#update.objects_biomod2_model,
+	#update.objects_BIOMOD.models.out
 )
 
 

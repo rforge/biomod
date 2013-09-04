@@ -96,7 +96,8 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
 # 4. Evaluate model over another dataset (here the full one)
 
 ## creation of suitable dataset
-data <- cbind(GuloGulo=get_formal_data(myBiomodModelOut,'resp.var'), get_formal_data(myBiomodModelOut,'expl.var'))
+data <- cbind(GuloGulo=get_formal_data(myBiomodModelOut,'resp.var'), 
+              get_formal_data(myBiomodModelOut,'expl.var'))
 
 ## evaluation
 evaluate(myBiomodModelOut, data=data, stat=c('ROC','TSS'))

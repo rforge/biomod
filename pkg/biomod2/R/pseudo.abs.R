@@ -283,6 +283,7 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
               
               # puting presences, true absences and pseudo absences together
               xy <- rbind(coordinates(sp), xyFromCell(mask, selected.cells))
+              xy <- .add_PA_rownames(xy) 
               sp <- as.numeric(unlist(c(as.vector(sp@data), rep(NA,length(selected.cells))), use.names=FALSE))
               env <- extract(env, xy)
 
@@ -420,6 +421,7 @@ setMethod('sre.pseudo.abs.selection', signature(env="RasterStack"),
             
             # puting presences, true absences and pseudo absences together
             xy <- rbind(coordinates(sp)[which(!is.na(as.vector(sp@data))),], xyFromCell(mask, selected.cells))
+            xy <- .add_PA_rownames(xy) 
             sp <- as.numeric(unlist(c(na.omit(as.vector(sp@data)), rep(NA,length(selected.cells))), use.names=FALSE))
             env <- extract(env, xy)
           
@@ -528,6 +530,7 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               
               # puting presences, true absences and pseudo absences together
               xy <- rbind(coordinates(sp), xyFromCell(mask, selected.cells))
+              xy <- .add_PA_rownames(xy) 
               sp <- as.numeric(unlist(c(as.vector(sp@data), rep(NA,length(selected.cells))), use.names=FALSE))
               env <- extract(env, xy)
 
@@ -541,6 +544,19 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
               
             } 
           })
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #  
+# automaticaly add rownames to a data.frame
+.add_PA_rownames <- function(xy){
+  rn <- row.names(xy)
+  missing_rn <- which(rn == "")
+  if(length(missing_rn)){
+    rn[missing_rn] <- paste("pa", 1:length(missing_rn), sep="")
+  }
+  rownames(xy) <- rn
+  return(xy)
+}
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #  
 
 # setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
 #           function(sp, env, distMin, distMax, nb.points, nb.repet){

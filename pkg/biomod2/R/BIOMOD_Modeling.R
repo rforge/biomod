@@ -51,7 +51,7 @@
   # 1. args checking =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   args <- .Models.check.args(data, models, models.options, NbRunEval, DataSplit,
                              Yweights, VarImport, models.eval.meth, Prevalence, 
-                             do.full.models, ...)
+                             do.full.models, SaveObj,...)
   # updating Models arguments
   models <- args$models
   models.options <- args$models.options
@@ -63,7 +63,8 @@
   Prevalence <- args$Prevalence
   do.full.models <- args$do.full.models
   DataSplitTable <- args$DataSplitTable
-
+  SaveObj <- args$SaveObj
+  
   rm(args)
   models.out <- new('BIOMOD.models.out',
                     sp.name = data@sp.name,
@@ -236,7 +237,7 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 .Models.check.args <- function(data, models, models.options, NbRunEval, DataSplit,
-                               Yweights, VarImport, models.eval.meth, Prevalence, do.full.models,...){
+                               Yweights, VarImport, models.eval.meth, Prevalence, do.full.models, SaveObj, ...){
   cat('\n\nChecking Models arguments...\n')
   add.args <- list(...)
   
@@ -385,7 +386,14 @@
       }
     }
   }
-
+  
+  ##### TO BE CHANGE BUT PREVENT FROM BUGS LATTER
+  # Force object saving parameter
+  if(!SaveObj){
+    cat("\n\t SaveObj param was automaticaly set to TRUE to prevent from bugs.")
+    SaveObj <- TRUE
+  }
+  
 #   cat('\nChecking done!\n')
   return(list(models = models,
               models.options = models.options,
@@ -396,6 +404,7 @@
               models.eval.meth = models.eval.meth,
               Prevalence = Prevalence,
               do.full.models = do.full.models,
+              SaveObj = SaveObj,
               DataSplitTable=add.args$DataSplitTable))
 }
 

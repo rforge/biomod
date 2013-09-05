@@ -149,7 +149,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
       rowToRm <- unique(unlist(lapply(BFD@data.env.var,function(x){return(which(is.na(x)))})))
       if(length(rowToRm)){
         cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
-        BFD@coord <- BFD@coord[-rowToRm,]
+        BFD@coord <- BFD@coord[-rowToRm,,drop=FALSE]
         BFD@data.species <- BFD@data.species[-rowToRm]
         BFD@data.env.var <- BFD@data.env.var[-rowToRm,,drop=FALSE]
       }
@@ -157,7 +157,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
         rowToRm <- unique(unlist(lapply(BFD@eval.data.env.var,function(x){return(which(is.na(x)))})))
         if(length(rowToRm)){
           cat("\n\t\t\t! Some NAs have been automaticly removed from your evaluation data")
-          BFD@eval.coord <- BFD@eval.coord[-rowToRm,]
+          BFD@eval.coord <- BFD@eval.coord[-rowToRm,,drop=FALSE]
           BFD@eval.data.species <- BFD@eval.data.species[-rowToRm]
           BFD@eval.data.env.var <- BFD@eval.data.env.var[-rowToRm,,drop=FALSE]
         }      
@@ -432,16 +432,16 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
       rowToRm <- unique(unlist(lapply(pa.data.tmp$env,function(x){return(which(is.na(x)))})))
       if(length(rowToRm)){
         cat("\n\t\t\t! Some NAs have been automaticly removed from your data")
-        pa.data.tmp$xy <- pa.data.tmp$xy[-rowToRm,,drop=FALSE]
-        pa.data.tmp$sp <- pa.data.tmp$sp[-rowToRm, ,drop=FALSE]
+        pa.data.tmp$xy <- pa.data.tmp$xy[-rowToRm,,drop=FALSE]        
+        pa.data.tmp$sp <- pa.data.tmp$sp[-rowToRm, drop=FALSE]
         pa.data.tmp$env <- pa.data.tmp$env[-rowToRm,,drop=FALSE]
         pa.data.tmp$pa.tab <- pa.data.tmp$pa.tab[-rowToRm,,drop=FALSE]
-        cat("\n***\n")
-        cat("\ndim(xy) <-", dim(pa.data.tmp$xy))
-        cat("\nclass(sp) <- ", class(pa.data.tmp$sp))
-        cat("\ndim(sp) <-", dim(pa.data.tmp$sp))
-        cat("\ndim(env) <-", dim(pa.data.tmp$env))
-        cat("\ndim(pa.tab) <-", dim(pa.data.tmp$pa.tab))
+#         cat("\n***\n")
+#         cat("\ndim(xy) <-", dim(pa.data.tmp$xy))
+#         cat("\nclass(sp) <- ", class(pa.data.tmp$sp))
+#         cat("\ndim(sp) <-", dim(pa.data.tmp$sp))
+#         cat("\ndim(env) <-", dim(pa.data.tmp$env))
+#         cat("\ndim(pa.tab) <-", dim(pa.data.tmp$pa.tab))
         
       }      
     }
@@ -450,9 +450,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
     # data counting
 #     pa.data.tmp$data.counting <- apply(pa.data.tmp$pa.tab,2,function(x){nbPres <- sum(pa.data.tmp$sp[x],na.rm=T) ; return(c(nbPres,sum(x)-nbPres))})
 #     colnames(pa.data.tmp$data.counting) <- colnames(pa.data.tmp$pa.tab)
-    
-    
-      
+
     BFD <- BIOMOD.formated.data(sp=pa.data.tmp$sp,
                                 env=pa.data.tmp$env,
                                 xy=as.data.frame(pa.data.tmp$xy),
@@ -507,9 +505,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
     } else{
       data.mask <- stack()
     }
-    
 
-      
     BFDP <- new('BIOMOD.formated.data.PA',
                 sp.name = BFD@sp.name,
                 coord = BFD@coord,

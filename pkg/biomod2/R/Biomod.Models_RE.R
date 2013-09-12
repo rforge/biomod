@@ -159,13 +159,17 @@
     
     ### Old version
     if(Options@GAM$algo == 'GAM_gam'){ ## gam package
+      # package loading
+      if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
+      if( ! ("package:gam" %in% search()) ){ require(gam,quietly=TRUE) }
+      
       cat('\n\t> GAM (gam) modelling...')
       
-      gamStart <- eval(parse(text=paste("gam(",colnames(Data)[1] ,"~1 ," ,
+      gamStart <- eval(parse(text=paste("gam::gam(",colnames(Data)[1] ,"~1 ," ,
                                         " data = Data[calibLines,], family = ", Options@GAM$family$family,"(link = '",Options@GAM$family$link,"')",#eval(Options@GAM$family),
                                         ", weights = Yweights[calibLines])" ,sep="")))
       
-      model.sp <- try( step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
+      model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
                                 data = Data[calibLines,],
                                 keep = .functionkeep, 
                                 direction = "both",
@@ -173,6 +177,10 @@
                                 control = Options@GAM$control))#eval(control.list)) )
       
     } else { ## mgcv package
+      # package loading
+      if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
+      if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
+      
       if(is.null(Options@GAM$myFormula)){
         cat("\n\tAutomatic formula generation...")
         gam.formula <- makeFormula(resp_name,head(Data[,expl_var_names,drop=FALSE]),Options@GAM$type, Options@GAM$interaction.level, k=Options@GAM$k)

@@ -460,12 +460,12 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
             
             args <- list(...)
             if(object@model_subclass %in% c("GAM_mgcv","BAM_mgcv")){
-              if( ("package:gam" %in% search()) ){ detach("package:gam")}
-#               if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
+              if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
+              if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
             }
             
             if(object@model_subclass == "GAM_gam"){
-              if( ("package:mgcv" %in% search()) ){ detach("package:mgcv")}
+              if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
               if( ! ("package:gam" %in% search()) ){ require(gam,quietly=TRUE) }
             }
             

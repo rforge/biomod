@@ -2,18 +2,28 @@
 ## external functions importation ##
 ####################################
 importFrom("abind", abind, asub)
-importFrom("gbm", gbm, gbm.perf)
-importFrom("mda", fda, mars)
-importFrom("nnet", nnet)
+#importFrom("gbm", gbm, gbm.perf)
+import("gbm")
+importFrom("MASS",stepAIC)
+#importFrom("mda", fda, mars)
+import("mda")
+#importFrom("nnet", nnet)
+import("nnet")
+#importFrom("parallel", detectCores) # for gbm package
 import("pROC") # import the whole package to get S3 Methods
-importFrom("rpart", prune, rpart)
-importFrom("randomForest",randomForest)
+#importFrom("rpart", prune, rpart)
+import("rpart")
+#importFrom("randomForest",randomForest)
+import("randomForest")
 ### raster package is at time consider as dependencie
 #importFrom(raster, addLayer, calc, canProcessInMemory, cellFromXY, cv, extract, inMemory, maxValue, minValue, ncell, nlayers, predict, raster, rasterOptions, reclassify, readAll, sampleRandom, stack, Which, writeRaster)
 importFrom(rasterVis, levelplot)
 #importFrom(RColorBrewer, brewer.pal)
 ### sp package is at time consider as dependencie
 #importFrom(sp, coordinates, read.asciigrid, SpatialPointsDataFrame, spplot)
+#import("survivial") # for gbm package
+#import("spline") # for gbm package
+
 
 ### generic methods importation
 #import("graphics")

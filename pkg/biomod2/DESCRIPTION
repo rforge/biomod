@@ -9,6 +9,6 @@ Contact: Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>, Damien Georges <
 BugReports: <https://r-forge.r-project.org/R/?group_id=302>
 Description: Functions for species distribution modeling, calibration and evaluation, ensemble of models.
 Depends: stats, methods, utils, sp, raster, parallel
-Imports: abind, rasterVis, pROC, nnet, gbm, mda, randomForest, rpart, parallel, mgcv, gam, MASS
-Suggests: ade4, foreign, Hmisc
+Imports: abind, rasterVis, pROC, nnet, gbm, mda, randomForest, rpart, parallel, MASS
+Suggests: ade4, foreign, Hmisc, mgcv, gam
 License: GPL-2

@@ -462,13 +462,13 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
             if(object@model_subclass %in% c("GAM_mgcv","BAM_mgcv")){
               if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
               if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
-#               requireNamespace("mgcv")
+#               loadNamespace("mgcv")
             }
             
             if(object@model_subclass == "GAM_gam"){
               if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
               if( ! ("package:gam" %in% search()) ){ require(gam,quietly=TRUE) }
-#               requireNamespace("gam")
+#               loadNamespace("gam")
             }
             
             ## data checking

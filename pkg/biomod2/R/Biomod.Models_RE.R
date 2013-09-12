@@ -161,7 +161,8 @@
     if(Options@GAM$algo == 'GAM_gam'){ ## gam package
       # package loading
       if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
-      if( ! ("package:gam" %in% search()) ){ require(gam,quietly=TRUE) }
+      if( ! ("package:gam" %in% search()) ){ require("gam",quietly=TRUE) }
+#       loadNamespace("gam")
       
       cat('\n\t> GAM (gam) modelling...')
       
@@ -180,6 +181,7 @@
       # package loading
       if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
       if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
+#       loadNamespace("mgcv")
       
       if(is.null(Options@GAM$myFormula)){
         cat("\n\tAutomatic formula generation...")

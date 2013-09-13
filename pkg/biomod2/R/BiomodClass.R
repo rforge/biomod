@@ -1457,7 +1457,7 @@ setMethod("get_predictions", "BIOMOD.projection.out",
               models_selected <- grep(pattern=grep_full, models_selected, value=T)
             }
             
-            cat("\n*** models_selected = ", models_selected)
+#             cat("\n*** models_selected = ", models_selected)
             
             if (length(models_selected)){
               proj <- load_stored_object(obj@proj)

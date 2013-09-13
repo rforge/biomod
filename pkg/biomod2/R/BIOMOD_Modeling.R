@@ -182,9 +182,9 @@
   }
   
   # removing MAXENT tmp dir
-  if('MAXENT' %in% models){
-    .Delete.Maxent.WorkDir(species.name=models.out@sp.name, modeling.id=models.out@modeling.id)
-  }
+#   if('MAXENT' %in% models){
+#     .Delete.Maxent.WorkDir(species.name=models.out@sp.name, modeling.id=models.out@modeling.id)
+#   }
   
   rm(modeling.out)
   

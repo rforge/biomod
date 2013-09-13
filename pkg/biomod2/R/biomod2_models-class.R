@@ -806,12 +806,12 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   rm_tmp_files <- args$rm_tmp_files
   temp_workdir <- args$temp_workdir
   
-  if (is.null(temp_workdir)) temp_workdir <- paste("maxentWDtmp", format(Sys.time(), "%s"), sep="")
+#   if (is.null(temp_workdir)) temp_workdir <- paste("maxentWDtmp", format(Sys.time(), "%s"), sep="")
   if (is.null(rm_tmp_files)) rm_tmp_files <- TRUE
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir, silent=TRUE )
+  MWD <- .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, silent=TRUE )
   
   # checking maxent.jar is present
   path_to_maxent.jar <- file.path(object@model_options$path_to_maxent.jar, "maxent.jar")
@@ -823,12 +823,12 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   system(command=paste("java -cp ", path_to_maxent.jar,
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
-                       file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj"), " ", 
-                       file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.grd") , 
+                       MWD$m_workdir, " ", 
+                       file.path(MWD$m_workdir, "projMaxent.grd") , 
                        " doclamp=false visible=false autorun nowarnings notooltips", sep=""), wait = TRUE, intern=TRUE)
   
   if(!silent) cat("\n\t\tReading Maxent outputs...")
-  proj <- raster(file.path(object@resp_name, temp_workdir , "MaxentTmpData","projMaxent.grd"))
+  proj <- raster(file.path(MWD$m_workdir,"projMaxent.grd"))
   
   if(length(get_scaling_model(object))){
     names(proj) <- "pred"
@@ -849,7 +849,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
 #       unlink(x=file.path(object@resp_name, temp_workdir), recursive=TRUE, force=TRUE )
-      .Delete.Maxent.WorkDir(species.name = object@resp_name, proj.name = temp_workdir)
+      .Delete.Maxent.WorkDir(MWD)
     }
   }
   
@@ -880,7 +880,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   ## no xy needed for models projections
   xy <- NULL
   
-  .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, proj.name = temp_workdir, silent=T)
+  MWD <- .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, proj.name = temp_workdir, silent=T)
 #   .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
   
   # checking maxent.jar is present
@@ -890,19 +890,25 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   }
   
   if(!silent) cat("\n\t\tRunning Maxent...")
+#   system(command=paste("java -cp ", path_to_maxent.jar,
+#                        " density.Project \"", 
+#                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
+#                        file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj_swd.csv"), " ", 
+#                        file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.asc") , 
+#                        " doclamp=false", sep=""), wait = TRUE, intern=TRUE)
   system(command=paste("java -cp ", path_to_maxent.jar,
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
-                       file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj_swd.csv"), " ", 
-                       file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.asc") , 
+                       file.path(MWD$m_workdir, "Proj_swd.csv"), " ", 
+                       file.path(MWD$m_workdir, "projMaxent.asc") , 
                        " doclamp=false", sep=""), wait = TRUE, intern=TRUE)
   
   if(!silent) cat("\n\t\tReading Maxent outputs...")
-  proj <- as.numeric(read.asciigrid(file.path(object@resp_name, temp_workdir , "MaxentTmpData", "projMaxent.asc"))@data[,1])
+  proj <- as.numeric(read.asciigrid(file.path(MWD$m_workdir, "projMaxent.asc"))@data[,1])
   
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
-      .Delete.Maxent.WorkDir(species.name = object@resp_name, temp_workdir = file.path(object@resp_name, temp_workdir), silent=T)
+      .Delete.Maxent.WorkDir(MWD)
     }
   }
 

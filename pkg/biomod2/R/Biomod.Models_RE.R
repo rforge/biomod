@@ -501,16 +501,15 @@
   
   # MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "MAXENT"){
-    .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport = 0, evalData, eval.xy, species.name=resp_name, modeling.id=modeling.id)
+    MWD <- .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport = 0, evalData, eval.xy, species.name=resp_name, modeling.id=modeling.id)
     
     # run MaxEnt:
     cat("\n Running Maxent...")  
-    system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), " environmentallayers=\"",
-                         file.path(resp_name,"models",modeling.id, "MaxentTmpData", "Back_swd.csv"),"\" samplesfile=\"",
-                         file.path(resp_name,"models",modeling.id, "MaxentTmpData", "Sp_swd.csv"),"\" projectionlayers=\"",
-                         gsub(", ",",",toString(list.files(file.path(resp_name,"models",modeling.id,"MaxentTmpData", "Pred"),
-                                                           full.names= T))), "\" outputdirectory=\"",
-                         file.path(resp_name, "models", modeling.id, paste(model_name, "_outputs", sep="")),"\"",
+    system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), 
+                         " environmentallayers=\"", MWD$m_backgroundFile,
+                         "\" samplesfile=\"", MWD$m_speciesFile,
+                         "\" projectionlayers=\"", gsub(", ",",",toString(MWD$m_predictFile)), 
+                         "\" outputdirectory=\"", MWD$m_outdir, "\"",
                          " outputformat=logistic ",
                          #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations,
                          ifelse(length(categorial_var), 
@@ -536,7 +535,7 @@
     
     
     model.bm <- new("MAXENT_biomod2_model",
-                    model_output_dir=file.path(resp_name, "models", modeling.id, paste(model_name, "_outputs", sep="")),
+                    model_output_dir = MWD$m_outdir,
                     model_name = model_name,
                     model_class = 'MAXENT',
                     model_options = Options@MAXENT,
@@ -547,7 +546,10 @@
     
     # for MAXENT predicitons are calculated in the same time than models building to save time.
     cat("\n Getting predictions...")
-    g.pred <- try(round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam,"_Pred_swd.csv", sep="") ) )[,3]) * 1000))
+    g.pred <- try(round(as.numeric(read.csv(MWD$m_predictFile)[,3]) * 1000))
+    
+    # remove tmp dir
+    .Delete.Maxent.WorkDir(MWD)
   }
   # end MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   

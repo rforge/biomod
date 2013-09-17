@@ -28,7 +28,6 @@ importFrom(rasterVis, levelplot)
 ### generic methods importation
 #import("graphics")
 #import("stats")
-#import("methods")
 import("raster")
 import("sp")
 

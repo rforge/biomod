@@ -687,7 +687,7 @@ setClass("BIOMOD.Model.Options",
 #                                 class.stratify.cv = 'bernoulli',
                                 perf.method = 'cv'),
                    
-                   GAM = list( algo = "GAM_gam",
+                   GAM = list( algo = "GAM_mgcv",
                                type = "s_smoother",
                                k = NULL,
                                interaction.level = 0,
@@ -1464,15 +1464,20 @@ setMethod("get_predictions", "BIOMOD.projection.out",
               if(inherits(proj,'Raster')){
                 proj <- raster::subset(proj,models_selected,drop=FALSE)
               } else {
-                proj <- proj[,.extractModelNamesInfo(model.names=models_selected,info='models'),
-                             .extractModelNamesInfo(model.names=models_selected,info='run.eval'),
-                             .extractModelNamesInfo(model.names=models_selected,info='data.set'), drop=FALSE]
+                if(length(dim(proj)) == 4){ ## 4D arrays
+                  proj <- proj[,.extractModelNamesInfo(model.names=models_selected,info='models'),
+                               .extractModelNamesInfo(model.names=models_selected,info='run.eval'),
+                               .extractModelNamesInfo(model.names=models_selected,info='data.set'), drop=FALSE]
+                } else{ ## matrix (e.g. from ensemble models projections)
+                  proj <- proj[,models_selected,drop=FALSE]
+                }
+
               }
                
               if(as.data.frame){
                 proj <- as.data.frame(proj)
                 ## set correct names
-                if(obj@type == 'array'){
+                if(obj@type == 'array' & length(dim(proj)) == 4){
                   names(proj) <- unlist(lapply(strsplit(names(proj),".", fixed=TRUE), 
                                                function(x){
                                                  return(paste(obj@sp.name, x[3], x[2], x[1],sep="_"))
@@ -1574,7 +1579,8 @@ setClass("BIOMOD.EnsembleModeling.out",
                         em.computed = 'character',
                         em.by = 'character',
                         em.models = 'ANY',
-                        modeling.id = 'character'),
+                        modeling.id = 'character',
+                        link = 'character'),
                         #                         em.models.kept = 'list',
                         #                         em.prediction = 'BIOMOD.stored.array',
                         #                         em.evaluation = 'BIOMOD.stored.array',
@@ -1589,7 +1595,8 @@ setClass("BIOMOD.EnsembleModeling.out",
                     eval.metric.quality.threshold = 0,
                     em.models = NULL,
                     em.computed = character(),
-                    modeling.id = '.'),
+                    modeling.id = '.',
+                    link = ''),
                     #                     em.models.kept = NULL,
                     #                     em.prediction = NULL,
 #                     #                     em.evaluation = NULL,

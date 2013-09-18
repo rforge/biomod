@@ -46,7 +46,13 @@
   
   if(is.null(compress)) compress <- FALSE
   if(is.null(do.stack)) do.stack <- TRUE
-  if(is.null(xy.new.env)) xy.new.env <- matrix()
+  if(is.null(xy.new.env)) { 
+    if(!is.null(projection.output)){
+      xy.new.env <- projection.output@xy.coord
+    } else{
+      xy.new.env <- matrix()
+    }
+  } 
   
   rm(list=c('args_checked','args'))
   
@@ -60,7 +66,7 @@
                   xy.coord = xy.new.env,
                   modeling.object.id = EM.output@modeling.id)
   
-  proj_out@modeling.object@link = EM.output@models.out.obj@link
+  proj_out@modeling.object@link = EM.output@link
   
   proj_is_raster <- FALSE
   if(inherits(new.env, 'Raster')){
@@ -76,7 +82,7 @@
     proj_out@proj <- new('BIOMOD.stored.raster.stack')
   } else{
     proj_out@proj <- new('BIOMOD.stored.array')
-    do.stack = FALSE
+    do.stack = TRUE
   }
   
   # 1.c creating output directory
@@ -150,12 +156,16 @@
   proj_out@models.projected <- EM.output@em.computed
   
   if(do.stack){
-    names(ef.out) <- EM.output@em.computed
+    if( inherits(ef.out, "Raster") ) {
+      names(ef.out) <- EM.output@em.computed
+    } else {
+      colnames(ef.out) <- EM.output@em.computed
+    }
     # save object
     file_name_tmp <- file.path(EM.output@sp.name,paste("proj_", proj.name, sep=""),paste("proj_", proj.name,"_",EM.output@sp.name,"_ensemble",output.format,sep=""))
     if(output.format== '.Rdata'){
       save(ef.out, file=file_name_tmp, compress=compress)
-    } else{
+    } else if( inherits(ef.out, "Raster") ){
       writeRaster(ef.out,filename=file_name_tmp, overwrite=TRUE)
     }
     saved.files <- c(saved.files, file_name_tmp)
@@ -165,6 +175,7 @@
   }
     
   proj_out@proj@val <- ef.out
+  proj_out@proj@inMemory <- TRUE
   
   ## binary && filtering transformations
   if(length(binary.meth) | length(filtered.meth)){

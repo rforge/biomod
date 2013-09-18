@@ -1,6 +1,14 @@
 ####################################
 ## external functions importation ##
 ####################################
+
+### generic methods importation
+#import("graphics")
+#import("stats")
+import("methods") 
+import("raster")
+import("sp")
+
 importFrom("abind", abind, asub)
 #importFrom("gbm", gbm, gbm.perf)
 import("gbm")
@@ -25,11 +33,7 @@ importFrom(rasterVis, levelplot)
 #import("spline") # for gbm package
 
 
-### generic methods importation
-#import("graphics")
-#import("stats")
-import("raster")
-import("sp")
+
 
 ####################################
 ##       biomod2 exports	  	  ##

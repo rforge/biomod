@@ -33,6 +33,7 @@ EnsembleModeling objects are created, used and returned by BIOMOD functions. It'
     \item{\code{em.by}:}{ "character", way models are combined}
     \item{\code{em.models}:}{ "ANY", list of built biomod2.ensemble.models objects }
     \item{\code{modeling.id}:}{ "character", the id of the whole modelling process}
+    \item{\code{link}:}{ "character", the path to correspunding hard drive saved object}
   }
 
 }

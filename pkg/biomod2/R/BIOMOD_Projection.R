@@ -377,14 +377,16 @@
       
   ## do.stack
   if(class(new.env) != 'RasterStack'){
-    # do.stack <- TRUE
+    if(!do.stack) cat("\n\t\t! 'do.stack' arg is always set as TRUE for data.frame/matrix dataset")
+    do.stack <- TRUE
   } else{
     if(do.stack){
       # test if there is memory enough to work with RasterStack
-      do.stack = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
-      if (!do.stack){ 
-        cat("\n   ! Results will be saved as individual RasterLayers because of a lack of memory !")
-      }
+      test = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
+      if (!test) rasterOptions(todisk=T)
+#       if (!do.stack){ 
+#         cat("\n   ! Results will be saved as individual RasterLayers because of a lack of memory !")
+#       }
     }
   }
 

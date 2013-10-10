@@ -111,6 +111,7 @@ setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='data.frame'),
               m_workdir <- file.path(species.name,proj.name,paste('m_',sub(".","",as.character(format(Sys.time(), "%OS6")), fixed=T),sep=""))
             }
             MWD$m_workdir <- m_workdir
+                      
             dir.create(m_workdir, recursive=TRUE, showWarnings=FALSE)
             
             # Proj Data

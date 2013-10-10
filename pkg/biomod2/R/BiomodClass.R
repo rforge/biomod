@@ -1153,19 +1153,19 @@ setMethod("load_stored_object", "BIOMOD.stored.data",
               } else if(grepl(".grd", obj@link) | grepl(".img", obj@link)){
                 return(raster::stack(obj@link))
               } else {
-                filesToLoad <- list.files(path=sub("/individual_projections","", bm_proj@link), full.names=T)
+                filesToLoad <- list.files(path=sub("/individual_projections","", obj@link), full.names=T)
                 toMatch <- c('.grd$','.img$')
                 filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)  
                 if(length(filesToLoad)){
                   return(raster::stack(filesToLoad[1]))
                 } else {
-                  filesToLoad <- list.files(path=bm_proj@link, full.names=T)
+                  filesToLoad <- list.files(path=obj@link, full.names=T)
                   toMatch <- c('.grd$','.img$')
                   filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
-                  toMatch <- bm_proj@models.projected
+                  toMatch <- obj@models.projected
                   filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
                   proj <- raster::stack(filesToLoad)
-                  toMatch <- c(bm_proj@link,".img$",'.grd$', .Platform$file.sep)
+                  toMatch <- c(obj@link,".img$",'.grd$', .Platform$file.sep)
                   names(proj) <- gsub(pattern=paste(toMatch,collapse="|"), "", filesToLoad)
                   return(proj)
                 }   

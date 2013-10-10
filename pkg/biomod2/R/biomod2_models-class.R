@@ -830,10 +830,10 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   if(!silent) cat("\n\t\tReading Maxent outputs...")
   proj <- raster(file.path(MWD$m_workdir,"projMaxent.grd"))
   
-  if(length(get_scaling_model(object))){
-    names(proj) <- "pred"
-    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
-  }
+#   if(length(get_scaling_model(object))){
+#     names(proj) <- "pred"
+#     proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
+#   }
 
   if(on_0_1000) proj <- round(proj*1000)
   
@@ -849,7 +849,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
 #       unlink(x=file.path(object@resp_name, temp_workdir), recursive=TRUE, force=TRUE )
-      .Delete.Maxent.WorkDir(MWD)
+      .Delete.Maxent.WorkDir(MWD, silent=silent)
     }
   }
   
@@ -864,7 +864,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   xy <- args$xy
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
-  if (is.null(temp_workdir)) temp_workdir <- paste("maxentWDtmp", format(Sys.time(), "%s"), sep="")
+#   if (is.null(temp_workdir)) temp_workdir <- paste("maxentWDtmp", format(Sys.time(), "%s"), sep="")
   if (is.null(rm_tmp_files)) rm_tmp_files <- TRUE
   
 #   if( is.null(xy) ){
@@ -880,7 +880,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   ## no xy needed for models projections
   xy <- NULL
   
-  MWD <- .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, proj.name = temp_workdir, silent=T)
+  MWD <- .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, silent=T)
 #   .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
   
   # checking maxent.jar is present
@@ -896,26 +896,28 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
 #                        file.path(object@resp_name, temp_workdir, "MaxentTmpData","Proj_swd.csv"), " ", 
 #                        file.path(object@resp_name, temp_workdir, "MaxentTmpData", "projMaxent.asc") , 
 #                        " doclamp=false", sep=""), wait = TRUE, intern=TRUE)
+  
   system(command=paste("java -cp ", path_to_maxent.jar,
                        " density.Project \"", 
                        file.path(object@model_output_dir, sub("_MAXENT",".lambdas",object@model_name, fixed=T)),"\" ", 
-                       file.path(MWD$m_workdir, "Proj_swd.csv"), " ", 
+                       file.path(MWD$m_workdir, "Pred_swd.csv"), " ", 
                        file.path(MWD$m_workdir, "projMaxent.asc") , 
                        " doclamp=false", sep=""), wait = TRUE, intern=TRUE)
+
   
   if(!silent) cat("\n\t\tReading Maxent outputs...")
   proj <- as.numeric(read.asciigrid(file.path(MWD$m_workdir, "projMaxent.asc"))@data[,1])
   
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
-      .Delete.Maxent.WorkDir(MWD)
+      .Delete.Maxent.WorkDir(MWD, silent=silent)
     }
   }
 
-  if(length(get_scaling_model(object))){
-    proj <- data.frame(pred = proj)
-    proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
-  }
+#   if(length(get_scaling_model(object))){
+#     proj <- data.frame(pred = proj)
+#     proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)
+#   }
   
   if(on_0_1000) proj <- round(proj*1000)
   

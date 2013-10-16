@@ -253,11 +253,29 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
 .predict.ANN_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
+  
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
+  
   
   set.seed(555)
-  proj <- as.numeric( predict(get_formal_model(object), newdata, type="raw") )
+  proj <- as.numeric( predict(get_formal_model(object), newdata[not_na_rows,,drop=F], type="raw") )
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
   
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -334,11 +352,28 @@ setMethod('predict', signature(object = 'CTA_biomod2_model'),
 .predict.CTA_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
+  
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
   
   set.seed(123)
-  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata),type="prob")[,2])
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE]),type="prob")[,2])
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
   
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -417,7 +452,18 @@ setMethod('predict', signature(object = 'FDA_biomod2_model'),
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata),type = "posterior")[,2])
+  ## check if na occurs in newdata cause they are not well supported
+  not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE]),type = "posterior")[,2])
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
 
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -513,10 +559,27 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
 .predict.GAM_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
   
-  proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = as.data.frame(newdata)))
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
+  
+  proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = as.data.frame(newdata[not_na_rows,,drop=FALSE])))
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
 
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -593,10 +656,27 @@ setMethod('predict', signature(object = 'GBM_biomod2_model'),
 .predict.GBM_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
   
-  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata), n.trees = object@n.trees_optim, type = "response"))
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
+  
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE]), n.trees = object@n.trees_optim, type = "response"))
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
   
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -672,10 +752,27 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
 .predict.GLM_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
   
-  proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = newdata[,,drop=FALSE]))
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
+  
+  proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = newdata[not_na_rows,,drop=FALSE]))
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
   
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -751,10 +848,27 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
 .predict.MARS_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
   
-  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata)))
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
+  
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE])))
+  
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
   
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
@@ -880,7 +994,10 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   ## no xy needed for models projections
   xy <- NULL
   
-  MWD <- .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata), xy = xy , species.name = object@resp_name, silent=T)
+  ## check if na occurs in newdata cause they are not well supported
+  not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  
+  MWD <- .Prepare.Maxent.Proj.WorkDir(Data = as.data.frame(newdata[not_na_rows,,drop=FALSE]), xy = xy , species.name = object@resp_name, silent=T)
 #   .Prepare.Maxent.Proj.WorkDir(Data = newdata, species.name = object@resp_name, proj.name = temp_workdir )
   
   # checking maxent.jar is present
@@ -907,6 +1024,14 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   
   if(!silent) cat("\n\t\tReading Maxent outputs...")
   proj <- as.numeric(read.asciigrid(file.path(MWD$m_workdir, "projMaxent.asc"))@data[,1])
+  
+  ## add original NAs in table
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
   
   if(!is.null(rm_tmp_files)){
     if(rm_tmp_files){
@@ -989,11 +1114,28 @@ setMethod('predict', signature(object = 'RF_biomod2_model'),
 .predict.RF_biomod2_model.data.frame <- function(object, newdata, ...){
   args <- list(...)
   on_0_1000 <- args$on_0_1000
+  omit.na <- args$omit.na
   
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
+  if (is.null(omit.na)) omit.na <- FALSE
   
-  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata), type='prob')[,'1'])
+  ## check if na occurs in newdata cause they are not well supported
+  if(omit.na){
+    not_na_rows <- apply(newdata, 1, function(x){sum(is.na(x))==0})
+  } else {
+    not_na_rows <- rep(T, nrow(newdata))
+  }
+  
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE]), type='prob')[,'1'])
 
+  ## add original NAs in table if it needed
+  if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset
+    tmp <- rep(NA,length(not_na_rows))
+    tmp[not_na_rows] <- proj
+    proj <- tmp
+    rm('tmp')
+  }
+  
   if(length(get_scaling_model(object))){
     proj <- data.frame(pred = proj)
     proj <- .testnull(object = get_scaling_model(object), Prev = 0.5 , dat = proj)

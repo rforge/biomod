@@ -83,23 +83,29 @@
   rm('args')
   gc()
   
+  out <- NULL
+  
   if(PA.strategy == 'none'){ # no Pseudo Absences
-    return(BIOMOD.formated.data(sp=resp.var,
+    out <- BIOMOD.formated.data(sp=resp.var,
                                 xy=resp.xy,
                                 env=expl.var,
                                 sp.name=resp.name,
                                 eval.sp=eval.resp.var,
                                 eval.env=eval.expl.var,
                                 eval.xy=eval.resp.xy,
-                                na.rm=na.rm))
+                                na.rm=na.rm)
   } else{ # Automatic Pseudo Absences Selection
-    return(BIOMOD.formated.data.PA(sp=resp.var, xy=resp.xy, env=expl.var, sp.name=resp.name,
+    out <- BIOMOD.formated.data.PA(sp=resp.var, xy=resp.xy, env=expl.var, sp.name=resp.name,
                                    eval.sp=eval.resp.var, eval.env=eval.expl.var, eval.xy=eval.resp.xy,
                                    PA.NbRep=PA.nb.rep, PA.strategy=PA.strategy, 
                                    PA.nb.absences = PA.nb.absences, PA.dist.min = PA.dist.min,
                                    PA.dist.max = PA.dist.max, PA.sre.quant = PA.sre.quant, PA.table=PA.table, 
-                                   na.rm=na.rm))
+                                   na.rm=na.rm)
   } 
+  
+  
+  .bmCat("Done")
+  return(out)
 }
 
 .BIOMOD_FormatingData.check.args <- function(resp.var,

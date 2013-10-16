@@ -128,7 +128,7 @@ myBiomodProjection <- BIOMOD_Projection(
                         proj.name = 'current',
                         selected.models = grep('_RF', get_built_models(
                                                 myBiomodModelOut), value=TRUE),
-                        compress = 'NULL',
+                        compress = FALSE,
                         build.clamping.mask = FALSE)
                           
 

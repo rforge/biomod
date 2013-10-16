@@ -32,6 +32,7 @@
   
   # 0. get additional args =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   args <- list(...)
+  omit.na <- args$omit.na # omit all non full filled environemental cells (always TRUE if env is a raster object)
   silent <- args$silent # echo advancement or not
   do.stack <- args$do.stack # store output in a lone stack
   clamping.level <- args$clamping.levels # remove all cells where at least clamping.level variables are out of their calibrating range
@@ -39,6 +40,7 @@
   output.format <- args$output.format # raster output format
   keep.in.memory <- args$keep.in.memory # store results on memory or only on hard drive
   
+  if(is.null(omit.na)) omit.na <- TRUE
   if(is.null(silent)) silent <- FALSE
   if(is.null(do.stack)) do.stack <- TRUE
 #   if(is.null(clamping.value)) clamping.value <- -1
@@ -144,7 +146,7 @@
       filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections", paste("proj_", proj.name, "_", mod.name,ifelse(output.format==".RData",".grd",output.format), sep="") )
     } else { filename=NULL }
     
-    return(predict(mod, new.env, on_0_1000=TRUE, filename=filename))
+    return(predict(mod, new.env, on_0_1000=TRUE, filename=filename, omit.na=omit.na))
   })
   
   # 2b. Puting outputs in the right format =-=-=-=-=-=-=-=-=-=-=-= #

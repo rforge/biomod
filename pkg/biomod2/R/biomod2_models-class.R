@@ -716,6 +716,8 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
             if(inherits(newdata, 'Raster')){            
               return(.predict.GLM_biomod2_model.RasterStack(object, newdata, ... ))
             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
+              ## transform matrix into dataframe to be able to use predict.glm fct
+              if (inherits(newdata, 'matrix')) newdata <- as.data.frame(newdata)
               return(.predict.GLM_biomod2_model.data.frame(object, newdata, ... ))
             } else{ stop("invalid newdata input") }
             

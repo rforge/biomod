@@ -171,8 +171,10 @@
     save(list = paste("proj_",proj.name, "_", modeling.output@sp.name, sep=""), 
          file = file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name, output.format ,sep="")), compress=compress)     
   } else {
-    writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name, sep="")),
-                filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name, output.format ,sep="")), overwrite=TRUE)
+    if(do.stack){
+      writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name, sep="")),
+                  filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name, output.format ,sep="")), overwrite=TRUE)
+    }
   }
   
   # 3. Compute binary and filtered transformation =-=-=-=-=-=-=-=- #
@@ -259,7 +261,7 @@
     proj_out@proj@link <- file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), 
                                 paste("proj_",proj.name, "_", modeling.output@sp.name, output.format, sep="") )    
   } else{
-    proj_out@proj@link <-file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections")
+    proj_out@proj@link <- file.path(modeling.output@sp.name, paste("proj_", proj.name, sep=""), "individual_projections", paste("proj_", proj.name, "_",selected.models, output.format, sep=""))
   }
 
   # save a copy of output object without value to be lighter

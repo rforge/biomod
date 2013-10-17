@@ -1148,26 +1148,36 @@ setMethod("load_stored_object", "BIOMOD.stored.data",
             if(inherits(obj, "BIOMOD.stored.raster.stack")){
               if( grepl(".RData", obj@link) ){
                 return(get(load(obj@link)))
-              } else if(grepl(".grd", obj@link) | grepl(".img", obj@link)){
-                return(raster::stack(obj@link))
-              } else {
-                filesToLoad <- list.files(path=sub("/individual_projections","", obj@link), full.names=T)
-                toMatch <- c('.grd$','.img$')
-                filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)  
-                if(length(filesToLoad)){
-                  return(raster::stack(filesToLoad[1]))
-                } else {
-                  filesToLoad <- list.files(path=obj@link, full.names=T)
-                  toMatch <- c('.grd$','.img$')
-                  filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
-                  toMatch <- obj@models.projected
-                  filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
-                  proj <- raster::stack(filesToLoad)
-                  toMatch <- c(obj@link,".img$",'.grd$', .Platform$file.sep)
-                  names(proj) <- gsub(pattern=paste(toMatch,collapse="|"), "", filesToLoad)
-                  return(proj)
-                }   
-              } 
+              } else if(all(grepl(".grd", obj@link) | grepl(".img", obj@link))){
+                out <- raster::stack(x = obj@link)
+                ## rename layer in case of individual projections
+                if(all(grepl("individual_projections",obj@link))){
+                  # remove directories arch and extention
+                  xx <- sub("[:.:].+$", "", sub("^.+individual_projections/", "",obj@link))
+                  # remove projection name
+                  to_rm <- sub("[^_]+[:_:][^_]+[:_:][^_]+[:_:][^_]+$", "", xx)
+                  xx <- sub(to_rm,"", xx)
+                  names(out) <- xx
+                }
+                return(out)
+              } # else {
+#                 filesToLoad <- list.files(path=sub("/individual_projections","", obj@link), full.names=T)
+#                 toMatch <- c('.grd$','.img$')
+#                 filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)  
+#                 if(length(filesToLoad)){
+#                   return(raster::stack(filesToLoad[1]))
+#                 } else {
+#                   filesToLoad <- list.files(path=obj@link, full.names=T)
+#                   toMatch <- c('.grd$','.img$')
+#                   filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
+#                   toMatch <- obj@models.projected
+#                   filesToLoad <- grep(pattern=paste(toMatch,collapse="|"), filesToLoad, value=T)
+#                   proj <- raster::stack(filesToLoad)
+#                   toMatch <- c(obj@link,".img$",'.grd$', .Platform$file.sep)
+#                   names(proj) <- gsub(pattern=paste(toMatch,collapse="|"), "", filesToLoad)
+#                   return(proj)
+#                 }   
+#               } 
             } else { # for all other stored objects
               return(get(load(obj@link)))
             }
@@ -1494,6 +1504,9 @@ setMethod("get_predictions", "BIOMOD.projection.out",
             
             return(proj)          
           })
+
+
+
 
 # 2.3 other functions
 setMethod('plot', signature(x='BIOMOD.projection.out', y="missing"),

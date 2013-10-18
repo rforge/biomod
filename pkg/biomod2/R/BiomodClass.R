@@ -1487,7 +1487,6 @@ setMethod("get_predictions", "BIOMOD.projection.out",
                 ## set correct names
                 
                 if(obj@type == 'array' & sum(!(names(proj) %in% models_selected))>0 ){ ## from array & not valid names
-                  cat("\n*** change colnames")
                   names(proj) <- unlist(lapply(strsplit(names(proj),".", fixed=TRUE), 
                                                function(x){
                                                  return(paste(obj@sp.name, x[3], x[2], x[1],sep="_"))

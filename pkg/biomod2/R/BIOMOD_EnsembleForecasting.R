@@ -27,6 +27,7 @@
   output.format <- args$output.format # raster output format
   compress <- args$compress # compress or not output
   do.stack <- args$do.stack # save raster as stack or layers
+  keep.in.memory <- args$keep.in.memory # store results on memory or only on hard drive
   
   
   if(is.null(output.format)){
@@ -45,7 +46,25 @@
   }
   
   if(is.null(compress)) compress <- FALSE
-  if(is.null(do.stack)) do.stack <- TRUE
+  
+  if(is.null(do.stack)) {
+    do.stack <- TRUE # if no info at all set it TRUE
+    # if not explicitly defined apply same rules than projection.output ones
+    if(!is.null(projection.output)){
+      if(all(grepl("individual_projections", projection.output@proj@link))){
+        do.stack <- FALSE
+      }
+    }
+  }
+  
+  if(is.null(keep.in.memory)){
+    keep.in.memory <- TRUE # if no info at all set it TRUE
+    # if not explicitly defined apply same rules than projection.output ones
+    if(!is.null(projection.output)){
+      keep.in.memory <- projection.output@proj@inMemory
+    }
+  } 
+  
   if(is.null(xy.new.env)) { 
     if(!is.null(projection.output)){
       xy.new.env <- projection.output@xy.coord
@@ -171,11 +190,13 @@
     saved.files <- c(saved.files, file_name_tmp)
     proj_out@proj@link <- file_name_tmp
   } else {
-    proj_out@proj@link <- indiv_proj_dir
+    proj_out@proj@link <- saved.files #EM.output@em.computed
   }
-    
-  proj_out@proj@val <- ef.out
-  proj_out@proj@inMemory <- TRUE
+  
+  if(!is.null(ef.out)){
+    proj_out@proj@val <- ef.out
+    proj_out@proj@inMemory <- TRUE
+  }
   
   ## binary && filtering transformations
   if(length(binary.meth) | length(filtered.meth)){
@@ -186,7 +207,11 @@
   
   
   # save object
-  assign(paste(EM.output@sp.name,".", proj.name, ".ensemble.projection.out", sep=""), free(proj_out))
+  if(!keep.in.memory){
+    proj_out <- free(proj_out)
+  }
+  
+  assign(paste(EM.output@sp.name,".", proj.name, ".ensemble.projection.out", sep=""), proj_out)
   save(list = paste(EM.output@sp.name,".", proj.name, ".ensemble.projection.out", sep=""),
        file = file.path(EM.output@sp.name, paste("proj_", proj.name, sep=""), paste(EM.output@sp.name,".", proj.name, ".ensemble.projection.out", sep="")))
   
@@ -194,6 +219,12 @@
   .bmCat("Done")
   return(proj_out)
 }
+
+
+
+
+
+
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 .BIOMOD_EnsembleForecasting.check.args <- function( EM.output,

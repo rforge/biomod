@@ -601,9 +601,10 @@
         out$predictions <- as.data.frame(get_predictions(modeling.output, as.data.frame = TRUE)[,models.kept.union, drop=F])
       } else{ ## redo prediction on full data.set
         cat("\n   ! Models projections for whole zonation required...")
+        temp_name <- paste('tmp_',sub(".","",as.character(format(Sys.time(), "%OS6")), fixed=T),sep="")
         out$predictions <- BIOMOD_Projection(modeling.output = modeling.output,
                                              new.env = get_formal_data(modeling.output)@data.env.var,
-                                             proj.name = 'Tmp',
+                                             proj.name = temp_name,
                                              xy.new.env = get_formal_data(modeling.output)@coord,
                                              selected.models = models.kept.union,
                                              compress = 'xz',
@@ -618,7 +619,7 @@
                                                 }))
         # keep only wanted columns
         out$predictions <- out$predictions[,models.kept.union, drop=F]
-        unlink(file.path(modeling.output@sp.name,"proj.bm"),recursive = TRUE, force = TRUE)
+        unlink(file.path(modeling.output@sp.name,paste("proj_", temp_name, sep="") ),recursive = TRUE, force = TRUE)
         cat("\n")
       }
 #     }

@@ -16,6 +16,7 @@
   args_checked <- .BIOMOD_EnsembleForecasting.check.args( EM.output,
                                                           projection.output,
                                                           new.env,
+                                                          selected.models,
                                                           proj.name,
                                                           total.consensus=FALSE,
                                                           binary.meth,
@@ -23,6 +24,7 @@
   
 #   total.consensus <- args_checked$total.consensus
   proj.name <- args_checked$proj.name
+  selected.models <- args_checked$selected.models
     
   output.format <- args$output.format # raster output format
   compress <- args$compress # compress or not output
@@ -198,9 +200,71 @@
     proj_out@proj@inMemory <- TRUE
   }
   
-  ## binary && filtering transformations
+  
+  
+  ## binary && filtering transformations #############################################################
   if(length(binary.meth) | length(filtered.meth)){
-    cat("\n\n ! binary and filtering transformation not available yet")
+    cat("\n")
+    eval.meth <- unique(c(binary.meth,filtered.meth))
+    
+    ## get all treshold
+    thresholds <- sapply(selected.models, function(x){
+      get_evaluations(EM.output)[[x]][eval.meth, "Cutoff"]
+    })
+    
+    ## do binary transformation
+    for(eval.meth in binary.meth){
+      cat("\n\t> Building", eval.meth,"binaries")
+      if(!do.stack){
+        for(i in 1:length(proj_out@proj@link)){
+          file.tmp <- proj_out@proj@link[i]
+          thres.tmp <- thresholds[i]
+          writeRaster(x = BinaryTransformation(raster(file.tmp),thres.tmp),
+                      filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
+                      overwrite=TRUE)
+        }
+      } else {
+        assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""),
+               value = BinaryTransformation(ef.out,thresholds))
+        
+        if(output.format == '.RData'){
+          save(list = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""), 
+               file = file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), compress=compress)   
+        } else {
+          writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep="")),
+                      filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), overwrite=TRUE)
+        }
+        
+        rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""))
+      }
+    }
+    
+    ## do filtered transformation
+    for(eval.meth in filtered.meth){
+      cat("\n\t> Building", eval.meth,"filtered")
+      if(!do.stack){
+        for(i in 1:length(proj_out@proj@link)){
+          file.tmp <- proj_out@proj@link[i]
+          thres.tmp <- thresholds[i]
+          writeRaster(x = FilteringTransformation(raster(file.tmp),thres.tmp),
+                      filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
+                      overwrite=TRUE)
+        }
+      } else {
+        assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep=""),
+               value = FilteringTransformation(ef.out,thresholds))
+        
+        if(output.format == '.RData'){
+          save(list = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep=""), 
+               file = file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", output.format ,sep="")), compress=compress)   
+        } else {
+          writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep="")),
+                      filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", output.format ,sep="")), overwrite=TRUE)
+        }
+        
+        rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep=""))
+      }
+    }
   }
   
   
@@ -230,6 +294,7 @@
 .BIOMOD_EnsembleForecasting.check.args <- function( EM.output,
                                                     projection.output,
                                                     new.env,
+                                                    selected.models,
                                                     proj.name,
                                                     total.consensus,
                                                     binary.meth,
@@ -255,6 +320,16 @@
     if( length(missing_pred) ){
       stop("Some models prediction missing :", toString(missing_pred))
     }
+  }
+  
+  ## selected.models
+  if(selected.models[1] == 'all'){
+    selected.models <- get_built_models(EM.output)
+  } else{
+    selected.models <- intersect(selected.models, get_built_models(EM.output))
+  }
+  if(length(selected.models) < 1){
+    stop('No models selected')
   }
   
   ## projection name
@@ -289,6 +364,7 @@
                                                     
   return(list(projection.output = projection.output,
               EM.output = EM.output,
+              selected.models = selected.models,
               proj.name = proj.name,
               total.consensus = total.consensus,
               binary.meth = binary.meth,

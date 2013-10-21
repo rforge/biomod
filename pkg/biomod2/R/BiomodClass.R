@@ -1146,7 +1146,7 @@ setMethod("load_stored_object", "BIOMOD.stored.data",
             
             # different comportement with raster
             if(inherits(obj, "BIOMOD.stored.raster.stack")){
-              if( grepl(".RData", obj@link) ){
+              if( length(obj@link) == 1 & all(grepl(".RData", obj@link)) ){
                 return(get(load(obj@link)))
               } else if(all(grepl(".grd", obj@link) | grepl(".img", obj@link))){
                 out <- raster::stack(x = obj@link)
@@ -1155,7 +1155,7 @@ setMethod("load_stored_object", "BIOMOD.stored.data",
                   # remove directories arch and extention
                   xx <- sub("[:.:].+$", "", sub("^.+individual_projections/", "",obj@link))
                   # remove projection name
-                  to_rm <- sub("[^_]+[:_:][^_]+[:_:][^_]+[:_:][^_]+$", "", xx)
+                  to_rm <- unique(sub("[^_]+[:_:][^_]+[:_:][^_]+[:_:][^_]+$", "", xx))                  
                   xx <- sub(to_rm,"", xx)
                   names(out) <- xx
                 }

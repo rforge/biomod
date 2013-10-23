@@ -505,7 +505,9 @@
     
     # run MaxEnt:
     cat("\n Running Maxent...")  
-    system(command=paste("java -mx512m -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), 
+    system(command=paste("java ",
+                         ifelse(is.null(Options@MAXENT$memory_allocated),"",paste("-mx",Options@MAXENT$memory_allocated,"m",sep="")),
+                         " -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), 
                          " environmentallayers=\"", MWD$m_backgroundFile,
                          "\" samplesfile=\"", MWD$m_speciesFile,
                          "\" projectionlayers=\"", gsub(", ",",",toString(MWD$m_predictFile)), 

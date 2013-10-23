@@ -102,15 +102,7 @@ setMethod("getModelsEvaluations", "BIOMOD.models.out",
           function(obj){
             cat("\n!! deprecated function that will be remove in next package update")
             cat("\n please prefere to use get_evaluations(obj)")
-            if(obj@models.evaluation@inMemory ){
-              return(obj@models.evaluation@val)
-            } else{
-              if(obj@models.evaluation@link != ''){
-                #                 load(obj@models.evaluation@link)
-                #                 return(models.evaluation)
-                return(get(load(obj@models.evaluation@link)))                
-              } else{ return(NA) }
-            }
+            return(get_evaluations(obj=obj))
           }
 )
 
@@ -333,23 +325,9 @@ setGeneric("getEMeval",
 setMethod("getEMeval", "BIOMOD.EnsembleModeling.out",
           function(obj, model=NULL, met=NULL){
             cat("\n!! deprecated function that will be remove in next package update")
-            cat("\n please prefere to use get_evaluation(obj)")
-            if(is.null(model)){
-              model <- obj@em.computed
-            }
-            if(is.character(model) | is.numeric(model)){
-              lout <- list()
-              for(mod in model){
-                if(is.null(met)){
-                  lout[[mod]] <- obj@em.res[[mod]]$em.cross.validation[,,,drop=F]
-                } else if(!is.null(meth)){
-                  lout[[mod]] <- (obj@em.res[[mod]]$em.cross.validation[met,,,drop=F])
-                } 
-              }
-              return(lout)
-            } else{
-              return(NULL)
-            }
+            cat("\n please prefere to use get_evaluations(obj)")
+            return(get_evaluations(obj=obj, model=model, met=met))
+
             
           }
 )

@@ -726,6 +726,7 @@ setClass("BIOMOD.Model.Options",
                              maxnodes= NULL),
                    
                    MAXENT = list(path_to_maxent.jar = getwd(),
+                                 memory_allocated = 512,
                                  maximumiterations = 200,
                                  visible = FALSE,
                                  linear = TRUE,
@@ -911,6 +912,11 @@ setClass("BIOMOD.Model.Options",
            
            ## MAXENT ##
            if(!is.character(object@MAXENT$path_to_maxent.jar)){ cat("\nMAXENT$path_to_maxent.jar must be a character"); test <- FALSE }
+           if(!is.null(object@MAXENT$memory_allocated)){
+             if(!is.numeric(object@MAXENT$memory_allocated)){
+               cat("\nMAXENT$memory_allocated must be a positive integer or NULL for unlimited memory allocation"); test <- FALSE }
+             }
+           
            
            if(!is.numeric(object@MAXENT$maximumiterations)){ cat("\nMAXENT$maximumiterations must be a integer"); test <- FALSE } else{
              if(object@MAXENT$maximumiterations < 0 | object@MAXENT$maximumiterations%%1!=0){ cat("\nMAXENT$maximumiterations must be a positive integer"); test <- FALSE }
@@ -1038,6 +1044,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             ## MAXENT options
             cat("\n")
             cat("\nMAXENT = list( path_to_maxent.jar = '", object@MAXENT$path_to_maxent.jar, "',", sep="")
+            cat("\n               memory_allocated = ", ifelse(length(object@MAXENT$memory_allocated) < 1,'NULL',object@MAXENT$memory_allocated), ",", sep="")
             cat("\n               maximumiterations = ", object@MAXENT$maximumiterations, ",", sep="")
             cat("\n               visible = ", object@MAXENT$visible, ",", sep="")
             cat("\n               linear = ", object@MAXENT$linear, ",", sep="")

@@ -184,6 +184,7 @@ NOTE: for method and parms, you can give a 'real' value as described in the rpar
 \section{=-=-= MAXENT -=  \url{http://www.cs.princeton.edu/~schapire/maxent/}}{
   \itemize{
     \item{\code{path_to_maxent.jar} : character, the link to \pkg{maxent.jar} file (the working directory by default) }
+    \item{\code{memory_allocated} : integer (default \code{512}), the amount of memory (in Mo) reserved for java to run MAXENT. should be 64, 128, 256, 512, 1024, 2048... or NULL if you want to use default java memory limitation parameter.}
     \item{\code{maximumiterations} : integer (default \code{200}), maximum iteration done}
     \item{\code{visible} : logical (default \code{FALSE}), make the Maxent user interface visible}
     \item{\code{linear} : logical (default \code{TRUE}), allow linear features to be used}

@@ -26,7 +26,7 @@
                                 selected.models = 'all',
                                 binary.meth = NULL,
                                 filtered.meth = NULL,
-                                compress = 'xz',
+                                compress = TRUE,
                                 build.clamping.mask = TRUE,
                                 ...){
   

@@ -16,7 +16,7 @@ setMethod( 'Projection', signature(new.env.data = 'data.frame'),
            filtred.proj = NULL,
 #            models.evaluation = NULL,
 #            models.options = NULL,
-           compress="xz",
+           compress = TRUE,
 #            scaled.models=TRUE,
            do.stack = FALSE){
         
@@ -125,7 +125,7 @@ setMethod( 'Projection', signature(new.env.data = 'RasterStack'),
            models.evaluation = NULL,
            models.options = NULL,
            stack = TRUE,
-           compress="xz",
+           compress = TRUE,
            scaled.models=TRUE,
            do.stack = FALSE){
         

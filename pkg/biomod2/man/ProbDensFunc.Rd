@@ -118,7 +118,7 @@ ProbDensFunc(initial,
                                           proj.name = 'current',
                                           selected.models = 'all',
                                           binary.meth = 'TSS',
-                                          compress = 'xz',
+                                          compress = FALSE,
                                           build.clamping.mask = TRUE)
   
   BIOMOD_EnsembleForecasting(projection.output=myBiomodProjection,

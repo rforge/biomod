@@ -60,6 +60,7 @@
     scal.models <- args$scal.models
     resp_name <- args$resp_name
     expl_var_names <- args$expl_var_names
+    compress.arg <- TRUE # ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')
   }
   
   categorial_var <- unlist(sapply(expl_var_names, function(x){if(is.factor(Data[,x])) return(x) else return(NULL)} ))
@@ -749,7 +750,7 @@
          value= model.bm)
   save(list=paste( nam, Model, sep = "_"),
        file=file.path(resp_name, "models", modeling.id, paste( nam, Model, sep = "_")),
-       compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+       compress=compress.arg)
   
 
   # End model saving step =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #

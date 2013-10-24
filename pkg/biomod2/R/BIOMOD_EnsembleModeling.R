@@ -607,7 +607,7 @@
                                              proj.name = temp_name,
                                              xy.new.env = get_formal_data(modeling.output)@coord,
                                              selected.models = models.kept.union,
-                                             compress = 'xz',
+                                             compress = TRUE,
                                              build.clamping.mask = F,
                                              do.stack=T, silent = T)@proj@val
         

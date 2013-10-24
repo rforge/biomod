@@ -13,7 +13,7 @@ BIOMOD_Projection(modeling.output,
                   selected.models = 'all',
                   binary.meth = NULL,
                   filtered.meth = NULL,
-                  compress = 'xz',
+                  compress = TRUE,
                   build.clamping.mask = TRUE,
                   ...)
 }
@@ -34,7 +34,7 @@ BIOMOD_Projection(modeling.output,
 
 \item{filtered.meth}{a vector of a subset of models evaluation method computed before (see \code{\link[biomod2]{BIOMOD_Modeling}}). if NULL then no filtering transformation computed, else the given binary techniques will be used to transform the projection by stetting to 0 the probability values below a specific threshold.}
 
-\item{compress}{compression format of objects stored on your hard drive. May be one of \sQuote{xz}, \sQuote{gzip} or \code{NULL}}
+\item{compress}{boolean or character, the compression format of objects stored on your hard drive. May be one of \sQuote{TRUE}, \sQuote{FALSE}, \sQuote{xz} or \sQuote{gzip} (see \code{\link{save}})}
 
 \item{build.clamping.mask}{ if TRUE, a clamping mask will be saved on hard drive different (see details)}
 
@@ -143,7 +143,7 @@ myBiomodProjectionFuture <- BIOMOD_Projection(modeling.output = myBiomodModelOut
                                               proj.name = 'future',
                                               selected.models = 'all',
                                               binary.meth = 'TSS',
-                                              compress = 'xz',
+                                              compress = FALSE,
                                               build.clamping.mask = TRUE)
 
 # print summary and plot projections

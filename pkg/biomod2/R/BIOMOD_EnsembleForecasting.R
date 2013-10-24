@@ -6,7 +6,7 @@
                                           proj.name = NULL,
                                           binary.meth = NULL,
                                           filtered.meth = NULL,
-                                          compress = 'xz',
+                                          compress = TRUE,
                                           ...){
   .bmCat("Do Ensemble Models Projections")
   
@@ -133,7 +133,7 @@
                                       proj.name = tmp_dir,
                                       xy.new.env = NULL,
                                       selected.models = needed_predictions,
-                                      compress = 'xz',
+                                      compress = TRUE,
                                       build.clamping.mask = F,
                                       do.stack=T, silent = T)
     # getting the results

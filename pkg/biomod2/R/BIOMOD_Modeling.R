@@ -166,7 +166,7 @@
 
     # save model predictions
     models.prediction <- .transform.outputs(modeling.out, out='prediction')
-    save(models.prediction, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.prediction"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+    save(models.prediction, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.prediction"),  compress=compress.arg)
     models.out@models.prediction@inMemory <- FALSE
     models.out@models.prediction@link <- file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.prediction")
 #     models.out@models.prediction@val <- .transform.outputs(modeling.out, out='prediction')

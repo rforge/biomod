@@ -132,7 +132,7 @@ myBiomodProjectionFuture <- BIOMOD_Projection(modeling.output = myBiomodModelOut
                                               proj.name = 'future',
                                               selected.models = 'all',
                                               binary.meth = 'TSS',
-                                              compress = 'xz',
+                                              compress = FALSE,
                                               build.clamping.mask = TRUE)
 
 # 5. Detect where our species occurances state is forecasted to change

@@ -31,6 +31,7 @@
 .Rescaler5 <-
 function(dataToRescale, ref=NULL, name, original=FALSE, weights=NULL)
 {
+  compress.arg = ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')
 #     #preparing data
 #     #homogenize the format accross original predictions and new projections 
 #     if(!class(dataToRescale)[1]=='RasterLayer'){
@@ -70,8 +71,7 @@ function(dataToRescale, ref=NULL, name, original=FALSE, weights=NULL)
 #       Rescaling_GLM = glm(ref~DataF, data=DataF, family=binomial, weights=wgts)
       eval(parse(text=paste("save(Rescaling_GLM, file='", getwd(),"/",
                             unlist(strsplit(name,'_'))[1], "/models/scaling_models/",
-                            name, "_scaled' , compress='",ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz')
-                            ,"')", sep=""))) 
+                            name, "_scaled' ,  compress=", compress.arg, ")", sep=""))) 
     } else{
       eval(parse(text=paste("load('", getwd(),"/",unlist(strsplit(name,'_'))[1],
                             "/models/scaling_models/",name,"_scaled')", sep="")))

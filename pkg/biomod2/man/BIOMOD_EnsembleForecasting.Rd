@@ -14,7 +14,7 @@ BIOMOD_EnsembleForecasting( EM.output,
                             proj.name = NULL,
                             binary.meth = NULL,
                             filtered.meth = NULL,
-                            compress = 'xz',
+                            compress = TRUE,
                             ...)
 }
 
@@ -28,7 +28,7 @@ BIOMOD_EnsembleForecasting( EM.output,
   \item{proj.name}{the projection name (results will be saved within proj_proj.name directory). Only needed if \code{projection.output} is \code{NULL} }
   \item{binary.meth}{vector specifying the names of evaluation metrics and associated thresholds to transform the probabilities of presence into presence and absence (binary transformation).  }
   \item{filtered.meth}{vector specifying the names of evaluation metrics and associated thresholds to transform into 0 the probabilities of presence lower than the thresholds.}
-  \item{compress}{the compression level for hard drive saved objects. (see \code{\link{save}})}
+  \item{compress}{boolean or character, the compression format of objects stored on your hard drive. May be one of \sQuote{TRUE}, \sQuote{FALSE}, \sQuote{xz} or \sQuote{gzip} (see \code{\link{save}})}
   \item{\ldots}{ further arguments (see details)}
 }
 

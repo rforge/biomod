@@ -64,6 +64,7 @@
   do.full.models <- args$do.full.models
   DataSplitTable <- args$DataSplitTable
   SaveObj <- args$SaveObj
+  compress.arg = TRUE#ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
   
   rm(args)
   models.out <- new('BIOMOD.models.out',
@@ -86,11 +87,11 @@
   # 3. Saving Data and Model.option objects -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   if(SaveObj){
     # save Input Data
-    save(data, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"formated.input.data"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+    save(data, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"formated.input.data"), compress = compress.arg)
     models.out@formated.input.data@inMemory <- FALSE
     models.out@formated.input.data@link <- file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"formated.input.data")
     # save Model Options
-    save(models.options, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.options"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+    save(models.options, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.options"), compress = compress.arg)
     models.out@models.options@inMemory <- FALSE
     models.out@models.options@link <- file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.options")
 
@@ -110,7 +111,7 @@
     }
   }
   # save calib.lines
-  save(calib.lines, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"calib.lines"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+  save(calib.lines, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"calib.lines"), compress = compress.arg)
   models.out@calib.lines@inMemory <- FALSE
   models.out@calib.lines@link <- file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"calib.lines")
   rm(calib.lines)
@@ -140,7 +141,7 @@
   if(SaveObj){
     # save model evaluation
     models.evaluation <- .transform.outputs(modeling.out, out='evaluation')
-    save(models.evaluation, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.evaluation"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+    save(models.evaluation, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.evaluation"), compress = compress.arg)
     models.out@models.evaluation@inMemory <- TRUE
     models.out@models.evaluation@link <- file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.evaluation")
     models.out@models.evaluation@val <- models.evaluation
@@ -156,7 +157,7 @@
 #       dimnames(variables.importances) <- vi.dim.names
 #       rm('vi.dim.names')
     
-      save(variables.importances, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"variables.importance"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+      save(variables.importances, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"variables.importance"), compress = compress.arg)
       models.out@variables.importances@inMemory <- TRUE
       models.out@variables.importances@link <-file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"variables.importance")
       models.out@variables.importances@val <- variables.importances
@@ -173,7 +174,7 @@
     
     # save evaluation model predictions
     models.prediction.eval <- .transform.outputs(modeling.out, out='prediction.eval')
-    save(models.prediction.eval, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.prediction.eval"), compress=ifelse(.Platform$OS.type == 'windows', 'gzip', 'xz'))
+    save(models.prediction.eval, file = file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.prediction.eval"), compress = compress.arg)
     models.out@models.prediction.eval@inMemory <- FALSE
     models.out@models.prediction.eval@link <- file.path(models.out@sp.name,".BIOMOD_DATA",models.out@modeling.id,"models.prediction.eval")
 #     models.out@models.prediction@val <- .transform.outputs(modeling.out, out='prediction')

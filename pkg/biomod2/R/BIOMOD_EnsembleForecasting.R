@@ -161,7 +161,7 @@
         if(length(ef.out)) ef.out <- stack(ef.out,ef.tmp) else ef.out <- raster::stack(ef.tmp)
       } else {
         file_name_tmp <- file.path(indiv_proj_dir,paste(em.comp,output.format,sep=""))
-        if(output.format== '.Rdata'){
+        if(output.format== '.RData'){
           save(ef.tmp, file=file_name_tmp, compress=compress)
         } else{
           writeRaster(ef.tmp,filename=file_name_tmp, overwrite=TRUE)
@@ -176,6 +176,9 @@
   
   proj_out@models.projected <- EM.output@em.computed
   
+  cat("\n*** do.stack = ", do.stack )
+  cat("\n*** output.format = ", output.format)
+  
   if(do.stack){
     if( inherits(ef.out, "Raster") ) {
       names(ef.out) <- EM.output@em.computed
@@ -184,7 +187,8 @@
     }
     # save object
     file_name_tmp <- file.path(EM.output@sp.name,paste("proj_", proj.name, sep=""),paste("proj_", proj.name,"_",EM.output@sp.name,"_ensemble",output.format,sep=""))
-    if(output.format== '.Rdata'){
+    if(output.format== '.RData'){
+      cat("\n*** saving file...")
       save(ef.out, file=file_name_tmp, compress=compress)
     } else if( inherits(ef.out, "Raster") ){
       writeRaster(ef.out,filename=file_name_tmp, overwrite=TRUE)

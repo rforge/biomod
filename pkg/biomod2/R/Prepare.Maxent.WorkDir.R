@@ -167,6 +167,11 @@ setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterStack'),
             return(MWD)
           })
 
+setMethod('.Prepare.Maxent.Proj.WorkDir', signature(Data='RasterLayer'),
+          def = function(Data, species.name =".",proj.name=".", silent=FALSE){
+            .Prepare.Maxent.Proj.WorkDir(Data=stack(Data), species.name =species.name ,proj.name=proj.name , silent=silent)
+          })
+
 # .Prepare.Maxent.Proj.WorkDir <- function(Data, xy, proj_name=NULL){
 #   cat('\n\tCreating Maxent Temp Proj Data..')
 #   

@@ -946,7 +946,13 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
                        " doclamp=false visible=false autorun nowarnings notooltips", sep=""), wait = TRUE, intern=TRUE)
   
   if(!silent) cat("\n\t\tReading Maxent outputs...")
-  proj <- raster(file.path(MWD$m_workdir,"projMaxent.asc"))
+  proj <- raster(file.path(MWD$m_workdir,"projMaxent.asc"), crs=projection(newdata))
+  
+#   # keep the coordinates ref system of new data
+#   # TO DO => do it in .Prepare.Maxent.Proj.WorkDir()
+#   proj.ref <- projection(newdata)
+  
+  # 
   
   #   if(length(get_scaling_model(object))){
   #     names(proj) <- "pred"

@@ -126,7 +126,8 @@
            file = file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_ClampingMask", output.format ,sep="") ), compress=compress )      
     } else {
       writeRaster(x=get(paste("proj_",proj.name,"_",modeling.output@sp.name,"_ClampingMask",sep="")),
-                  filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_ClampingMask", output.format ,sep="")), overwrite=TRUE)
+                  filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_ClampingMask", output.format ,sep="")),
+                  datatype="INT1S", overwrite=TRUE)
     }
 
 
@@ -190,7 +191,8 @@
     if(do.stack){
       saved.files <- file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name, output.format ,sep=""))
       writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name, sep="")),
-                  filename=saved.files, overwrite=TRUE)
+                  filename=saved.files, overwrite=TRUE,
+                  datatype = "INT2U" )
       
     }
   }
@@ -234,7 +236,8 @@
           thres.tmp <- asub(thresholds, eval.meth[drop=FALSE], 1, drop=FALSE)[,i]
           writeRaster(x = BinaryTransformation(raster(file.tmp),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
-                      overwrite=TRUE)
+                      overwrite=TRUE,
+                      datatype = "LOG1S")
         }
       } else {
       assign(x = paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep=""),
@@ -245,7 +248,9 @@
              file = file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"bin", output.format ,sep="")), compress=compress)   
       } else {
         writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep="")),
-                    filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"bin", output.format ,sep="")), overwrite=TRUE)
+                    filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"bin", output.format ,sep="")), 
+                    overwrite=TRUE,
+                    datatype = "LOG1S")
       }
       
       rm(list=paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep=""))
@@ -261,7 +266,8 @@
           thres.tmp <- asub(thresholds, eval.meth[drop=FALSE], 1, drop=FALSE)[,i]
           writeRaster(x = FilteringTransformation(raster(file.tmp),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
-                      overwrite=TRUE)
+                      overwrite=TRUE,
+                      datatype="INT1U")
         }
       } else {
         assign(x = paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"filt", sep=""),
@@ -272,7 +278,9 @@
                file = file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"filt", output.format ,sep="")), compress=compress)   
         } else {
           writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"filt", sep="")),
-                      filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"filt", output.format ,sep="")), overwrite=TRUE)
+                      filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"filt", output.format ,sep="")), 
+                      overwrite=TRUE,
+                      datatype="INT1U")
         }
         
         rm(list=paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"filt", sep=""))

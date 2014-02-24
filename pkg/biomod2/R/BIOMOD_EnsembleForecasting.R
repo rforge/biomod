@@ -164,6 +164,7 @@
         if(output.format== '.RData'){
           save(ef.tmp, file=file_name_tmp, compress=compress)
         } else{
+          ## TODO : define the raster dataformat (depends if em.cv has been computed)
           writeRaster(ef.tmp,filename=file_name_tmp, overwrite=TRUE)
         }
         saved.files <- c(saved.files, file_name_tmp)
@@ -187,6 +188,7 @@
     if(output.format== '.RData'){
       save(ef.out, file=file_name_tmp, compress=compress)
     } else if( inherits(ef.out, "Raster") ){
+      ## TODO : define the raster dataformat (depends if em.cv has been computed)
       writeRaster(ef.out,filename=file_name_tmp, overwrite=TRUE)
     }
     saved.files <- c(saved.files, file_name_tmp)
@@ -221,7 +223,8 @@
           thres.tmp <- thresholds[i]
           writeRaster(x = BinaryTransformation(raster(file.tmp),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
-                      overwrite=TRUE)
+                      overwrite=TRUE,
+                      datatype="LOG1S")
         }
       } else {
         assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""),
@@ -232,7 +235,9 @@
                file = file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), compress=compress)   
         } else {
           writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep="")),
-                      filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), overwrite=TRUE)
+                      filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), 
+                      overwrite=TRUE,
+                      datatype="LOG1S")
         }
         
         rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""))
@@ -246,6 +251,7 @@
         for(i in 1:length(proj_out@proj@link)){
           file.tmp <- proj_out@proj@link[i]
           thres.tmp <- thresholds[i]
+          ## TODO : define the raster dataformat (depends if em.cv has been computed)
           writeRaster(x = FilteringTransformation(raster(file.tmp),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
                       overwrite=TRUE)
@@ -258,6 +264,7 @@
           save(list = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep=""), 
                file = file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", output.format ,sep="")), compress=compress)   
         } else {
+          ## TODO : define the raster dataformat (depends if em.cv has been computed)
           writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep="")),
                       filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", output.format ,sep="")), overwrite=TRUE)
         }
@@ -266,8 +273,6 @@
       }
     }
   }
-  
-  
   
   
   # save object

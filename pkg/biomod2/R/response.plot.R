@@ -112,6 +112,7 @@
       par(mar = c(2,2,3.5,1))
     } else {
       par(mfrow=.CleverCut(nb.graphs))
+    
     }
 
   } 
@@ -153,7 +154,7 @@
         mod <- get(model)
         
         # 2. make projections 
-        proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000)
+        proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000, do_check=FALSE)
         
         # 4. Ploting results
         if(plot ) {
@@ -207,7 +208,7 @@
           mod <- get(model)
           
           # 2. make projections
-          proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000)
+          proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000, do_check=FALSE)
           
           # 4. Storing results
           vari <- paste(vari1,vari2,sep="_")
@@ -361,10 +362,10 @@
   if(sum(!(c("nnet") %in% class(mod))) == 0){
     return(new("ANN_biomod2_model",
                model = mod,
-               model_name = paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),      
+               model_name = paste(ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_ANN", sep=""),      
                model_class = 'ANN', 
                resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])), 
-               expl_var_names = attr(mod$terms,"term.labels")))
+               expl_var_names = ifelse( is.character(attr( mod$terms,"term.labels")), attr( mod$terms,"term.labels"), "") ))
   }
   
   
@@ -407,7 +408,7 @@
                model_name = paste(as.character(mod$Terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_GBM", sep=""),
                model_class = 'GBM',
                resp_name = as.character(mod$Terms[[2]]),
-               expl_var_names = attr(mod$terms,"term.labels")))
+               expl_var_names = attr(mod$Terms,"term.labels")))
   }
   
   ## GLM ##
@@ -434,10 +435,10 @@
   if(sum(!(c("randomForest") %in% class(mod)) == 0 )){
     return(new("RF_biomod2_model",
                model = mod,
-               model_name =paste(as.character(mod$terms[[2]]),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_RF", sep=""),
+               model_name =paste(ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])),"_AllData_",as.character(format(Sys.time(), "%OS6")),"_RF", sep=""),
                model_class = 'RF',
                resp_name = ifelse(is.null(mod$terms[[2]]), "species",as.character(mod$terms[[2]])),
-               expl_var_names = attr(mod$terms,"term.labels")))
+               expl_var_names = ifelse( is.character(attr( mod$terms,"term.labels")), attr( mod$terms,"term.labels"), "") ))
   }
   
   stop("Unknown model class")

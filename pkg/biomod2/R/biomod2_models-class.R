@@ -1353,6 +1353,7 @@ setClass('EMmean_biomod2_model',
 
 setMethod('predict', signature(object = 'EMmean_biomod2_model'),
           function(object, newdata=NULL, formal_predictions=NULL, ...){
+            args <- list(...)
             
             do_check <- args$do_check
             if(is.null(do_check)) do_check <- TRUE
@@ -1496,7 +1497,6 @@ setMethod('predict', signature(object = 'EMcv_biomod2_model'),
           function(object, newdata=NULL, formal_predictions=NULL, ...){
             
             args <- list(...)
-            
             do_check <- args$do_check
             if(is.null(do_check)) do_check <- TRUE
             

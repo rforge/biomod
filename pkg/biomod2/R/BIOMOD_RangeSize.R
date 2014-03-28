@@ -146,7 +146,7 @@ setMethod('BIOMOD_RangeSize', signature(CurrentPred='RasterLayer', FutureProj='R
 setMethod('BIOMOD_RangeSize', signature(CurrentPred='RasterLayer', FutureProj='RasterLayer' ),
           function(CurrentPred, FutureProj,  SpChange.Save=NULL){
             BIOMOD_RangeSize(CurrentPred = CurrentPred, FutureProj = stack(FutureProj),  SpChange.Save = SpChange.Save)
-          }
+          })
 
 
 

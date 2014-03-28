@@ -235,7 +235,7 @@
         for(i in 1:length(proj_out@proj@link)){
           file.tmp <- proj_out@proj@link[i]
           thres.tmp <- asub(thresholds, eval.meth[drop=FALSE], 1, drop=FALSE)[,i]
-          writeRaster(x = BinaryTransformation(raster(file.tmp),thres.tmp),
+          writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
                       overwrite=TRUE,
                       datatype = "LOG1S")
@@ -265,7 +265,7 @@
         for(i in 1:length(proj_out@proj@link)){
           file.tmp <- proj_out@proj@link[i]
           thres.tmp <- asub(thresholds, eval.meth[drop=FALSE], 1, drop=FALSE)[,i]
-          writeRaster(x = FilteringTransformation(raster(file.tmp),thres.tmp),
+          writeRaster(x = FilteringTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
                       overwrite=TRUE, #datatype="INT1U"
                       )

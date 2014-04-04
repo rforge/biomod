@@ -1156,7 +1156,7 @@ setMethod("load_stored_object", "BIOMOD.stored.data",
               if( length(obj@link) == 1 & all(grepl(".RData", obj@link)) ){
                 return(get(load(obj@link)))
               } else if(all(grepl(".grd", obj@link) | grepl(".img", obj@link))){
-                out <- raster::stack(x = obj@link)
+                out <- raster::stack(x = obj@link, RAT=FALSE)
                 ## rename layer in case of individual projections
                 if(all(grepl("individual_projections",obj@link))){
                   # remove directories arch and extention
@@ -1721,7 +1721,7 @@ setMethod('show', signature('BIOMOD.EnsembleModeling.out'),
 #   if(!is.null(filename)){
 #     cat("\n\t\tWriting projection on hard drive...")
 #     writeRaster(proj, filename=filename, overwrite=overwrite)
-#     proj <- raster(filename)
+#     proj <- raster(filename, RAT=FALSE)
 #   }
 #   
 #   return(proj)

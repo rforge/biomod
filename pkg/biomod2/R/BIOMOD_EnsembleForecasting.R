@@ -221,10 +221,16 @@
         for(i in 1:length(proj_out@proj@link)){
           file.tmp <- proj_out@proj@link[i]
           thres.tmp <- thresholds[i]
-          writeRaster(x = BinaryTransformation(raster(file.tmp),thres.tmp),
+          
+          cat("\n***")
+          cat("\n file.tmp = ", file.tmp)
+          cat("\n thres.tmp = ", thres.tmp)
+          cat("\n***")
+          
+          writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
                       overwrite=TRUE,
-                      datatype="LOG1S")
+                      datatype="INT1U")
         }
       } else {
         assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""),
@@ -237,7 +243,7 @@
           writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep="")),
                       filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), 
                       overwrite=TRUE,
-                      datatype="LOG1S")
+                      datatype="INT1U")
         }
         
         rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""))
@@ -252,7 +258,7 @@
           file.tmp <- proj_out@proj@link[i]
           thres.tmp <- thresholds[i]
           ## TODO : define the raster dataformat (depends if em.cv has been computed)
-          writeRaster(x = FilteringTransformation(raster(file.tmp),thres.tmp),
+          writeRaster(x = FilteringTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
                       overwrite=TRUE)
         }

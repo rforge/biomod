@@ -238,7 +238,7 @@
           writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
                       overwrite=TRUE,
-                      datatype = "LOG1S")
+                      datatype = "INT1U")
         }
       } else {
       assign(x = paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep=""),
@@ -251,7 +251,7 @@
         writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep="")),
                     filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"bin", output.format ,sep="")), 
                     overwrite=TRUE,
-                    datatype = "LOG1S")
+                    datatype = "INT1U")
       }
       
       rm(list=paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep=""))

@@ -220,13 +220,7 @@
       if(!do.stack){
         for(i in 1:length(proj_out@proj@link)){
           file.tmp <- proj_out@proj@link[i]
-          thres.tmp <- thresholds[i]
-          
-          cat("\n***")
-          cat("\n file.tmp = ", file.tmp)
-          cat("\n thres.tmp = ", thres.tmp)
-          cat("\n***")
-          
+          thres.tmp <- thresholds[i]          
           writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
                       overwrite=TRUE,

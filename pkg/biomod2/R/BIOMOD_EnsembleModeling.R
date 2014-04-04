@@ -229,8 +229,11 @@
           }))
           names(models.kept.tresh) <- models.kept
           
+          ## remove models if some thresholds are undefined
+          to_keep <- is.finite(models.kept.tresh)
+          
           model.bm <- new("EMca_biomod2_model",
-                           model = models.kept,
+                           model = models.kept[to_keep],
                            model_name = model_name,
                            model_class = 'EMca',
                            model_options = Options,
@@ -239,7 +242,7 @@
                            expl_var_type = expl_var_type,
                            expl_var_range = expl_var_range,
                            modeling.id = modeling.output@modeling.id,
-                           tresholds = models.kept.tresh) 
+                           tresholds = models.kept.tresh[to_keep]) 
 
         }
         
@@ -262,6 +265,10 @@
 #               prediction.kept.tmp <- prediction.kept[,models.kept]
             }
           }
+          
+          ## remove models if score is not defined
+          models.kept.tmp <- models.kept.tmp[is.finite(models.kept.scores.tmp)]
+          models.kept.scores.tmp <- models.kept.scores.tmp[is.finite(models.kept.scores.tmp)]
           
           # weights are "decay" times decreased for each subsequent model in model quality order.
           models.kept.scores.tmp <- round(models.kept.scores.tmp, 3) # sometimes there can be a rounding issue in R, so here I make sure all values are rounded equally.

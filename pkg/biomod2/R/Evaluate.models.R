@@ -121,11 +121,11 @@ Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Precision = 5, Fixed.thresh = NUL
   rownames(eval.out) <- Stat
   
   ## deal with NAs
-  if(!all(is.finite(eval.out[1,]))) warnings("\nsome NAs occurs in models evalutions that can lead to strange results afterwards !!")
-  if(!is.finite(eval.out$best.stat)) eval.out$best.stat <- -1
-  if(!is.finite(eval.out$sensitivity)) eval.out$sensitivity <- 0
-  if(!is.finite(eval.out$specificity)) eval.out$specificity <- 0
-  if(!is.finite(eval.out$cutoff)) eval.out$cutoff <- ( max(min(Fit, na.rm=T),0) + min(max(Fit, na.rm=T),1000) ) / 2
+#   if(!all(is.finite(eval.out))) warnings("\nsome NAs occurs in models evalutions that can lead to strange results afterwards !!")
+#   if(!is.finite(eval.out[1,"best.stat"])) eval.out[1,"best.stat"]<- NA
+#   if(!is.finite(eval.out[1,"sensitivity"])) eval.out[1,"sensitivity"] <- NA
+#   if(!is.finite(eval.out[1,"specificity"])) eval.out[1,"specificity"] <- NA
+#   if(!is.finite(eval.out[1,"cutoff"])) eval.out[1,"cutoff"] <- NA
     
   return(eval.out)
 }

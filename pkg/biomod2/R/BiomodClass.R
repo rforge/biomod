@@ -707,6 +707,8 @@ setClass("BIOMOD.Model.Options",
                               cost = NULL ),
                    
                    ANN = list(NbCV = 5,
+                              size = NULL,
+                              decay = NULL,
                               rang = 0.1,
                               maxit = 200),
                    
@@ -844,6 +846,14 @@ setClass("BIOMOD.Model.Options",
            ## ANN ##
            if(!is.numeric(object@ANN$NbCV)){ cat("\nANN$NbCV must be a integer"); test <- FALSE } else{
              if(object@ANN$NbCV < 0 | object@ANN$NbCV%%1!=0){ cat("\nANN$NbCV must be a positive integer"); test <- FALSE }
+           }
+           
+           if( ( is.null(object@ANN$size) | length(object@ANN$size)>1 ) & object@ANN$NbCV <= 0){ cat("\nANN$size has to be defined as a single integer if ANN$NbCV=0"); test <- FALSE } else{
+             if(!is.null(object@ANN$size)) if( !is.numeric(object@ANN$size) | !all( object@ANN$size > 0 ) | !all( object@ANN$size %% 1 == 0 ) ){ cat("\nANN$size must be NULL or a positive (vector of) integer"); test <- FALSE }
+           }
+
+           if( ( is.null(object@ANN$decay) | length(object@ANN$decay)>1 ) & object@ANN$NbCV <= 0){ cat("\nANN$decay has to be defined as a single number if ANN$NbCV=0"); test <- FALSE } else{
+             if(!is.null(object@ANN$decay)) if( !is.numeric(object@ANN$decay) | !all( object@ANN$decay > 0 ) ){ cat("\nANN$decay must be NULL or a positive (vector of) number"); test <- FALSE }
            }
            
            if(!is.numeric(object@ANN$rang)){ cat("\nANN$rang must be a numeric"); test <- FALSE } else{
@@ -1015,6 +1025,8 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             ## ANN options
             cat("\n")
             cat("\nANN = list( NbCV = ", object@ANN$NbCV, ",", sep="")
+            cat("\n            size = ", ifelse(length(object@ANN$size)<1,'NULL',object@ANN$size), ",", sep="")
+            cat("\n            decay = ", ifelse(length(object@ANN$decay)<1,'NULL',object@ANN$decay), ",", sep="")
             cat("\n            rang = ", object@ANN$rang, ",", sep="")
             cat("\n            maxit = ", object@ANN$maxit, "),", sep="")
             

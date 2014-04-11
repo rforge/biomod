@@ -168,6 +168,8 @@
 #     if(!is.null(ANN$type )) { opt@ANN$type <- ANN$type }
 #     if(!is.null(ANN$interaction.level )) { opt@ANN$interaction.level <- ANN$interaction.level }
     if(!is.null(ANN$NbCV )) { opt@ANN$NbCV <- ANN$NbCV }
+    if(!is.null(ANN$size )) { opt@ANN$size <- ANN$size }
+    if(!is.null(ANN$decay )) { opt@ANN$decay <- ANN$decay }    
     if(!is.null(ANN$rang )) { opt@ANN$rang <- ANN$rang }
     if(!is.null(ANN$maxit )) { opt@ANN$maxit <- ANN$maxit }
   }

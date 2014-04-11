@@ -388,16 +388,35 @@
   
   # ANN models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "ANN") {
-    CV_nnet = .CV.nnet(Input = Data[,expl_var_names,drop=FALSE], 
-                       Target = Data[calibLines,1], 
-                       nbCV = Options@ANN$NbCV, 
-                       W = Yweights[calibLines])
+    size = Options@ANN$size
+    decay = Options@ANN$decay
+    
+    if(is.null(size) | is.null(decay) | length(size)>1 | length(decay)>1 ){
+      ## define the size and decay to test
+      if(is.null(size)) size=c(2,4,6, 8)
+      if(is.null(decay)) decay=c(0.001, 0.01, 0.05, 0.1)
+      
+      ## do cross validation test to find the optimal values of size and decay parameters (prevent from overfitting)
+      CV_nnet = .CV.nnet(Input = Data[,expl_var_names,drop=FALSE], 
+                         Target = Data[calibLines,1],
+                         size=size,
+                         decay=decay,
+                         maxit = Options@ANN$maxit,
+                         nbCV = Options@ANN$NbCV, 
+                         W = Yweights[calibLines])
+
+      ## get the optimised parameters values
+      decay <- CV_nnet[1, 2]
+      size <- CV_nnet[1,1]      
+    }
+
+    cat("\n*** decay = ", decay, ", size = ", size)
     
     model.sp <- try(nnet(formula = makeFormula(resp_name,head(Data[,expl_var_names,drop=FALSE]), 'simple',0),
                          data = Data[calibLines,],
-                         size = CV_nnet[1,1],
+                         size = size,
                          rang = Options@ANN$rang,
-                         decay = CV_nnet[1, 2],
+                         decay = decay,
                          weights=Yweights,
                          maxit = Options@ANN$maxit,
                          trace = FALSE))

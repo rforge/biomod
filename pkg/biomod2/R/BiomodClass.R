@@ -717,6 +717,7 @@ setClass("BIOMOD.Model.Options",
                    FDA = list(method = 'mars'),
                    
                    MARS = list(degree = 2,
+                               nk = NULL,
                                penalty = 2,
                                thresh = 0.001,
                                prune = TRUE),
@@ -883,6 +884,10 @@ setClass("BIOMOD.Model.Options",
              if(object@MARS$degree < 0 | object@MARS$degree%%1!=0){ cat("\nMARS$degree must be a positive integer"); test <- FALSE }
            }
            
+           if(!is.null(object@MARS$nk)){ 
+             if(object@MARS$nk < 0 | object@MARS$nk%%1!=0){ cat("\nMARS$nk must be a positive integer or NULL if you want to use default parameter"); test <- FALSE }
+           }
+           
            if(!is.numeric(object@MARS$penalty)){ cat("\nMARS$penalty must be a integer"); test <- FALSE } else{
              if(object@MARS$penalty < 0 | object@MARS$penalty%%1!=0){ cat("\nMARS$penalty must be a positive integer"); test <- FALSE }
            }
@@ -1041,6 +1046,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             ## MARS options
             cat("\n")
             cat("\nMARS = list( degree = ", object@MARS$degree, ",", sep="")
+            cat("\n             nk = ", ifelse(length(object@MARS$nk) < 1,'NULL',object@MARS$nk), ",", sep="")
             cat("\n             penalty = ", object@MARS$penalty, ",", sep="")
             cat("\n             thresh = ", object@MARS$thresh, ",", sep="")
             cat("\n             prune = ", object@MARS$prune, "),", sep="")

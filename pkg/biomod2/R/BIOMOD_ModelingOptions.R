@@ -186,6 +186,7 @@
 
   if(!is.null(MARS)){
     if(!is.null(MARS$degree )) { opt@MARS$degree <- MARS$degree }
+    if(!is.null(MARS$nk )) { opt@MARS$nk <- MARS$nk }
     if(!is.null(MARS$penalty )) { opt@MARS$penalty <- MARS$penalty }
     if(!is.null(MARS$thresh )) { opt@MARS$thresh <- MARS$thresh }
     if(!is.null(MARS$prune )) { opt@MARS$prune <- MARS$prune }

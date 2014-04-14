@@ -336,10 +336,17 @@
   
   # MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "MARS"){
+    ## deal with nk argument 
+    ## if not defined, it will be setted up to default mars value i.e max(21, 2 * ncol(x) + 1)
+    nk <- Options@MARS$nk
+    if(is.null(nk)){
+      nk <- max(21, 2 * length(expl_var_names) + 1)
+    }
     
     model.sp <- try( mars(x = Data[calibLines,expl_var_names,drop=FALSE],
                           y = Data[calibLines,1],
                           degree = Options@MARS$degree,
+                          nk = nk,
                           penalty = Options@MARS$penalty,
                           thresh = Options@MARS$thresh,
                           prune = Options@MARS$prune,

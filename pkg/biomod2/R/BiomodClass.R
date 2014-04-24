@@ -1287,7 +1287,7 @@ setMethod("get_predictions", "BIOMOD.models.out",
             }
             
             # select calibration or eval data
-            if(evaluation) pred <- obj@models.prediction else pred <- obj@models.prediction.eval
+            if(evaluation) pred <- obj@models.prediction.eval else pred <- obj@models.prediction
             
             if(!as.data.frame){
               if(pred@inMemory ){

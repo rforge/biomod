@@ -1793,6 +1793,17 @@ setMethod("get_needed_models", "BIOMOD.EnsembleModeling.out",
           }
 )
 
+setMethod("get_needed_models", "BIOMOD.EnsembleModeling.out",
+          function(obj, selected.models='all', ...){           ### MODIFIED ROBIN : ici j'ai renom? "subset" en "selected.models" pour que ?a soit le m?me nom que dans les autres fonctions
+            add.args <- list(...)  
+            if(selected.models[[1]]=="all") selected.index <- c(1:length(obj@em.models)) else selected.index <- which(names(obj@em.models) %in% selected.models) ### MODIFIED ROBIN : ici je selectionne uniquement le sous-ensemble des mod?les que l'utilisateur a sp?cifi?.
+            needed_models <- lapply(obj@em.models[selected.index], function(x) return(x@model))  ### MODIFIED ROBIN : ici je selectionne uniquement le sous-ensemble des mod?les que l'utilisateur a sp?cifi?.
+            needed_models <- unique(unlist(needed_models))
+            return(needed_models)
+          }
+)
+
+
 
 
 setMethod("get_kept_models", "BIOMOD.EnsembleModeling.out",

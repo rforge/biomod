@@ -121,7 +121,7 @@
                                                   
   
   ### get needed models prediction ###
-  needed_predictions <- get_needed_models(EM.output)
+  needed_predictions <- get_needed_models(EM.output, selected.models=selected.models)
   
   if (length(projection.output)){
     formal_pred <- get_predictions(projection.output, full.name=needed_predictions, as.data.frame=ifelse(projection.output@type=='array',T,F) )
@@ -145,7 +145,7 @@
   
   ef.out <- NULL
   # 2. Do the ensemble modeling
-  for( em.comp in EM.output@em.computed){
+  for( em.comp in EM.output@em.computed[which(EM.output@em.computed %in% selected.models)]){
     cat("\n\n\t> Projecting", em.comp, "...")
     model.tmp <- NULL
     BIOMOD_LoadModels(EM.output, full.name=em.comp, as='model.tmp')
@@ -175,13 +175,13 @@
       
   }
   
-  proj_out@models.projected <- EM.output@em.computed
+  proj_out@models.projected <- EM.output@em.computed[which(EM.output@em.computed %in% selected.models)]
   
   if(do.stack){
     if( inherits(ef.out, "Raster") ) {
-      names(ef.out) <- EM.output@em.computed
+      names(ef.out) <- proj_out@models.projected
     } else {
-      colnames(ef.out) <- EM.output@em.computed
+      colnames(ef.out) <- proj_out@models.projected
     }
     # save object
     file_name_tmp <- file.path(EM.output@sp.name,paste("proj_", proj.name, sep=""),paste("proj_", proj.name,"_",EM.output@sp.name,"_ensemble",output.format,sep=""))
@@ -315,7 +315,7 @@
   }
   
   # check all needed predictions are available
-  needed_pred <- get_needed_models(EM.output)
+  needed_pred <- get_needed_models(EM.output, selected.models=selected.models)  
   
   if(!is.null(projection.output)){
     if(!inherits(projection.output, "BIOMOD.projection.out")){

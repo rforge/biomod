@@ -10,6 +10,7 @@ import("raster")
 import("sp")
 
 importFrom("abind", abind, asub)
+importFrom("reshape", melt)
 #importFrom("gbm", gbm, gbm.perf)
 import("gbm")
 importFrom("MASS",stepAIC)

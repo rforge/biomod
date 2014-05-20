@@ -1324,13 +1324,46 @@ setMethod("get_predictions", "BIOMOD.models.out",
 
 setMethod("get_evaluations", "BIOMOD.models.out",
           function(obj, ...){
+            args <- list(...)
+            
+            ## fill some additional parameters 
+            as.data.frame <- ifelse(!is.null(args$as.data.frame), args$as.data.frame, FALSE)
+            
+            out <- NULL
             if(obj@models.evaluation@inMemory ){
-              return(obj@models.evaluation@val)
+              out <- obj@models.evaluation@val
             } else{
               if(obj@models.evaluation@link != ''){
-                return(get(load(obj@models.evaluation@link)))                
-              } else{ return(NA) }
+                out <- get(load(obj@models.evaluation@link))          
+              }
             }
+            
+            ## transform into data.frame object if needed
+            if(as.data.frame){
+              tmp <- reshape::melt.array(out,varnames=c("eval.metric", "test","m","r","d"))
+              model_names <- unique(apply(tmp[,c("m","r","d"), drop=F], 1, paste, collapse="_"))
+              out <- data.frame() #NULL
+              for(mod in model_names){
+                m = unlist(strsplit(mod,"_"))[1]
+                r = unlist(strsplit(mod,"_"))[2]
+                d = unlist(strsplit(mod,"_"))[3]
+                eval.met = as.character(unique(tmp[which( tmp$m == m & tmp$r == r & tmp$d == d), "eval.metric", drop=T]))
+                for(em in eval.met){
+                  out <- rbind(out, 
+                               data.frame( Model.name = mod,
+                                           Eval.metric = em,
+                                           Testing.data = as.numeric( tmp[which( tmp$m == m & tmp$r == r & tmp$d == d & tmp$eval.metric == em & tmp$test == "Testing.data"), "value", drop=T]),
+                                           Evaluating.data = ifelse("Evaluating.data" %in% tmp$test, as.numeric( tmp[which( tmp$m == m & tmp$r == r & tmp$d == d & tmp$eval.metric == em & tmp$test == "Evaluating.data"), "value", drop=T]), NA ),
+                                           Cutoff = as.numeric( tmp[which( tmp$m == m & tmp$r == r & tmp$d == d & tmp$eval.metric == em & tmp$test == "Cutoff"), "value", drop=T]),
+                                           Sensitivity = as.numeric( tmp[which( tmp$m == m & tmp$r == r & tmp$d == d & tmp$eval.metric == em & tmp$test == "Sensitivity"), "value", drop=T]),
+                                           Specificity = as.numeric( tmp[which( tmp$m == m & tmp$r == r & tmp$d == d & tmp$eval.metric == em & tmp$test == "Specificity"), "value", drop=T]) )
+                  ) 
+                } # end loop on eval metric
+              } # end loop on models names
+              
+            }
+            
+            return(out)
           }
 )
 
@@ -1820,25 +1853,67 @@ setMethod("get_kept_models", "BIOMOD.EnsembleModeling.out",
 )
 
 
+# setMethod("get_evaluations", "BIOMOD.EnsembleModeling.out",
+#           function(obj, model=NULL, met=NULL){
+#             if(is.null(model)){
+#               model <- obj@em.computed
+#             }
+#             if(is.character(model) | is.numeric(model)){
+#               lout <- list()
+#               for(mod in model){
+#                 if(is.null(met)){
+#                   lout[[mod]] <- obj@em.models[[mod]]@model_evaluation[,,drop=F]
+#                 } else if(!is.null(meth)){
+#                   lout[[mod]] <- (obj@em.rmodels[[mod]]@model_evaluation[met,,drop=F])
+#                 } 
+#               }
+#               return(lout)
+#             } else{
+#               return(NULL)
+#             }
+#             
+#           }
+# )
+
 setMethod("get_evaluations", "BIOMOD.EnsembleModeling.out",
-          function(obj, model=NULL, met=NULL){
-            if(is.null(model)){
-              model <- obj@em.computed
-            }
-            if(is.character(model) | is.numeric(model)){
-              lout <- list()
-              for(mod in model){
-                if(is.null(met)){
-                  lout[[mod]] <- obj@em.models[[mod]]@model_evaluation[,,drop=F]
-                } else if(!is.null(meth)){
-                  lout[[mod]] <- (obj@em.rmodels[[mod]]@model_evaluation[met,,drop=F])
-                } 
-              }
-              return(lout)
-            } else{
-              return(NULL)
+          function(obj, ...){
+            args <- list(...)
+            
+            ## fill some additional parameters 
+            as.data.frame <- ifelse(!is.null(args$as.data.frame), args$as.data.frame, FALSE)
+            
+            out <- list()
+            
+            ## list of computed models
+            models <- obj@em.computed
+            
+            ## extract evaluation scores as a list
+            for(mod in models){ 
+              out[[mod]] <- obj@em.models[[mod]]@model_evaluation[,,drop=F]
             }
             
+            ## transform into data.frame object if needed
+            if(as.data.frame){
+              tmp <- reshape::melt(out, varnames=c("eval.metric", "test"))
+              tmp$model.name <- sapply(tmp$L1, function(x){paste(tail(unlist(strsplit(x, "_")),3), collapse="_")})
+              out <- data.frame() #NULL
+              for(mod in unique(tmp$model.name)){
+                eval.met = as.character(unique(tmp[which( tmp$model.name == mod ), "eval.metric", drop=T]))
+                for(em in eval.met){
+                  out <- rbind(out, 
+                               data.frame( Model.name = mod,
+                                           Eval.metric = em,
+                                           Testing.data = as.numeric( tmp[which( tmp$model.name == mod & tmp$eval.metric == em & tmp$test == "Testing.data"), "value", drop=T]),
+                                           Evaluating.data = ifelse("Evaluating.data" %in% tmp$test, as.numeric( tmp[which( tmp$model.name == mod & tmp$eval.metric == em & tmp$test == "Evaluating.data"), "value", drop=T]), NA ),
+                                           Cutoff = as.numeric( tmp[which( tmp$model.name == mod & tmp$eval.metric == em & tmp$test == "Cutoff"), "value", drop=T]),
+                                           Sensitivity = as.numeric( tmp[which( tmp$model.name == mod & tmp$eval.metric == em & tmp$test == "Sensitivity"), "value", drop=T]),
+                                           Specificity = as.numeric( tmp[which( tmp$model.name == mod & tmp$eval.metric == em & tmp$test == "Specificity"), "value", drop=T]) )
+                  ) 
+                } # end loop on eval metric
+              } # end loop on models names
+            } # end as.data.frame == TRUE
+            
+            return(out)
           }
 )
 

@@ -277,21 +277,29 @@
           models.kept.scores.tmp <- round(models.kept.scores.tmp, 3) # sometimes there can be a rounding issue in R, so here I make sure all values are rounded equally.
           
           # dealing with numerical decay
+          cat("\n\t\t", " original models scores = ", models.kept.scores.tmp)
           if(is.numeric(prob.mean.weight.decay)){
             DecayCount <- sum(models.kept.scores.tmp>0)
             WOrder <- order(models.kept.scores.tmp, decreasing=T)
             Dweights <- models.kept.scores.tmp
-            for(J in 1:DecayCount) Dweights[WOrder[J]] <- (DecayCount - J + 1) * prob.mean.weight.decay
+            ## old version
+            # for(J in 1:DecayCount) Dweights[WOrder[J]] <- (DecayCount - J + 1) * prob.mean.weight.decay
+            ## end old version
+            for(J in 1:DecayCount) Dweights[WOrder[J]] <- I(prob.mean.weight.decay^(DecayCount - J + 1))
             #If 2 or more score are identical -> make a mean weight between the ones concerned
             for(J in 1:length(models.kept.scores.tmp)){
               if(sum(models.kept.scores.tmp[J]==models.kept.scores.tmp)>1) Dweights[which(models.kept.scores.tmp[J]==models.kept.scores.tmp)] <- mean(Dweights[which(models.kept.scores.tmp[J]==models.kept.scores.tmp)])
             }      
-            models.kept.scores.tmp <- Dweights
+            models.kept.scores.tmp <- round(Dweights, digits=3)
             rm(list=c('Dweights','DecayCount','WOrder'))          
+          } else if ( is.function(prob.mean.weight.decay) ){ # dealing with function decay
+            models.kept.scores.tmp <- sapply(models.kept.scores.tmp, prob.mean.weight.decay)
           }
           
           ### Standardise model weights
-          models.kept.scores.tmp <- models.kept.scores.tmp/sum(models.kept.scores.tmp, na.rm=T)
+          models.kept.scores.tmp <- round(models.kept.scores.tmp/sum(models.kept.scores.tmp, na.rm=T), digits=3)
+          
+          cat("\n\t\t", " final models weights = ", models.kept.scores.tmp)
           
           model.bm <- new("EMwmean_biomod2_model",
                            model = models.kept.tmp,
@@ -489,16 +497,23 @@
   
   # 7. decay checking
   if(prob.mean.weight){
-    if(is.numeric(prob.mean.weight.decay)){
+    test.prob.mean.weight.decay <- TRUE
+    ## check compatibility of prob.mean.weight.decay class
+    if(!is.numeric(prob.mean.weight.decay) & !is.character(prob.mean.weight.decay) & !is.function(prob.mean.weight.decay)){
+      test.prob.mean.weight.decay <- FALSE
+    } else if(is.numeric(prob.mean.weight.decay)){ ## check numeric prob.mean.weight.decay
       if(prob.mean.weight.decay < 0){
-        stop("'prob.mean.weight.decay' should be either 'proportional' or a numeric value > 0")
+        test.prob.mean.weight.decay <- FALSE
       }
-    } else{
+    } else if(is.character(prob.mean.weight.decay)){ ## check character prob.mean.weight.decay
       if(prob.mean.weight.decay != 'proportional'){
-        stop("'prob.mean.weight.decay' should be either 'proportional' or a numeric value > 0")
+        test.prob.mean.weight.decay <- FALSE
       }
-#       prob.mean.weight.decay <- 1
-    }   
+    }
+    
+    if(!test.prob.mean.weight.decay){
+      stop("'prob.mean.weight.decay' should be either 'proportional', a numeric value > 0 or a function")
+    }
   }
 
   if(is.null(eval.metric)){

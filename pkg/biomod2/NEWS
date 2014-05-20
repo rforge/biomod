@@ -1,3 +1,6 @@
+3.1-44 (2014-05-20)
+	* possibility to use user defined function to influence the way models are weighted in weighted mean ensemble models (Thanks to Frank B.)
+
 3.1-43 (2014-05-20)
 	* add of as.data.frame argument for get_evaluations() function to enable formal and ensemble models' evaluation scores merging
 

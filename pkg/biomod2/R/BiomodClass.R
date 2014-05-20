@@ -1895,7 +1895,7 @@ setMethod("get_evaluations", "BIOMOD.EnsembleModeling.out",
             ## transform into data.frame object if needed
             if(as.data.frame){
               tmp <- reshape::melt(out, varnames=c("eval.metric", "test"))
-              tmp$model.name <- sapply(tmp$L1, function(x){paste(tail(unlist(strsplit(x, "_")),3), collapse="_")})
+              tmp$model.name <- sapply(tmp$L1, function(x){paste(unlist(strsplit(x, "_"))[-1], collapse="_")})
               out <- data.frame() #NULL
               for(mod in unique(tmp$model.name)){
                 eval.met = as.character(unique(tmp[which( tmp$model.name == mod ), "eval.metric", drop=T]))

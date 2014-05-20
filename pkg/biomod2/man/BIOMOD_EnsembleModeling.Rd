@@ -12,6 +12,7 @@ BIOMOD_EnsembleModeling( modeling.output,
                          em.by = 'all',
                          eval.metric = 'all',
                          eval.metric.quality.threshold = NULL,
+                         models.eval.meth = c('KAPPA','TSS','ROC'),
                          prob.mean = TRUE,
                          prob.cv = FALSE,
                          prob.ci = FALSE,
@@ -27,8 +28,9 @@ BIOMOD_EnsembleModeling( modeling.output,
   \item{modeling.output}{a \code{"\link[=BIOMOD.models.out-class]{BIOMOD.models.out}"} returned by \code{\link[biomod2]{BIOMOD_Modeling}}}
   \item{chosen.models}{a character vector (either 'all' or a sub-selection of model names) that defines the models kept for building the ensemble models (might be useful for removing some non-preferred models)}
   \item{em.by}{Character. Flag defining the way the models will be combined to build the ensemble models. Available values are \code{'PA_dataset+repet'} (default), \code{'PA_dataset+algo'}, \code{'PA_dataset'}, \code{'algo'} and  \code{'all'}}
-  \item{eval.metric}{vector of names of evaluation metric. If 'all', the same evaluation metrics than those of \code{modeling.output} will be automatically selected}
+  \item{eval.metric}{vector of names of evaluation metric used to build ensemble models. It is involved for formal models exclusion if \code{eval.metric.quality.threshold} is defined and/or for building ensemble models that are dependent of formal models evaluation scores (e.g. weighted mean and comitee averaging). If 'all', the same evaluation metrics than those of \code{modeling.output} will be automatically selected}
   \item{eval.metric.quality.threshold}{If not \code{NULL}, the minimum scores below which models will be excluded of the ensemble-models building.}
+  \item{models.eval.meth}{ the evaluation methods used to evaluate ensemble models ( see \code{"\link[=BIOMOD_Modeling]{BIOMOD_Modeling}"}  \bold{models.eval.meth} section for more detailed informations )}
   \item{prob.mean}{Logical. Estimate the mean probabilities across predictions }
   \item{prob.cv}{Logical. Estimate the coefficient of variation across predictions}
   \item{prob.ci}{Logical . Estimate the confidence interval around the \code{prob.mean}}
@@ -215,6 +217,7 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
                            em.by = 'all',
                            eval.metric = c('TSS'),
                            eval.metric.quality.threshold = c(0.7),
+                           models.eval.meth = c('TSS','ROC'),
                            prob.mean = TRUE,
                            prob.cv = FALSE,
                            prob.ci = FALSE,

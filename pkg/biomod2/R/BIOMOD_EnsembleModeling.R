@@ -3,6 +3,7 @@
                                        em.by = 'all',
                                        eval.metric = 'all',
                                        eval.metric.quality.threshold = NULL,
+                                       models.eval.meth = c('KAPPA','TSS','ROC'),
                                        prob.mean = TRUE,
                                        prob.cv = FALSE,
                                        prob.ci = FALSE,
@@ -18,6 +19,7 @@
                                                chosen.models,
                                                eval.metric,
                                                eval.metric.quality.threshold,
+                                               models.eval.meth,
                                                prob.mean,
                                                prob.cv,
                                                prob.ci,
@@ -32,6 +34,7 @@
   chosen.models <- args$chosen.models
   eval.metric <- args$eval.metric
   eval.metric.quality.threshold <- args$eval.metric.quality.threshold
+  models.eval.meth <- args$models.eval.meth
   prob.mean <- args$prob.mean
   prob.cv <- args$prob.cv
   prob.ci <- args$prob.ci
@@ -312,10 +315,10 @@
  
         
         # Model evaluation stuff =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-        if(length(eval.metric) > 0){
+        if( length(models.eval.meth) ){
           cat("\n\t\t\tEvaluating Model stuff...")
  
-          cross.validation <- sapply(eval.metric,
+          cross.validation <- sapply(models.eval.meth,
                                      Find.Optim.Stat,
                                      Fit = pred.bm,
                                      Obs = obs)
@@ -324,7 +327,7 @@
           
           if(exists('eval_pred.bm')){
             
-            true.evaluation <- sapply(eval.metric,
+            true.evaluation <- sapply(models.eval.meth,
                                       function(x){
                                         return( Find.Optim.Stat(Stat = x,
                                                                 Fit = eval_pred.bm,
@@ -391,6 +394,7 @@
                                                    chosen.models,
                                                    eval.metric,
                                                    eval.metric.quality.threshold,
+                                                   models.eval.meth,
                                                    prob.mean,
                                                    prob.cv,
                                                    prob.ci,
@@ -451,6 +455,17 @@
     }
   }
   
+  # 4b. model.eval.meth checking
+  models.eval.meth <- unique(models.eval.meth)
+  
+  if(sum(models.eval.meth %in% c('FAR','SR','HSS','ORSS','TSS','KAPPA','ACCURACY','BIAS',
+                                 'POD','PODFD','CSI','ETS','HK','ROC')) != length(models.eval.meth)){
+    stop(paste(models.eval.meth[which( (models.eval.meth %in% c('FAR','SR','HSS','ORSS','TSS',
+                                                                'KAPPA','ACCURACY','BIAS', 'POD',
+                                                                'PODFD','CSI', 'ETS','HK','ROC')) 
+                                       == FALSE) ]," is not a availabe models evaluation metric !",sep=""))
+  }
+  
   # 5. check selected EM algo
   if( !is.logical(prob.mean) | !is.logical(prob.cv) | !is.logical(prob.ci) | !is.logical(prob.median) |
       !is.logical(committee.averaging) | !is.logical(prob.mean.weight) ){
@@ -501,6 +516,7 @@
                 chosen.models = chosen.models,
                 eval.metric = eval.metric,
                 eval.metric.quality.threshold = eval.metric.quality.threshold,
+                models.eval.meth = models.eval.meth,
                 prob.mean = prob.mean,
                 prob.cv = prob.cv,
                 prob.ci = prob.ci,

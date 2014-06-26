@@ -206,6 +206,7 @@
     if(!is.null(MAXENT$path_to_maxent.jar )) {
       opt@MAXENT$path_to_maxent.jar <- normalizePath(sub("maxent.jar", "", MAXENT$path_to_maxent.jar)) # ensure path format validity
       } else {opt@MAXENT$path_to_maxent.jar <- getwd()}
+    if(!is.null(MAXENT$memory_allocated )) { opt@MAXENT$memory_allocated <- MAXENT$memory_allocated }
     if(!is.null(MAXENT$maximumiterations )) { opt@MAXENT$maximumiterations <- MAXENT$maximumiterations }
     if(!is.null(MAXENT$visible )) { opt@MAXENT$visible <- MAXENT$visible }
     if(!is.null(MAXENT$linear )) { opt@MAXENT$linear <- MAXENT$linear }

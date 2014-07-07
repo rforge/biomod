@@ -168,15 +168,15 @@
       cat('\n\t> GAM (gam) modelling...')
       
       gamStart <- eval(parse(text=paste("gam::gam(",colnames(Data)[1] ,"~1 ," ,
-                                        " data = Data[calibLines,], family = ", Options@GAM$family$family,"(link = '",Options@GAM$family$link,"')",#eval(Options@GAM$family),
+                                        " data = Data[calibLines,,drop=FALSE], family = ", Options@GAM$family$family,"(link = '",Options@GAM$family$link,"')",#eval(Options@GAM$family),
                                         ", weights = Yweights[calibLines])" ,sep="")))
       
-      model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
-                                data = Data[calibLines,],
-                                keep = .functionkeep, 
-                                direction = "both",
-                                trace= Options@GAM$control$trace,
-                                control = Options@GAM$control))#eval(control.list)) )
+model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
+                               data = Data[calibLines,,drop=FALSE],
+#                                keep = .functionkeep, 
+                               direction = "both",
+                               trace= Options@GAM$control$trace,
+                               control = Options@GAM$control))#eval(control.list)) )
       
     } else { ## mgcv package
       # package loading
@@ -194,7 +194,7 @@
       if (Options@GAM$algo == 'GAM_mgcv'){
         cat('\n\t> GAM (mgcv) modelling...')
         model.sp <- try(mgcv::gam(gam.formula, 
-                                   data= Data, 
+                                   data= Data[calibLines,,drop=FALSE], 
                                    family= Options@GAM$family, 
                                    weights = Yweights,
                                    control = Options@GAM$control))
@@ -202,7 +202,7 @@
       } else if (Options@GAM$algo == 'BAM_mgcv'){ ## big data.frame gam version
         cat('\n\t> BAM (mgcv) modelling...')
         model.sp <- try(mgcv::bam(gam.formula, 
-                                   data=Data, 
+                                   data=Data[calibLines,,drop=FALSE],
                                    family=Options@GAM$family,
                                    weights = Yweights,
                                    control = Options@GAM$control))
@@ -279,7 +279,7 @@
     if(Options@GLM$test != 'none'){
       ## make the model selection
       glmStart <- glm(eval(parse(text=paste(colnames(Data)[1],"~1",sep=""))), 
-                      data = Data[calibLines,],
+                      data = Data[calibLines,,drop=FALSE],
                       family = Options@GLM$family,
                       control = eval(Options@GLM$control),
                       weights = Yweights[calibLines],
@@ -291,7 +291,7 @@
       options(warn=-1)
       model.sp <- try( stepAIC(glmStart, 
                                glm.formula,
-                               data = Data[calibLines,],
+                               data = Data[calibLines,,drop=FALSE],
                                direction = "both", trace = FALSE, 
                                k = criteria, 
                                weights = Yweights[calibLines],
@@ -304,7 +304,7 @@
     } else {
       ## keep the total model      
       model.sp <- try( glm(glm.formula, 
-                           data = cbind(Data[calibLines,],matrix(Yweights[calibLines], ncol=1, dimnames=list(NULL, "Yweights"))),
+                           data = cbind(Data[calibLines,,drop=FALSE],matrix(Yweights[calibLines], ncol=1, dimnames=list(NULL, "Yweights"))),
                            family = Options@GLM$family,
                            control = eval(Options@GLM$control),
                            weights = Yweights,
@@ -372,7 +372,7 @@
   # FDA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "FDA") {
     model.sp <- try( fda(formula = makeFormula(colnames(Data)[1],head(Data)[,expl_var_names,drop=FALSE], 'simple',0),
-                         data = Data[calibLines,],
+                         data = Data[calibLines,,drop=FALSE],
                          method = eval(parse(text=call(Options@FDA$method))),
                          weights = Yweights) )
     
@@ -420,7 +420,7 @@
     cat("\n*** decay = ", decay, ", size = ", size)
     
     model.sp <- try(nnet(formula = makeFormula(resp_name,head(Data[,expl_var_names,drop=FALSE]), 'simple',0),
-                         data = Data[calibLines,],
+                         data = Data[calibLines,,drop=FALSE],
                          size = size,
                          rang = Options@ANN$rang,
                          decay = decay,

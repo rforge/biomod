@@ -325,28 +325,43 @@
         # Model evaluation stuff =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         if( length(models.eval.meth) ){
           cat("\n\t\t\tEvaluating Model stuff...")
- 
-          cross.validation <- sapply(models.eval.meth,
-                                     Find.Optim.Stat,
-                                     Fit = pred.bm,
-                                     Obs = obs)
           
-          rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
+          if(algo == 'prob.cv'){ ## switch of evalutaion process
+            cross.validation <- matrix(NA,4,length(models.eval.meth), 
+                                       dimnames = list(c("Testing.data","Cutoff","Sensitivity", "Specificity"),
+                                                       models.eval.meth))
+          } else {
+            cross.validation <- sapply(models.eval.meth,
+                                       Find.Optim.Stat,
+                                       Fit = pred.bm,
+                                       Obs = obs)
+            rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
+          }
+ 
+          
           
           if(exists('eval_pred.bm')){
             
-            true.evaluation <- sapply(models.eval.meth,
-                                      function(x){
-                                        return( Find.Optim.Stat(Stat = x,
-                                                                Fit = eval_pred.bm,
-                                                                Obs = eval.obs,
-                                                                Fixed.thresh = cross.validation["Cutoff",x]) )
-                                      })
+            if(algo == 'prob.cv'){ ## switch of evalutaion process
+              cross.validation <- matrix(NA,5,length(models.eval.meth), 
+                                         dimnames = list(c("Testing.data","Evaluating.data","Cutoff","Sensitivity", "Specificity"),
+                                                         models.eval.meth))
+            } else {
+              true.evaluation <- sapply(models.eval.meth,
+                                        function(x){
+                                          return( Find.Optim.Stat(Stat = x,
+                                                                  Fit = eval_pred.bm,
+                                                                  Obs = eval.obs,
+                                                                  Fixed.thresh = cross.validation["Cutoff",x]) )
+                                        })
+              
+              
+              cross.validation <- rbind(cross.validation["Testing.data",], true.evaluation)
+              rownames(cross.validation) <- c("Testing.data","Evaluating.data","Cutoff","Sensitivity", "Specificity")
+            }
             
             
-            cross.validation <- rbind(cross.validation["Testing.data",], true.evaluation)
             
-            rownames(cross.validation) <- c("Testing.data","Evaluating.data","Cutoff","Sensitivity", "Specificity")
           }
           
           ## store results

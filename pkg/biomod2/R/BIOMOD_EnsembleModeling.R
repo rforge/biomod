@@ -315,7 +315,7 @@
         }
         
         #### Models Evaluation ####
-        pred.bm <- predict(model.bm, expl, formal_predictions=needed_predictions$predictions[,model.bm@model, drop=F] )
+        pred.bm <- predict(model.bm, expl, formal_predictions=needed_predictions$predictions[,model.bm@model, drop=F], on_0_1000 = T )
         
         if(exists('eval.obs') & exists('eval.expl')){
           eval_pred.bm <- predict(model.bm, eval.expl)

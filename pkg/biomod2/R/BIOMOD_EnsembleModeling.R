@@ -1,6 +1,6 @@
 'BIOMOD_EnsembleModeling' <- function( modeling.output,
                                        chosen.models = 'all',
-                                       em.by = 'all',
+                                       em.by = 'PA_dataset+repet',
                                        eval.metric = 'all',
                                        eval.metric.quality.threshold = NULL,
                                        models.eval.meth = c('KAPPA','TSS','ROC'),
@@ -93,7 +93,12 @@
       obs <-  get_formal_data(modeling.output,'resp.var')
       expl <- get_formal_data(modeling.output,'expl.var')
       if(head(unlist(strsplit(assemb,"_")),1) != 'AllData'){
-        kept_cells <- get_formal_data(modeling.output)@PA[, paste(head(unlist(strsplit(assemb,"_")),1))]
+        if(class(get_formal_data(modeling.output)) == "BIOMOD.formated.data.PA"){
+          kept_cells <- get_formal_data(modeling.output)@PA[, paste(head(unlist(strsplit(assemb,"_")),1))]
+        } else {
+          kept_cells <- rep(T, length(obs))
+        }
+        
         obs <- obs[kept_cells]
         expl <- expl[kept_cells, ,drop=F]
       }                              
@@ -118,7 +123,7 @@
     for(eval.m in eval.metric){
       
       # define model name
-      base_model_name <- paste(modeling.output@sp.name,"_",assemb,"_",eval.m,'_' ,sep="")
+#       base_model_name <- paste(modeling.output@sp.name,"_",assemb,"_",eval.m,'_' ,sep="")
       models.kept <- needed_predictions$models.kept[[eval.m]]
       models.kept.scores <- needed_predictions$models.kept.scores[[eval.m]]
       
@@ -131,7 +136,8 @@
         if(algo == 'prob.mean'){
           cat("\n   > Mean of probabilities...")
           
-          model_name <- paste(base_model_name,"EMmean",sep="")
+#           model_name <- paste(base_model_name,"EMmean",sep="")
+          model_name <- paste(modeling.output@sp.name,"_","EMmeanBy",eval.m, "_", assemb ,sep="")
           
           model.bm <- new("EMmean_biomod2_model",
                            model = models.kept,
@@ -148,7 +154,8 @@
         # 2. CV of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
         if(algo == 'prob.cv'){
           cat("\n   > Coef of variation of probabilities...")
-          model_name <- paste(base_model_name,"EMcv",sep="")
+#           model_name <- paste(base_model_name,"EMcv",sep="")
+          model_name <- paste("EMcvBy",eval.m, "_", assemb ,sep="")
           
           model.bm <- new("EMcv_biomod2_model",
                            model = models.kept,
@@ -165,7 +172,8 @@
         # 3. Median of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
         if(algo == 'prob.median'){
           cat("\n   > Median of ptobabilities...")
-          model_name <- paste(base_model_name,"EMmedian",sep="")
+#           model_name <- paste(base_model_name,"EMmedian",sep="")
+          model_name <- paste(modeling.output@sp.name,"_","EMmedianBy",eval.m, "_", assemb ,sep="")
           
           model.bm <- new("EMmedian_biomod2_model",
                            model = models.kept,
@@ -184,7 +192,8 @@
           cat("\n   > Confidence Interval...")
           
           ## Quantile inferior
-          model_name <- paste(base_model_name,"EMciInf",sep="")
+#           model_name <- paste(base_model_name,"EMciInf",sep="")
+          model_name <- paste(modeling.output@sp.name,"_","EMciInfBy",eval.m, "_", assemb ,sep="")
           
           model.bm <- new("EMci_biomod2_model",
                            model = models.kept,
@@ -202,7 +211,8 @@
 
         if(algo == 'prob.ci.sup'){
           ## Quantile superior
-          model_name <- paste(base_model_name,"EMciSup",sep="")
+#           model_name <- paste(base_model_name,"EMciSup",sep="")
+          model_name <- paste(modeling.output@sp.name,"_","EMciSupBy",eval.m, "_", assemb ,sep="")          
           
           model.bm <- new("EMci_biomod2_model",
                            model = models.kept,
@@ -222,7 +232,8 @@
         # 5. Comitee averaging of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         if(algo == 'committee.averaging'){      
           cat("\n   >  Comittee averaging...")
-          model_name <- paste(base_model_name,"EMca",sep="")
+#           model_name <- paste(base_model_name,"EMca",sep="")
+          model_name <- paste(modeling.output@sp.name,"_","EMcaBy",eval.m, "_", assemb ,sep="")
           
           models.kept.tresh <- unlist(lapply(models.kept, function(x){
             mod <- tail(unlist(strsplit(x,"_")), 3)[3]
@@ -252,8 +263,9 @@
         # 6. weighted mean of probabilities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         if(algo == 'prob.mean.weight'){
           cat("\n   > Prababilities wegthing mean...")
-          model_name <- paste(base_model_name,"EMwmean",sep="")
-          
+#           model_name <- paste(base_model_name,"EMwmean",sep="")
+          model_name <- paste(modeling.output@sp.name,"_","EMwmeanBy",eval.m, "_", assemb ,sep="")          
+
           # remove SRE models if ROC
           models.kept.tmp <- models.kept
           models.kept.scores.tmp <- models.kept.scores
@@ -566,20 +578,23 @@
   
   if(em.by == 'PA_dataset'){
     for(dat in .extractModelNamesInfo(chosen.models, info='data.set')){
-      assembl.list[[paste(dat,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",dat,"_",sep=""), chosen.models)]
+#       assembl.list[[paste(dat,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",dat,"_",sep=""), chosen.models)]
+      assembl.list[[paste("mergedAlgo_mergedRun_", dat, sep="")]] <- chosen.models[grep(paste("_",dat,"_",sep=""), chosen.models)]
     }
     return(assembl.list)
   }
   
   if(em.by == 'algo'){
     for(algo in .extractModelNamesInfo(chosen.models, info='models')){
-      assembl.list[[paste(algo,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",algo,sep=""), chosen.models)]
+#       assembl.list[[paste(algo,"_AllRun", sep="")]] <- chosen.models[grep(paste("_",algo,sep=""), chosen.models)]
+      assembl.list[[paste(algo,"_mergedRun_mergedData", sep="")]] <- chosen.models[grep(paste("_",algo,sep=""), chosen.models)]
     }
     return(assembl.list)
   }
   
   if(em.by == 'all'){
-    assembl.list[["TotalConsensus"]] <- chosen.models
+#     assembl.list[["TotalConsensus"]] <- chosen.models
+    assembl.list[[paste("mergedAlgo_mergedRun_mergedData", sep="")]] <- chosen.models
     return(assembl.list)
   }
   
@@ -589,7 +604,8 @@
         mod.tmp <- intersect(x=grep(paste("_",dat,"_",sep=""), chosen.models), 
                              y=grep(paste("_",repet,"_",sep=""), chosen.models))
         if(length(mod.tmp)){
-          assembl.list[[paste(dat,"_",repet,'_AllAlgos', sep="")]] <- chosen.models[mod.tmp]
+#           assembl.list[[paste(dat,"_",repet,'_AllAlgos', sep="")]] <- chosen.models[mod.tmp]
+          assembl.list[[paste("mergedAlgo_",repet,"_",dat, sep="")]] <- chosen.models[mod.tmp]
         }
       }
     }
@@ -602,7 +618,8 @@
         mod.tmp <- intersect(x=grep(paste("_",dat,"_",sep=""), chosen.models), 
                              y=grep(paste("_",algo,sep=""), chosen.models))
         if(length(mod.tmp)){
-          assembl.list[[paste(dat,"_AllRepet_",algo, sep="")]] <- chosen.models[mod.tmp]
+#           assembl.list[[paste(dat,"_AllRepet_",algo, sep="")]] <- chosen.models[mod.tmp]
+          assembl.list[[paste(algo,"_mergedRun_", dat, sep="")]] <- chosen.models[mod.tmp]
         }
       }
     }

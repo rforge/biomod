@@ -560,7 +560,7 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
                          " beta_lqp=", Options@MAXENT$beta_lqp,
                          " beta_hinge=", Options@MAXENT$beta_hinge,
                          " defaultprevalence=", Options@MAXENT$defaultprevalence,
-                         " autorun nowarnings notooltips", sep=""), wait = TRUE, intern = TRUE,
+                         " autorun nowarnings notooltips noaddsamplestobackground", sep=""), wait = TRUE, intern = TRUE,
            ignore.stdout = FALSE, ignore.stderr = FALSE)
     
     

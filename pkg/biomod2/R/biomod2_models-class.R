@@ -235,7 +235,7 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  set.seed(555)
+#   set.seed(555)
   proj <- predict(newdata, get_formal_model(object), type="raw")
   
   if(length(get_scaling_model(object))){
@@ -611,6 +611,7 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
   }
   
   proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = as.data.frame(newdata[not_na_rows,,drop=FALSE])))
+#   proj <- as.numeric(.testnull(object = get_formal_model(object), Prev = 0.5 , dat = as.data.frame(newdata[not_na_rows,,drop=FALSE])))
   
   ## add original NAs in table if it needed
   if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset

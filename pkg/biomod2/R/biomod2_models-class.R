@@ -249,7 +249,7 @@ setMethod('predict', signature(object = 'ANN_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -357,7 +357,7 @@ setMethod('predict', signature(object = 'CTA_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -462,7 +462,7 @@ setMethod('predict', signature(object = 'FDA_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -584,7 +584,7 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -691,7 +691,7 @@ setMethod('predict', signature(object = 'GBM_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -797,7 +797,7 @@ setMethod('predict', signature(object = 'GLM_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -901,7 +901,7 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -1032,7 +1032,7 @@ setMethod('predict', signature(object = 'MAXENT_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -1191,7 +1191,7 @@ setMethod('predict', signature(object = 'RF_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }
@@ -1286,7 +1286,7 @@ setMethod('predict', signature(object = 'SRE_biomod2_model'),
   if(!is.null(filename)){
     cat("\n\t\tWriting projection on hard drive...")
     if(on_0_1000){ ## projections are stored as positive integer 
-      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag="-9999")
+      writeRaster(proj, filename=filename, overwrite=overwrite, datatype="INT2S", NAflag=-9999)
     } else { ## keep default data format for saved raster 
       writeRaster(proj, filename=filename, overwrite=overwrite) 
     }

@@ -131,7 +131,7 @@
     } else {
       writeRaster(x=get(paste("proj_",proj.name,"_",modeling.output@sp.name,"_ClampingMask",sep="")),
                   filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_ClampingMask", output.format ,sep="")),
-                  datatype = "INT1S", NAflag=-127,
+                  datatype = "INT2S", NAflag=-9999,
                   overwrite=TRUE)
     }
 
@@ -246,7 +246,7 @@
           writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
                       overwrite=TRUE,
-                      datatype = "INT1S",NAflag=-127)
+                      datatype = "INT2S",NAflag=-9999)
         }
       } else {
       assign(x = paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep=""),
@@ -259,7 +259,7 @@
         writeRaster(x=get(paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep="")),
                     filename=file.path(modeling.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", modeling.output@sp.name,"_",eval.meth,"bin", output.format ,sep="")), 
                     overwrite=TRUE,
-                    datatype = "INT1S",NAflag=-127)
+                    datatype = "INT2S",NAflag=-9999)
       }
       
       rm(list=paste("proj_",proj.name, "_", modeling.output@sp.name,"_",eval.meth,"bin", sep=""))

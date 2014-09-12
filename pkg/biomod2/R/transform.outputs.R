@@ -452,8 +452,6 @@ setMethod('.transform.outputs', signature(modOut='list'),
   })
 
 DF_to_ARRAY <- function(df){
-  cat("\n*** class(df) = ", class(df))
-  cat("\n*** colnames(df) = ", colnames(df))
   if(!is.data.frame(df) & !is.matrix(df)){
     if(is.list(df)){
       df.names <- names(df)

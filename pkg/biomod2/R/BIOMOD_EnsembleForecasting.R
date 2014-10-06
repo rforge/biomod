@@ -170,7 +170,7 @@
           save(ef.tmp, file=file_name_tmp, compress=compress)
         } else{
           ## TODO : define the raster dataformat (depends if em.cv has been computed)
-          writeRaster(ef.tmp,filename=file_name_tmp, overwrite=TRUE, datatype = "INT2S",NAflag=-9999)
+          writeRaster(ef.tmp,filename=file_name_tmp, overwrite=TRUE)
         }
         saved.files <- c(saved.files, file_name_tmp)
       }
@@ -194,7 +194,7 @@
       save(ef.out, file=file_name_tmp, compress=compress)
     } else if( inherits(ef.out, "Raster") ){
       ## TODO : define the raster dataformat (depends if em.cv has been computed)
-      writeRaster(ef.out,filename=file_name_tmp, overwrite=TRUE, datatype = "INT2S",NAflag=-9999)
+      writeRaster(ef.out,filename=file_name_tmp, overwrite=TRUE)
     }
     saved.files <- c(saved.files, file_name_tmp)
     proj_out@proj@link <- file_name_tmp
@@ -232,7 +232,7 @@
           writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
                       overwrite=TRUE,
-                      datatype = "INT2S",NAflag=-9999)
+                      datatype = "INT1S",NAflag=-127)
         }
       } else {
         assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""),
@@ -245,7 +245,7 @@
           writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep="")),
                       filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), 
                       overwrite=TRUE,
-                      datatype = "INT2S", NAflag=-9999)
+                      datatype = "INT1S", NAflag=-127)
         }
         
         rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""))
@@ -262,7 +262,7 @@
           ## TODO : define the raster dataformat (depends if em.cv has been computed)
           writeRaster(x = FilteringTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
                       filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
-                      overwrite=TRUE, datatype = "INT2S", NAflag=-9999)
+                      overwrite=TRUE)
         }
       } else {
         assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep=""),
@@ -274,8 +274,7 @@
         } else {
           ## TODO : define the raster dataformat (depends if em.cv has been computed)
           writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep="")),
-                      filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", output.format ,sep="")), 
-                      overwrite=TRUE,datatype = "INT2S",NAflag=-9999)
+                      filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", output.format ,sep="")), overwrite=TRUE)
         }
         
         rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"filt", sep=""))

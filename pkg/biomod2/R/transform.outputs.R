@@ -172,7 +172,7 @@ setMethod('.transform.outputs', signature(modOut='list'),
                       lapply(names(modOut[[d1]][[d2]]), function(d3){ # models
                         if(is.null(modOut[[d1]][[d2]][[d3]][['calib.failure']])){
                           return(data.frame(modOut[[d1]][[d2]][[d3]][['evaluation']]))
-                        } else { matrix(NA, ncol=4, nrow=length(eval.meth.names), dimnames=list(eval.meth.names,eval.col.names))}
+                        } else { matrix(NA, ncol=length(eval.col.names), nrow=length(eval.meth.names), dimnames=list(eval.meth.names,eval.col.names))}
                       })
                     })
                   })
@@ -452,6 +452,8 @@ setMethod('.transform.outputs', signature(modOut='list'),
   })
 
 DF_to_ARRAY <- function(df){
+  cat("\n*** class(df) = ", class(df))
+  cat("\n*** colnames(df) = ", colnames(df))
   if(!is.data.frame(df) & !is.matrix(df)){
     if(is.list(df)){
       df.names <- names(df)

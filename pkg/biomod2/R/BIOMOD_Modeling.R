@@ -30,7 +30,7 @@
 
 ####################################################################################################
 
-'BIOMOD_Modeling' <- function( data, 
+BIOMOD_Modeling <- function( data, 
                                models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT'), 
                                models.options = NULL, 
                                NbRunEval=1, 

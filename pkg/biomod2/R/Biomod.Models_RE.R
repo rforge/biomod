@@ -586,7 +586,8 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
   # make prediction =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if((Model != "MAXENT"))
     g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))
-  
+
+
   # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
   if(scal.models & !inherits(g.pred,'try-error')){
     cat("\n\tModel scaling...")
@@ -614,7 +615,7 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
     # keep the name of uncompleted modelisations
     cat("\n   ! Note : ", model_name, "failed!\n")
     ListOut$calib.failure = model_name
-    return(ListOut)
+    return(ListOut) ## end of function.
   }
   
   # make prediction on evaluation data =-=-=-=-=-=-=-=-=-=-=-=-=-= #

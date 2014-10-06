@@ -155,7 +155,7 @@
         if(algo == 'prob.cv'){
           cat("\n   > Coef of variation of probabilities...")
 #           model_name <- paste(base_model_name,"EMcv",sep="")
-          model_name <- paste(modeling.output@sp.name,"_","EMcvBy",eval.m, "_", assemb ,sep="")
+          model_name <- paste("EMcvBy",eval.m, "_", assemb ,sep="")
           
           model.bm <- new("EMcv_biomod2_model",
                            model = models.kept,

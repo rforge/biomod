@@ -1599,15 +1599,17 @@ setMethod('plot', signature(x='BIOMOD.projection.out', y="missing"),
                           colorkey=list(labels=list(
                             labels=my.lab,
                             at=my.labs.at)))
-              )
-              if(inherits(try_plot,"try-error")){ # try classical plot
+              ) 
+              if(! inherits(try_plot,"try-error")){ ## produce plot
+                print(try_plot)
+              } else{## try classical plot
                 cat("\nrasterVis' levelplot() function failed. Try to call standard raster plotting function.",
                     "It can lead to unooptimal representations.",
                     "You should try to do it by yourself extracting predicions (see : get_predictions() function)", fill=options()$width)
                 try_plot <- try(
                   plot(get_predictions(x, full.name=models_selected))
                 )
-              }
+              } 
               
               if(inherits(try_plot,"try-error")){ # try classical plot
                 cat("\n Plotting function failed.. You should try to do it by yourself!")

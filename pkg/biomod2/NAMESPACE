@@ -118,6 +118,7 @@ export(
 exportMethods(
 	get_built_models,
 	get_evaluations,
+	get_calib_lines,
 	get_formal_data,
 	get_formal_model, 
 	get_kept_models,
@@ -132,6 +133,7 @@ exportMethods(
 export(
 	get_built_models,
 	get_evaluations,
+	get_calib_lines,
 	get_formal_data,
 	get_formal_model, 
 	get_kept_models,

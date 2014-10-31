@@ -11,14 +11,14 @@
   res.sp.run <- list()
   
   for(i in 1:ncol(X$calibLines)){ # loop on RunEval
-    cat('\n\n-=-=-=--=-=-=-',paste(X$name,colnames(X$calibLines)[i],sep=""),'\n')
-    
-    res.sp.run[[colnames(X$calibLines)[i]]] <- lapply(Model, .Biomod.Models,
+    cat('\n\n-=-=-=--=-=-=-',paste(X$name,dimnames(X$calibLines)[[2]][i],sep=""),'\n')
+
+    res.sp.run[[dimnames(X$calibLines)[[2]][i]]] <- lapply(Model, .Biomod.Models,
                                                       Data = X$dataBM,
                                                       Options = Options,
-                                                      calibLines = na.omit(X$calibLines[,i]),
+                                                      calibLines = na.omit(X$calibLines[,i,]), ## transform 3D calibLines obj into a 1D vector
                                                       Yweights = na.omit(X$Yweights),
-                                                      nam = paste(X$name,colnames(X$calibLines)[i], sep=""),
+                                                      nam = paste(X$name,dimnames(X$calibLines)[[2]][i], sep=""),
                                                       VarImport = VarImport,
                                                       mod.eval.method = mod.eval.method,
                                                       evalData = X$evalDataBM,
@@ -28,7 +28,7 @@
                                                       scal.models = scal.models,
                                                       modeling.id = modeling.id)
     
-    names(res.sp.run[[colnames(X$calibLines)[i]]]) <- Model
+    names(res.sp.run[[dimnames(X$calibLines)[[2]][i]]]) <- Model
     
   }
   

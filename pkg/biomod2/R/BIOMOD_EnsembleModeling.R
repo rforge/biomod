@@ -89,25 +89,31 @@
     }
     
     ##### !!!!!! TO DO -> select appropriate part of dataset according to em.by
+    obs <-  get_formal_data(modeling.output,'resp.var')
+    expl <- get_formal_data(modeling.output,'expl.var')
+    
+    ## subselection of observations according to dataset used to produce ensemble models
     if(em.by %in% c("PA_dataset",'PA_dataset+algo','PA_dataset+repet')){
-      obs <-  get_formal_data(modeling.output,'resp.var')
-      expl <- get_formal_data(modeling.output,'expl.var')
-      if(head(unlist(strsplit(assemb,"_")),1) != 'AllData'){
+      if(unlist(strsplit(assemb,"_"))[3] != 'AllData'){
         if(class(get_formal_data(modeling.output)) == "BIOMOD.formated.data.PA"){
-          kept_cells <- get_formal_data(modeling.output)@PA[, paste(head(unlist(strsplit(assemb,"_")),1))]
+          kept_cells <- get_formal_data(modeling.output)@PA[, unlist(strsplit(assemb,"_"))[3]]
         } else {
           kept_cells <- rep(T, length(obs))
         }
         
         obs <- obs[kept_cells]
         expl <- expl[kept_cells, ,drop=F]
-      }                              
-    }   
-    if(em.by %in% c("algo","all") ){
-      ## we need to take all data even if it is much better to have 
-      obs <-  get_formal_data(modeling.output,'resp.var')
-      expl <- get_formal_data(modeling.output,'expl.var')
-    }                                        
+      }
+    } 
+    
+    ## subselection of observations according to dataset used to produce ensemble models is done at evaluation step
+    
+    
+#     if(em.by %in% c("algo","all") ){
+#       ## we need to take all data even if it is much better to have 
+#       obs <-  get_formal_data(modeling.output,'resp.var')
+#       expl <- get_formal_data(modeling.output,'expl.var')
+#     }                                        
     # remove na
     obs[is.na(obs)] <- 0
     
@@ -343,6 +349,17 @@
                                        dimnames = list(c("Testing.data","Cutoff","Sensitivity", "Specificity"),
                                                        models.eval.meth))
           } else {
+            if(em.by == "PA_dataset+repet"){ ## select the same evaluation data than formal models
+              ## get formal models calib/eval lines
+              calib_lines <- get_calib_lines(modeling.output)
+              ## get info on wich dataset and which repet this ensemble model is based on
+              pa_dataset_id <- paste("_", unlist(strsplit(assemb,"_"))[3], sep="")
+              repet_id <- paste("_", unlist(strsplit(assemb,"_"))[2], sep="")
+              ## define and extract the subset of points model will be evaluated on
+              pred.bm <- na.omit(pred.bm[ ! na.omit(calib_lines[ , repet_id, pa_dataset_id]) ])
+              obs <- na.omit(obs[ ! na.omit(calib_lines[ , repet_id, pa_dataset_id]) ])    
+            }
+            
             cross.validation <- sapply(models.eval.meth,
                                        Find.Optim.Stat,
                                        Fit = pred.bm,

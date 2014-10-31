@@ -28,6 +28,11 @@ setGeneric("get_evaluations",
              standardGeneric("get_evaluations")
            })
 
+setGeneric("get_calib_lines",
+           function(obj, ...){
+             standardGeneric("get_calib_lines")
+           })
+
 setGeneric("get_variables_importance",
            function(obj, ...){
              standardGeneric("get_variables_importance")
@@ -1368,6 +1373,16 @@ setMethod("get_evaluations", "BIOMOD.models.out",
 )
 
 
+setMethod("get_calib_lines", "BIOMOD.models.out",
+   function(obj, as.data.frame = FALSE, ...){
+     calib_lines <- load_stored_object(obj@calib.lines)
+     
+     return(calib_lines)
+   }
+          
+)
+
+
 setMethod("get_variables_importance", "BIOMOD.models.out",
           function(obj, ...){
             if(obj@variables.importances@inMemory ){
@@ -1951,7 +1966,6 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
             
             ### Calib/Valid lines
             if(!is.null(DataSplitTable)){
-              cat("\n*** DataSplitTable is not NULL")
               calibLines <- DataSplitTable
               colnames(calibLines) <- paste('_RUN',1:ncol(calibLines), sep='')
             } else {
@@ -1966,6 +1980,10 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
                 }
               }
             }
+            ## force calib.lines object to be 3D array
+            dn_tmp <- dimnames(calibLines) ## keep track of dimnames
+            dim(calibLines) <- c(dim(calibLines),1)
+            dimnames(calibLines) <- list(dn_tmp[[1]], dn_tmp[[2]], "_AllData")
             
             if(is.null(Yweights)){ # 1 for all points
               if(!is.null(Prevalence)){
@@ -2028,8 +2046,11 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                   }                
                 }
               }
-              
-              
+              ## force calib.lines object to be 3D array
+              dn_tmp <- dimnames(calibLines) ## keep track of dimnames
+              dim(calibLines) <- c(dim(calibLines),1)
+              dimnames(calibLines) <- list(dn_tmp[[1]], dn_tmp[[2]], paste("_PA",pa, sep=""))
+        
               
               # dealing with evaluation data
               if(data@has.data.eval){

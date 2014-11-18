@@ -356,14 +356,15 @@
               pa_dataset_id <- paste("_", unlist(strsplit(assemb,"_"))[3], sep="")
               repet_id <- paste("_", unlist(strsplit(assemb,"_"))[2], sep="")
               ## define and extract the subset of points model will be evaluated on
-              pred.bm <- na.omit(pred.bm[ ! na.omit(calib_lines[ , repet_id, pa_dataset_id]) ])
-              obs <- na.omit(obs[ ! na.omit(calib_lines[ , repet_id, pa_dataset_id]) ])    
+              eval_lines <- ! na.omit(calib_lines[ , repet_id, pa_dataset_id])
+            } else {
+              eval_lines <- rep(T, length(pred.bm))
             }
             
             cross.validation <- sapply(models.eval.meth,
                                        Find.Optim.Stat,
-                                       Fit = pred.bm,
-                                       Obs = obs)
+                                       Fit = pred.bm[eval_lines],
+                                       Obs = obs[eval_lines])
             rownames(cross.validation) <- c("Testing.data","Cutoff","Sensitivity", "Specificity")
           }
  

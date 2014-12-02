@@ -160,6 +160,10 @@
       ef.tmp <- predict(model.tmp, formal_predictions = formal_pred[,model.tmp@model, drop=FALSE], on_0_1000 = on_0_1000)
     }
     
+    cat("\n***")
+    plot(ef.tmp)
+#     writeRaster(ef.tmp, "ef_tmp1.img", overwrite=T)
+    
     
     if(inherits(ef.tmp,'Raster')){
       if(do.stack){
@@ -228,11 +232,11 @@
       if(!do.stack){
         for(i in 1:length(proj_out@proj@link)){
           file.tmp <- proj_out@proj@link[i]
-          thres.tmp <- thresholds[i]          
-          writeRaster(x = BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
+          thres.tmp <- thresholds[i]
+          proj_bin <- BinaryTransformation(raster(file.tmp, RAT=FALSE),thres.tmp)
+          writeRaster(x = proj_bin,
                       filename = sub(output.format, paste("_",eval.meth,"bin", output.format, sep=""), file.tmp), 
-                      overwrite=TRUE,
-                      datatype = "INT2S",NAflag=-999)
+                      overwrite=TRUE ) ## , datatype = "INT2S",NAflag=-9999)
         }
       } else {
         assign(x = paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""),
@@ -244,8 +248,8 @@
         } else {
           writeRaster(x=get(paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep="")),
                       filename=file.path(EM.output@sp.name, paste("proj_", proj.name, sep= ""), paste("proj_",proj.name,"_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", output.format ,sep="")), 
-                      overwrite=TRUE,
-                      datatype = "INT2S", NAflag=-9999)
+                      overwrite=TRUE) ## , datatype = "INT2S", NAflag=-9999)
+                      
         }
         
         rm(list=paste("proj_",proj.name, "_", EM.output@sp.name,"_ensemble_",eval.meth,"bin", sep=""))
@@ -260,7 +264,8 @@
           file.tmp <- proj_out@proj@link[i]
           thres.tmp <- thresholds[i]
           ## TODO : define the raster dataformat (depends if em.cv has been computed)
-          writeRaster(x = FilteringTransformation(raster(file.tmp, RAT=FALSE),thres.tmp),
+          filt_proj <- FilteringTransformation(raster(file.tmp, RAT=FALSE),thres.tmp)
+          writeRaster(x = filt_proj,
                       filename = sub(output.format, paste("_",eval.meth,"filt", output.format, sep=""), file.tmp), 
                       overwrite=TRUE)
         }

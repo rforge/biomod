@@ -9,6 +9,7 @@ import("methods")
 import("raster")
 import("sp")
 import("ggplot2")
+import("parallel")
 
 importFrom("abind", abind, asub)
 import("reshape")

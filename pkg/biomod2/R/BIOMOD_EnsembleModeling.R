@@ -356,7 +356,11 @@
               pa_dataset_id <- paste("_", unlist(strsplit(assemb,"_"))[3], sep="")
               repet_id <- paste("_", unlist(strsplit(assemb,"_"))[2], sep="")
               ## define and extract the subset of points model will be evaluated on
-              eval_lines <- ! na.omit(calib_lines[ , repet_id, pa_dataset_id])
+              if (repet_id == "_Full"){
+                eval_lines <- rep(T, length(pred.bm))
+              } else {
+                eval_lines <- ! na.omit(calib_lines[ , repet_id, pa_dataset_id])
+              }
             } else {
               eval_lines <- rep(T, length(pred.bm))
             }

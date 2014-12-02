@@ -10,6 +10,7 @@
 \alias{get_evaluations,BIOMOD.EnsembleModeling.out-method}
 \alias{get_variables_importance}
 \alias{get_variables_importance,BIOMOD.models.out-method}
+\alias{get_variables_importance,BIOMOD.EnsembleModeling.out-method}
 \alias{get_options}
 \alias{get_options,BIOMOD.models.out-method}
 \alias{get_predictions}

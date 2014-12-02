@@ -1935,6 +1935,19 @@ setMethod("get_evaluations", "BIOMOD.EnsembleModeling.out",
 )
 
 
+setMethod("get_variables_importance", "BIOMOD.EnsembleModeling.out",
+          function(obj, ...){
+            vi <- NULL
+            for (mod in get_built_models(obj) ){
+              (vi_tmp <- obj@em.models[[mod]]@model_variables_importance)
+              vi <- abind::abind(vi, vi_tmp, along=3)
+            }
+            dimnames(vi)[[3]] <- get_built_models(obj)
+            
+            return(vi)
+          }
+)
+
 setMethod("get_built_models", "BIOMOD.EnsembleModeling.out",
           function(obj, ...){
             return(obj@em.computed)

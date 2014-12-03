@@ -65,6 +65,8 @@
                                            PA.sre.quant,
                                            PA.table)
   
+  cat("\n*** data checking ok")
+  
   resp.var <- args$resp.var
   expl.var <- args$expl.var 
   resp.xy <- args$resp.xy
@@ -86,6 +88,7 @@
   out <- NULL
   
   if(PA.strategy == 'none'){ # no Pseudo Absences
+    cat("\n called BIOMOD.formated.data")
     out <- BIOMOD.formated.data(sp=resp.var,
                                 xy=resp.xy,
                                 env=expl.var,

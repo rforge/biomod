@@ -128,6 +128,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
                                               xy=eval.xy,
                                               sp.name=sp.name)
               
+              cat("\n*** BiomodClass.R l131")
               if(raster::nlayers(BFDeval@data.mask)>0){
                 data.mask.tmp <- try(raster::addLayer(data.mask,BFDeval@data.mask))
                 if( !inherits(data.mask.tmp,"try-error")){
@@ -256,6 +257,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
 
 setMethod('plot', signature(x='BIOMOD.formated.data', y="missing"),
           function(x,coord=NULL,col=NULL){
+            cat("\n*** BiomodClass.R l260")
             if(raster::nlayers(x@data.mask)>0){
               require(rasterVis)
               
@@ -548,6 +550,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
 # 2.3 other functions
 setMethod('plot', signature(x='BIOMOD.formated.data.PA', y="missing"),
           function(x,coord=NULL,col=NULL){
+            cat("\n*** BiomodClass.R l553")
             if(raster::nlayers(x@data.mask)>0){
               require(rasterVis)
               

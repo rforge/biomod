@@ -428,6 +428,7 @@
   } else{
     if(do.stack){
       # test if there is memory enough to work with RasterStack
+      cat("\n*** BIOMOD_Projection l431")
       test = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
       if (!test) rasterOptions(todisk=T)
 #       if (!do.stack){ 

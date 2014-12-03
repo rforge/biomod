@@ -70,9 +70,11 @@ setMethod('BinaryTransformation', signature(data='RasterStack'),
   function(data, threshold)
   {
     if(length(threshold) == 1){
+      cat("\n*** BinaryTransformation.R l73")
       threshold <- rep(threshold, raster::nlayers(data))
     }
     StkTmp <- raster::stack()
+    cat("\n*** BinaryTransformation.R l77")
     for(i in 1:raster::nlayers(data)){
       StkTmp <- raster::addLayer(StkTmp, BinaryTransformation(raster::subset(data,i,drop=TRUE), threshold[i]))
     }

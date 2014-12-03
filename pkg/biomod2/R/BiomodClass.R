@@ -224,18 +224,23 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
                 }
               }
             }
-            
+            cat("\n*** BIOMOD.formated.data l227")
             if(is.null(xy)) xy <- as.data.frame(coordinates(env))
+            
+            cat("\n*** BIOMOD.formated.data l230")
             
             data.mask = reclassify(raster::subset(env,1,drop=T), c(-Inf,Inf,-1))
             data.mask[cellFromXY(data.mask,xy[which(sp==1),])] <- 1
             data.mask[cellFromXY(data.mask,xy[which(sp==0),])] <- 0
-            data.mask <- stack(data.mask)
+            data.mask <- raster::stack(data.mask)
             names(data.mask) <- sp.name
+            
+            cat("\n*** BIOMOD.formated.data l238")
             
             #     env_levels <- levels(env)
             env <- as.data.frame(extract(env,xy, factors=T))
             
+            cat("\n*** BIOMOD.formated.data l243")
             
             if(length(categorial_var)){
               for(cat_var in categorial_var){
@@ -246,7 +251,10 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
               }
             }
             
+            cat("\n*** BIOMOD.formated.data l254")
+            
             BFD <- BIOMOD.formated.data(sp,env,xy,sp.name,eval.sp, eval.env, eval.xy, na.rm=na.rm, data.mask=data.mask)
+            cat("\n*** BIOMOD.formated.data l257")
             return(BFD)
           }
 )

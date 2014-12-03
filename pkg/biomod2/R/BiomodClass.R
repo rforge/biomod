@@ -111,9 +111,9 @@ setGeneric( "BIOMOD.formated.data",
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE, data.mask=NULL ){
-            if(is.null(data.mask)) data.mask <- stack()
+            if(is.null(data.mask)) data.mask <- raster::stack()
             
-            
+            cat("\n*** BIOMOD.formated.data l115")
             if(is.null(eval.sp)){
               BFD <- new('BIOMOD.formated.data', 
                          coord=xy, 
@@ -187,6 +187,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
 
 setMethod('BIOMOD.formated.data', signature(sp='data.frame'), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
+            cat("\n*** BIOMOD.formated.data l190")
             if(ncol(sp) > 1 ){
               stop("Invalid response variable")
             }
@@ -198,6 +199,7 @@ setMethod('BIOMOD.formated.data', signature(sp='data.frame'),
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
+            cat("\n*** BIOMOD.formated.data l202")
             env <- as.data.frame(env)
             BFD <- BIOMOD.formated.data(sp,env,xy,sp.name, eval.sp, eval.env, eval.xy, na.rm=na.rm)
             return(BFD)
@@ -206,6 +208,8 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
+            cat("\n*** BIOMOD.formated.data l211")
+            
             categorial_var <- names(env)[raster::is.factor(env)]
             
             # take the same eval environemental variables than calibrating ones 

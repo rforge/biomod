@@ -88,7 +88,7 @@
   out <- NULL
   
   if(PA.strategy == 'none'){ # no Pseudo Absences
-    cat("\n called BIOMOD.formated.data")
+    cat("\n*** called BIOMOD.formated.data")
     out <- BIOMOD.formated.data(sp=resp.var,
                                 xy=resp.xy,
                                 env=expl.var,
@@ -97,6 +97,7 @@
                                 eval.env=eval.expl.var,
                                 eval.xy=eval.resp.xy,
                                 na.rm=na.rm)
+    cat("\n*** BIOMOD.formated.data done")
   } else{ # Automatic Pseudo Absences Selection
     out <- BIOMOD.formated.data.PA(sp=resp.var, xy=resp.xy, env=expl.var, sp.name=resp.name,
                                    eval.sp=eval.resp.var, eval.env=eval.expl.var, eval.xy=eval.resp.xy,

@@ -212,13 +212,17 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
             
             categorial_var <- names(env)[raster::is.factor(env)]
             
+            cat("\n*** BIOMOD.formated.data l215")
             # take the same eval environemental variables than calibrating ones 
             if(!is.null(eval.sp)){
               if(is.null(eval.env)){
+                cat("\n*** BIOMOD.formated.data l219")
                 #         eval.env_levels <- levels(eval.env)
                 eval.env <- as.data.frame(extract(env,eval.xy))
                 if(length(categorial_var)){
+                  cat("\n*** BIOMOD.formated.data l223")
                   for(cat_var in categorial_var){
+                    cat("\n*** BIOMOD.formated.data l225")
                     eval.env[,cat_var] <- as.factor(eval.env[,cat_var])
                   }
                 }

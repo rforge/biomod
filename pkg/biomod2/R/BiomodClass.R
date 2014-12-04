@@ -209,7 +209,8 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
             cat("\n*** BIOMOD.formated.data l211")
-            
+            cat("\n*** sessionInfo() \n")
+            print(sessionInfo())
             categorial_var <- names(env)[raster::is.factor(env)]  
             
             cat("\n*** BIOMOD.formated.data l215")

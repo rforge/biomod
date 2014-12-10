@@ -84,7 +84,11 @@ Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Precision = 5, Fixed.thresh = NUL
           ## add a new test that is probably useless
           if (is.na(mini)) mini <- 0
           if (is.na(maxi)) maxi <- 1000
-          valToTest <- unique( round(c(seq(mini,maxi,length.out=100), mini, maxi)) )
+          valToTest <- try(unique( round(c(seq(mini,maxi,length.out=100), mini, maxi)) ))
+          if(inherits(valToTest, "try-error")){
+            cat("\n*** range of values to test automatically set up")
+            valToTest <- seq(0,1000, by=50)
+          }
           # deal with unique value to test case
           if(length(valToTest)<3){
             valToTest <- round(c(mean(0,mini), valToTest, mean(1000,maxi)))

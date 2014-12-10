@@ -417,7 +417,7 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
       size <- CV_nnet[1,1]      
     }
 
-    cat("\n*** decay = ", decay, ", size = ", size)
+#     cat("\n*** decay = ", decay, ", size = ", size)
     
     model.sp <- try(nnet(formula = makeFormula(resp_name,head(Data[,expl_var_names,drop=FALSE]), 'simple',0),
                          data = Data[calibLines,,drop=FALSE],

@@ -113,7 +113,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE, data.mask=NULL ){
             if(is.null(data.mask)) data.mask <- raster::stack()
             
-            cat("\n*** BIOMOD.formated.data l115")
             if(is.null(eval.sp)){
               BFD <- new('BIOMOD.formated.data', 
                          coord=xy, 
@@ -128,7 +127,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
                                               xy=eval.xy,
                                               sp.name=sp.name)
               
-              cat("\n*** BiomodClass.R l131")
               if(raster::nlayers(BFDeval@data.mask)>0){
                 data.mask.tmp <- try(raster::addLayer(data.mask,BFDeval@data.mask))
                 if( !inherits(data.mask.tmp,"try-error")){
@@ -187,7 +185,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='data.frame' ),
 
 setMethod('BIOMOD.formated.data', signature(sp='data.frame'), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-            cat("\n*** BIOMOD.formated.data l190")
             if(ncol(sp) > 1 ){
               stop("Invalid response variable")
             }
@@ -199,7 +196,6 @@ setMethod('BIOMOD.formated.data', signature(sp='data.frame'),
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-            cat("\n*** BIOMOD.formated.data l202")
             env <- as.data.frame(env)
             BFD <- BIOMOD.formated.data(sp,env,xy,sp.name, eval.sp, eval.env, eval.xy, na.rm=na.rm)
             return(BFD)
@@ -208,45 +204,34 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-            cat("\n*** BIOMOD.formated.data l211")
-            cat("\n*** sessionInfo() \n")
-            print(sessionInfo())
+#             cat("\n*** sessionInfo() \n")
+#             print(sessionInfo())
             categorial_var <- names(env)[raster::is.factor(env)]  
             
-            cat("\n*** BIOMOD.formated.data l215")
             # take the same eval environemental variables than calibrating ones 
             if(!is.null(eval.sp)){
               if(is.null(eval.env)){
-                cat("\n*** BIOMOD.formated.data l219")
                 #         eval.env_levels <- levels(eval.env)
                 eval.env <- as.data.frame(extract(env,eval.xy))
                 if(length(categorial_var)){
-                  cat("\n*** BIOMOD.formated.data l223")
                   for(cat_var in categorial_var){
-                    cat("\n*** BIOMOD.formated.data l225")
                     eval.env[,cat_var] <- as.factor(eval.env[,cat_var])
                   }
                 }
               }
             }
-            cat("\n*** BIOMOD.formated.data l227")
+
             if(is.null(xy)) xy <- as.data.frame(coordinates(env))
-            
-            cat("\n*** BIOMOD.formated.data l230")
-            
+                        
             data.mask = reclassify(raster::subset(env,1,drop=T), c(-Inf,Inf,-1))
             data.mask[cellFromXY(data.mask,xy[which(sp==1),])] <- 1
             data.mask[cellFromXY(data.mask,xy[which(sp==0),])] <- 0
             data.mask <- raster::stack(data.mask)
             names(data.mask) <- sp.name
-            
-            cat("\n*** BIOMOD.formated.data l238")
-            
+                        
             #     env_levels <- levels(env)
             env <- as.data.frame(extract(env,xy, factors=T))
-            
-            cat("\n*** BIOMOD.formated.data l243")
-            
+                        
             if(length(categorial_var)){
               for(cat_var in categorial_var){
                 env[,cat_var] <- as.factor(env[,cat_var])
@@ -256,10 +241,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
               }
             }
             
-            cat("\n*** BIOMOD.formated.data l254")
-            
             BFD <- BIOMOD.formated.data(sp,env,xy,sp.name,eval.sp, eval.env, eval.xy, na.rm=na.rm, data.mask=data.mask)
-            cat("\n*** BIOMOD.formated.data l257")
             return(BFD)
           }
 )
@@ -274,7 +256,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
 
 setMethod('plot', signature(x='BIOMOD.formated.data', y="missing"),
           function(x,coord=NULL,col=NULL){
-            cat("\n*** BiomodClass.R l260")
             if(raster::nlayers(x@data.mask)>0){
               require(rasterVis)
               
@@ -567,7 +548,7 @@ BIOMOD.formated.data.PA <-  function(sp, env, xy, sp.name,
 # 2.3 other functions
 setMethod('plot', signature(x='BIOMOD.formated.data.PA', y="missing"),
           function(x,coord=NULL,col=NULL){
-            cat("\n*** BiomodClass.R l553")
+
             if(raster::nlayers(x@data.mask)>0){
               require(rasterVis)
               
@@ -1438,7 +1419,7 @@ setMethod("get_formal_data", "BIOMOD.models.out",
                 if(obj@formated.input.data@link != ''){
                   data <- get(load(obj@formated.input.data@link))
                   return(data)
-                } else{ cat("\n***"); return(NA) }
+                } else{ return(NA) }
               }              
             } else if(subinfo == 'MinMax'){
               return(apply(get_formal_data(obj, "expl.var"),2, function(x){
@@ -2014,9 +1995,11 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
               }
             }
             ## force calib.lines object to be 3D array
-            dn_tmp <- dimnames(calibLines) ## keep track of dimnames
-            dim(calibLines) <- c(dim(calibLines),1)
-            dimnames(calibLines) <- list(dn_tmp[[1]], dn_tmp[[2]], "_AllData")
+            if(length(dim(calibLines)) < 3 ){
+              dn_tmp <- dimnames(calibLines) ## keep track of dimnames
+              dim(calibLines) <- c(dim(calibLines),1)
+              dimnames(calibLines) <- list(dn_tmp[[1]], dn_tmp[[2]], "_AllData")
+            }
             
             if(is.null(Yweights)){ # 1 for all points
               if(!is.null(Prevalence)){
@@ -2053,8 +2036,7 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
               colnames(dataBM)[1] <- data@sp.name
               
               ### Calib/Valid lines
-              if(!is.null(DataSplitTable)){
-                cat("\n*** DataSplitTable is not NULL")
+              if(!is.null(DataSplitTable)){                
                 if(length(dim(DataSplitTable))==2){
                   calibLines <- DataSplitTable
                 } else {
@@ -2079,12 +2061,14 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                   }                
                 }
               }
+
               ## force calib.lines object to be 3D array
-              dn_tmp <- dimnames(calibLines) ## keep track of dimnames
-              dim(calibLines) <- c(dim(calibLines),1)
-              dimnames(calibLines) <- list(dn_tmp[[1]], dn_tmp[[2]], paste("_PA",pa, sep=""))
-        
-              
+              if(length(dim(calibLines)) < 3 ){
+                dn_tmp <- dimnames(calibLines) ## keep track of dimnames
+                dim(calibLines) <- c(dim(calibLines),1)
+                dimnames(calibLines) <- list(dn_tmp[[1]], dn_tmp[[2]], paste("_PA",pa, sep=""))
+              }
+                
               # dealing with evaluation data
               if(data@has.data.eval){
                 evalDataBM <- data.frame(cbind(data@eval.data.species,data@eval.data.env.var))

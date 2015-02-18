@@ -120,7 +120,7 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
       }
     }
   }
-  
+    
   if(inherits(Explanatory, 'SpatialPoints')){
     Explanatory <- as.data.frame(Explanatory@data)
     nb.expl.vars <- ncol(Explanatory)
@@ -135,6 +135,21 @@ sre <- function (Response = NULL, Explanatory = NULL, NewData = NULL, Quant = 0.
     nb.expl.vars <- nlayers(Explanatory)
     names.expl.vars <- names(Explanatory) 
   }
+
+  ## check explanatory variables class
+  test_no_factorial_var <- TRUE
+  if(is.data.frame(Explanatory)){ 
+    if(any(unlist(lapply(Explanatory, is.factor)))){
+      test_no_factorial_var <- FALSE
+    }
+  } else if (inherits(Explanatory, 'Raster')){
+    if(any(is.factor(Explanatory))){
+      test_no_factorial_var <- FALSE
+    }
+  }
+  
+  if(!test_no_factorial_var) stop("SRE algorithm does not handle factorial variables")
+    
   
   # If no NewData given, projection will be done on Explanatory variables
   if(is.null(NewData)){

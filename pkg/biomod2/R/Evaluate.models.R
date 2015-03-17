@@ -64,6 +64,20 @@ evaluate <- function(model, data, stat, as.array=FALSE){
 
 
 Find.Optim.Stat <- function(Stat='TSS',Fit,Obs,Precision = 5, Fixed.thresh = NULL){
+  ## check Fit and obs quality
+  
+  ## remove all uninite values
+  to_keep <- ( is.finite(Fit) & is.finite(Obs) )
+  Fit <- Fit[to_keep]
+  Obs <- Obs[to_keep]
+  
+  ## check some data are still here.
+  if(!length(Obs) | !length(Fit)){
+    cat("Non finite obs or fit available => model evaluation skipped !")
+    eval.out <- matrix(NA,1,4, dimnames = list(Stat, c("best.stat","cutoff","sensitivity","specificity")))
+    return(eval.out)
+  }
+  
   if(length(unique(Obs)) == 1 | length(unique(Fit)) == 1){
 #     warning("\nObserved or fited data contains only a value.. Evaluation Methods switched off\n",immediate.=T)
 #     best.stat <- cutoff <- true.pos <- sensitivity <- true.neg <- specificity <- NA  

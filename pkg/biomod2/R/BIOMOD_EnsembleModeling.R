@@ -360,6 +360,10 @@
                 eval_lines <- rep(T, length(pred.bm))
               } else {
                 eval_lines <- ! na.omit(calib_lines[ , repet_id, pa_dataset_id])
+                ## trick to detect when it is a full model but with a non common name
+                if(all(!eval_lines)){ ## i.e. all lines used for calib => full model
+                  eval_lines <- !eval_lines
+                }
               }
             } else {
               eval_lines <- rep(T, length(pred.bm))

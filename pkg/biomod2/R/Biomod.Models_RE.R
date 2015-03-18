@@ -370,11 +370,17 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
   
   
   # FDA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  if (Model == "FDA") {
-    model.sp <- try( fda(formula = makeFormula(colnames(Data)[1],head(Data)[,expl_var_names,drop=FALSE], 'simple',0),
-                         data = Data[calibLines,,drop=FALSE],
-                         method = eval(parse(text=call(Options@FDA$method))),
-                         weights = Yweights) )
+  if (Model == "FDA") {  
+    model.sp <- try( do.call(fda,
+                             c( list( formula = makeFormula(colnames(Data)[1],head(Data)[,expl_var_names,drop=FALSE], 'simple',0),
+                                      data = Data[calibLines,,drop=FALSE],
+                                      method = eval(parse(text=call(Options@FDA$method))),
+                                      weights = Yweights[calibLines] ),
+                                Options@FDA$add_args) ) )
+
+    
+    cat("\n*** test fda\n")
+    print(model.sp$call)
     
     if( !inherits(model.sp,"try-error") ){
       

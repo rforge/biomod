@@ -720,7 +720,8 @@ setClass("BIOMOD.Model.Options",
                    
                    SRE = list(quant = 0.025),
                    
-                   FDA = list(method = 'mars'),
+                   FDA = list(method = 'mars',
+                              add_args = NULL),
                    
                    MARS = list(degree = 2,
                                nk = NULL,
@@ -875,7 +876,7 @@ setClass("BIOMOD.Model.Options",
            
            ## FDA ##
            if(! object@FDA$method %in% c( 'polyreg', 'mars', 'bruto')){cat("\nFDA$method must be 'polyreg', 'mars' or 'bruto'"); test <- FALSE }
-           
+           if(!is.null(object@FDA$add_args)){ if(!is.list(object@FDA$add_args)) {cat("\nFDA$add_args must be a list or NULL"); test <- FALSE } }
            
            
            ## SRE ##
@@ -1047,7 +1048,10 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             
             ## FDA options
             cat("\n")
-            cat("\nFDA = list( method = '", object@FDA$method, "'),", sep="")
+            cat("\nFDA = list( method = '", object@FDA$method, "',", sep="")
+            cat("\n            add_args = ", ifelse(length(object@FDA$add_args)<1,
+                                                    'NULL', 
+                                                    paste("list(", paste(.print.control(object@FDA$add_args), collapse=""), ")", sep="")), "),",sep="")
             
             ## MARS options
             cat("\n")

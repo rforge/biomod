@@ -154,6 +154,8 @@ NOTE: for method and parms, you can give a 'real' value as described in the rpar
   Please refer to \code{\link[mda]{fda}} help file to get the meaning of these options.
   \itemize{
     \item{\code{method} (default \code{'mars'})}
+    \item{\code{add_args} (default \code{NULL}) : additional arguments to \code{method} given as a list of parameters
+    (corespond to the \ldots options of fda function) }
   }
 }
 

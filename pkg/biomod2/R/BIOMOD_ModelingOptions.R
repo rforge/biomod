@@ -181,7 +181,8 @@
   if(!is.null(FDA)){
 #     if(!is.null(FDA$type )) { opt@FDA$type <- FDA$type }
 #     if(!is.null(FDA$interaction.level )) { opt@FDA$interaction.level <- FDA$interaction.level }
-    if(!is.null(FDA$method )) { opt@FDA$method <- FDA$method }  
+    if(!is.null(FDA$method )) { opt@FDA$method <- FDA$method }
+    if(!is.null(FDA$add_args )) { opt@FDA$add_args <- FDA$add_args } ## additional args such as degree, nk
   }
 
   if(!is.null(MARS)){

@@ -377,10 +377,6 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
                                       method = eval(parse(text=call(Options@FDA$method))),
                                       weights = Yweights[calibLines] ),
                                 Options@FDA$add_args) ) )
-
-    
-    cat("\n*** test fda\n")
-    print(model.sp$call)
     
     if( !inherits(model.sp,"try-error") ){
       

@@ -480,7 +480,6 @@ BIOMOD_Modeling <- function( data,
     EF.weight <- models.eval.meth
   } else {
     EF.weight <- models.eval.meth[models.eval.meth %in% models.options@EF$weight.method]
-    cat('\n***', EF.weight)
   }
   if(length(EF.weight)==0) stop('No weighting method available selected for Ensemble forcastiong stuff')
   return(list(EF.algo = EF.algo,

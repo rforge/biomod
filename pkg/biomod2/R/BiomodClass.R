@@ -204,8 +204,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='matrix' ),
 
 setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ), 
           function(sp,env,xy=NULL,sp.name=NULL, eval.sp=NULL, eval.env=NULL, eval.xy=NULL, na.rm=TRUE){
-#             cat("\n*** sessionInfo() \n")
-#             print(sessionInfo())
             categorial_var <- names(env)[raster::is.factor(env)]  
             
             # take the same eval environemental variables than calibrating ones 
@@ -235,9 +233,6 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
             if(length(categorial_var)){
               for(cat_var in categorial_var){
                 env[,cat_var] <- as.factor(env[,cat_var])
-                #         cat("\n***",which(colnames(env)==cat_var))
-                #         
-                #         levels(env[,cat_var]) <- env_levels[[which(colnames(env)==cat_var)]][[1]][,ncol(env_levels[[which(colnames(env)==cat_var)]][[1]])]
               }
             }
             

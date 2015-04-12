@@ -231,8 +231,6 @@
         algo.run <- .extractModelNamesInfo(model.names=mod, info='models')
         thresholds[eval.meth,algo.run,eval.run,PA.run] <- get_evaluations(modeling.output)[eval.meth,"Cutoff",algo.run,eval.run,PA.run]
         if(! on_0_1000) thresholds[eval.meth,algo.run,eval.run,PA.run]  <- thresholds[eval.meth,algo.run,eval.run,PA.run] / 1000
-#         cat("\n***")
-#         cat("thresholds = ", thresholds)
       }
     }
     
@@ -428,7 +426,6 @@
   } else{
     if(do.stack){
       # test if there is memory enough to work with RasterStack
-      cat("\n*** BIOMOD_Projection l431")
       test = canProcessInMemory( raster::subset(new.env,1), 2*length(selected.models) + nlayers(new.env) )
       if (!test) rasterOptions(todisk=T)
 #       if (!do.stack){ 

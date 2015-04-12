@@ -171,7 +171,6 @@ Find.Optim.Stat <- function(Stat = 'TSS',
                                                length.out = Nb.thresh.test), 
                                            mini, maxi)) ))
           if(inherits(valToTest, "try-error")){
-            cat("\n*** range of values to test automatically set up")
             valToTest <- seq(fit.scale["min"], fit.scale["max"], 
                              length.out = Nb.thresh.test)
           }

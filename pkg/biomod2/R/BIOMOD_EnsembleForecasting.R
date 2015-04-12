@@ -159,12 +159,7 @@
     } else {
       ef.tmp <- predict(model.tmp, formal_predictions = formal_pred[,model.tmp@model, drop=FALSE], on_0_1000 = on_0_1000)
     }
-    
-#     cat("\n***")
-#     plot(ef.tmp)
-#     writeRaster(ef.tmp, "ef_tmp1.img", overwrite=T)
-    
-    
+        
     if(inherits(ef.tmp,'Raster')){
       if(do.stack){
         if(length(ef.out)) ef.out <- stack(ef.out,ef.tmp) else ef.out <- raster::stack(ef.tmp)

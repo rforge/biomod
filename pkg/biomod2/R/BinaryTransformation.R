@@ -1,8 +1,49 @@
+##' @title Convert species' probability of occurrence into binary presence-absence 
+##'   data using a predefined threshold 
+##' 
+##' @description Function that converts an object containing probability values 
+##'   into a binary presence-absence object according to a pre-defined threshold(s).
+##'   
+##' @param data numeric vector, a \code{matrix}, a \code{data.frame}, a 
+##'   \code{RasterLayer} or a \code{RasterStack} containing the data to be 
+##'   converted
+##' @param threshold numeric value or a vector containing the threshold to be 
+##'   used for converting data.
+##' 
+##' @details
+##'   If data is a vector or a raster object, then the threshold should be a 
+##'   numeric value. If data is matrix,dataframe or rasterStack, then the threshold
+##'   should have, in theory, as many values as the number of columns or layers
+##'   to transform. 
+##'   In the particular case that the data to convert is a \code{matrix}/\code{data.frame} 
+##'   with several columns or a \code{RasterStack} with several layers and the 
+##'   threshold is a single numeric value, the same threshold will be applied 
+##'   to all columns (resp. layers).  
+##' 
+##' 
+##' @return An object of the same class than \code{data} with binary (0 or 1) values,
+##'   usually presence-absence.
+##' 
+##' @author Wilfried Thuiller, Damien Georges
+##' 
+##' @examples
+##'   xx <- rnorm(50,10)
+##'   yy <- BinaryTransformation(xx, 10)
+##' 
+##'   cbind(xx,yy)
+##' 
+##' @keywords models 
+##' 
+##' @export
+##' @docType methods
+##' @rdname BinaryTransformation-methods
 setGeneric("BinaryTransformation",
            function(data, threshold){
              standardGeneric("BinaryTransformation")
            })
 
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, data.frame-method 
 setMethod('BinaryTransformation', signature(data='data.frame'), 
   function(data, threshold)
   {
@@ -19,6 +60,8 @@ setMethod('BinaryTransformation', signature(data='data.frame'),
   	
   })
 
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, matrix-method
 setMethod('BinaryTransformation', signature(data='matrix'), 
   function(data, threshold)
   {
@@ -26,6 +69,8 @@ setMethod('BinaryTransformation', signature(data='matrix'),
     return(BinaryTransformation(data, threshold))
   })
 
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, numeric-method
 setMethod('BinaryTransformation', signature(data='numeric'), 
   function(data, threshold)
   {
@@ -33,6 +78,8 @@ setMethod('BinaryTransformation', signature(data='numeric'),
     return(BinaryTransformation(data, threshold))
   })
 
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, array-method
 setMethod('BinaryTransformation', signature(data='array'), 
           function(data, threshold)
           {
@@ -55,6 +102,8 @@ setMethod('BinaryTransformation', signature(data='array'),
                            } ))
           })
 
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, RasterLayer-method
 setMethod('BinaryTransformation', signature(data='RasterLayer'), 
   function(data, threshold)
   {
@@ -66,6 +115,8 @@ setMethod('BinaryTransformation', signature(data='RasterLayer'),
     
   })
 
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, RasterStack-method
 setMethod('BinaryTransformation', signature(data='RasterStack'), 
   function(data, threshold)
   {
@@ -79,7 +130,9 @@ setMethod('BinaryTransformation', signature(data='RasterStack'),
     names(StkTmp) <- names(data)
     return(StkTmp)
   })
-          
+
+##' @rdname BinaryTransformation-methods
+##' @aliases BinaryTransformation, RasterBrick-method
 setMethod('BinaryTransformation', signature(data='RasterBrick'), 
   function(data, threshold)
   {

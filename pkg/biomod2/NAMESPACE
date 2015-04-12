@@ -34,6 +34,7 @@ importFrom(rasterVis, levelplot)
 #importFrom(sp, coordinates, read.asciigrid, SpatialPointsDataFrame, spplot)
 #import("survivial") # for gbm package
 #import("spline") # for gbm package
+#importFrom("gam", s)
 
 
 

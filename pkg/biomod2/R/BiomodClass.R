@@ -8,9 +8,9 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # We choose here to create monospecific objects to make all procedures and parallelising easier
-require(sp, quietly=TRUE)
-require(raster, quietly=TRUE)
-require(rasterVis, quietly=TRUE)
+requireNamespace("sp", quietly=TRUE)
+requireNamespace("raster", quietly=TRUE)
+requireNamespace("rasterVis", quietly=TRUE)
 
 # 0. Generic Functions definition -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=- #
 setGeneric("get_predictions",
@@ -257,7 +257,7 @@ setMethod('BIOMOD.formated.data', signature(sp='numeric', env='RasterStack' ),
 setMethod('plot', signature(x='BIOMOD.formated.data', y="missing"),
           function(x,coord=NULL,col=NULL){
             if(raster::nlayers(x@data.mask)>0){
-              require(rasterVis)
+              requireNamespace("rasterVis")
               
               ## check that there is some undefined areas to prevent from strange plotting issues
               if(min(cellStats(x@data.mask,min)) == -1){ # there is undifined area
@@ -550,7 +550,7 @@ setMethod('plot', signature(x='BIOMOD.formated.data.PA', y="missing"),
           function(x,coord=NULL,col=NULL){
 
             if(raster::nlayers(x@data.mask)>0){
-              require(rasterVis)
+              requireNamespace("rasterVis")
               
               ## check that there is some undefined areas to prevent from strange plotting issues
               if(min(cellStats(x@data.mask,min)) == -1){ # there is undifined area
@@ -1599,7 +1599,7 @@ setMethod('plot', signature(x='BIOMOD.projection.out', y="missing"),
             
             
             if(class(x@proj) == "BIOMOD.stored.raster.stack"){
-              require(rasterVis)
+              requireNamespace("rasterVis")
               
               ## define the breaks of the color key
               my.at <- seq(0,1000,by=100)

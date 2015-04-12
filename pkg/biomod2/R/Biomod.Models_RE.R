@@ -181,7 +181,7 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
     } else { ## mgcv package
       # package loading
       if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
-      if( ! ("package:mgcv" %in% search()) ){ require(mgcv,quietly=TRUE) }
+      if( ! ("package:mgcv" %in% search()) ){ require("mgcv",quietly=TRUE) }
 #       loadNamespace("mgcv")
       
       if(is.null(Options@GAM$myFormula)){

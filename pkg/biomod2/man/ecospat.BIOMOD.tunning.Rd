@@ -94,6 +94,68 @@ Tuning ANN: Tuning process may take a while. ANN is tuned within Biomod using cr
 Tuning FDA: It's not possible to specify tuning parameters for FDA in Biomod at the moment.
 Tuning GLM: Tuning GLm is not possible using quadratic terms of interaction because not supported by bestglm package
 }
+\examples{
+\dontrun{
+# species occurrences
+DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
+                                    package="biomod2"))
+head(DataSpecies)
+
+# the name of studied species
+myRespName <- 'GuloGulo'
+
+# the presence/absences data for our species
+myResp <- as.numeric(DataSpecies[,myRespName])
+
+# the XY coordinates of species data
+myRespXY <- DataSpecies[,c("X_WGS84","Y_WGS84")]
+
+# Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
+myExpl = stack( system.file( "external/bioclim/current/bio3.grd",
+                             package="biomod2"),
+                system.file( "external/bioclim/current/bio4.grd",
+                             package="biomod2"),
+                system.file( "external/bioclim/current/bio7.grd",
+                             package="biomod2"),
+                system.file( "external/bioclim/current/bio11.grd",
+                             package="biomod2"),
+                system.file( "external/bioclim/current/bio12.grd",
+                             package="biomod2"))
+# 1. Formatting Data
+myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
+                                     expl.var = myExpl,
+                                     resp.xy = myRespXY,
+                                     resp.name = myRespName)
+
+# 2. Defining Models Options using default options.
+### Duration for turing all models sequential with default settings on 3.4 GHz processor: approx. 45 min
+### tuning all models in parallel (on 8 cores) using foreach loops runs much faster: approx. 14 min
+#library(doParallel);cl<-makeCluster(8);registerDoParallel(cl)
+
+
+time.seq<-system.time(Biomod.tuning <- ecospat.BIOMOD.tuning(myBiomodData,
+                                                             env.ME = myExpl,
+                                                             n.bg.ME = ncell(myExpl)))
+#stopCluster(cl)
+
+myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
+                                     models = c('RF','CTA'),
+                                     models.options = Biomod.tuning$models.options,
+                                     NbRunEval=1,
+                                     DataSplit=100,
+                                     VarImport=0,
+                                     models.eval.meth = c('ROC'),
+                                     do.full.models=FALSE,
+                                     modeling.id="test")
+
+
+#  eval.plot(Biomod.tuning$tune.MAXENT at results)
+par(mfrow=c(1,3))
+plot(Biomod.tuning$tune.CTA.rpart)
+plot(Biomod.tuning$tune.CTA.rpart2)
+plot(Biomod.tuning$tune.RF)
+}
+}
 \author{
 Frank Breiner
 }

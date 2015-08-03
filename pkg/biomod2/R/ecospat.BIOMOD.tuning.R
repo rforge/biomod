@@ -50,8 +50,67 @@
 ##' 
 ##' @seealso BIOMOD_ModelingOptions(), train
 ##' 
-##' @example
+##' @examples
+##' \dontrun{
+##' # species occurrences
+##' DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
+##'                                     package="biomod2"))
+##' head(DataSpecies)
 ##' 
+##' # the name of studied species
+##' myRespName <- 'GuloGulo'
+##' 
+##' # the presence/absences data for our species 
+##' myResp <- as.numeric(DataSpecies[,myRespName])
+##' 
+##' # the XY coordinates of species data
+##' myRespXY <- DataSpecies[,c("X_WGS84","Y_WGS84")]
+##' 
+##' # Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
+##' myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
+##'                              package="biomod2"),
+##'                 system.file( "external/bioclim/current/bio4.grd", 
+##'                              package="biomod2"), 
+##'                 system.file( "external/bioclim/current/bio7.grd", 
+##'                              package="biomod2"),  
+##'                 system.file( "external/bioclim/current/bio11.grd", 
+##'                              package="biomod2"), 
+##'                 system.file( "external/bioclim/current/bio12.grd", 
+##'                              package="biomod2"))
+##' # 1. Formatting Data
+##' myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
+##'                                      expl.var = myExpl,
+##'                                      resp.xy = myRespXY,
+##'                                      resp.name = myRespName)
+##' 
+##' # 2. Defining Models Options using default options.
+##' ### Duration for turing all models sequential with default settings on 3.4 GHz processor: approx. 45 min
+##' ### tuning all models in parallel (on 8 cores) using foreach loops runs much faster: approx. 14 min
+##' #library(doParallel);cl<-makeCluster(8);registerDoParallel(cl) 
+##' 
+##' 
+##' time.seq<-system.time(Biomod.tuning <- ecospat.BIOMOD.tuning(myBiomodData,
+##'                                                              env.ME = myExpl,
+##'                                                              n.bg.ME = ncell(myExpl)))
+##' #stopCluster(cl)
+##' 
+##' myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
+##'                                      models = c('RF','CTA'), 
+##'                                      models.options = Biomod.tuning$models.options, 
+##'                                      NbRunEval=1, 
+##'                                      DataSplit=100, 
+##'                                      VarImport=0, 
+##'                                      models.eval.meth = c('ROC'),
+##'                                      do.full.models=FALSE,
+##'                                      modeling.id="test")
+##' 
+##' 
+##' #  eval.plot(Biomod.tuning$tune.MAXENT at results)
+##' par(mfrow=c(1,3))
+##' plot(Biomod.tuning$tune.CTA.rpart)
+##' plot(Biomod.tuning$tune.CTA.rpart2)
+##' plot(Biomod.tuning$tune.RF)
+##' }
 ecospat.BIOMOD.tuning <- function(data,
                                   models = c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT'),
                                   models.options = BIOMOD_ModelingOptions(),
@@ -104,29 +163,31 @@ ecospat.BIOMOD.tuning <- function(data,
   }  
   
   tune.GLM <- tune.MAXENT <- tune.GAM <- tune.GBM <- tune.CTA.rpart <- tune.CTA.rpart2 <- tune.RF <- tune.ANN <- tune.MARS <- tune.FDA <- NULL
-  if('SRE' %in% models){cat("No tuning for SRE!")} 
-    
-    resp <- data@data.species
-  if(metric == 'ROC' | metric == 'TSS'){resp <- as.factor(ifelse(resp == 1, "Presence", "Absence"))}
+if('SRE' %in% models){cat("No tuning for SRE!")} 
 
-  if('GBM' %in% models){  
+resp <- data@data.species
+if(metric == 'ROC' | metric == 'TSS'){resp <- as.factor(ifelse(resp == 1, "Presence", "Absence"))}
+
+if('GBM' %in% models){  
   
-    if(is.null(ctrl.GBM)){ctrl.GBM <- trControl}
-    cat(paste("\n-=-=-=-=-=-=-=-=-=-=\n",
-      "Start tuning GBM. Start coarse tuning\n"))
-    
-    tune.grid <- expand.grid(.interaction.depth = seq(2, 8, by = 3),
-                             .n.trees = c(500, 1000, 2500),
-                             .shrinkage = c(0.001, 0.01, 0.1))
-    try(tune.GBM <- caret::train(data@data.env.var, resp,
-                      method = "gbm",
-                      tuneGrid = tune.grid,
-                      trControl = ctrl.GBM,
-                      verbose = FALSE))
-    cat("Best optimization of coarse tuning:\n")
-    cat(paste(tune.GBM$bestTune,"\n-=-=-=-=-=-=-=-=-=-=\n"))
-
-    if(!is.null(tune.GBM)){
+  if(is.null(ctrl.GBM)){ctrl.GBM <- trControl}
+  cat(paste("\n-=-=-=-=-=-=-=-=-=-=\n",
+            "Start tuning GBM. Start coarse tuning\n"))
+  
+  tune.grid <- expand.grid(.interaction.depth = seq(2, 8, by = 3),
+                           .n.trees = c(500, 1000, 2500),
+                           .shrinkage = c(0.001, 0.01, 0.1),
+                           .n.minobsinnode = 10)
+  
+  try(tune.GBM <- train(data@data.env.var, resp,
+                        method = "gbm",
+                        tuneGrid = tune.grid,
+                        trControl = ctrl.GBM,
+                        verbose = FALSE))
+  cat("Best optimization of coarse tuning:\n")
+  cat(paste(tune.GBM$bestTune,"\n-=-=-=-=-=-=-=-=-=-=\n"))
+  
+  if(!is.null(tune.GBM)){
     cat("Start fine tuning\n")
     
     if(tune.GBM$bestTune$n.trees==2500){
@@ -139,27 +200,28 @@ ecospat.BIOMOD.tuning <- function(data,
     
     tune.grid <- expand.grid(.interaction.depth = c(tune.GBM$bestTune$interaction.depth-1,tune.GBM$bestTune$interaction.depth,tune.GBM$bestTune$interaction.depth+1),
                              .n.trees = n.trees,
-                             .shrinkage = c(tune.GBM$bestTune$shrinkage/2,tune.GBM$bestTune$shrinkage,tune.GBM$bestTune$shrinkage*5))
+                             .shrinkage = c(tune.GBM$bestTune$shrinkage/2,tune.GBM$bestTune$shrinkage,tune.GBM$bestTune$shrinkage*5),
+                             .n.minobsinnode = 10)
     tune.GBM <- NULL
-    try(tune.GBM <- caret::train(data@data.env.var, resp,
-                      method = "gbm",
-                      tuneGrid = tune.grid,
-                      trControl = ctrl.GBM,
-                      verbose = FALSE))  
-  }
+    try(tune.GBM <- train(data@data.env.var, resp,
+                          method = "gbm",
+                          tuneGrid = tune.grid,
+                          trControl = ctrl.GBM,
+                          verbose = FALSE))  
+    }
   cat(paste("\n Finished tuning GBM\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
-
+  
   if('RF' %in% models){
     cat("Start tuning RF\n")
-          
+    
     if(is.null(ctrl.RF)){ctrl.RF <- trControl}
     ## give both mtry as bestTune
-    try(tune.RF <- caret::train(data@data.env.var, resp,
-                     method = method.RF,
-                     tuneLength = tuneLength,
-                     trControl = ctrl.RF,
-                     metric = metric))
+    try(tune.RF <- train(data@data.env.var, resp,
+                         method = method.RF,
+                         tuneLength = tuneLength,
+                         trControl = ctrl.RF,
+                         metric = metric))
     cat(paste("Finished tuning RF\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
   
@@ -172,7 +234,7 @@ ecospat.BIOMOD.tuning <- function(data,
     # decay: optimised by cross validation on model AUC (NbCv cross validation; tested decay will be the following c(0.001, 0.01, 0.05, 0.1)).
     # could increase maxit from 200 to 500
     # a nice option would be to use model averaging for ann: avNNet in package(caret)
-
+    
     ## Box-cox transformation of predictors
     #box.cox.trans <- data@data.env.var
     ## if Some have zero values, we need to add one to them so that
@@ -181,76 +243,76 @@ ecospat.BIOMOD.tuning <- function(data,
     #if(sum(box.cox.trans)>0){box.cox.trans <- box.cox.trans + 1}
     #pp <- preProcess(data@data.env.var, method = "BoxCox")
     #contPredTrain <- predict(pp, box.cox.trans)
-   
+    
     ## Create a specific candidate set of models to evaluate:
     tune.grid <- expand.grid(.decay = decay.tune.ANN,
-                                .size = size.tune.ANN,
-                                ## The next option is to use bagging (see the
-                                ## next chapter) instead of different random
-                                ## seeds.
-                                .bag = FALSE)
-    try(tune.ANN <- caret::train(data@data.env.var, resp, 
-                        method = method.ANN,
-                        tuneGrid = tune.grid,
-                        trControl = ctrl.ANN,
-                        ## Automatically standardize data prior to modeling
-                        ## and prediction
-                        preProc = c("center", "scale"),
-                        linout = TRUE,
-                        trace = FALSE,
-                        MaxNWts.ANN = MaxNWts.ANN,
-                        maxit = maxit.ANN,
-                        metric = metric))
+                             .size = size.tune.ANN,
+                             ## The next option is to use bagging (see the
+                             ## next chapter) instead of different random
+                             ## seeds.
+                             .bag = FALSE)
+    try(tune.ANN <- train(data@data.env.var, resp, 
+                          method = method.ANN,
+                          tuneGrid = tune.grid,
+                          trControl = ctrl.ANN,
+                          ## Automatically standardize data prior to modeling
+                          ## and prediction
+                          preProc = c("center", "scale"),
+                          linout = TRUE,
+                          trace = FALSE,
+                          MaxNWts.ANN = MaxNWts.ANN,
+                          maxit = maxit.ANN,
+                          metric = metric))
     cat(paste("Finished tuning ANN\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
-
+  
   if('GAM' %in% models){
     cat("Start tuning GAM\n")
     
     if(is.null(ctrl.GAM)){ctrl.GAM <- trControl}
     
-    try(tune.GAM <-   caret::train(data@data.env.var, resp, 
-                             method = method.GAM,
-                             trControl = ctrl.GAM))
+    try(tune.GAM <-   train(data@data.env.var, resp, 
+                            method = method.GAM,
+                            trControl = ctrl.GAM))
     cat(paste("Finished tuning GAM\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
-
-
+  
+  
   if('MAXENT' %in% models){
     cat("Start tuning MAXENT\n")
     if(cvmethod.ME != 'randomkfold'){kfolds.ME <- NA}
-    try(tune.MAXENT <- ENMeval::ENMevaluate(data@coord[data@data.species==1,],env.ME,bg.coords= data@coord[data@data.species==0,],
+    try(tune.MAXENT <- ENMevaluate(data@coord[data@data.species==1,],env.ME,bg.coords= data@coord[data@data.species==0,],
                                    method=cvmethod.ME, kfolds = kfolds.ME, overlap=overlap.ME, 
-                                   bin.output=bin.output.ME, clamp=clamp.ME))
+                                   bin.output=TRUE, clamp=clamp.ME))
     cat(paste("Finished tuning MAXENT\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
-    
+  
   if('MARS' %in% models){
     cat("Start tuning MARS\n")
     
     if(is.null(ctrl.MARS)){ctrl.MARS <- trControl}
     
     tune.grid <- expand.grid(.degree = 1:2, .nprune = 2:38)
-    try(tune.MARS <-   caret::train(data@data.env.var, resp, 
-                       method = method.MARS,
-                       tuneGrid = tune.grid,
-                       trControl = ctrl.MARS))
+    try(tune.MARS <-   train(data@data.env.var, resp, 
+                             method = method.MARS,
+                             tuneGrid = tune.grid,
+                             trControl = ctrl.MARS))
     cat(paste("Finished tuning MARS\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
-
-
+  
+  
   if('GLM' %in% models){
     cat("Start tuning GLM\n")
     
     if(is.null(ctrl.GLM)){ctrl.GLM <- trControl}
-    try(tune.GLM <-   caret::train( makeFormula("resp",data@data.env.var, type= type.GLM,interaction.level = 0),
-                                 data=cbind(data@data.env.var,resp=resp),
-                                 method = method.GLM,
-                                 trControl = ctrl.GLM))
+    try(tune.GLM <-   train( makeFormula("resp",data@data.env.var, type= type.GLM,interaction.level = 0),
+                             data=cbind(data@data.env.var,resp=resp),
+                             method = method.GLM,
+                             trControl = ctrl.GLM))
     cat(paste("Finished tuning GLM\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
-
-
+  
+  
   
   if('FDA' %in% models){
     ## DOES NOT WORK
@@ -258,12 +320,11 @@ ecospat.BIOMOD.tuning <- function(data,
     
     if(is.null(ctrl.FDA)){ctrl.FDA <- trControl}
     
-    tune.grid <- expand.grid(.degree = 1:2, 
-                             .nprune = 2:38)
-    try(tune.FDA <- caret::train(data@data.env.var, factor(resp), 
-                  method = "fda",
-                  tuneGrid = tune.grid,                  
-                  trControl = ctrl.FDA))
+    tune.grid <- expand.grid(.degree = 1:2, .nprune = 2:38)
+    try(tune.FDA <- train(data@data.env.var, factor(resp), 
+                          method = "fda",
+                          tuneGrid = tune.grid,                  
+                          trControl = ctrl.FDA))
     cat(paste("Finished tuning FDA\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
   
@@ -273,14 +334,14 @@ ecospat.BIOMOD.tuning <- function(data,
     if(is.null(ctrl.CTA)){ctrl.CTA <- trControl}    
     
     cat("Tuning Complexity Parameter")    
-    try(tune.CTA.rpart <- caret::train(data@data.env.var, resp, 
+    try(tune.CTA.rpart <- train(data@data.env.var, resp, 
                                 method = "rpart",
                                 tuneLength = tuneLength,
                                 trControl = ctrl.CTA,
                                 metric=metric))
     
     cat("Tuning Max Tree Depth")
-    try(tune.CTA.rpart2 <-  caret::train(data@data.env.var, resp,
+    try(tune.CTA.rpart2 <-  train(data@data.env.var, resp,
                                   method = "rpart2",
                                   tuneLength = tuneLength,
                                   trControl = ctrl.CTA,
@@ -289,14 +350,14 @@ ecospat.BIOMOD.tuning <- function(data,
   }
   
   ## Compiling information:
-
+  
   if(!is.null(tune.GLM)){
     tune.GLM
     models.options@GLM$myFormula <- formula(tune.GLM$finalModel)
     models.options@GLM$type <- type.GLM
     models.options@GLM$test <- "no"    
-  }else{if('GLM' %in% models){cat("Tuning GLM failed!"); tune.GLM <- "FAILED"}}
-
+  } else { if('GLM' %in% models){cat("Tuning GLM failed!"); tune.GLM <- "FAILED"}}
+  
   if(!is.null(tune.MAXENT)){
     if(metric.ME=="ROC"){metric.ME <- "Mean.AUC"}
     if(!metric.ME %in% c("Mean.AUC", "Mean.AUC.DIFF", "delta.AICc")){metric.ME <- "Mean.AUC"; cat("Invalid metric.ME argument! metric.ME was set to Mean.AUC")}
@@ -307,85 +368,85 @@ ecospat.BIOMOD.tuning <- function(data,
       models.options@MAXENT$product <- grepl("P",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$threshold <- grepl("T",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$beta_threshold <- tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"rm"]  
-      }else {       
+    }else {       
       models.options@MAXENT$linear <- grepl("L",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$quadratic <- grepl("Q",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$hinge <- grepl("H",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$product <- grepl("P",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$threshold <- grepl("T",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
       models.options@MAXENT$beta_threshold <- tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"rm"]  
-      }}else{ if('MAXENT' %in% models){cat("Tuning MAXENT failed!"); tune.MAXENT <- "FAILED"}}
-
+    }}else{ if('MAXENT' %in% models){cat("Tuning MAXENT failed!"); tune.MAXENT <- "FAILED"}}
+  
   if(!is.null(tune.GAM)){
     if(metric == 'TSS'){
       models.options@GAM$select <- tune.GAM$results[which.max(apply(tune.GAM$results[,c("Sens","Spec")],1,sum)-1),"select"]    
       models.options@GAM$method <- tune.GAM$results[which.max(apply(tune.GAM$results[,c("Sens","Spec")],1,sum)-1),"method"]    
-      }else {
-    models.options@GAM$select <- tune.GAM$bestTune$select
-    models.options@GAM$method <- tune.GAM$bestTune$method
+    }else {
+      models.options@GAM$select <- tune.GAM$bestTune$select
+      models.options@GAM$method <- tune.GAM$bestTune$method
     }}else{ if('GAM' %in% models){cat("Tuning GAM failed!"); tune.GAM <- "FAILED"}}
-
+  
   if(!is.null(tune.GBM)){
-  if(metric == 'TSS'){
-    models.options@GBM$n.trees <- tune.GBM$results[which.max(apply(tune.GBM$results[,c("Sens","Spec")],1,sum)-1),"n.trees"]
-    models.options@GBM$interaction.depth <- tune.GBM$results[which.max(apply(tune.GBM$results[,c("Sens","Spec")],1,sum)-1),"interaction.depth"]    
-    models.options@GBM$shrinkage <- tune.GBM$results[which.max(apply(tune.GBM$results[,c("Sens","Spec")],1,sum)-1),"shrinkage"] 
-  }else{
-    models.options@GBM$n.trees <- tune.GBM$bestTune$n.trees
-    models.options@GBM$interaction.depth <- tune.GBM$bestTune$interaction.depth    
-    models.options@GBM$shrinkage <- tune.GBM$bestTune$shrinkage 
+    if(metric == 'TSS'){
+      models.options@GBM$n.trees <- tune.GBM$results[which.max(apply(tune.GBM$results[,c("Sens","Spec")],1,sum)-1),"n.trees"]
+      models.options@GBM$interaction.depth <- tune.GBM$results[which.max(apply(tune.GBM$results[,c("Sens","Spec")],1,sum)-1),"interaction.depth"]    
+      models.options@GBM$shrinkage <- tune.GBM$results[which.max(apply(tune.GBM$results[,c("Sens","Spec")],1,sum)-1),"shrinkage"] 
+    }else{
+      models.options@GBM$n.trees <- tune.GBM$bestTune$n.trees
+      models.options@GBM$interaction.depth <- tune.GBM$bestTune$interaction.depth    
+      models.options@GBM$shrinkage <- tune.GBM$bestTune$shrinkage 
     }}else{ if('GBM' %in% models){cat("Tuning GBM failed!"); tune.GBM <- "FAILED"}}
-
+  
   if(!is.null(tune.CTA.rpart)){
-  if(metric == 'TSS'){
-    models.options@CTA$control$cp <- tune.CTA.rpart$results[which.max(apply(tune.CTA.rpart$results[,c("Sens","Spec")],1,sum)-1),"cp"]    
-  }else{
-    models.options@CTA$control$cp <- tune.CTA.rpart$bestTune      
-  }}else{ if('CTA' %in% models){cat("Tuning CTA cp failed!"); tune.CTA.rpart <- "FAILED"}}
-
+    if(metric == 'TSS'){
+      models.options@CTA$control$cp <- tune.CTA.rpart$results[which.max(apply(tune.CTA.rpart$results[,c("Sens","Spec")],1,sum)-1),"cp"]    
+    }else{
+      models.options@CTA$control$cp <- tune.CTA.rpart$bestTune      
+    }}else{ if('CTA' %in% models){cat("Tuning CTA cp failed!"); tune.CTA.rpart <- "FAILED"}}
+  
   if(!is.null(tune.CTA.rpart2)){
-  if(metric == 'TSS'){
-    models.options@CTA$control$maxdepth <- tune.CTA.rpart2$results[which.max(apply(tune.CTA.rpart2$results[,c("Sens","Spec")],1,sum)-1),"maxdepth"]    
-  }else{
-    models.options@CTA$control$maxdepth <- tune.CTA.rpart2$bestTune      
-  }}else{ if('CTA' %in% models){cat("Tuning CTA maxdepth failed!"); tune.CTA.rpart2 <- "FAILED"}}
+    if(metric == 'TSS'){
+      models.options@CTA$control$maxdepth <- tune.CTA.rpart2$results[which.max(apply(tune.CTA.rpart2$results[,c("Sens","Spec")],1,sum)-1),"maxdepth"]    
+    }else{
+      models.options@CTA$control$maxdepth <- tune.CTA.rpart2$bestTune      
+    }}else{ if('CTA' %in% models){cat("Tuning CTA maxdepth failed!"); tune.CTA.rpart2 <- "FAILED"}}
   
   if(!is.null(tune.RF)){
-  if(metric == 'TSS'){
-    models.options@RF$mtry <- tune.RF$results[which.max(apply(tune.RF$results[,c("Sens","Spec")],1,sum)-1),"mtry"]    
-  }else{
-    models.options@RF$mtry <- tune.RF$bestTune$mtry  
-  }}else{ if('RF' %in% models){cat("Tuning RF failed!"); tune.RF <- "FAILED"}}
+    if(metric == 'TSS'){
+      models.options@RF$mtry <- tune.RF$results[which.max(apply(tune.RF$results[,c("Sens","Spec")],1,sum)-1),"mtry"]    
+    }else{
+      models.options@RF$mtry <- tune.RF$bestTune$mtry  
+    }}else{ if('RF' %in% models){cat("Tuning RF failed!"); tune.RF <- "FAILED"}}
   
   if(!is.null(tune.ANN)){
-  if(metric == 'TSS'){
-    models.options@ANN$size <- tune.ANN$results[which.max(apply(tune.ANN$results[,c("Sens","Spec")],1,sum)-1),"size"]    
-    models.options@ANN$decay <- tune.ANN$results[which.max(apply(tune.ANN$results[,c("Sens","Spec")],1,sum)-1),"decay"]    
-    models.options@ANN$maxit <- maxit.ANN
+    if(metric == 'TSS'){
+      models.options@ANN$size <- tune.ANN$results[which.max(apply(tune.ANN$results[,c("Sens","Spec")],1,sum)-1),"size"]    
+      models.options@ANN$decay <- tune.ANN$results[which.max(apply(tune.ANN$results[,c("Sens","Spec")],1,sum)-1),"decay"]    
+      models.options@ANN$maxit <- maxit.ANN
     }else{
-    models.options@ANN$size <- tune.ANN$bestTune$size
-    models.options@ANN$decay <- tune.ANN$bestTune$decay 
-    models.options@ANN$maxit <- maxit.ANN
+      models.options@ANN$size <- tune.ANN$bestTune$size
+      models.options@ANN$decay <- tune.ANN$bestTune$decay 
+      models.options@ANN$maxit <- maxit.ANN
     }}else{ if('ANN' %in% models){cat("Tuning ANN failed!"); tune.ANN <- "FAILED"}}
   
   if(!is.null(tune.MARS)){
-  if(metric == 'TSS'){
-    models.options@ANN$degree <- tune.MARS$results[which.max(apply(tune.MARS$results[,c("Sens","Spec")],1,sum)-1),"degree"]    
-    models.options@ANN$nk <- tune.MARS$results[which.max(apply(tune.MARS$results[,c("Sens","Spec")],1,sum)-1),"nk"]    
-  }else{
-    models.options@MARS$degree <- tune.MARS$bestTune$degree
-    models.options@MARS$nk <- tune.MARS$bestTune$nprune
-  }}else{ if('MARS' %in% models){cat("Tuning MARS failed!"); tune.MARS <- "FAILED"}}
+    if(metric == 'TSS'){
+      models.options@ANN$degree <- tune.MARS$results[which.max(apply(tune.MARS$results[,c("Sens","Spec")],1,sum)-1),"degree"]    
+      models.options@ANN$nk <- tune.MARS$results[which.max(apply(tune.MARS$results[,c("Sens","Spec")],1,sum)-1),"nk"]    
+    }else{
+      models.options@MARS$degree <- tune.MARS$bestTune$degree
+      models.options@MARS$nk <- tune.MARS$bestTune$nprune
+    }}else{ if('MARS' %in% models){cat("Tuning MARS failed!"); tune.MARS <- "FAILED"}}
   
   if(!is.null(tune.FDA)){
-  #models.options@FDA$method <- "earth"   
-  if(metric == 'TSS'){
-    models.options@FDA$add_args <- list(degree=tune.FDA$results[which.max(apply(tune.FDA$results[,c("Sens","Spec")],1,sum)-1),"degree"],   
-                                  nk=tune.FDA$results[which.max(apply(tune.FDA$results[,c("Sens","Spec")],1,sum)-1),"nprune"])    
-  }else{
-    models.options@FDA$add_args <- list(degree=tune.FDA$bestTune$degree,nk=tune.FDA$bestTune$nprune)
-  }}else{ if('FDA' %in% models){cat("Tuning FDA failed!"); tune.FDA <- "FAILED"}}
-
+    #models.options@FDA$method <- "earth"   
+    if(metric == 'TSS'){
+      models.options@FDA$add_args <- list(degree=tune.FDA$results[which.max(apply(tune.FDA$results[,c("Sens","Spec")],1,sum)-1),"degree"],   
+                                          nk=tune.FDA$results[which.max(apply(tune.FDA$results[,c("Sens","Spec")],1,sum)-1),"nprune"])    
+    }else{
+      models.options@FDA$add_args <- list(degree=tune.FDA$bestTune$degree,nk=tune.FDA$bestTune$nprune)
+    }}else{ if('FDA' %in% models){cat("Tuning FDA failed!"); tune.FDA <- "FAILED"}}
+  
   return(list(models.options=models.options,   tune.CTA.rpart = tune.CTA.rpart, tune.CTA.rpart2 = tune.CTA.rpart2,
               tune.RF = tune.RF, tune.ANN = tune.ANN,  tune.MARS = tune.MARS, tune.FDA = tune.FDA, tune.GBM=tune.GBM,
               tune.GAM = tune.GAM, tune.MAXENT = tune.MAXENT, tune.GLM=tune.GLM))

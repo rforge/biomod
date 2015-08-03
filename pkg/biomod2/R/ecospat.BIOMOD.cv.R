@@ -29,6 +29,74 @@
 ##' 
 ##' @author Frank Breiner
 ##' 
+##' @examples
+##' \donrun{
+##' # species occurrences
+##' DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
+##'                                     package="biomod2"))
+##' head(DataSpecies)
+##' 
+##' the name of studied species
+##' myRespName <- 'GuloGulo'
+##' 
+##' # the presence/absences data for our species 
+##' myResp <- as.numeric(DataSpecies[,myRespName])
+##' 
+##' # the XY coordinates of species data
+##' myRespXY <- DataSpecies[,c("X_WGS84","Y_WGS84")]
+##' 
+##' 
+##' # Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
+##' myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
+##'                              package="biomod2"),
+##'                 system.file( "external/bioclim/current/bio4.grd", 
+##'                              package="biomod2"), 
+##'                 system.file( "external/bioclim/current/bio7.grd", 
+##'                              package="biomod2"),  
+##'                 system.file( "external/bioclim/current/bio11.grd", 
+##'                              package="biomod2"), 
+##'                 system.file( "external/bioclim/current/bio12.grd", 
+##'                              package="biomod2"))
+##' 
+##' # 1. Formatting Data
+##' myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
+##'                                      expl.var = myExpl,
+##'                                      resp.xy = myRespXY,
+##'                                      resp.name = myRespName)
+##' 
+##' # 2. Defining Models Options using default options.
+##' myBiomodOption <- BIOMOD_ModelingOptions()
+##' 
+##' 
+##' # 3. Creating DataSplitTable
+##' 
+##' DataSplitTable <- ecospat.BIOMOD.cv(myBiomodData, k=5, rep=2, do.full.models=F)
+##' DataSplitTable.y <- ecospat.BIOMOD.cv(myBiomodData,stratified.cv=T, stratify="y", k=2)
+##' colnames(DataSplitTable.y)[1:2] <- c("RUN11","RUN12")
+##' DataSplitTable <- cbind(DataSplitTable,DataSplitTable.y)
+##' head(DataSplitTable)
+##' 
+##' # 4. Doing Modelisation
+##' 
+##' myBiomodModelOut <- BIOMOD_Modeling( myBiomodData, 
+##'                                      models = c('RF'), 
+##'                                      models.options = myBiomodOption, 
+##'                                      DataSplitTable = DataSplitTable,
+##'                                      VarImport=0, 
+##'                                      models.eval.meth = c('ROC'),
+##'                                      do.full.models=FALSE,
+##'                                      modeling.id="test")
+##' 
+##' ## get cv evaluations
+##' eval <- get_evaluations(myBiomodModelOut,as.data.frame=T)
+##' 
+##' eval$strat <- NA
+##' eval$strat[grepl("13",eval$Model.name)] <- "Full"
+##' eval$strat[!(grepl("11",eval$Model.name)|grepl("12",eval$Model.name)|grepl("13",eval$Model.name))] <- "Random"
+##' eval$strat[grepl("11",eval$Model.name)|grepl("12",eval$Model.name)] <- "Strat"
+##' 
+##' boxplot(eval$Testing.data~ eval$strat, ylab="ROC AUC")
+##' }
 
 ecospat.BIOMOD.cv <- function(data, k=5,repetition=5, do.full.models = TRUE, stratified.cv=FALSE, stratify="both", balance="pres"){
  

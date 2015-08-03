@@ -161,9 +161,10 @@
     ### Old version
     if(Options@GAM$algo == 'GAM_gam'){ ## gam package
       # package loading
-      if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
-      if( ! ("package:gam" %in% search()) ){ require("gam",quietly=TRUE) }
-#       loadNamespace("gam")
+#       if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
+#       if( ! ("package:gam" %in% search()) ){ require("gam",quietly=TRUE) }
+      if(isNamespaceLoaded("mgcv")){unloadNamespace("mgcv")}
+      if(!isNamespaceLoaded("gam")){requireNamespace("gam", quietly = TRUE)}
       
       cat('\n\t> GAM (gam) modelling...')
       
@@ -180,9 +181,11 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
       
     } else { ## mgcv package
       # package loading
-      if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
-      if( ! ("package:mgcv" %in% search()) ){ require("mgcv",quietly=TRUE) }
-#       loadNamespace("mgcv")
+#       if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
+#       if( ! ("package:mgcv" %in% search()) ){ require("mgcv",quietly=TRUE) }
+      if(isNamespaceLoaded("gam")){unloadNamespace("gam")}
+      if(!isNamespaceLoaded("mgcv")){requireNamespace("mgcv", quietly = TRUE)}
+      
       
       if(is.null(Options@GAM$myFormula)){
         cat("\n\tAutomatic formula generation...")

@@ -36,6 +36,11 @@ importFrom(rasterVis, levelplot)
 #import("spline") # for gbm package
 #importFrom("gam", s)
 
+### imports for ecospat.xxx functions (to be removed at some point?)
+importFrom("dismo", kfold)
+importFrom("PresenceAbsence", presence.absence.accuracy)
+importFrom("caret", trainControl, twoClassSummary)
+importFrom("ENMeval", ENMevaluate)
 
 
 
@@ -173,7 +178,10 @@ export(
 	response.plot2,
 	sre,
 	update_objects,
-	variables_importance
+	variables_importance,
+	ecospat.BIOMOD.cv,
+	ecospat.BIOMOD.presenceonly,
+	ecospat.BIOMOD.tuning
 )
 
 ## to be hidden

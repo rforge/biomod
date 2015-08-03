@@ -1,3 +1,9 @@
+3.2-00 (2015-07-28)
+  * add 3 new functions in biomod2 (Frank B. contribution)
+  * ecospat.BIOMOD.cv to control models cross validation procedure
+  * ecospat.BIOMOD.presenceonly to evaluate biomods models using boyce and mpa indices
+  * ecospat.BIOMOD.tuning to automatically tune BIOMOD_ModelingOptions parameters
+
 3.1-59 (2014-10-23)
 	* add model evaluation scores plottinfg function
 	* dependence to ggplot2
@@ -39,7 +45,7 @@
 	* new variable_importance function.
 	* ...
 
-﻿2.1.37 (2013-06-12)
+2.1.37 (2013-06-12)
 	* change (temporally?) gam default package from 'mgcv' to 'gam' to deal with memory (cache) over-consuming (Thanks to Burke G.)
 	* update of response.plot2 function (optimization + deal with factorial variables)
 

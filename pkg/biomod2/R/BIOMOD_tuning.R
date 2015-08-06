@@ -1,5 +1,5 @@
-##' @name BIOMOD_tunning
-##' @aliases BIOMOD_tunning
+##' @name BIOMOD_tuning
+##' @aliases BIOMOD_tuning
 ##' 
 ##' @title Function to tune biomod single models parameters
 ##'
@@ -91,7 +91,7 @@
 ##' #library(doParallel);cl<-makeCluster(8);registerDoParallel(cl) 
 ##' 
 ##' 
-##' time.seq<-system.time(Biomod.tuning <- ecospat.BIOMOD.tuning(myBiomodData,
+##' time.seq<-system.time(Biomod.tuning <- BIOMOD_tuning(myBiomodData,
 ##'                                                              env.ME = myExpl,
 ##'                                                              n.bg.ME = ncell(myExpl)))
 ##' #stopCluster(cl)
@@ -113,7 +113,7 @@
 ##' plot(Biomod.tuning$tune.CTA.rpart2)
 ##' plot(Biomod.tuning$tune.RF)
 ##' }
-ecospat.BIOMOD.tuning <- function(data,
+BIOMOD_tuning <- function(data,
                                   models = c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT'),
                                   models.options = BIOMOD_ModelingOptions(),
                                   method.ANN = 'avNNet',

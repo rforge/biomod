@@ -128,8 +128,10 @@ myBiomodData <- BIOMOD_FormatingData(resp.var = myResp,
                                      resp.name = myRespName)
 
 # 2. Defining Models Options using default options.
-### Duration for turing all models sequential with default settings on 3.4 GHz processor: approx. 45 min
-### tuning all models in parallel (on 8 cores) using foreach loops runs much faster: approx. 14 min
+### Duration for turing all models sequential with default settings
+### on 3.4 GHz processor: approx. 45 min tuning all models in parallel
+### (on 8 cores) using foreach loops runs much faster: approx. 14 min
+
 #library(doParallel);cl<-makeCluster(8);registerDoParallel(cl)
 
 

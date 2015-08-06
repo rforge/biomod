@@ -40,7 +40,7 @@ Stratified cv could be used to test for model overfitting and for assessing tran
   Presences will however be unbalanced over the particians. Be careful: If the presences are clumped on an edge of the study area it is possible that all presences are in one bin.
 }
 \examples{
-\\donrun{
+\dontrun{
 # species occurrences
 DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
                                     package="biomod2"))
@@ -102,7 +102,9 @@ eval <- get_evaluations(myBiomodModelOut,as.data.frame=T)
 
 eval$strat <- NA
 eval$strat[grepl("13",eval$Model.name)] <- "Full"
-eval$strat[!(grepl("11",eval$Model.name)|grepl("12",eval$Model.name)|grepl("13",eval$Model.name))] <- "Random"
+eval$strat[!(grepl("11",eval$Model.name)|
+             grepl("12",eval$Model.name)|
+             grepl("13",eval$Model.name))] <- "Random"
 eval$strat[grepl("11",eval$Model.name)|grepl("12",eval$Model.name)] <- "Strat"
 
 boxplot(eval$Testing.data~ eval$strat, ylab="ROC AUC")

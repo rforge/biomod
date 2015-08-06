@@ -109,6 +109,9 @@ pres.only.eval$eval
 \author{
 Frank Breiner
 }
+\references{
+Engler, R., A. Guisan, and L. Rechsteiner. 2004. An improved approach for predicting the distribution of rare and endangered species from occurrence and pseudo-absence data. Journal of Applied Ecology.
+}
 \seealso{
 ecospat.boyce, ecospat.mpa, BIOMOD_Modeling, BIOMOD_EnsembleModeling
 }

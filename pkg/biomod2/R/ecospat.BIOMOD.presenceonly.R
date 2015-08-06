@@ -23,6 +23,9 @@
 ##' data.frame containing evaluation scores for the evaluation metrics used for 
 ##' the BIOMOD_Modeling function and additional Boyce index and MPA
 ##' 
+##' @references
+##' Engler, R., A. Guisan, and L. Rechsteiner. 2004. An improved approach for predicting the distribution of rare and endangered species from occurrence and pseudo-absence data. Journal of Applied Ecology.
+##' 
 ##' @author
 ##' Frank Breiner
 ##' 
@@ -312,45 +315,4 @@ ecospat.BIOMOD.presenceonly <- function(modeling.output = NULL, EM.output = NULL
     }
 }
 
-
-
-# 
-# 
-# ## NOTE: requires ecospat.mpa which is not in the package yet:
-# 
-# ### ecospat.mpa
-# 
-# ## This function calculates the Minimal Predicted Area.
-# 
-# ## FUNCTION'S ARGUMENTS
-# ## Pred:      numeric or RasterLayer .predicted suitabilities from a SDM prediction
-# ## Sp.occ.xy: xy-coordinates of the species (if Pred is a RasterLayer)
-# ## perc:      Percentage of Sp.occ.xy that should be encompassed by the binary map.
-# 
-# ## Details:
-# 
-# ## Value
-# # Returns the Minimal Predicted Area
-# 
-# ## Author(s)
-# # Frank Breiner
-# 
-# ## References
-# # Engler, R., A. Guisan, and L. Rechsteiner. 2004. An improved approach for predicting the distribution of rare and endangered species from occurrence and pseudo-absence data. Journal of Applied Ecology 41:263–274.
-# 
-# 
-# 
-# 
-# ecospat.mpa <- function(Pred, Sp.occ.xy, perc = 0.9){
-#   perc <- 1-perc
-#   if(class(Pred)=="RasterLayer"){
-#     Pred <- extract(Pred, Sp.occ.xy)}
-#   round(quantile(Pred,probs=perc),3)}
-# 
-# ### EXAMPLE
-# 
-# obs <- (ecospat.testData$glm_Saxifraga_oppositifolia
-#         [which(ecospat.testData$Saxifraga_oppositifolia==1)])
-# 
-# ecospat.mpa(obs)
 

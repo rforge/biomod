@@ -1,21 +1,13 @@
 Package: biomod2
 Type: Package
-Title: Ensemble platform for species distribution modeling
-Version: 3.2-00
-Date: 2015-07-28
-Authors@R: c(person("Wilfried Thuiller", "Developer", 
-                    role = c("aut"),
-                    email = "wilfried.thuiller@ujf-grenoble.fr"),
-	           person("Damien Georges", "Developer", 
-                    role = c("aut", "cre"),
-                    email = "damien.georges2@gmail.com"),
-             person("Robin Engler", "Developer", role = c("aut")),
-             person("Frank Breiner", "Developer", role = c("aut")))
+Title: Ensemble Platform for Species Distribution Modeling
+Version: 3.2-01
+Date: 2015-08-O6
 Author: 
-  Wilfried Thuiller Developer [aut, cre],
-  Damien Georges Developer [aut, cre],
-  Robin Engler Developer [aut],
-  Frank Breiner Developer [aut]
+  Wilfried Thuiller [aut, cre],
+  Damien Georges [aut, cre],
+  Robin Engler [aut],
+  Frank Breiner [aut]
 Maintainer: Damien Georges <damien.georges2@gmail.com>
 Contact: Wilfried Thuiller <wilfried.thuiller@ujf-grenoble.fr>, Damien Georges <damien.georges2@gmail.com>
 BugReports: <https://r-forge.r-project.org/R/?group_id=302>

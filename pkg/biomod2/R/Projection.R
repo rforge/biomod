@@ -14,10 +14,10 @@ setMethod( 'Projection', signature(new.env.data = 'data.frame'),
            proj.name = NULL,
            binary.proj = NULL,
            filtred.proj = NULL,
-#            models.evaluation = NULL,
-#            models.options = NULL,
+           models.evaluation = NULL,
+           models.options = NULL,
            compress = TRUE,
-#            scaled.models=TRUE,
+           scaled.models=TRUE,
            do.stack = FALSE){
         
 #     # 1. loading resuired libraries =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -42,9 +42,9 @@ setMethod( 'Projection', signature(new.env.data = 'data.frame'),
 #       kept.algo.run <- algo.run
 #     }
     
-    proj.array <- lapply(kept.models.name, .Projection.do.proj, env=new.env.data, xy=xy, scaled.models=scaled.models, proj.name=paste("proj_",proj.name, sep=""), models.options=models.options)
+    proj.array <- lapply(models.name, .Projection.do.proj, env=new.env.data, xy=xy, scaled.models=scaled.models, proj.name=paste("proj_",proj.name, sep=""), models.options=models.options)
     proj.array <- as.data.frame(proj.array)
-    names(proj.array) <- kept.models.name
+    names(proj.array) <- models.name
     
     # 5. Computing Binary transformation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     if(length(binary.proj)>0){

@@ -30,7 +30,7 @@
 ##' @author Frank Breiner
 ##' 
 ##' @examples
-##' \donrun{
+##' \dontrun{
 ##' # species occurrences
 ##' DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
 ##'                                     package="biomod2"))
@@ -92,7 +92,9 @@
 ##' 
 ##' eval$strat <- NA
 ##' eval$strat[grepl("13",eval$Model.name)] <- "Full"
-##' eval$strat[!(grepl("11",eval$Model.name)|grepl("12",eval$Model.name)|grepl("13",eval$Model.name))] <- "Random"
+##' eval$strat[!(grepl("11",eval$Model.name)|
+##'              grepl("12",eval$Model.name)|
+##'              grepl("13",eval$Model.name))] <- "Random"
 ##' eval$strat[grepl("11",eval$Model.name)|grepl("12",eval$Model.name)] <- "Strat"
 ##' 
 ##' boxplot(eval$Testing.data~ eval$strat, ylab="ROC AUC")

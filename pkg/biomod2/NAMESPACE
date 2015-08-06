@@ -179,9 +179,9 @@ export(
 	sre,
 	update_objects,
 	variables_importance,
-	ecospat.BIOMOD.cv,
-	ecospat.BIOMOD.presenceonly,
-	ecospat.BIOMOD.tuning
+	BIOMOD_cv,
+	BIOMOD_presenceonly,
+	BIOMOD_tuning
 )
 
 ## to be hidden

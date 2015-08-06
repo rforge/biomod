@@ -1,5 +1,5 @@
-##' @name ecospat.BIOMOD.tunning
-##' @aliases ecospat.BIOMOD.tunning
+##' @name BIOMOD_tunning
+##' @aliases BIOMOD_tunning
 ##' 
 ##' @title Function to tune biomod single models parameters
 ##'
@@ -39,9 +39,9 @@
 ##  at param number.cores    numeric. Number of cores used for parallel computing. (Default: detectCores()-1)
 ##' 
 ##' @details
-##' Tuning ANN: Tuning process may take a while. ANN is tuned within Biomod using cross-validation
-##' Tuning FDA: It's not possible to specify tuning parameters for FDA in Biomod at the moment.
-##' Tuning GLM: Tuning GLm is not possible using quadratic terms of interaction because not supported by bestglm package
+##' Tuning ANN: if no parameters are specified for ANN, they are tuned internally
+##'   in BIOMOD_Modelling using cross-validation. ANN parameters are therefore 
+##'   tuned in every case either within ecospat.BIOMOD.tunning or BIOMOD_Modelling 
 ##' 
 ##' @return
 ##' BIOMOD.models.options object with optimized parameters
@@ -181,7 +181,7 @@ if('GBM' %in% models){
                            .shrinkage = c(0.001, 0.01, 0.1),
                            .n.minobsinnode = 10)
   
-  try(tune.GBM <- train(data@data.env.var, resp,
+  try(tune.GBM <- caret::train(data@data.env.var, resp,
                         method = "gbm",
                         tuneGrid = tune.grid,
                         trControl = ctrl.GBM,
@@ -205,7 +205,7 @@ if('GBM' %in% models){
                              .shrinkage = c(tune.GBM$bestTune$shrinkage/2,tune.GBM$bestTune$shrinkage,tune.GBM$bestTune$shrinkage*5),
                              .n.minobsinnode = 10)
     tune.GBM <- NULL
-    try(tune.GBM <- train(data@data.env.var, resp,
+    try(tune.GBM <- caret::train(data@data.env.var, resp,
                           method = "gbm",
                           tuneGrid = tune.grid,
                           trControl = ctrl.GBM,
@@ -219,7 +219,7 @@ if('GBM' %in% models){
     
     if(is.null(ctrl.RF)){ctrl.RF <- trControl}
     ## give both mtry as bestTune
-    try(tune.RF <- train(data@data.env.var, resp,
+    try(tune.RF <- caret::train(data@data.env.var, resp,
                          method = method.RF,
                          tuneLength = tuneLength,
                          trControl = ctrl.RF,
@@ -253,7 +253,7 @@ if('GBM' %in% models){
                              ## next chapter) instead of different random
                              ## seeds.
                              .bag = FALSE)
-    try(tune.ANN <- train(data@data.env.var, resp, 
+    try(tune.ANN <- caret::train(data@data.env.var, resp, 
                           method = method.ANN,
                           tuneGrid = tune.grid,
                           trControl = ctrl.ANN,
@@ -273,7 +273,7 @@ if('GBM' %in% models){
     
     if(is.null(ctrl.GAM)){ctrl.GAM <- trControl}
     
-    try(tune.GAM <-   train(data@data.env.var, resp, 
+    try(tune.GAM <-   caret::train(data@data.env.var, resp, 
                             method = method.GAM,
                             trControl = ctrl.GAM))
     cat(paste("Finished tuning GAM\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
@@ -295,7 +295,7 @@ if('GBM' %in% models){
     if(is.null(ctrl.MARS)){ctrl.MARS <- trControl}
     
     tune.grid <- expand.grid(.degree = 1:2, .nprune = 2:38)
-    try(tune.MARS <-   train(data@data.env.var, resp, 
+    try(tune.MARS <-   caret::train(data@data.env.var, resp, 
                              method = method.MARS,
                              tuneGrid = tune.grid,
                              trControl = ctrl.MARS))
@@ -307,7 +307,7 @@ if('GBM' %in% models){
     cat("Start tuning GLM\n")
     
     if(is.null(ctrl.GLM)){ctrl.GLM <- trControl}
-    try(tune.GLM <-   train( makeFormula("resp",data@data.env.var, type= type.GLM,interaction.level = 0),
+    try(tune.GLM <-   caret::train( makeFormula("resp",data@data.env.var, type= type.GLM,interaction.level = 0),
                              data=cbind(data@data.env.var,resp=resp),
                              method = method.GLM,
                              trControl = ctrl.GLM))
@@ -323,7 +323,7 @@ if('GBM' %in% models){
     if(is.null(ctrl.FDA)){ctrl.FDA <- trControl}
     
     tune.grid <- expand.grid(.degree = 1:2, .nprune = 2:38)
-    try(tune.FDA <- train(data@data.env.var, factor(resp), 
+    try(tune.FDA <- caret::train(data@data.env.var, factor(resp), 
                           method = "fda",
                           tuneGrid = tune.grid,                  
                           trControl = ctrl.FDA))
@@ -336,14 +336,14 @@ if('GBM' %in% models){
     if(is.null(ctrl.CTA)){ctrl.CTA <- trControl}    
     
     cat("Tuning Complexity Parameter")    
-    try(tune.CTA.rpart <- train(data@data.env.var, resp, 
+    try(tune.CTA.rpart <- caret::train(data@data.env.var, resp, 
                                 method = "rpart",
                                 tuneLength = tuneLength,
                                 trControl = ctrl.CTA,
                                 metric=metric))
     
     cat("Tuning Max Tree Depth")
-    try(tune.CTA.rpart2 <-  train(data@data.env.var, resp,
+    try(tune.CTA.rpart2 <-  caret::train(data@data.env.var, resp,
                                   method = "rpart2",
                                   tuneLength = tuneLength,
                                   trControl = ctrl.CTA,

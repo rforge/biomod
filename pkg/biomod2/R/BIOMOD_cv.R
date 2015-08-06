@@ -1,5 +1,5 @@
-##' @name ecospat.BIOMOD.cv
-##' @aliases ecospat.BIOMOD.cv
+##' @name BIOMOD_cv
+##' @aliases BIOMOD_cv
 ##' 
 ##' @title Custom models cross-validation procedure
 ##' 
@@ -26,6 +26,11 @@
 ##' DataSplitTable matrix with k*repetition (+ 1 for Full models if  do.full.models = TRUE) columns for BIOMOD_Modeling function.
 ##' Stratification "x" and "y" was described in Wenger and Olden 2012. While Stratification "y" uses k partitions along the y-gradient, "x" does the same for the x-gradient and "both" combines them.
 ##' Stratification "block" was described in Muscarella et al. 2014. For bins of equal number are partitioned (bottom-left, bottom-right, top-left and top-right).
+##' 
+##' @references
+##' Muscarella, R., Galante, P.J., Soley-Guardia, M., Boria, R.A., Kass, J.M., Uriarte, M. & Anderson, R.P. (2014). ENMeval: An R package for conducting spatially independent evaluations and estimating optimal model complexity for Maxent ecological niche models. Methods in Ecology and Evolution, 5, 1198–1205.
+##' 
+##' Wenger, S.J. & Olden, J.D. (2012). Assessing transferability of ecological models: an underappreciated aspect of statistical validation. Methods in Ecology and Evolution, 3, 260–267.
 ##' 
 ##' @author Frank Breiner
 ##' 
@@ -70,8 +75,8 @@
 ##' 
 ##' # 3. Creating DataSplitTable
 ##' 
-##' DataSplitTable <- ecospat.BIOMOD.cv(myBiomodData, k=5, rep=2, do.full.models=F)
-##' DataSplitTable.y <- ecospat.BIOMOD.cv(myBiomodData,stratified.cv=T, stratify="y", k=2)
+##' DataSplitTable <- BIOMOD_cv(myBiomodData, k=5, rep=2, do.full.models=F)
+##' DataSplitTable.y <- BIOMOD_cv(myBiomodData,stratified.cv=T, stratify="y", k=2)
 ##' colnames(DataSplitTable.y)[1:2] <- c("RUN11","RUN12")
 ##' DataSplitTable <- cbind(DataSplitTable,DataSplitTable.y)
 ##' head(DataSplitTable)
@@ -100,7 +105,7 @@
 ##' boxplot(eval$Testing.data~ eval$strat, ylab="ROC AUC")
 ##' }
 
-ecospat.BIOMOD.cv <- function(data, k=5,repetition=5, do.full.models = TRUE, stratified.cv=FALSE, stratify="both", balance="pres"){
+BIOMOD_cv <- function(data, k=5,repetition=5, do.full.models = TRUE, stratified.cv=FALSE, stratify="both", balance="pres"){
  
   DataSplitTable.y <-  DataSplitTable.x <-   DataSplitTable <- NULL
   if(stratified.cv){

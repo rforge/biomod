@@ -1,8 +1,8 @@
 3.2-00 (2015-07-28)
   * add 3 new functions in biomod2 (Frank B. contribution)
-  * ecospat.BIOMOD.cv to control models cross validation procedure
-  * ecospat.BIOMOD.presenceonly to evaluate biomods models using boyce and mpa indices
-  * ecospat.BIOMOD.tuning to automatically tune BIOMOD_ModelingOptions parameters
+  * BIOMOD_cv to control models cross validation procedure
+  * BIOMOD_presenceonly to evaluate biomods models using boyce and mpa indices
+  * BIOMOD_tuning to automatically tune BIOMOD_ModelingOptions parameters
 
 3.1-59 (2014-10-23)
 	* add model evaluation scores plottinfg function

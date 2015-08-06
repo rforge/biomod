@@ -1,5 +1,5 @@
-##' @name ecospat.BIOMOD.presenceonly
-##' @aliases ecospat.BIOMOD.presenceonly
+##' @name BIOMOD_presenceonly
+##' @aliases BIOMOD_presenceonly
 ##' 
 ##' @title evaluate models with presences only metrics
 ##' 
@@ -103,11 +103,11 @@
 ##'                                        prob.mean.weight.decay = 'proportional' )   
 ##' 
 ##' # evaluate Biomod models with the Boyce index and MPA
-##' pres.only.eval <- ecospat.BIOMOD.presenceonly(myBiomodModelOut, myBiomodEM)
+##' pres.only.eval <- BIOMOD_presenceonly(myBiomodModelOut, myBiomodEM)
 ##' pres.only.eval$eval
 ##' }
 
-ecospat.BIOMOD.presenceonly <- function(modeling.output = NULL, EM.output = NULL, save.output = T){
+BIOMOD_presenceonly <- function(modeling.output = NULL, EM.output = NULL, save.output = T){
   
   ## note : this function need ecospat.mpa function not yet available in ecospat package
   ## TODO(damien) remove this function and make the link with the ecospat.mpa package

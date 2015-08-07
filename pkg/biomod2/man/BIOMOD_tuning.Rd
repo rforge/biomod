@@ -2,11 +2,10 @@
 % Please edit documentation in R/BIOMOD_tuning.R
 \name{BIOMOD_tuning}
 \alias{BIOMOD_tuning}
-\alias{BIOMOD_tuning}
 \title{Function to tune biomod single models parameters}
 \usage{
-BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN",
-  "FDA", "MARS", "RF", "MAXENT"), models.options = BIOMOD_ModelingOptions(),
+BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN", "FDA",
+  "MARS", "RF", "MAXENT"), models.options = BIOMOD_ModelingOptions(),
   method.ANN = "avNNet", method.RF = "rf", method.MARS = "earth",
   method.GAM = "gam", method.GLM = "glmStepAIC", trControl = NULL,
   metric = "ROC", ctrl.CTA = NULL, ctrl.RF = NULL, ctrl.ANN = NULL,

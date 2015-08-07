@@ -466,7 +466,7 @@ DF_to_ARRAY <- function(df){
   
   a <- sapply(strsplit(colnames(df), '_'), tail, n=3)
   b <- lapply(1:3, function(id) return(unique(a[id,])))
-  array.dim.names <- c(list(c(NULL)),rev(b))
+  array.dim.names <- c(list(c()),rev(b))
 #   array.dim.names <- c(list(c(NULL)),rev(apply(sapply(strsplit(colnames(df), '_'), tail, n=3),1,unique)))
   
   array.dim <- c(nrow(df),sapply(array.dim.names[-1],length))

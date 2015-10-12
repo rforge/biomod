@@ -530,64 +530,91 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
   
   
   
-  # MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  if (Model == "MAXENT"){
-    MWD <- .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport = 0, evalData, eval.xy, species.name=resp_name, modeling.id=modeling.id)
+  # MAXENT.Phillips models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  if (Model == "MAXENT.Phillips"){
+    MWD <- .Prepare.Maxent.WorkDir(Data, xy, calibLines, nam, VarImport = 0, 
+									evalData, eval.xy, species.name=resp_name, 
+									modeling.id = modeling.id, 
+                                   	background_data_dir = Options@MAXENT.Phillips$background_data_dir)
     
     # run MaxEnt:
     cat("\n Running Maxent...")  
     system(command=paste("java ",
-                         ifelse(is.null(Options@MAXENT$memory_allocated),"",paste("-mx",Options@MAXENT$memory_allocated,"m",sep="")),
-                         " -jar ", file.path(Options@MAXENT$path_to_maxent.jar, "maxent.jar"), 
+                         ifelse(is.null(Options@MAXENT.Phillips$memory_allocated),"",paste("-mx",Options@MAXENT.Phillips$memory_allocated,"m",sep="")),
+                         " -jar ", file.path(Options@MAXENT.Phillips$path_to_maxent.jar, "maxent.jar"), 
                          " environmentallayers=\"", MWD$m_backgroundFile,
                          "\" samplesfile=\"", MWD$m_speciesFile,
                          "\" projectionlayers=\"", gsub(", ",",",toString(MWD$m_predictFile)), 
                          "\" outputdirectory=\"", MWD$m_outdir, "\"",
                          " outputformat=logistic ",
-                         #                            "jackknife maximumiterations=",Options@MAXENT$maximumiterations,
+                         #                            "jackknife maximumiterations=",Options@MAXENT.Phillips$maximumiterations,
                          ifelse(length(categorial_var), 
                                 paste(" togglelayertype=",categorial_var, collapse=" ",sep=""), 
                                 ""),
                          " redoifexists",
-                         " visible=", Options@MAXENT$visible,
-                         " linear=", Options@MAXENT$linear,
-                         " quadratic=", Options@MAXENT$quadratic,
-                         " product=", Options@MAXENT$product,
-                         " threshold=", Options@MAXENT$threshold,
-                         " hinge=", Options@MAXENT$hinge,
-                         " lq2lqptthreshold=", Options@MAXENT$lq2lqptthreshold,
-                         " l2lqthreshold=", Options@MAXENT$l2lqthreshold,
-                         " hingethreshold=", Options@MAXENT$hingethreshold,
-                         " beta_threshold=", Options@MAXENT$beta_threshold,
-                         " beta_categorical=", Options@MAXENT$beta_categorical,
-                         " beta_lqp=", Options@MAXENT$beta_lqp,
-                         " beta_hinge=", Options@MAXENT$beta_hinge,
-                         " defaultprevalence=", Options@MAXENT$defaultprevalence,
+                         " visible=", Options@MAXENT.Phillips$visible,
+                         " linear=", Options@MAXENT.Phillips$linear,
+                         " quadratic=", Options@MAXENT.Phillips$quadratic,
+                         " product=", Options@MAXENT.Phillips$product,
+                         " threshold=", Options@MAXENT.Phillips$threshold,
+                         " hinge=", Options@MAXENT.Phillips$hinge,
+                         " lq2lqptthreshold=", Options@MAXENT.Phillips$lq2lqptthreshold,
+                         " l2lqthreshold=", Options@MAXENT.Phillips$l2lqthreshold,
+                         " hingethreshold=", Options@MAXENT.Phillips$hingethreshold,
+                         " beta_threshold=", Options@MAXENT.Phillips$beta_threshold,
+                         " beta_categorical=", Options@MAXENT.Phillips$beta_categorical,
+                         " beta_lqp=", Options@MAXENT.Phillips$beta_lqp,
+                         " beta_hinge=", Options@MAXENT.Phillips$beta_hinge,
+                         " defaultprevalence=", Options@MAXENT.Phillips$defaultprevalence,
                          " autorun nowarnings notooltips noaddsamplestobackground", sep=""), wait = TRUE, intern = TRUE,
            ignore.stdout = FALSE, ignore.stderr = FALSE)
     
     
-    model.bm <- new("MAXENT_biomod2_model",
+    model.bm <- new("MAXENT.Phillips_biomod2_model",
                     model_output_dir = MWD$m_outdir,
                     model_name = model_name,
-                    model_class = 'MAXENT',
-                    model_options = Options@MAXENT,
+                    model_class = 'MAXENT.Phillips',
+                    model_options = Options@MAXENT.Phillips,
                     resp_name = resp_name,
                     expl_var_names = expl_var_names,
                     expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
                     expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
     
-    # for MAXENT predicitons are calculated in the same time than models building to save time.
+    # for MAXENT.Phillips predicitons are calculated in the same time than models building to save time.
     cat("\n Getting predictions...")
     g.pred <- try(round(as.numeric(read.csv(MWD$m_outputFile)[,3]) * 1000))
     
     # remove tmp dir
     .Delete.Maxent.WorkDir(MWD)
   }
-  # end MAXENT models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+  # end MAXENT.Phillips models creation -=-=-=-=-=-=-=-=-=-=-=-=-= #
+
+  # MAXENT.Tsuruoka models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+  if(Model == "MAXENT.Tsuruoka"){
+    model.sp <- try(maxent::maxent(feature_matrix = Data[calibLines, expl_var_names, drop = FALSE],
+                                   code_vector = as.factor(Data[calibLines, 1]),
+                                   l1_regularizer = Options@MAXENT.Tsuruoka$l1_regularizer,
+                                   l2_regularizer = Options@MAXENT.Tsuruoka$l2_regularizer,
+                                   use_sgd = Options@MAXENT.Tsuruoka$use_sgd,
+                                   set_heldout = Options@MAXENT.Tsuruoka$set_heldout,
+                                   verbose = Options@MAXENT.Tsuruoka$verbose))
+    
+    if( !inherits(model.sp,"try-error") ){
+      model.bm <- new("MAXENT.Tsuruoka_biomod2_model",
+                      model = model.sp,
+                      model_name = model_name,
+                      model_class = 'MAXENT.Tsuruoka',
+                      model_options = Options@MAXENT.Tsuruoka,
+                      resp_name = resp_name,
+                      expl_var_names = expl_var_names,
+                      expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+                      expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
+    }
+  }
+  # end of MAXENT.Tsuruoka models creation -=-=-=-=-=-=-=-=-=-=-=- #
   
   # make prediction =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  if((Model != "MAXENT"))
+  if((Model != "MAXENT.Phillips"))
     g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))
 
 
@@ -723,11 +750,11 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
 #         TempDS <- Data[, expl_var_names,drop=FALSE]
 #         TempDS[, vari] <- sample(TempDS[, vari])
 #         
-#         if(Model != "MAXENT"){
+#         if(Model != "MAXENT.Phillips"){
 #           ## make projection on suffled dataset
 #           shuffled.pred <- try(predict(model.bm, TempDS, on_0_1000=TRUE))
 #         } else{
-#           ## for MAXENT, we have created all the permutation at model building step
+#           ## for MAXENT.Phillips, we have created all the permutation at model building step
 #           shuffled.pred <- try(round(as.numeric(read.csv(file.path(model.bm@model_output_dir, paste(nam, vari, run, "swd.csv", sep="_")))[,3])*1000) )
 #           ## scal suffled.pred if necessary
 #           if(length(getScalingModel(model.bm))){
@@ -904,8 +931,12 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
     set.seed(71)
   }
   
-  if(Model == 'MAXENT'){
-    cat('\nModel=MAXENT')
+  if(Model == 'MAXENT.Phillips'){
+    cat('\nModel=MAXENT.Phillips')
+  }
+  
+  if(Model == 'MAXENT.Tsuruoka'){
+    cat('\nModel=MAXENT.Tsuruoka')
   }
   
   #     if (Model == "GLM" | Model == "GAM") 

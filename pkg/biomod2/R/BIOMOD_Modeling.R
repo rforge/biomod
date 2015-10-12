@@ -31,7 +31,7 @@
 ####################################################################################################
 
 BIOMOD_Modeling <- function( data, 
-                               models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT'), 
+                               models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT.Phillips', 'MAXENT.Tsuruoka'), 
                                models.options = NULL, 
                                NbRunEval=1, 
                                DataSplit=100, 
@@ -187,8 +187,8 @@ BIOMOD_Modeling <- function( data,
 
   }
   
-  # removing MAXENT tmp dir
-#   if('MAXENT' %in% models){
+  # removing MAXENT.Phillips tmp dir
+#   if('MAXENT.Phillips' %in% models){
 #     .Delete.Maxent.WorkDir(species.name=models.out@sp.name, modeling.id=models.out@modeling.id)
 #   }
   
@@ -262,21 +262,19 @@ BIOMOD_Modeling <- function( data,
   
   models <- unique(models)
   
-  if(sum(models %in% c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT')) != length(models)){
-    stop(paste(models[which( (models %in% c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT'))
+  if(sum(models %in% c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT.Phillips', 'MAXENT.Tsuruoka')) != length(models)){
+    stop(paste(models[which( (models %in% c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT.Phillips', 'MAXENT.Tsuruoka'))
                              == FALSE) ]," is not a availabe model !",sep=""))
   }
   
   categorial_var <- unlist(sapply(colnames(data@data.env.var), function(x){if(is.factor(data@data.env.var[,x])) return(x) else return(NULL)} ))
   
   if(length(categorial_var)){
-    if("SRE" %in% models){
-      models <- models[-which(models=="SRE")]
-      cat("\n\t! SRE was switch off because of categorical variables !")
-    }
-    if("MARS" %in% models){
-      models <- models[-which(models=="MARS")]
-      cat("\n\t! MARS was switch off because of categorical variables !")
+    models.fact.unsuprort <- c("SRE", "MARS", "MAXENT.Tsuruoka")
+    models.swich.off <- intersect(models, models.fact.unsuprort)
+    if(length(models.swich.off)){
+      models <- setdiff(models, models.swich.off)
+      cat(paste0("\n\t! ", paste(models.swich.off, collapse = ",", sep = " ")," were switch off because of categorical variables !"))
     }
     
   }
@@ -289,21 +287,21 @@ BIOMOD_Modeling <- function( data,
   if( is.null(models.options)){
     warning("Models will run with 'defaults' parameters", immediate.=T)
     # create a default models.options object
-    models.options <- BIOMOD_ModelingOptions() # MAXENT = list( path_to_maxent.jar = getwd()) 
+    models.options <- BIOMOD_ModelingOptions() # MAXENT.Phillips = list( path_to_maxent.jar = getwd()) 
     
   }
   
-  # MAXENT specific checking
-  if("MAXENT" %in% models){
-    if(!file.exists(file.path(models.options@MAXENT$path_to_maxent.jar ,"maxent.jar")) ){
-      models = models[-which(models=='MAXENT')]
-      warning("The maxent.jar file is missing. You need to download this file (http://www.cs.princeton.edu/~schapire/maxent) and put the maxent.jar file in your working directory -> MAXENT was switched off")
+  # MAXENT.Phillips specific checking
+  if("MAXENT.Phillips" %in% models){
+    if(!file.exists(file.path(models.options@MAXENT.Phillips$path_to_maxent.jar ,"maxent.jar")) ){
+      models = models[-which(models=='MAXENT.Phillips')]
+      warning("The maxent.jar file is missing. You need to download this file (http://www.cs.princeton.edu/~schapire/maxent) and put the maxent.jar file in your working directory -> MAXENT.Phillips was switched off")
     } else if(!.check.java.installed()){
-      models = models[-which(models=='MAXENT')]
+      models = models[-which(models=='MAXENT.Phillips')]
     } else if(nrow(data@coord)==1){
      # no coordinates
-      warning("You must give XY coordinates if you want to run MAXENT -> MAXENT was switched off")
-      models = models[-which(models=='MAXENT')]
+      warning("You must give XY coordinates if you want to run MAXENT.Phillips -> MAXENT.Phillips was switched off")
+      models = models[-which(models=='MAXENT.Phillips')]
     } 
   }
   
@@ -385,10 +383,10 @@ BIOMOD_Modeling <- function( data,
     if(!is.numeric(Prevalence) | Prevalence>=1 | Prevalence <=0){
       stop("Prevalence must be a 0-1 numeric")
     } else {
-      # update MAXENT default prevalence
-      if("MAXENT" %in% models){
-        cat("\n\t MAXENT defaultprevalence option was updated to fit with modeling prevalence (i.e",Prevalence,")")
-        models.options@MAXENT$defaultprevalence = Prevalence
+      # update MAXENT.Phillips default prevalence
+      if("MAXENT.Phillips" %in% models){
+        cat("\n\t MAXENT.Phillips defaultprevalence option was updated to fit with modeling prevalence (i.e",Prevalence,")")
+        models.options@MAXENT.Phillips$defaultprevalence = Prevalence
       }
     }
   }
@@ -496,7 +494,7 @@ BIOMOD_Modeling <- function( data,
   } else java.test <- ""
   
   if(!is.null(attr(java.test,"class"))){
-    cat("\n! java software seems not be corectly installed\n  > MAXENT modelling was switched off!")
+    cat("\n! java software seems not be corectly installed\n  > MAXENT.Phillips modelling was switched off!")
     return(FALSE)
   } else{ return(TRUE) }
   

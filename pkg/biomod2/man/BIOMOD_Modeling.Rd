@@ -8,7 +8,8 @@
 \usage{
 BIOMOD_Modeling( data, 
                  models = c('GLM','GBM','GAM','CTA','ANN',
-                            'SRE','FDA','MARS','RF','MAXENT'), 
+                            'SRE','FDA','MARS','RF','MAXENT.Phillips', 
+                            "MAXENT.Tsuruoka"), 
                  models.options = NULL, 
                  NbRunEval=1, 
                  DataSplit=100, 
@@ -25,7 +26,7 @@ BIOMOD_Modeling( data,
 
 \arguments{
   \item{data}{\code{BIOMOD.formated.data} object returned by \code{\link[biomod2]{BIOMOD_FormatingData}}}
-  \item{models}{vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'SRE', 'FDA', 'MARS', 'RF' and 'MAXENT' } 
+  \item{models}{vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'SRE', 'FDA', 'MARS', 'RF', 'MAXENT.Phillips' and "MAXENT.Tsuruoka" } 
   \item{models.options}{\code{BIOMOD.models.options} object returned by \code{\link[biomod2]{BIOMOD_ModelingOptions}}}
   \item{NbRunEval}{Number of Evaluation run} 
   \item{DataSplit}{\% of data used to calibrate the models, the remaining part will be used for testing }
@@ -60,13 +61,14 @@ BIOMOD_Modeling( data,
       \item{GLM : Generalized Linear Model (\code{\link[stats]{glm}})}
       \item{GAM : Generalized Additive Model (\code{\link[gam]{gam}}, \code{\link[mgcv]{gam}} or \code{\link[mgcv]{bam}}, see \code{\link[biomod2]{BIOMOD_ModelingOptions} for details on algorithm selection})}
       \item{GBM : Generalized Boosting Model or usually called Boosted Regression Trees (\code{\link[gbm]{gbm}})}
-      \item{CTA : Classification Tree Analysis (\code{\link[rpart]{rpart}})}
-      \item{ANN : Artificial Neural Network (\code{\link[nnet]{nnet}})}
-      \item{SRE : Surface Range Envelop or usually called BIOCLIM}
-      \item{FDA : Flexible Discriminant Analysis (\code{\link[mda]{fda}})}
-      \item{MARS : Multiple Adaptive Regression Splines (\code{\link[mda]{mars}})}
-      \item{RF : Random Forest (\code{\link[randomForest]{randomForest}})}
-      \item{MAXENT : Maximum Entropy (\url{http://www.cs.princeton.edu/~schapire/maxent/})}
+      \item{CTA: Classification Tree Analysis (\code{\link[rpart]{rpart}})}
+      \item{ANN: Artificial Neural Network (\code{\link[nnet]{nnet}})}
+      \item{SRE: Surface Range Envelop or usually called BIOCLIM}
+      \item{FDA: Flexible Discriminant Analysis (\code{\link[mda]{fda}})}
+      \item{MARS: Multiple Adaptive Regression Splines (\code{\link[mda]{mars}})}
+      \item{RF: Random Forest (\code{\link[randomForest]{randomForest}})}
+      \item{MAXENT.Phillips: Maximum Entropy (\url{http://www.cs.princeton.edu/~schapire/maxent/})}
+      \item{MAXENT.Tsuruoka: low-memory multinomial logistic regression (\code{\link[maxent]{maxent}})}
     }
     
   }

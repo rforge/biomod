@@ -95,7 +95,7 @@ setMethod('BinaryTransformation', signature(data='array'),
             
             return(sweep(data,2:length(dim(data)),threshold,
                          function(x,y) { 
-                           if(!is.na(x)){
+                           if(!any(is.na(x))){
                              return(x>y)
                             } else { 
                              return(rep(NA,length(x)) )}
@@ -123,12 +123,14 @@ setMethod('BinaryTransformation', signature(data='RasterStack'),
     if(length(threshold) == 1){
       threshold <- rep(threshold, raster::nlayers(data))
     }
-    StkTmp <- raster::stack()
-    for(i in 1:raster::nlayers(data)){
-      StkTmp <- raster::addLayer(StkTmp, BinaryTransformation(raster::subset(data,i,drop=TRUE), threshold[i]))
-    }
-    names(StkTmp) <- names(data)
-    return(StkTmp)
+    return(calc(data, function(x){x >= threshold}))
+#     ## old version
+#     StkTmp <- raster::stack()
+#     for(i in 1:raster::nlayers(data)){
+#       StkTmp <- raster::addLayer(StkTmp, BinaryTransformation(raster::subset(data,i,drop=TRUE), threshold[i]))
+#     }
+#     names(StkTmp) <- names(data)
+#     return(StkTmp)
   })
 
 ##' @rdname BinaryTransformation-methods

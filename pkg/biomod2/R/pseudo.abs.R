@@ -237,8 +237,9 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
               for(j in 1:ncol(pa.tab)){
                 pa.tab[sample(x=cand.cells,size=nb.points,replace=FALSE),j] <- TRUE
               }
-              env <- as.data.frame(extract(env, coordinates(sp), method='bilinear'))
-              
+#               env <- as.data.frame(extract(env, coordinates(sp), method='bilinear'))
+                env <- as.data.frame(extract(env, coordinates(sp)))
+
               return(list(xy = coordinates(sp),
                           sp = as.numeric(unlist(sp@data, use.names=FALSE)),
                           env = as.data.frame(env),
@@ -322,8 +323,10 @@ setMethod('user.defined.pseudo.abs.selection', signature(env="RasterStack"),
 #             require('raster',quietly=T)
             cat("\n   > User defined pseudo absences selection")
 
-            env <- as.data.frame(extract(env, coordinates(sp), method='bilinear'))
-              
+#             env <- as.data.frame(extract(env, coordinates(sp), method='bilinear'))
+              env <- as.data.frame(extract(env, coordinates(sp)))
+
+
             return(list(xy = coordinates(sp),
                         sp = as.numeric(unlist(sp@data, use.names=FALSE)),
                         env = as.data.frame(env),
@@ -484,7 +487,8 @@ setMethod('disk.pseudo.abs.selection', signature(env="RasterStack"),
             # 1. Check if NA are present in sp or not to determine which dataset to use
             if(.nb.available.pa.cells(sp) > 0 ){ # PA will be taken into response variable
               env.tmp <- SpatialPointsDataFrame(coords = coordinates(sp),
-                                                data = as.data.frame(extract(env,coordinates(sp),method='bilinear')))
+#                                                 data = as.data.frame(extract(env,coordinates(sp),method='bilinear'))
+                                                data = as.data.frame(extract(env,coordinates(sp))))
                                                 
               return(disk.pseudo.abs.selection(sp, env.tmp, distMin, distMax, nb.points, nb.repet))
             } else {

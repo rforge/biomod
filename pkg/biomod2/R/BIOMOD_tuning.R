@@ -4,7 +4,7 @@
 ##' @title Function to tune biomod single models parameters
 ##'
 ##' @param data            BIOMOD.formated.data object returned by BIOMOD_FormatingData
-##' @param models          vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'FDA', 'MARS', 'RF' and 'MAXENT'
+##' @param models          vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'FDA', 'MARS', 'RF' and 'MAXENT.Phillips'
 ##' @param models.options  BIOMOD.models.options object returned by BIOMOD_ModelingOptions. Default: BIOMOD_ModelingOptions()
 ##' @param method.RF       which classification or regression model to use for randomForest (default: "rf"). see http://topepo.github.io/caret/Random_Forest.html
 ##' @param method.ANN      which classification or regression model to use for artificial neural networks (default: "avNNet"). see http://topepo.github.io/caret/Neural_Network.html
@@ -12,11 +12,11 @@
 ##' @param method.GAM      which classification or regression model to use for GAM (default: "gam"). see http://topepo.github.io/caret/Generalized_Additive_Model.html
 ##' @param method.GLM      which classification or regression model to use for GLM: (default: 'glmStepAIC'). see http://topepo.github.io/caret/Generalized_Linear_Model.html
 ##' @param type.GLM        either 'simple', 'quadratic', 'polynomial' or 's_smoother' defining the type of formula you want to build with GLM
-##' @param cvmethod.ME     method used for data partitioning for MAXENT (default: 'randomkfold')
-##' @param kfolds.ME       number of bins to use for k-fold cross-validation used for MAXENT (Default: 10).
+##' @param cvmethod.ME     method used for data partitioning for MAXENT.Phillips (default: 'randomkfold')
+##' @param kfolds.ME       number of bins to use for k-fold cross-validation used for MAXENT.Phillips (Default: 10).
 ##' @param overlap.ME      logical; Calculates pairwise metric of niche overlap if TRUE (Default: FALSE). (see ?calc.niche.overlap)
 ##' @param clamp.ME        logical; If TRUE (Default) "Features are constrained to remain within the range of values in the training data" (Elith et al. 2011)
-##' @param n.bg.ME         Number of Background points used to run MAXENT (Default: 10000)
+##' @param n.bg.ME         Number of Background points used to run MAXENT.Phillips (Default: 10000)
 ##' @param env.ME          RasterStack of model predictor variables
 ##' @param bin.output.ME   logical; If TRUE, appends evaluations metrics for each evaluation bin to results table (i.e., in addition to the average values across bins).
 ##' @param trControl       global control parameters for runing (default trainControl(method="cv",summaryFunction=twoClassSummary,classProbs=T),returnData = FALSE). for details see trainControl
@@ -107,14 +107,14 @@
 ##'                                      modeling.id="test")
 ##' 
 ##' 
-##' #  eval.plot(Biomod.tuning$tune.MAXENT at results)
+##' #  eval.plot(Biomod.tuning$tune.MAXENT.Phillips at results)
 ##' par(mfrow=c(1,3))
 ##' plot(Biomod.tuning$tune.CTA.rpart)
 ##' plot(Biomod.tuning$tune.CTA.rpart2)
 ##' plot(Biomod.tuning$tune.RF)
 ##' }
 BIOMOD_tuning <- function(data,
-                                  models = c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT'),
+                                  models = c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT.Phillips'),
                                   models.options = BIOMOD_ModelingOptions(),
                                   method.ANN = 'avNNet',
                                   method.RF = 'rf',
@@ -146,10 +146,10 @@ BIOMOD_tuning <- function(data,
                                   metric.ME = 'ROC',
                                   clamp.ME = T){
 
-  ## MAXENT: http://cran.r-project.org/web/packages/ENMeval/ENMeval.pdf --> ENMevaluate()
+  ## MAXENT.Phillips: http://cran.r-project.org/web/packages/ENMeval/ENMeval.pdf --> ENMevaluate()
   ## or:    http://cran.r-project.org/web/packages/maxent/maxent.pdf -->  tune.maxent()
   packages <- NULL
-  if(sum(c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT') %in% models)>0){
+  if(sum(c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT.Phillips') %in% models)>0){
 #     require(caret)
     if(is.null(trControl)){
       trControl <- caret::trainControl(method = "cv", 
@@ -159,12 +159,12 @@ BIOMOD_tuning <- function(data,
     }
   }
   
-  if("MAXENT" %in% models){
+  if("MAXENT.Phillips" %in% models){
     if(is.null(env.ME)){stop("env.ME argument required!")
     }
   }  
   
-  tune.GLM <- tune.MAXENT <- tune.GAM <- tune.GBM <- tune.CTA.rpart <- tune.CTA.rpart2 <- tune.RF <- tune.ANN <- tune.MARS <- tune.FDA <- NULL
+  tune.GLM <- tune.MAXENT.Phillips <- tune.GAM <- tune.GBM <- tune.CTA.rpart <- tune.CTA.rpart2 <- tune.RF <- tune.ANN <- tune.MARS <- tune.FDA <- NULL
 if('SRE' %in% models){cat("No tuning for SRE!")} 
 
 resp <- data@data.species
@@ -280,13 +280,13 @@ if('GBM' %in% models){
   }
   
   
-  if('MAXENT' %in% models){
-    cat("Start tuning MAXENT\n")
+  if('MAXENT.Phillips' %in% models){
+    cat("Start tuning MAXENT.Phillips\n")
     if(cvmethod.ME != 'randomkfold'){kfolds.ME <- NA}
-    try(tune.MAXENT <- ENMevaluate(data@coord[data@data.species==1,],env.ME,bg.coords= data@coord[data@data.species==0,],
+    try(tune.MAXENT.Phillips <- ENMevaluate(data@coord[data@data.species==1,],env.ME,bg.coords= data@coord[data@data.species==0,],
                                    method=cvmethod.ME, kfolds = kfolds.ME, overlap=overlap.ME, 
                                    bin.output=TRUE, clamp=clamp.ME))
-    cat(paste("Finished tuning MAXENT\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
+    cat(paste("Finished tuning MAXENT.Phillips\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
   
   if('MARS' %in% models){
@@ -360,24 +360,24 @@ if('GBM' %in% models){
     models.options@GLM$test <- "no"    
   } else { if('GLM' %in% models){cat("Tuning GLM failed!"); tune.GLM <- "FAILED"}}
   
-  if(!is.null(tune.MAXENT)){
+  if(!is.null(tune.MAXENT.Phillips)){
     if(metric.ME=="ROC"){metric.ME <- "Mean.AUC"}
     if(!metric.ME %in% c("Mean.AUC", "Mean.AUC.DIFF", "delta.AICc")){metric.ME <- "Mean.AUC"; cat("Invalid metric.ME argument! metric.ME was set to Mean.AUC")}
     if(metric.ME == 'Mean.AUC'){
-      models.options@MAXENT$linear <- grepl("L",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$quadratic <- grepl("Q",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$hinge <- grepl("H",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$product <- grepl("P",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$threshold <- grepl("T",tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$beta_threshold <- tune.MAXENT@results[which.max(tune.MAXENT@results[,metric.ME]),"rm"]  
+      models.options@MAXENT.Phillips$linear <- grepl("L",tune.MAXENT.Phillips@results[which.max(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$quadratic <- grepl("Q",tune.MAXENT.Phillips@results[which.max(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$hinge <- grepl("H",tune.MAXENT.Phillips@results[which.max(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$product <- grepl("P",tune.MAXENT.Phillips@results[which.max(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$threshold <- grepl("T",tune.MAXENT.Phillips@results[which.max(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$beta_threshold <- tune.MAXENT.Phillips@results[which.max(tune.MAXENT.Phillips@results[,metric.ME]),"rm"]  
     }else {       
-      models.options@MAXENT$linear <- grepl("L",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$quadratic <- grepl("Q",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$hinge <- grepl("H",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$product <- grepl("P",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$threshold <- grepl("T",tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"features"]) 
-      models.options@MAXENT$beta_threshold <- tune.MAXENT@results[which.min(tune.MAXENT@results[,metric.ME]),"rm"]  
-    }}else{ if('MAXENT' %in% models){cat("Tuning MAXENT failed!"); tune.MAXENT <- "FAILED"}}
+      models.options@MAXENT.Phillips$linear <- grepl("L",tune.MAXENT.Phillips@results[which.min(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$quadratic <- grepl("Q",tune.MAXENT.Phillips@results[which.min(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$hinge <- grepl("H",tune.MAXENT.Phillips@results[which.min(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$product <- grepl("P",tune.MAXENT.Phillips@results[which.min(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$threshold <- grepl("T",tune.MAXENT.Phillips@results[which.min(tune.MAXENT.Phillips@results[,metric.ME]),"features"]) 
+      models.options@MAXENT.Phillips$beta_threshold <- tune.MAXENT.Phillips@results[which.min(tune.MAXENT.Phillips@results[,metric.ME]),"rm"]  
+    }}else{ if('MAXENT.Phillips' %in% models){cat("Tuning MAXENT.Phillips failed!"); tune.MAXENT.Phillips <- "FAILED"}}
   
   if(!is.null(tune.GAM)){
     if(metric == 'TSS'){
@@ -451,7 +451,7 @@ if('GBM' %in% models){
   
   return(list(models.options=models.options,   tune.CTA.rpart = tune.CTA.rpart, tune.CTA.rpart2 = tune.CTA.rpart2,
               tune.RF = tune.RF, tune.ANN = tune.ANN,  tune.MARS = tune.MARS, tune.FDA = tune.FDA, tune.GBM=tune.GBM,
-              tune.GAM = tune.GAM, tune.MAXENT = tune.MAXENT, tune.GLM=tune.GLM))
+              tune.GAM = tune.GAM, tune.MAXENT.Phillips = tune.MAXENT.Phillips, tune.GLM=tune.GLM))
 }
 
 

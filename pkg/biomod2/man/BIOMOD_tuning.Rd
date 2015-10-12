@@ -5,7 +5,7 @@
 \title{Function to tune biomod single models parameters}
 \usage{
 BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN", "FDA",
-  "MARS", "RF", "MAXENT"), models.options = BIOMOD_ModelingOptions(),
+  "MARS", "RF", "MAXENT.Phillips"), models.options = BIOMOD_ModelingOptions(),
   method.ANN = "avNNet", method.RF = "rf", method.MARS = "earth",
   method.GAM = "gam", method.GLM = "glmStepAIC", trControl = NULL,
   metric = "ROC", ctrl.CTA = NULL, ctrl.RF = NULL, ctrl.ANN = NULL,
@@ -20,7 +20,7 @@ BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN", "FDA",
 \arguments{
 \item{data}{BIOMOD.formated.data object returned by BIOMOD_FormatingData}
 
-\item{models}{vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'FDA', 'MARS', 'RF' and 'MAXENT'}
+\item{models}{vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'FDA', 'MARS', 'RF' and 'MAXENT.Phillips'}
 
 \item{models.options}{BIOMOD.models.options object returned by BIOMOD_ModelingOptions. Default: BIOMOD_ModelingOptions()}
 
@@ -66,15 +66,15 @@ BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN", "FDA",
 
 \item{type.GLM}{either 'simple', 'quadratic', 'polynomial' or 's_smoother' defining the type of formula you want to build with GLM}
 
-\item{cvmethod.ME}{method used for data partitioning for MAXENT (default: 'randomkfold')}
+\item{cvmethod.ME}{method used for data partitioning for MAXENT.Phillips (default: 'randomkfold')}
 
 \item{overlap.ME}{logical; Calculates pairwise metric of niche overlap if TRUE (Default: FALSE). (see ?calc.niche.overlap)}
 
 \item{bin.output.ME}{logical; If TRUE, appends evaluations metrics for each evaluation bin to results table (i.e., in addition to the average values across bins).}
 
-\item{kfolds.ME}{number of bins to use for k-fold cross-validation used for MAXENT (Default: 10).}
+\item{kfolds.ME}{number of bins to use for k-fold cross-validation used for MAXENT.Phillips (Default: 10).}
 
-\item{n.bg.ME}{Number of Background points used to run MAXENT (Default: 10000)}
+\item{n.bg.ME}{Number of Background points used to run MAXENT.Phillips (Default: 10000)}
 
 \item{env.ME}{RasterStack of model predictor variables}
 
@@ -150,7 +150,7 @@ myBiomodModelOut <- BIOMOD_Modeling( myBiomodData,
                                      modeling.id="test")
 
 
-#  eval.plot(Biomod.tuning$tune.MAXENT at results)
+#  eval.plot(Biomod.tuning$tune.MAXENT.Phillips at results)
 par(mfrow=c(1,3))
 plot(Biomod.tuning$tune.CTA.rpart)
 plot(Biomod.tuning$tune.CTA.rpart2)

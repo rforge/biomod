@@ -663,7 +663,8 @@ setClass("BIOMOD.Model.Options",
                         FDA = "list",
                         MARS = "list",
                         RF = "list",
-                        MAXENT = "list"),
+                        MAXENT.Phillips = "list",
+                        MAXENT.Tsuruoka = "list"),
          
          prototype(GLM = list( type = 'quadratic',
                                interaction.level = 0,
@@ -730,8 +731,10 @@ setClass("BIOMOD.Model.Options",
                              nodesize = 5,
                              maxnodes= NULL),
                    
-                   MAXENT = list(path_to_maxent.jar = getwd(),
+                   MAXENT.Phillips = list(path_to_maxent.jar = getwd(),
                                  memory_allocated = 512,
+                                 background_data_dir = 'default',
+                                 maximumbackground = 'default',
                                  maximumiterations = 200,
                                  visible = FALSE,
                                  linear = TRUE,
@@ -746,7 +749,13 @@ setClass("BIOMOD.Model.Options",
                                  beta_categorical = -1.0,
                                  beta_lqp = -1.0,
                                  beta_hinge = -1.0,
-                                 defaultprevalence = 0.5)
+                                 defaultprevalence = 0.5),
+                   
+                   MAXENT.Tsuruoka = list(l1_regularizer = 0.0,
+                                          l2_regularizer = 0.0,
+                                          use_sgd = FALSE,
+                                          set_heldout = 0,
+                                          verbose = FALSE)
                    
          ),
          validity = function(object){
@@ -927,48 +936,61 @@ setClass("BIOMOD.Model.Options",
            
            
            
-           ## MAXENT ##
-           if(!is.character(object@MAXENT$path_to_maxent.jar)){ cat("\nMAXENT$path_to_maxent.jar must be a character"); test <- FALSE }
-           if(!is.null(object@MAXENT$memory_allocated)){
-             if(!is.numeric(object@MAXENT$memory_allocated)){
-               cat("\nMAXENT$memory_allocated must be a positive integer or NULL for unlimited memory allocation"); test <- FALSE }
+           ## MAXENT.Phillips ##
+           if(!is.character(object@MAXENT.Phillips$path_to_maxent.jar)){ cat("\nMAXENT.Phillips$path_to_maxent.jar must be a character"); test <- FALSE }
+           if(!is.null(object@MAXENT.Phillips$memory_allocated)){
+             if(!is.numeric(object@MAXENT.Phillips$memory_allocated)){
+               cat("\nMAXENT.Phillips$memory_allocated must be a positive integer or NULL for unlimited memory allocation"); test <- FALSE }
            }
            
+           if(!is.character(object@MAXENT.Phillips$background_data_dir)){ cat("\nMAXENT.Phillips$background_data_dir must be 'default' (=> use the same pseudo absences than other models as background) or a path to the directory where your environmental layer are stored"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$maximumiterations)){ cat("\nMAXENT$maximumiterations must be a integer"); test <- FALSE } else{
-             if(object@MAXENT$maximumiterations < 0 | object@MAXENT$maximumiterations%%1!=0){ cat("\nMAXENT$maximumiterations must be a positive integer"); test <- FALSE }
+		   tt <- is.character(object@MAXENT.Phillips$maximumbackground) | is.numeric(object@MAXENT.Phillips$maximumbackground)
+           if(is.character(object@MAXENT.Phillips$maximumbackground)) if(object@MAXENT.Phillips$maximumbackground != 'default') tt <- FALSE
+           if(!tt){ cat("\nMAXENT.Phillips$maximumbackground must be 'default' or numeric"); test <- FALSE }
+           
+
+           if(!is.numeric(object@MAXENT.Phillips$maximumiterations)){ cat("\nMAXENT.Phillips$maximumiterations must be a integer"); test <- FALSE } else{
+             if(object@MAXENT.Phillips$maximumiterations < 0 | object@MAXENT.Phillips$maximumiterations%%1!=0){ cat("\nMAXENT.Phillips$maximumiterations must be a positive integer"); test <- FALSE }
            }
            
-           if(!is.logical(object@MAXENT$visible)){ cat("\nMAXENT$visible must be a logical"); test <- FALSE }
+           if(!is.logical(object@MAXENT.Phillips$visible)){ cat("\nMAXENT.Phillips$visible must be a logical"); test <- FALSE }
            
-           if(!is.logical(object@MAXENT$linear)){ cat("\nMAXENT$linear must be a logical"); test <- FALSE }
+           if(!is.logical(object@MAXENT.Phillips$linear)){ cat("\nMAXENT.Phillips$linear must be a logical"); test <- FALSE }
            
-           if(!is.logical(object@MAXENT$quadratic)){ cat("\nMAXENT$quadratic must be a logical"); test <- FALSE }
+           if(!is.logical(object@MAXENT.Phillips$quadratic)){ cat("\nMAXENT.Phillips$quadratic must be a logical"); test <- FALSE }
            
-           if(!is.logical(object@MAXENT$product)){ cat("\nMAXENT$product must be a logical"); test <- FALSE }
+           if(!is.logical(object@MAXENT.Phillips$product)){ cat("\nMAXENT.Phillips$product must be a logical"); test <- FALSE }
            
-           if(!is.logical(object@MAXENT$threshold)){ cat("\nMAXENT$threshold must be a logical"); test <- FALSE }
+           if(!is.logical(object@MAXENT.Phillips$threshold)){ cat("\nMAXENT.Phillips$threshold must be a logical"); test <- FALSE }
            
-           if(!is.logical(object@MAXENT$hinge)){ cat("\nMAXENT$hinge must be a logical"); test <- FALSE }
+           if(!is.logical(object@MAXENT.Phillips$hinge)){ cat("\nMAXENT.Phillips$hinge must be a logical"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$lq2lqptthreshold)){ cat("\nMAXENT$lq2lqptthreshold must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$lq2lqptthreshold)){ cat("\nMAXENT.Phillips$lq2lqptthreshold must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$l2lqthreshold)){ cat("\nMAXENT$l2lqthreshold must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$l2lqthreshold)){ cat("\nMAXENT.Phillips$l2lqthreshold must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$lq2lqptthreshold)){ cat("\nMAXENT$lq2lqptthreshold must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$lq2lqptthreshold)){ cat("\nMAXENT.Phillips$lq2lqptthreshold must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$hingethreshold)){ cat("\nMAXENT$hingethreshold must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$hingethreshold)){ cat("\nMAXENT.Phillips$hingethreshold must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$beta_threshold)){ cat("\nMAXENT$beta_threshold must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$beta_threshold)){ cat("\nMAXENT.Phillips$beta_threshold must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$beta_categorical)){ cat("\nMAXENT$beta_categorical must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$beta_categorical)){ cat("\nMAXENT.Phillips$beta_categorical must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$beta_lqp)){ cat("\nMAXENT$beta_lqp must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$beta_lqp)){ cat("\nMAXENT.Phillips$beta_lqp must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$beta_hinge)){ cat("\nMAXENT$beta_hinge must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$beta_hinge)){ cat("\nMAXENT.Phillips$beta_hinge must be a numeric"); test <- FALSE }
            
-           if(!is.numeric(object@MAXENT$defaultprevalence)){ cat("\nMAXENT$defaultprevalence must be a numeric"); test <- FALSE }
+           if(!is.numeric(object@MAXENT.Phillips$defaultprevalence)){ cat("\nMAXENT.Phillips$defaultprevalence must be a numeric"); test <- FALSE }
            
+           ## MAXENT.Tsuruoka
+		       if(!is.numeric(object@MAXENT.Tsuruoka$l1_regularizer)){ cat("\nMAXENT.Tsuruoka$l1_regularizer must be a numeric"); test <- FALSE }		   
+		       if(!is.numeric(object@MAXENT.Tsuruoka$l2_regularizer)){ cat("\nMAXENT.Tsuruoka$l2_regularizer must be a numeric"); test <- FALSE }
+		       if(!is.logical(object@MAXENT.Tsuruoka$use_sgd)){ cat("\nMAXENT.Tsuruoka$use_sgd must be a logical"); test <- FALSE }
+		       if(!is.numeric(object@MAXENT.Tsuruoka$set_heldout)){ cat("\nMAXENT.Tsuruoka$set_heldout must be a numeric"); test <- FALSE }
+		       if(!is.logical(object@MAXENT.Tsuruoka$verbose)){ cat("\nMAXENT.Tsuruoka$verbose must be a logical"); test <- FALSE }
+		   
            return(test)
          })
 
@@ -1064,25 +1086,35 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n           nodesize = ", object@RF$nodesize, ",", sep="")
             cat("\n           maxnodes = ", ifelse(length(object@RF$maxnodes) < 1,'NULL',object@RF$maxnodes), "),", sep="")
             
-            ## MAXENT options
+            ## MAXENT.Phillips options
             cat("\n")
-            cat("\nMAXENT = list( path_to_maxent.jar = '", object@MAXENT$path_to_maxent.jar, "',", sep="")
-            cat("\n               memory_allocated = ", ifelse(length(object@MAXENT$memory_allocated) < 1,'NULL',object@MAXENT$memory_allocated), ",", sep="")
-            cat("\n               maximumiterations = ", object@MAXENT$maximumiterations, ",", sep="")
-            cat("\n               visible = ", object@MAXENT$visible, ",", sep="")
-            cat("\n               linear = ", object@MAXENT$linear, ",", sep="")
-            cat("\n               quadratic = ", object@MAXENT$quadratic, ",", sep="")
-            cat("\n               product = ", object@MAXENT$product, ",", sep="")
-            cat("\n               threshold = ", object@MAXENT$threshold, ",", sep="")
-            cat("\n               hinge = ", object@MAXENT$hinge, ",", sep="")
-            cat("\n               lq2lqptthreshold = ", object@MAXENT$lq2lqptthreshold, ",", sep="")
-            cat("\n               l2lqthreshold = ", object@MAXENT$l2lqthreshold, ",", sep="")
-            cat("\n               hingethreshold = ", object@MAXENT$hingethreshold, ",", sep="")
-            cat("\n               beta_threshold = ", object@MAXENT$beta_threshold, ",", sep="")
-            cat("\n               beta_categorical = ", object@MAXENT$beta_categorical, ",", sep="")
-            cat("\n               beta_lqp = ", object@MAXENT$beta_lqp, ",", sep="")
-            cat("\n               beta_hinge = ", object@MAXENT$beta_hinge, ",", sep="")
-            cat("\n               defaultprevalence = ", object@MAXENT$defaultprevalence, ")", sep="")
+            cat("\nMAXENT.Phillips = list( path_to_maxent.jar = '", object@MAXENT.Phillips$path_to_maxent.jar, "',", sep="")
+            cat("\n               memory_allocated = ", ifelse(length(object@MAXENT.Phillips$memory_allocated) < 1,'NULL',object@MAXENT.Phillips$memory_allocated), ",", sep="")
+            cat("\n               background_data_dir = ", ifelse(is.character(object@MAXENT.Phillips$background_data_dir), "'", ""), object@MAXENT.Phillips$background_data_dir, ifelse(is.character(object@MAXENT.Phillips$background_data_dir), "'", ""), ",", sep="")
+            cat("\n               maximumbackground = ", ifelse(is.character(object@MAXENT.Phillips$maximumbackground), "'", ""), object@MAXENT.Phillips$maximumbackground, ifelse(is.character(object@MAXENT.Phillips$maximumbackground), "'", ""), ",", sep="")
+            cat("\n               maximumiterations = ", object@MAXENT.Phillips$maximumiterations, ",", sep="")
+            cat("\n               visible = ", object@MAXENT.Phillips$visible, ",", sep="")
+            cat("\n               linear = ", object@MAXENT.Phillips$linear, ",", sep="")
+            cat("\n               quadratic = ", object@MAXENT.Phillips$quadratic, ",", sep="")
+            cat("\n               product = ", object@MAXENT.Phillips$product, ",", sep="")
+            cat("\n               threshold = ", object@MAXENT.Phillips$threshold, ",", sep="")
+            cat("\n               hinge = ", object@MAXENT.Phillips$hinge, ",", sep="")
+            cat("\n               lq2lqptthreshold = ", object@MAXENT.Phillips$lq2lqptthreshold, ",", sep="")
+            cat("\n               l2lqthreshold = ", object@MAXENT.Phillips$l2lqthreshold, ",", sep="")
+            cat("\n               hingethreshold = ", object@MAXENT.Phillips$hingethreshold, ",", sep="")
+            cat("\n               beta_threshold = ", object@MAXENT.Phillips$beta_threshold, ",", sep="")
+            cat("\n               beta_categorical = ", object@MAXENT.Phillips$beta_categorical, ",", sep="")
+            cat("\n               beta_lqp = ", object@MAXENT.Phillips$beta_lqp, ",", sep="")
+            cat("\n               beta_hinge = ", object@MAXENT.Phillips$beta_hinge, ",", sep="")
+            cat("\n               defaultprevalence = ", object@MAXENT.Phillips$defaultprevalence, "),", sep="")
+
+            ## MAXENT.Tsuruoka
+            cat("\n")
+            cat("\nMAXENT.Tsuruoka = list( l1_regularizer = ", object@MAXENT.Tsuruoka$l1_regularizer, ",", sep="")
+            cat("\n                        l2_regularizer = ", object@MAXENT.Tsuruoka$l2_regularizer, ",", sep="")
+            cat("\n                        use_sgd = ", object@MAXENT.Tsuruoka$use_sgd, ",", sep="")
+            cat("\n                        set_heldout = ", object@MAXENT.Tsuruoka$set_heldout, ",", sep="")
+            cat("\n                        verbose = ", object@MAXENT.Tsuruoka$verbose, ")", sep="")
             
             .bmCat()
           })
@@ -1526,8 +1558,7 @@ setMethod("get_predictions", "BIOMOD.projection.out",
           function(obj, as.data.frame=FALSE, full.name=NULL, model=NULL, run.eval=NULL, data.set=NULL){
             models_selected <- get_projected_models(obj)
             if(length(full.name)){
-              # models subselection according to model names
-              models_selected <- grep(pattern=paste(full.name,collapse="|"), models_selected, value=T)
+              models_selected <- intersect(full.name, models_selected)
             } else if(length(model) | length(run.eval) | length(data.set)){
               # models subselection according to model, run.eval and sata.set parameters
               if(length(model)) grep_model <- paste("(",paste(model,collapse="|"),")", sep="") else grep_model = "*"

@@ -35,6 +35,7 @@ importFrom(rasterVis, levelplot)
 #import("survivial") # for gbm package
 #import("spline") # for gbm package
 #importFrom("gam", s)
+import("maxent")
 
 ### imports for ecospat.xxx functions (to be removed at some point?)
 importFrom("dismo", kfold)
@@ -86,7 +87,8 @@ exportClasses(
 	GBM_biomod2_model,
 	GLM_biomod2_model,
 	MARS_biomod2_model,
-	MAXENT_biomod2_model,
+	MAXENT.Phillips_biomod2_model,
+  MAXENT.Tsuruoka_biomod2_model,
 	RF_biomod2_model,
 	SRE_biomod2_model,
 	EMca_biomod2_model,
@@ -179,6 +181,7 @@ export(
 	sre,
 	update_objects,
 	variables_importance,
+  .create.maxent.bg.dir,
 	BIOMOD_cv,
 	BIOMOD_presenceonly,
 	BIOMOD_tuning

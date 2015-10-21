@@ -710,9 +710,17 @@
         # transform array into data.frame
         out$predictions <- as.data.frame(out$predictions)
         names(out$predictions) <- unlist(lapply(strsplit(names(out$predictions),".", fixed=TRUE), 
-                                                function(x){
-                                                  return(paste(modeling.output@sp.name, x[3], x[2], x[1],sep="_"))
-                                                }))
+                                         function(x){
+                                           x.rev <- rev(x) ## we reverse the order of the splitted vector to have algo a t the end
+                                           data.set.id <- x.rev[1]
+                                           cross.valid.id <- x.rev[2]
+                                           algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
+                                           model.id <- paste(obj@sp.name,
+                                                             data.set.id,
+                                                             cross.valid.id,
+                                                             algo.id, sep="_")
+                                           return(model.id)
+                                         }))
         # keep only wanted columns
         out$predictions <- out$predictions[,models.kept.union, drop=F]
         unlink(file.path(modeling.output@sp.name,paste("proj_", temp_name, sep="") ),recursive = TRUE, force = TRUE)

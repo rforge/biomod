@@ -1339,17 +1339,31 @@ setMethod("get_predictions", "BIOMOD.models.out",
                 mod.pred <- as.data.frame(pred@val)
                 names(mod.pred) <- unlist(lapply(strsplit(names(mod.pred),".", fixed=TRUE), 
                                                  function(x){
-                                                   return(paste(obj@sp.name, x[3], x[2], x[1],sep="_"))
+                                                   x.rev <- rev(x) ## we reverse the order of the splitted vector to have algo a t the end
+                                                   data.set.id <- x.rev[1]
+                                                   cross.valid.id <- x.rev[2]
+                                                   algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
+                                                   model.id <- paste(obj@sp.name,
+                                                                     data.set.id,
+                                                                     cross.valid.id,
+                                                                     algo.id, sep="_")
+                                                   return(model.id)
                                                  }))
                 return(mod.pred)
               } else{
                 if(pred@link != ''){
-                  #                   load(obj@models.prediction@link)
-                  #                   mod.pred <- as.data.frame(models.prediction)
-                  mod.pred <- as.data.frame(get(load(pred@link)))                  
+                  mod.pred <- as.data.frame(get(load(pred@link)))    
                   names(mod.pred) <- unlist(lapply(strsplit(names(mod.pred),".", fixed=TRUE), 
                                                    function(x){
-                                                     return(paste(obj@sp.name, x[3], x[2], x[1],sep="_"))
+                                                     x.rev <- rev(x) ## we reverse the order of the splitted vector to have algo a t the end
+                                                     data.set.id <- x.rev[1]
+                                                     cross.valid.id <- x.rev[2]
+                                                     algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
+                                                     model.id <- paste(obj@sp.name,
+                                                                       data.set.id,
+                                                                       cross.valid.id,
+                                                                       algo.id, sep="_")
+                                                     return(model.id)
                                                    }))
                   return(mod.pred)
                 } else{ return(NULL) }
@@ -1593,9 +1607,17 @@ setMethod("get_predictions", "BIOMOD.projection.out",
                 
                 if(obj@type == 'array' & sum(!(names(proj) %in% models_selected))>0 ){ ## from array & not valid names
                   names(proj) <- unlist(lapply(strsplit(names(proj),".", fixed=TRUE), 
-                                               function(x){
-                                                 return(paste(obj@sp.name, x[3], x[2], x[1],sep="_"))
-                                               }))
+                                                   function(x){
+                                                     x.rev <- rev(x) ## we reverse the order of the splitted vector to have algo a t the end
+                                                     data.set.id <- x.rev[1]
+                                                     cross.valid.id <- x.rev[2]
+                                                     algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
+                                                     model.id <- paste(obj@sp.name,
+                                                                       data.set.id,
+                                                                       cross.valid.id,
+                                                                       algo.id, sep="_")
+                                                     return(model.id)
+                                                   }))
                 }
                 
                 # reorder the data.frame

@@ -715,7 +715,7 @@
                                            data.set.id <- x.rev[1]
                                            cross.valid.id <- x.rev[2]
                                            algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
-                                           model.id <- paste(obj@sp.name,
+                                           model.id <- paste(modeling.output@sp.name,
                                                              data.set.id,
                                                              cross.valid.id,
                                                              algo.id, sep="_")

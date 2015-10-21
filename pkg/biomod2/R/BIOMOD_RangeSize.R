@@ -60,8 +60,7 @@ setMethod('BIOMOD_RangeSize', signature(CurrentPred='array', FutureProj='array' 
                                                data.set.id <- x.rev[1]
                                                cross.valid.id <- x.rev[2]
                                                algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
-                                               model.id <- paste(obj@sp.name,
-                                                                 data.set.id,
+                                               model.id <- paste(data.set.id,
                                                                  cross.valid.id,
                                                                  algo.id, sep="_")
                                                return(model.id)
@@ -74,8 +73,7 @@ setMethod('BIOMOD_RangeSize', signature(CurrentPred='array', FutureProj='array' 
                                                   data.set.id <- x.rev[1]
                                                   cross.valid.id <- x.rev[2]
                                                   algo.id <- paste(rev(x.rev[3:length(x.rev)]), collapse = ".", sep = "")
-                                                  model.id <- paste(obj@sp.name,
-                                                                    data.set.id,
+                                                  model.id <- paste(data.set.id,
                                                                     cross.valid.id,
                                                                     algo.id, sep="_")
                                                   return(model.id)

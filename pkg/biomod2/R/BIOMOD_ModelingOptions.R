@@ -225,6 +225,7 @@
     if(!is.null(MAXENT.Phillips$beta_categorical )) { opt@MAXENT.Phillips$beta_categorical <- MAXENT.Phillips$beta_categorical }
     if(!is.null(MAXENT.Phillips$beta_lqp )) { opt@MAXENT.Phillips$beta_lqp <- MAXENT.Phillips$beta_lqp }
     if(!is.null(MAXENT.Phillips$beta_hinge )) { opt@MAXENT.Phillips$beta_hinge <- MAXENT.Phillips$beta_hinge }
+	  if(!is.null(MAXENT.Phillips$betamultiplier )) { opt@MAXENT.Phillips$betamultiplier <- MAXENT.Phillips$betamultiplier }
     if(!is.null(MAXENT.Phillips$defaultprevalence )) { opt@MAXENT.Phillips$defaultprevalence <- MAXENT.Phillips$defaultprevalence }
   } else{
     opt@MAXENT.Phillips$path_to_maxent.jar <- getwd()

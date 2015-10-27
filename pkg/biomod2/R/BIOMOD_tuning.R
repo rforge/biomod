@@ -150,7 +150,7 @@ BIOMOD_tuning <- function(data,
   ## or:    http://cran.r-project.org/web/packages/maxent/maxent.pdf -->  tune.maxent()
   packages <- NULL
   if(sum(c('GLM','GBM','GAM','CTA','ANN','FDA','MARS','RF','MAXENT.Phillips') %in% models)>0){
-#     require(caret)
+    if(!isNamespaceLoaded("caret")){requireNamespace("caret", quietly = TRUE)}
     if(is.null(trControl)){
       trControl <- caret::trainControl(method = "cv", 
                                         summaryFunction = caret::twoClassSummary,

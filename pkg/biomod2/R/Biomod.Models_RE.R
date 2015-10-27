@@ -161,9 +161,11 @@
     ### Old version
     if(Options@GAM$algo == 'GAM_gam'){ ## gam package
       # package loading
-#       if( ("package:mgcv" %in% search()) ){ detach("package:mgcv", unload=TRUE)}
-#       if( ! ("package:gam" %in% search()) ){ require("gam",quietly=TRUE) }
-      if(isNamespaceLoaded("mgcv")){unloadNamespace("mgcv")}
+      if(isNamespaceLoaded("mgcv")){
+        if(isNamespaceLoaded("caret")){unloadNamespace("caret")} ## need to unload caret before car
+        if(isNamespaceLoaded("car")){unloadNamespace("car")} ## need to unload car before mgcv
+        unloadNamespace("mgcv")
+      }
       if(!isNamespaceLoaded("gam")){requireNamespace("gam", quietly = TRUE)}
       
       cat('\n\t> GAM (gam) modelling...')
@@ -171,14 +173,12 @@
       gamStart <- eval(parse(text=paste("gam::gam(",colnames(Data)[1] ,"~1 ," ,
                                         " data = Data[calibLines,,drop=FALSE], family = ", Options@GAM$family$family,"(link = '",Options@GAM$family$link,"')",#eval(Options@GAM$family),
                                         ", weights = Yweights[calibLines])" ,sep="")))
-      
-model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s", Options@GAM$k),
-                               data = Data[calibLines,,drop=FALSE],
-#                                keep = .functionkeep, 
-                               direction = "both",
-                               trace= Options@GAM$control$trace,
-                               control = Options@GAM$control))#eval(control.list)) )
-      
+      model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "gam::s", Options@GAM$k),
+                                     data = Data[calibLines,,drop=FALSE],
+      #                                keep = .functionkeep, 
+                                     direction = "both",
+                                     trace= Options@GAM$control$trace,
+                                     control = Options@GAM$control))#eval(control.list)) )
     } else { ## mgcv package
       # package loading
 #       if( ("package:gam" %in% search()) ){ detach("package:gam", unload=TRUE)}
@@ -565,6 +565,7 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
                          " beta_categorical=", Options@MAXENT.Phillips$beta_categorical,
                          " beta_lqp=", Options@MAXENT.Phillips$beta_lqp,
                          " beta_hinge=", Options@MAXENT.Phillips$beta_hinge,
+                         " betamultiplier=", Options@MAXENT.Phillips$betamultiplier,
                          " defaultprevalence=", Options@MAXENT.Phillips$defaultprevalence,
                          " autorun nowarnings notooltips noaddsamplestobackground", sep=""), wait = TRUE, intern = TRUE,
            ignore.stdout = FALSE, ignore.stderr = FALSE)
@@ -615,7 +616,7 @@ model.sp <- try( gam::step.gam(gamStart, .scope(Data[1:3,-c(1,ncol(Data))], "s",
   
   # make prediction =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if((Model != "MAXENT.Phillips"))
-    g.pred <- try(predict(model.bm, Data[,expl_var_names,drop=FALSE], on_0_1000=TRUE))
+    g.pred <- try(predict(model.bm, Data[, expl_var_names, drop = FALSE], on_0_1000 = TRUE))
 
 
   # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #

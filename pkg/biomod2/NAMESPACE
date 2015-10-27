@@ -40,7 +40,7 @@ import("maxent")
 ### imports for ecospat.xxx functions (to be removed at some point?)
 importFrom("dismo", kfold)
 importFrom("PresenceAbsence", presence.absence.accuracy)
-importFrom("caret", trainControl, twoClassSummary)
+## importFrom("caret", trainControl, twoClassSummary)
 importFrom("ENMeval", ENMevaluate)
 
 
@@ -184,7 +184,8 @@ export(
   .create.maxent.bg.dir,
 	BIOMOD_cv,
 	BIOMOD_presenceonly,
-	BIOMOD_tuning
+	BIOMOD_tuning,
+  sample.factor.levels
 )
 
 ## to be hidden

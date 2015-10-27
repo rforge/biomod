@@ -206,6 +206,7 @@ NOTE: for method and parms, you can give a 'real' value as described in the rpar
     \item{\code{beta_categorical} : numeric (default \code{-1.0}), regularization parameter to be applied to all categorical features; negative value enables automatic setting}
     \item{\code{beta_lqp} : numeric (default \code{-1.0}), regularization parameter to be applied to all linear, quadratic and product features; negative value enables automatic setting}
     \item{\code{beta_hinge} : numeric (default \code{-1.0}), regularization parameter to be applied to all hinge features; negative value enables automatic setting}
+    \item{\code{betamultiplier} : numeric (default \code{1}), multiply all automatic regularization parameters by this number. A higher number gives a more spread-out distribution.}
     \item{\code{defaultprevalence} : numeric (default \code{0.5}), default prevalence of the species: probability of presence at ordinary occurrence points}
   }
 }

@@ -749,6 +749,7 @@ setClass("BIOMOD.Model.Options",
                                  beta_categorical = -1.0,
                                  beta_lqp = -1.0,
                                  beta_hinge = -1.0,
+                                 betamultiplier = 1,
                                  defaultprevalence = 0.5),
                    
                    MAXENT.Tsuruoka = list(l1_regularizer = 0.0,
@@ -942,46 +943,28 @@ setClass("BIOMOD.Model.Options",
              if(!is.numeric(object@MAXENT.Phillips$memory_allocated)){
                cat("\nMAXENT.Phillips$memory_allocated must be a positive integer or NULL for unlimited memory allocation"); test <- FALSE }
            }
-           
            if(!is.character(object@MAXENT.Phillips$background_data_dir)){ cat("\nMAXENT.Phillips$background_data_dir must be 'default' (=> use the same pseudo absences than other models as background) or a path to the directory where your environmental layer are stored"); test <- FALSE }
-           
-		   tt <- is.character(object@MAXENT.Phillips$maximumbackground) | is.numeric(object@MAXENT.Phillips$maximumbackground)
+           tt <- is.character(object@MAXENT.Phillips$maximumbackground) | is.numeric(object@MAXENT.Phillips$maximumbackground)
            if(is.character(object@MAXENT.Phillips$maximumbackground)) if(object@MAXENT.Phillips$maximumbackground != 'default') tt <- FALSE
            if(!tt){ cat("\nMAXENT.Phillips$maximumbackground must be 'default' or numeric"); test <- FALSE }
-           
-
            if(!is.numeric(object@MAXENT.Phillips$maximumiterations)){ cat("\nMAXENT.Phillips$maximumiterations must be a integer"); test <- FALSE } else{
              if(object@MAXENT.Phillips$maximumiterations < 0 | object@MAXENT.Phillips$maximumiterations%%1!=0){ cat("\nMAXENT.Phillips$maximumiterations must be a positive integer"); test <- FALSE }
            }
-           
            if(!is.logical(object@MAXENT.Phillips$visible)){ cat("\nMAXENT.Phillips$visible must be a logical"); test <- FALSE }
-           
            if(!is.logical(object@MAXENT.Phillips$linear)){ cat("\nMAXENT.Phillips$linear must be a logical"); test <- FALSE }
-           
            if(!is.logical(object@MAXENT.Phillips$quadratic)){ cat("\nMAXENT.Phillips$quadratic must be a logical"); test <- FALSE }
-           
            if(!is.logical(object@MAXENT.Phillips$product)){ cat("\nMAXENT.Phillips$product must be a logical"); test <- FALSE }
-           
            if(!is.logical(object@MAXENT.Phillips$threshold)){ cat("\nMAXENT.Phillips$threshold must be a logical"); test <- FALSE }
-           
            if(!is.logical(object@MAXENT.Phillips$hinge)){ cat("\nMAXENT.Phillips$hinge must be a logical"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$lq2lqptthreshold)){ cat("\nMAXENT.Phillips$lq2lqptthreshold must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$l2lqthreshold)){ cat("\nMAXENT.Phillips$l2lqthreshold must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$lq2lqptthreshold)){ cat("\nMAXENT.Phillips$lq2lqptthreshold must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$hingethreshold)){ cat("\nMAXENT.Phillips$hingethreshold must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$beta_threshold)){ cat("\nMAXENT.Phillips$beta_threshold must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$beta_categorical)){ cat("\nMAXENT.Phillips$beta_categorical must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$beta_lqp)){ cat("\nMAXENT.Phillips$beta_lqp must be a numeric"); test <- FALSE }
-           
            if(!is.numeric(object@MAXENT.Phillips$beta_hinge)){ cat("\nMAXENT.Phillips$beta_hinge must be a numeric"); test <- FALSE }
-           
+		       if(!is.numeric(object@MAXENT.Phillips$betamultiplier)){ cat("\nMAXENT.Phillips$betamultiplier must be a numeric"); test <- FALSE }
            if(!is.numeric(object@MAXENT.Phillips$defaultprevalence)){ cat("\nMAXENT.Phillips$defaultprevalence must be a numeric"); test <- FALSE }
            
            ## MAXENT.Tsuruoka
@@ -1106,6 +1089,7 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             cat("\n               beta_categorical = ", object@MAXENT.Phillips$beta_categorical, ",", sep="")
             cat("\n               beta_lqp = ", object@MAXENT.Phillips$beta_lqp, ",", sep="")
             cat("\n               beta_hinge = ", object@MAXENT.Phillips$beta_hinge, ",", sep="")
+            cat("\n               betamultiplier = ", object@MAXENT.Phillips$betamultiplier, ",", sep="")
             cat("\n               defaultprevalence = ", object@MAXENT.Phillips$defaultprevalence, "),", sep="")
 
             ## MAXENT.Tsuruoka
@@ -2039,7 +2023,10 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data'),
                 calibLines <- matrix(rep(TRUE,length(data@data.species)),ncol=1)
                 colnames(calibLines) <- '_Full'
               } else {
-                calibLines <- .SampleMat(data@data.species, DataSplit, NbRunEval)                    
+                calibLines <- .SampleMat(data.sp = data@data.species, 
+                                         dataSplit = DataSplit, 
+                                         nbRun = NbRunEval, 
+                                         data.env = data@data.env.var)                    
                 if(do.full.models){
                   calibLines <- cbind(calibLines, rep(TRUE,length(data@data.species)))
                   colnames(calibLines)[NbRunEval+1] <- '_Full'
@@ -2103,7 +2090,10 @@ setMethod('.Models.prepare.data', signature(data='BIOMOD.formated.data.PA'),
                   colnames(calibLines) <- '_Full'
                 } else {
                   calibLines <- matrix(NA,nrow=length(data@data.species),ncol=NbRunEval)
-                  sampled.mat <- .SampleMat(data@data.species[data@PA[,pa]], DataSplit, NbRunEval)
+                  sampled.mat <- .SampleMat(data.sp = data@data.species[data@PA[,pa]],
+                                            dataSplit = DataSplit,
+                                            nbRun = NbRunEval,
+                                            data.env = data@data.env.var[data@PA[,pa], , drop = FALSE]) 
                   calibLines[data@PA[,pa],] <- sampled.mat
                   colnames(calibLines) <- colnames(sampled.mat)
                   if(do.full.models){

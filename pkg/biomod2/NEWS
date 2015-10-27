@@ -1,3 +1,7 @@
+3.3-3 (2015-10-27)
+  * force sampling of each level of factorial variables
+  * add 'betamultiplier' parameter to tune MAXENT.Phillips (Frank B. request)
+
 3.3-00 (2015-10-05)
   MAJOR RELEASE
   * optimize the memory consumtion of projections and ensemble projections procedure

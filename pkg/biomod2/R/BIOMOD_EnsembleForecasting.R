@@ -127,7 +127,7 @@
   
   ### get needed models prediction ###
   needed_predictions <- get_needed_models(EM.output, selected.models=selected.models)
-  
+
   if (length(projection.output)){
     formal_pred <- get_predictions(projection.output, full.name=needed_predictions, as.data.frame=ifelse(projection.output@type=='array',T,F) )
   } else{
@@ -161,6 +161,11 @@
                         on_0_1000 = on_0_1000, 
                         filename = ifelse(output.format == '.RData', '', file_name_tmp))
     } else {
+      cat("\n*** here!!\n")
+      print(str(formal_pred))
+      cat("\n***\n")
+      cat(model.tmp@model)
+      cat("\n*** here!!\n")
       ef.tmp <- predict(model.tmp, formal_predictions = formal_pred[,model.tmp@model, drop=FALSE], on_0_1000 = on_0_1000)
     }
         

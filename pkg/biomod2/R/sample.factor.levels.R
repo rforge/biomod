@@ -93,7 +93,7 @@ sample.factor.levels <- function(x, mask.out = NULL, mask.in = NULL){
       ## initialize the list of cells that are selected
       selected.cells <- NULL
       ## get the levels of the factor on the full dataset
-      fact.level.original <- unlist(levels(subset(x, f)))
+      fact.level.original <- unlist(raster::levels(subset(x, f)))
       fact.level <- fact.level.original
       cat("\n> fact.level for",  names(x)[f], ":\t", paste(fact.level, names(fact.level), sep = ":", collapse = "\t"))
       if(!is.null(mask.out)){ ## mask containing points that have already been sampled

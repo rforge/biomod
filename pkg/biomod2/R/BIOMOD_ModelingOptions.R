@@ -187,11 +187,15 @@
   }
 
   if(!is.null(MARS)){
-    if(!is.null(MARS$degree )) { opt@MARS$degree <- MARS$degree }
+    if(!is.null(MARS$type)) { opt@MARS$type <- MARS$type }
+    if(!is.null(MARS$interaction.level)) { opt@MARS$interaction.level <- MARS$interaction.level }
+    if(!is.null(MARS$myFormula)) { opt@MARS$myFormula <- MARS$myFormula }
+#     if(!is.null(MARS$degree )) { opt@MARS$degree <- MARS$degree }
     if(!is.null(MARS$nk )) { opt@MARS$nk <- MARS$nk }
     if(!is.null(MARS$penalty )) { opt@MARS$penalty <- MARS$penalty }
     if(!is.null(MARS$thresh )) { opt@MARS$thresh <- MARS$thresh }
-    if(!is.null(MARS$prune )) { opt@MARS$prune <- MARS$prune }
+    if(!is.null(MARS$nprune )) { opt@MARS$nprune <- MARS$nprune }
+    if(!is.null(MARS$pmethod )) { opt@MARS$pmethod <- MARS$pmethod }
   }
 
   if(!is.null(RF)){

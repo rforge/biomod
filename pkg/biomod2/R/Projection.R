@@ -372,11 +372,11 @@ setMethod('.Projection.do.proj', signature(env='data.frame'),
       return( data.frame( proj = proj ) )
     }
     
-    if(model.type == 'MARS'){
-      # proj automaticly scaled
-      return(data.frame( proj = as.integer(.Rescaler5(as.numeric(predict(model.sp, env)), 
-                                              name = model.name) * 1000)))
-    }
+#     if(model.type == 'MARS'){
+#       # proj automaticly scaled
+#       return(data.frame( proj = as.integer(.Rescaler5(as.numeric(predict(model.sp, env)), 
+#                                               name = model.name) * 1000)))
+#     }
     
     if(model.type == 'RF'){
       proj <- as.integer(as.numeric(predict(model.sp,env, type='prob')[,'1']) *1000)

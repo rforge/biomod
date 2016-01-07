@@ -65,7 +65,7 @@ BIOMOD_Modeling( data,
       \item{ANN: Artificial Neural Network (\code{\link[nnet]{nnet}})}
       \item{SRE: Surface Range Envelop or usually called BIOCLIM}
       \item{FDA: Flexible Discriminant Analysis (\code{\link[mda]{fda}})}
-      \item{MARS: Multiple Adaptive Regression Splines (\code{\link[mda]{mars}})}
+      \item{MARS: Multiple Adaptive Regression Splines (\code{\link[earth]{earth}})}
       \item{RF: Random Forest (\code{\link[randomForest]{randomForest}})}
       \item{MAXENT.Phillips: Maximum Entropy (\url{http://www.cs.princeton.edu/~schapire/maxent/})}
       \item{MAXENT.Tsuruoka: low-memory multinomial logistic regression (\code{\link[maxent]{maxent}})}
@@ -115,7 +115,8 @@ Note that the \code{Prevalence} argument will always be ignored if \code{Yweight
   
   \item{\bold{rescal.all.models}}{
   
-  Some categorical models have to be scaled in every case (\sQuote{MARS}, \sQuote{FDA}, \sQuote{ANN}). But It may be interesting to scale all model computed to ensure that they will produced comparable predictions (0-1000 ladder). That's particularly useful when you do some ensemble forecasting to remove the scale prediction effect (the more extended projections are, the more they influence ensemble forecasting results). 
+  \bold{This parameter is quite experimental and we adcise not to use it. It should lead to reduction in projection scale amplitude }
+  Some categorical models have to be scaled in every case (\sQuote{FDA}, \sQuote{ANN}). But It may be interesting to scale all model computed to ensure that they will produced comparable predictions (0-1000 ladder). That's particularly useful when you do some ensemble forecasting to remove the scale prediction effect (the more extended projections are, the more they influence ensemble forecasting results). 
   }
 
   \item{\bold{do.full.models}}{

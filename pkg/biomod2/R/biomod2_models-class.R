@@ -859,7 +859,7 @@ setClass('MARS_biomod2_model',
          prototype = list(model_class = 'MARS'),
          validity = function(object){
            # check model class
-           if(sum(! ( c("mars") %in% class(object@model) ) ) > 0) return(FALSE)
+           if(is.element(class(object@model), c("MARS"))) return(FALSE)
            return(TRUE)
          })
 
@@ -893,7 +893,27 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
   if (is.null(overwrite)) overwrite <- TRUE
   if (is.null(on_0_1000)) on_0_1000 <- FALSE
   
-  proj <- predict(newdata, model=get_formal_model(object))
+  ##' @note we have to handle separatly rasterstack depending on the presence or not
+  ##' of factorial variable.
+  fact.var <- is.factor(newdata)
+  if(any(fact.var)){
+    ## get factor levels
+    fact.var.levels <- subset(levels(newdata), fact.var) 
+    proj <- calc(newdata, function(x) {
+      xx <- data.frame(x)
+      ## ensure that the data.frame has the right set of levels
+      for(i in which(fact.var)){
+        xx[[i]] <- factor(xx[[i]], levels = unlist(fact.var.levels[[i]]))
+      }
+      ## do the projection
+      proj.out <- as.numeric(predict(get_formal_model(object), xx, type = 'response'))
+      return(proj.out)
+    })
+  } else {
+    proj <- predict(newdata, model = get_formal_model(object), type = 'response')
+  }
+  
+  
   
   if(length(get_scaling_model(object))){
     names(proj) <- "pred"
@@ -932,7 +952,8 @@ setMethod('predict', signature(object = 'MARS_biomod2_model'),
     not_na_rows <- rep(T, nrow(newdata))
   }
   
-  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE])))
+  proj <- as.numeric(predict(get_formal_model(object), as.data.frame(newdata[not_na_rows,,drop=FALSE]), type = 'response'))
+
   
   ## add original NAs in table if it needed
   if(sum(!not_na_rows) > 0 ){ # some NAs in formal dataset

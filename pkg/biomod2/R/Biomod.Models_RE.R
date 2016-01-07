@@ -337,25 +337,91 @@
   
   
   
+#   # MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+#   if (Model == "MARS"){
+#     ## deal with nk argument 
+#     ## if not defined, it will be setted up to default mars value i.e max(21, 2 * ncol(x) + 1)
+#     nk <- Options@MARS$nk
+#     if(is.null(nk)){
+#       nk <- max(21, 2 * length(expl_var_names) + 1)
+#     }
+#     
+#     model.sp <- try( mars(x = Data[calibLines,expl_var_names,drop=FALSE],
+#                           y = Data[calibLines,1],
+#                           degree = Options@MARS$degree,
+#                           nk = nk,
+#                           penalty = Options@MARS$penalty,
+#                           thresh = Options@MARS$thresh,
+#                           prune = Options@MARS$prune,
+#                           w = Yweights[calibLines]) )
+#     
+#     if( !inherits(model.sp,"try-error") ){
+#       
+#       model.bm <- new("MARS_biomod2_model",
+#                       model = model.sp,
+#                       model_name = model_name,
+#                       model_class = 'MARS',
+#                       model_options = Options@MARS,
+#                       resp_name = resp_name,
+#                       expl_var_names = expl_var_names,
+#                       expl_var_type = get_var_type(Data[calibLines,expl_var_names,drop=F]),
+#                       expl_var_range = get_var_range(Data[calibLines,expl_var_names,drop=F]))
+#     }
+#   }
+#   # end MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
   # MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
   if (Model == "MARS"){
+    
+    ## build the most complete model formula
+    if(is.null(Options@MARS$myFormula)){
+      mars.formula <- makeFormula(colnames(Data)[1],head(Data),Options@MARS$type, Options@MARS$interaction.level)
+    } else{
+      mars.formula <- Options@MARS$myFormula
+    }    
+    
     ## deal with nk argument 
     ## if not defined, it will be setted up to default mars value i.e max(21, 2 * ncol(x) + 1)
     nk <- Options@MARS$nk
     if(is.null(nk)){
-      nk <- max(21, 2 * length(expl_var_names) + 1)
+      # nk <- max(21, 2 * length(expl_var_names) + 1)
+      nk <- min(200, max(20, 2 * length(expl_var_names))) + 1
     }
     
-    model.sp <- try( mars(x = Data[calibLines,expl_var_names,drop=FALSE],
-                          y = Data[calibLines,1],
-                          degree = Options@MARS$degree,
+    ##' @note Cause it fail so far  (bug in earth package) we remove will not use weights when we use 
+    ##' earth with factorial variables
+    if(any(sapply(Data, is.factor))) warning("Weights were ignore for MARS models with factorial explanatory variables.")
+      
+    model.sp <- try(earth(formula = mars.formula, 
+                          data = data.frame(Data[calibLines, , drop=FALSE], Yweights = Yweights[calibLines]),
+                          # weights = if(any(sapply(Data, is.factor))) NULL else Yweights[calibLines],
+                          glm = list(family = binomial),
+                          ncross = 0,
+                          keepxy = FALSE,
+                          # degree = Options@MARS$degree,
+                          pmethod = Options@MARS$pmethod,
+                          nprune = Options@MARS$nprune,
                           nk = nk,
                           penalty = Options@MARS$penalty,
-                          thresh = Options@MARS$thresh,
-                          prune = Options@MARS$prune,
-                          w = Yweights[calibLines]) )
+                          thresh = Options@MARS$thresh))
+    
+#     ## TEST ##
+#     cat("\n*** Mars formula")
+#     print(mars.formula)
+#     cat("\n*** Save data for debug")
+#     save(list = c('model.sp', 'Data', 'mars.formula', 'calibLines'), file = "dat_for_debug.RData")
+#     cat("\n*** Data\n")
+#     print(head(Data[]))
+#     cat("\n*** try direct predictions")
+#     pred.sp <- predict(model.sp, type = 'response')
+#     cat("\n*** try direct predictions with new data")
+#     pred.sp <- predict(model.sp, Data[, 2:6], type = 'response')
+#     cat("\n*** OK!!!")
+#     ## END TEST ##
     
     if( !inherits(model.sp,"try-error") ){
+      cat("\n\tselected formula : ")
+      print(model.sp$formula, useSource=FALSE)
       
       model.bm <- new("MARS_biomod2_model",
                       model = model.sp,
@@ -369,7 +435,7 @@
     }
   }
   # end MARS models creation -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  
+
   
   
   # FDA models creation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -615,8 +681,9 @@
   # end of MAXENT.Tsuruoka models creation -=-=-=-=-=-=-=-=-=-=-=- #
   
   # make prediction =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-  if((Model != "MAXENT.Phillips"))
+  if((Model != "MAXENT.Phillips")){
     g.pred <- try(predict(model.bm, Data[, expl_var_names, drop = FALSE], on_0_1000 = TRUE))
+  }
 
 
   # scale or not predictions =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -860,8 +927,8 @@
   # scaling parameter checking
   # never scal SRE
   if(Model == "SRE") scal.models <- FALSE
-  # always scal ANN, FDA, MARS
-  if(Model %in% c("ANN", "FDA", "MARS") ) scal.models <- TRUE
+  # always scal ANN, FDA
+  if(Model %in% c("ANN", "FDA") ) scal.models <- TRUE
   
   
   # models options checking and printing

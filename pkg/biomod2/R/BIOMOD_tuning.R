@@ -1,7 +1,8 @@
 ##' @name BIOMOD_tuning
 ##' @aliases BIOMOD_tuning
 ##' 
-##' @title Function to tune biomod single models parameters
+##' @title Tune models parameters
+##' @description Function to tune biomod single models parameters
 ##'
 ##' @param data            BIOMOD.formated.data object returned by BIOMOD_FormatingData
 ##' @param models          vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'FDA', 'MARS', 'RF' and 'MAXENT.Phillips'

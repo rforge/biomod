@@ -719,11 +719,15 @@ setClass("BIOMOD.Model.Options",
                    FDA = list(method = 'mars',
                               add_args = NULL),
                    
-                   MARS = list(degree = 2,
+                   MARS = list(type = 'simple',
+                               interaction.level = 0,
+                               myFormula = NULL,
+#                                degree = 1,
                                nk = NULL,
                                penalty = 2,
                                thresh = 0.001,
-                               prune = TRUE),
+                               nprune = NULL,
+                               pmethod = 'backward'),
                    
                    RF = list(do.classif = TRUE,
                              ntree = 500,
@@ -892,25 +896,27 @@ setClass("BIOMOD.Model.Options",
            
            
            ## MARS ##
-           if(!is.numeric(object@MARS$degree)){ cat("\nMARS$degree must be a integer"); test <- FALSE } else{
-             if(object@MARS$degree < 0 | object@MARS$degree%%1!=0){ cat("\nMARS$degree must be a positive integer"); test <- FALSE }
+           if(!(object@MARS$type %in% c('simple','quadratic','polynomial','user.defined'))){ cat("\nMARS$type must be 'simple',  'quadratic', 'polynomial' or 'user.defined'"); test <- FALSE}
+           if(!is.numeric(object@MARS$interaction.level)){ cat("\nMARS$interaction.level must be a integer"); test <- FALSE } else{
+             if(object@MARS$interaction.level < 0 | object@MARS$interaction.level%%1!=0){ cat("\nMARS$interaction.level must be a positive integer"); test <- FALSE }
            }
-           
+           if(!is.null(object@MARS$myFormula)) if(class(object@MARS$myFormula) != "formula"){ cat("\nMARS$myFormula must be NULL or a formula object"); test <- FALSE }
+#            if(!is.numeric(object@MARS$degree)){ cat("\nMARS$degree must be a integer"); test <- FALSE } else{
+#              if(object@MARS$degree < 0 | object@MARS$degree%%1!=0){ cat("\nMARS$degree must be a positive integer"); test <- FALSE }
+#            }
            if(!is.null(object@MARS$nk)){ 
              if(object@MARS$nk < 0 | object@MARS$nk%%1!=0){ cat("\nMARS$nk must be a positive integer or NULL if you want to use default parameter"); test <- FALSE }
            }
-           
            if(!is.numeric(object@MARS$penalty)){ cat("\nMARS$penalty must be a integer"); test <- FALSE } else{
              if(object@MARS$penalty < 0 | object@MARS$penalty%%1!=0){ cat("\nMARS$penalty must be a positive integer"); test <- FALSE }
            }
-           
            if(!is.numeric(object@MARS$thresh)){ cat("\nMARS$thresh must be a numeric"); test <- FALSE } else{
              if(object@MARS$thresh < 0 ){ cat("\nMARS$thresh must be positive"); test <- FALSE }
            }
-           
-           if(!is.logical(object@MARS$prune)){ cat("\nMARS$prune must be a logical"); test <- FALSE }
-           
-           
+           if(!is.null(object@MARS$nprune)){ if(!is.numeric(object@MARS$nprune)){ cat("\nMARS$nprune must be a numeric or NULL"); test <- FALSE }}
+           supported.pmethod <- c('backward', 'none', 'exhaustive', 'forward', 'seqrep', 'cv')
+           if(!is.element(object@MARS$pmethod, supported.pmethod)){cat("\nMARS$pmethod must be a one of", supported.pmethod); test <- FALSE }
+
            
            ## RF ##
            if(!is.logical(object@RF$do.classif)){ cat("\nRF$do.classif must be a logical"); test <- FALSE }
@@ -1055,11 +1061,15 @@ setMethod('show', signature('BIOMOD.Model.Options'),
             
             ## MARS options
             cat("\n")
-            cat("\nMARS = list( degree = ", object@MARS$degree, ",", sep="")
+            cat("\nMARS = list( type = '", object@MARS$type, "',", sep="")
+            cat("\n             interaction.level = ", object@MARS$interaction.level, ",", sep="")
+            cat("\n             myFormula = ",  ifelse(length(object@MARS$myFormula) < 1,'NULL',paste(object@GLM$myFormula[2],object@GLM$myFormula[1],object@GLM$myFormula[3])), ",", sep="") 
+#             cat("\n             degree = ", object@MARS$degree, ",", sep="")
             cat("\n             nk = ", ifelse(length(object@MARS$nk) < 1,'NULL',object@MARS$nk), ",", sep="")
             cat("\n             penalty = ", object@MARS$penalty, ",", sep="")
             cat("\n             thresh = ", object@MARS$thresh, ",", sep="")
-            cat("\n             prune = ", object@MARS$prune, "),", sep="")
+            cat("\n             nprune = ", ifelse(length(object@MARS$nprune) < 1,'NULL',object@MARS$nprune), ",", sep="")
+            cat("\n             pmethod = '", object@MARS$pmethod, "'),", sep="")
             
             ## RF options
             cat("\n")
@@ -1761,114 +1771,6 @@ setMethod('show', signature('BIOMOD.EnsembleModeling.out'),
             .bmCat()
           })
 
-# setClass("BIOMOD.EnsembleModeling.out",
-#          representation(sp.name = 'character',
-#                         expl.var.names = 'character',
-#                         models.out.obj = 'BIOMOD.stored.models.out',
-#                         eval.metric = 'character',
-#                         eval.metric.quality.threshold = 'numeric',
-#                         em.computed = 'character',
-#                         em.by = 'character',
-# #                         em.models.kept = 'list',
-# #                         em.prediction = 'BIOMOD.stored.array',
-# #                         em.evaluation = 'BIOMOD.stored.array',
-#                         em.res = 'list',
-#                         em.ci.alpha = 'numeric',
-#                         em.weight = 'list',
-#                         em.bin.tresh = 'list'),
-#          prototype( sp.name = '',
-#                     expl.var.names = '',
-#                     models.out.obj = new('BIOMOD.stored.models.out'),
-#                     eval.metric = '',
-#                     eval.metric.quality.threshold = NULL,
-# #                     em.computed = '',
-# #                     em.models.kept = NULL,
-# #                     em.prediction = NULL,
-# #                     em.evaluation = NULL,
-#                     em.res = list(),
-#                     em.ci.alpha = 0.05,
-#                     em.weight = list(),
-#                     em.bin.tresh = list()),
-#          validity = function(object){
-#            return(TRUE)
-#            })
-# 
-# 
-# setMethod('show', signature('BIOMOD.EnsembleModeling.out'),
-#           function(object){
-#             .bmCat("'BIOMOD.EnsembleModeling.out'")
-#             cat("\nsp.name :", object@sp.name, fill=.Options$width)
-#             cat("\nexpl.var.names :", object@expl.var.names, fill=.Options$width)
-#             cat("\n")
-#             cat("\nmodels computed:", toString(object@em.computed), fill=.Options$width)
-# 
-#             .bmCat()
-#           })
-
-# ######
-# setMethod('predict', signature(object = 'BIOMOD.EnsembleModeling.out'),
-#           function(object, newdata, subset=1, ...){
-#             
-#             args <- list(...)
-#             
-#             if(inherits(newdata, 'Raster')){            
-#               return(.predict.EM_biomod2_model.RasterStack(object, newdata, subset, ... ))
-#             } else if(inherits(newdata, 'data.frame') | inherits(newdata, 'matrix')){
-#               return(.predict.EM_biomod2_model.data.frame(object, newdata, subset, ... ))
-#             } else{ stop("invalid newdata input") }
-#             
-#           })
-# 
-# .predict.ANN_biomod2_model.RasterStack <- function(object, newdata, subset, ...){
-#   args <- list(...)
-#   filename <- args$filename
-#   overwrite <- args$overwrite
-#   on_0_1000 <- args$on_0_1000
-#   
-#   if (is.null(overwrite)) overwrite <- TRUE
-#   if (is.null(on_0_1000)) on_0_1000 <- FALSE
-#   
-#   set.seed(555)
-#   proj <- predict(newdata, get_formal_model(object), type="raw")
-#   
-#   if(length(getScalingModel(object))){
-#     names(proj) <- "pred"
-#     proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
-#   }
-#   
-#   if(on_0_1000) proj <- round(proj*1000)
-#   
-#   # save raster on hard drive ?
-#   if(!is.null(filename)){
-#     cat("\n\t\tWriting projection on hard drive...")
-#     writeRaster(proj, filename=filename, overwrite=overwrite)
-#     proj <- raster(filename, RAT=FALSE)
-#   }
-#   
-#   return(proj)
-# }
-# 
-# .predict.EM_biomod2_model.data.frame <- function(object, newdata, subset, ...){
-#   args <- list(...)
-#   on_0_1000 <- args$on_0_1000
-#   
-#   if (is.null(on_0_1000)) on_0_1000 <- FALSE
-#   
-#   set.seed(555)
-#   proj <- as.numeric( predict(get_formal_model(object), newdata, type="raw") )
-#   
-#   if(length(getScalingModel(object))){
-#     proj <- data.frame(pred = proj)
-#     proj <- .testnull(object = getScalingModel(object), Prev = 0.5 , dat = proj)
-#   }
-#   
-#   if(on_0_1000) proj <- round(proj*1000)
-#   
-#   return(proj)
-# }
-# ######
-
-
 setMethod("get_needed_models", "BIOMOD.EnsembleModeling.out",
           function(obj, subset='all', ...){
             add.args <- list(...)
@@ -1891,8 +1793,6 @@ setMethod("get_needed_models", "BIOMOD.EnsembleModeling.out",
 )
 
 
-
-
 setMethod("get_kept_models", "BIOMOD.EnsembleModeling.out",
           function(obj, model, ...){
             if(is.character(model) | is.numeric(model)){
@@ -1905,29 +1805,6 @@ setMethod("get_kept_models", "BIOMOD.EnsembleModeling.out",
             
           }
 )
-
-
-# setMethod("get_evaluations", "BIOMOD.EnsembleModeling.out",
-#           function(obj, model=NULL, met=NULL){
-#             if(is.null(model)){
-#               model <- obj@em.computed
-#             }
-#             if(is.character(model) | is.numeric(model)){
-#               lout <- list()
-#               for(mod in model){
-#                 if(is.null(met)){
-#                   lout[[mod]] <- obj@em.models[[mod]]@model_evaluation[,,drop=F]
-#                 } else if(!is.null(meth)){
-#                   lout[[mod]] <- (obj@em.rmodels[[mod]]@model_evaluation[met,,drop=F])
-#                 } 
-#               }
-#               return(lout)
-#             } else{
-#               return(NULL)
-#             }
-#             
-#           }
-# )
 
 setMethod("get_evaluations", "BIOMOD.EnsembleModeling.out",
           function(obj, ...){
@@ -1989,6 +1866,13 @@ setMethod("get_built_models", "BIOMOD.EnsembleModeling.out",
           function(obj, ...){
             return(obj@em.computed)
           })
+
+## TODO(damien): implement get_prediction for ensemble models 
+# setMethod("get_predictions", "BIOMOD.EnsembleModeling.out",
+#           function(obj, as.data.frame = FALSE, evaluation = FALSE){
+#           }
+# )
+
 
 ####################################################################################################
 ### BIOMOD Storing Ensemble Forecasting Objects ####################################################

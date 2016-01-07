@@ -161,15 +161,24 @@ NOTE: for method and parms, you can give a 'real' value as described in the rpar
   }
 }
 
-\section{=-=-= MARS -=-= (\code{\link[mda]{mars}})}{
+\section{=-=-= MARS -=-= (\code{\link[earth]{earth}})}{
 
-  Please refer to \code{\link[mda]{mars}} help file to get the meaning of these options.
+  Please refer to \code{\link[earth]{earth}} help file to get the meaning of these options.
   \itemize{
-    \item{\code{degree} (default \code{2})}
+    \item{\code{myFormula} : a typical formula object (see example). If not NULL, type and interaction.level args are switched off. 
+    You can choose to either: 
+    \itemize{
+    \item{generate automatically the GLM formula by using the type and interaction.level arguments 
+    type (default \code{'simple'}) : formula given to the model ('simple', 'quadratic' or 'polynomial'). 
+    interaction.level (default \code{0}) : integer corresponding to the interaction level between variables considered. Consider that interactions quickly enlarge the number of effective variables used into the GLM/MARS.}
+    \item{or construct specific formula}
+    }}
+%    \item{\code{degree} (default \code{2})}
     \item{\code{nk}} (default \code{NULL}) : an optional integer specifying the maximum number of model terms. If NULL is given then default mars function value is used ( i.e max(21, 2 * nb_expl_var + 1) )
     \item{\code{penalty} (default \code{2})}
     \item{\code{thresh} (default \code{0.001})}
-    \item{\code{prune} (default \code{TRUE})}
+    \item{\code{nprune} (default \code{NULL})}
+    \item{\code{pmethod} (default \code{"backward"})}
   }
 
 }

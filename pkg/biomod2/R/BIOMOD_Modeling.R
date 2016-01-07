@@ -270,7 +270,7 @@ BIOMOD_Modeling <- function( data,
   categorial_var <- unlist(sapply(colnames(data@data.env.var), function(x){if(is.factor(data@data.env.var[,x])) return(x) else return(NULL)} ))
   
   if(length(categorial_var)){
-    models.fact.unsuprort <- c("SRE", "MARS", "MAXENT.Tsuruoka")
+    models.fact.unsuprort <- c("SRE", "MAXENT.Tsuruoka")
     models.swich.off <- intersect(models, models.fact.unsuprort)
     if(length(models.swich.off)){
       models <- setdiff(models, models.swich.off)
@@ -355,17 +355,6 @@ BIOMOD_Modeling <- function( data,
       }
   }
   if(DataSplit==100) NbRunEval <- 0
-  
-  # Switch SRE and MARS off if one of the variables is a non-numeric.
-  if(sum(models %in% c('MARS', 'SRE')) > 0 ){
-    if(sum(apply(data@data.env.var,2,is.factor)) > 0){
-      modId <- which((models %in% c('MARS', 'SRE') ) == TRUE)
-      warning(paste("Because some environmental variables are factors, ",models[modId],
-                    " have been switched off! \n", sep=""))
-      models <- models[-modId] 
-    }
-  }
-  
   
   # Models evaluation method checking
   models.eval.meth <- unique(models.eval.meth)

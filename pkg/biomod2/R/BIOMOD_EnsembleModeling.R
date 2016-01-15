@@ -335,8 +335,28 @@
         #### Models Evaluation ####
         pred.bm <- predict(model.bm, expl, formal_predictions=needed_predictions$predictions[,model.bm@model, drop=F], on_0_1000 = T )
         
+        ## store models prediction on the hard drive ---------------------------
+        ## create the suitable directory architecture
+        pred.bm.name <- paste0(model_name, ".predictions")
+        pred.bm.outfile <- file.path(model.bm@resp_name, ".BIOMOD_DATA", model.bm@modeling.id, 
+                                     "ensemble.models", "ensemble.models.predictions",
+                                     pred.bm.name)
+        dir.create(dirname(pred.bm.outfile), showWarnings = FALSE, recursive = TRUE)
+        ## save models predictions
+        assign(pred.bm.name, pred.bm)
+        save(list = pred.bm.name, file = pred.bm.outfile, compress = TRUE)
+        rm(list = pred.bm.name)
+        ## end strore models preciciton on the hard drive ----------------------
+        
         if(exists('eval.obs') & exists('eval.expl')){
           eval_pred.bm <- predict(model.bm, eval.expl)
+          ## store models prediction on the hard drive -------------------------
+          pred.bm.name <- paste0(model_name, ".predictionsEval")
+          ## save models predictions
+          assign(pred.bm.name, eval_pred.bm)
+          save(list = pred.bm.name, file = pred.bm.outfile, compress = TRUE)
+          rm(list = pred.bm.name)
+          ## end strore models preciciton on the hard drive --------------------
         }
  
         
@@ -392,8 +412,6 @@
                                                                   Obs = eval.obs,
                                                                   Fixed.thresh = cross.validation["Cutoff",x]) )
                                         })
-              
-              
               cross.validation <- rbind(cross.validation["Testing.data",], true.evaluation)
               rownames(cross.validation) <- c("Testing.data","Evaluating.data","Cutoff","Sensitivity", "Specificity")
             }

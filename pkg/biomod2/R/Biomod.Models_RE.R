@@ -375,7 +375,7 @@
     
     ## build the most complete model formula
     if(is.null(Options@MARS$myFormula)){
-      mars.formula <- makeFormula(colnames(Data)[1],head(Data),Options@MARS$type, Options@MARS$interaction.level)
+      mars.formula <- makeFormula(colnames(Data)[1],head(Data)[, -ncol(Data), drop = FALSE],Options@MARS$type, Options@MARS$interaction.level)
     } else{
       mars.formula <- Options@MARS$myFormula
     }    
@@ -387,14 +387,10 @@
       # nk <- max(21, 2 * length(expl_var_names) + 1)
       nk <- min(200, max(20, 2 * length(expl_var_names))) + 1
     }
-    
-    ##' @note Cause it fail so far  (bug in earth package) we remove will not use weights when we use 
-    ##' earth with factorial variables
-    if(any(sapply(Data, is.factor))) warning("Weights were ignore for MARS models with factorial explanatory variables.")
-      
+
     model.sp <- try(earth(formula = mars.formula, 
-                          data = data.frame(Data[calibLines, , drop=FALSE], Yweights = Yweights[calibLines]),
-                          # weights = if(any(sapply(Data, is.factor))) NULL else Yweights[calibLines],
+                          data = Data[calibLines, , drop=FALSE],
+                          weights = Yweights,
                           glm = list(family = binomial),
                           ncross = 0,
                           keepxy = FALSE,
@@ -405,24 +401,7 @@
                           penalty = Options@MARS$penalty,
                           thresh = Options@MARS$thresh))
     
-#     ## TEST ##
-#     cat("\n*** Mars formula")
-#     print(mars.formula)
-#     cat("\n*** Save data for debug")
-#     save(list = c('model.sp', 'Data', 'mars.formula', 'calibLines'), file = "dat_for_debug.RData")
-#     cat("\n*** Data\n")
-#     print(head(Data[]))
-#     cat("\n*** try direct predictions")
-#     pred.sp <- predict(model.sp, type = 'response')
-#     cat("\n*** try direct predictions with new data")
-#     pred.sp <- predict(model.sp, Data[, 2:6], type = 'response')
-#     cat("\n*** OK!!!")
-#     ## END TEST ##
-    
     if( !inherits(model.sp,"try-error") ){
-      cat("\n\tselected formula : ")
-      print(model.sp$formula, useSource=FALSE)
-      
       model.bm <- new("MARS_biomod2_model",
                       model = model.sp,
                       model_name = model_name,
@@ -920,7 +899,7 @@
     Yweights <- rep(1,nrow(Data))
   }
   
-  if(Model %in% c('GBM','CTA','ANN','FDA','GAM')){ # this models required data and weights to be in a same datdaset
+  if(Model %in% c('GBM', 'CTA', 'ANN', 'FDA', 'GAM', 'MARS')){ # this models required data and weights to be in a same datdaset
     Data <- cbind(Data,Yweights)
   }
   
@@ -937,7 +916,7 @@
     if(!is.null(Options@GLM$myFormula)){
       cat('\n\tformula = ', paste(Options@GLM$myFormula[2],Options@GLM$myFormula[1],Options@GLM$myFormula[3]))
     } else{
-      cat('',Options@GLM$type,'with', ifelse(Options@GLM$interaction.level == 0, 'no interaction', paste('order',Options@GLM$interaction.level,'interaction level')))                  
+      cat(' (',Options@GLM$type,'with', ifelse(Options@GLM$interaction.level == 0, 'no interaction )', paste('order',Options@GLM$interaction.level,'interaction level )')))                  
     }
     
     if(Options@GLM$test == "AIC"){
@@ -992,6 +971,12 @@
   
   if (Model == "MARS"){ 
     cat("\nModel=Multiple Adaptive Regression Splines")
+    if(!is.null(Options@MARS$myFormula)){
+      cat('\n\tformula = ', paste(Options@MARS$myFormula[2],Options@MARS$myFormula[1],Options@MARS$myFormula[3]))
+    } else{
+      cat(' (',Options@MARS$type,'with', ifelse(Options@MARS$interaction.level == 0, 'no interaction )', paste('order',Options@MARS$interaction.level,'interaction level )')))                  
+    }
+    cat("\n")
   }
   
   if (Model == "RF"){ 

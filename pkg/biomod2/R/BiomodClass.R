@@ -1416,7 +1416,6 @@ setMethod("get_evaluations", "BIOMOD.models.out",
 setMethod("get_calib_lines", "BIOMOD.models.out",
    function(obj, as.data.frame = FALSE, ...){
      calib_lines <- load_stored_object(obj@calib.lines)
-     
      return(calib_lines)
    }
           
@@ -1867,13 +1866,23 @@ setMethod("get_built_models", "BIOMOD.EnsembleModeling.out",
             return(obj@em.computed)
           })
 
-## TODO(damien): implement get_prediction for ensemble models 
-# setMethod("get_predictions", "BIOMOD.EnsembleModeling.out",
-#           function(obj, as.data.frame = FALSE, evaluation = FALSE){
-#           }
-# )
+setMethod("get_predictions", "BIOMOD.EnsembleModeling.out",
+  function(obj, ...){
+    ## note: ensemble models predicitons are stored within the directory 
+    ##  <sp.name>/.BIOMOD_DATA/<modelling.id>/ensemble.models/ensemble.models.projections/
+    ##  This function is just a friendly way to load this data
+    
+    ## get the path to projections files we want to load
+    files.to.load <- file.path(obj@sp.name, ".BIOMOD_DATA", obj@modeling.id, "ensemble.models", 
+                              "ensemble.models.predictions", paste0(obj@em.computed, ".predictions"))
+    ## load and merge projection files within a data.frame
+    bm.pred <- do.call(cbind, lapply(files.to.load, function(ftl) get(load(ftl))))
+    colnames(bm.pred) <- obj@em.computed
+    return(bm.pred)
+  }
+)
 
-
+"/home/georgeda/Work/BIOMOD/RForge/tests/workdir/GuloGulo/.BIOMOD_DATA/test//GuloGulo_EMmeanByTSS_mergedAlgo_mergedRun_mergedData.predictions"
 ####################################################################################################
 ### BIOMOD Storing Ensemble Forecasting Objects ####################################################
 ####################################################################################################

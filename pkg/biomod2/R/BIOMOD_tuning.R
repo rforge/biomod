@@ -283,10 +283,11 @@ if('GBM' %in% models){
   
   if('MAXENT.Phillips' %in% models){
     cat("Start tuning MAXENT.Phillips\n")
-    if(cvmethod.ME != 'randomkfold'){kfolds.ME <- NA}
-    try(tune.MAXENT.Phillips <- ENMevaluate(data@coord[data@data.species==1,],env.ME,bg.coords= data@coord[data@data.species==0,],
-                                   method=cvmethod.ME, kfolds = kfolds.ME, overlap=overlap.ME, 
-                                   bin.output=TRUE, clamp=clamp.ME))
+    cat("Switch down so far..")
+#     if(cvmethod.ME != 'randomkfold'){kfolds.ME <- NA}
+#     try(tune.MAXENT.Phillips <- ENMevaluate(data@coord[data@data.species==1,],env.ME,bg.coords= data@coord[data@data.species==0,],
+#                                    method=cvmethod.ME, kfolds = kfolds.ME, overlap=overlap.ME, 
+#                                    bin.output=TRUE, clamp=clamp.ME))
     cat(paste("Finished tuning MAXENT.Phillips\n","\n-=-=-=-=-=-=-=-=-=-=\n"))
   }
   

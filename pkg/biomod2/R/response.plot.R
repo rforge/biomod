@@ -74,8 +74,8 @@
                               max = max(Data[data_species==1,i]))
     } else{
       # return everytimes the majoritary class
-      sum_level <- summary(Data[data_species==1,i])
-      ref_table[,i] <- names(sum_level)[sum_level==max(sum_level)]
+      sum_level <- summary(Data[data_species==1,i], na.rm = TRUE)
+      ref_table[,i] <- names(sum_level)[which.max(sum_level)]
     }
   }
   

@@ -1,8 +1,8 @@
 Package: biomod2
 Type: Package
 Title: Ensemble Platform for Species Distribution Modeling
-Version: 3.3-8
-Date: 2016-03-08
+Version: 3.3-9
+Date: 2016-03-14
 Author: Wilfried Thuiller [aut, cre],
     Damien Georges [aut, cre],
     Robin Engler [aut],

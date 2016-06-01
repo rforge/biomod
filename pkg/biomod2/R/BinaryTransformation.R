@@ -47,7 +47,7 @@ setGeneric("BinaryTransformation",
 setMethod('BinaryTransformation', signature(data='data.frame'), 
   function(data, threshold)
   {
-    cat("\n*** in setMethod('BinaryTransformation', signature(data='data.frame')")
+    # cat("\n*** in setMethod('BinaryTransformation', signature(data='data.frame')")
   	FUN2 <- function(x,y){
   		moa <- apply((x>y),2,as.integer)
   		if(ncol(moa)==1) return(moa[,1])
@@ -66,7 +66,7 @@ setMethod('BinaryTransformation', signature(data='data.frame'),
 setMethod('BinaryTransformation', signature(data='matrix'), 
   function(data, threshold)
   {
-    cat("\n*** in setMethod('BinaryTransformation', signature(data='matrix')")
+    # cat("\n*** in setMethod('BinaryTransformation', signature(data='matrix')")
     data <- as.data.frame(data)
     return(BinaryTransformation(data, threshold))
   })
@@ -76,7 +76,7 @@ setMethod('BinaryTransformation', signature(data='matrix'),
 setMethod('BinaryTransformation', signature(data='numeric'), 
   function(data, threshold)
   {
-    cat("\n*** in setMethod('BinaryTransformation', signature(data='numeric')")
+    # cat("\n*** in setMethod('BinaryTransformation', signature(data='numeric')")
     data <- as.data.frame(data)
     return(BinaryTransformation(data, threshold))
   })
@@ -86,7 +86,7 @@ setMethod('BinaryTransformation', signature(data='numeric'),
 setMethod('BinaryTransformation', signature(data='array'), 
           function(data, threshold)
           {
-            cat("\n*** in setMethod('BinaryTransformation', signature(data='array')")
+            # cat("\n*** in setMethod('BinaryTransformation', signature(data='array')")
             if(length(dim(data)) == length(dim(threshold))){
               if(sum( dim(data)[-1] != dim(threshold)[-1] ) > 0 ){
                 stop("data and threshold dimentions mismatch")
@@ -111,7 +111,7 @@ setMethod('BinaryTransformation', signature(data='array'),
 setMethod('BinaryTransformation', signature(data='RasterLayer'), 
   function(data, threshold)
   {
-    cat("\n*** in setMethod('BinaryTransformation', signature(data='RasterLayer')")
+    # cat("\n*** in setMethod('BinaryTransformation', signature(data='RasterLayer')")
     if(!is.na(threshold)){
       return(reclassify(data,c(-Inf,threshold,0, threshold,+Inf,1)))
     } else{ ## return a empty map (NA everywhere)

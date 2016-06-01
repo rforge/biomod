@@ -29,6 +29,7 @@
   # par <- add.args$par
   restrict_to_pres_range <- add.args$restrict_to_pres_range
   data_species <- add.args$data_species
+  use.formal.names <- add.args$use.formal.names
   
   if(is.null(on_0_1000)) on_0_1000 <- FALSE
   if(is.null(col)) if(!do.bivariate) col <- "black" else col <- c("red","orange","green")
@@ -36,6 +37,7 @@
   if(is.null(legend)) legend <- FALSE
   if(is.null(display_title)) display_title <- TRUE
   if(is.null(restrict_to_pres_range)) restrict_to_pres_range <- FALSE
+  if(is.null(use.formal.names)) use.formal.names <- FALSE
   
   formal_names <- models
   
@@ -151,8 +153,13 @@
       
       for(model in models){
         
+        
         # 0. get model
         mod <- get(model)
+        mod.name <- ifelse(use.formal.names, formal_names[which(is.element(models, model))], model)
+        
+        # cat("\n*** model = ", model, ", mod.name =  ", mod.name)
+        
         
         # 2. make projections 
         proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000, do_check=FALSE)
@@ -168,9 +175,9 @@
         
         # 5. Storing results
         if(length(list.out[[vari]]) == 0){ #init
-          eval(parse(text=paste("list.out[['",vari,"']] <- data.frame(",vari,"=pts.tmp, ",model,"=proj.tmp)",sep="")))
+          eval(parse(text=paste("list.out[['",vari,"']] <- data.frame(",vari,"=pts.tmp, ",mod.name,"=proj.tmp)",sep="")))
         } else{
-          eval(parse(text=paste("list.out[['",vari,"']] <- cbind(list.out[['",vari,"']],",model,"=proj.tmp)",sep="")))
+          eval(parse(text=paste("list.out[['",vari,"']] <- cbind(list.out[['",vari,"']],",mod.name,"=proj.tmp)",sep="")))
         }
         
       }    
@@ -188,6 +195,7 @@
   } else{ ## bivariate case
     for(vari1 in show.variables[-length(show.variables)]){
       for(vari2 in show.variables[-(1:which(show.variables == vari1))]){
+        
         
         # creating Tmp data
         #         if(is.factor(Data[,vari])) pts.tmp <- as.factor(levels(Data[,vari])) else pts.tmp <- seq(min(Data[,vari]), max(Data[,vari]), length.out=nb.pts)
@@ -207,6 +215,7 @@
           
           # 0. get model
           mod <- get(model)
+          mod.name <- ifelse(use.formal.names, formal_names[which(is.element(models, model))], model)
           
           # 2. make projections
           proj.tmp <- predict(mod, Data.r.tmp, on_0_1000=on_0_1000, do_check=FALSE)
@@ -214,9 +223,9 @@
           # 4. Storing results
           vari <- paste(vari1,vari2,sep="_")
           if(length(list.out[[vari]]) == 0){ #init
-            eval(parse(text=paste("list.out[['",vari,"']] <- data.frame(",vari1,"=pts.tmp1,",vari2,"=pts.tmp2, ",model,"=proj.tmp)",sep="")))
+            eval(parse(text=paste("list.out[['",vari,"']] <- data.frame(",vari1,"=pts.tmp1,",vari2,"=pts.tmp2, ",mod.name,"=proj.tmp)",sep="")))
           } else{
-            eval(parse(text=paste("list.out[['",vari,"']] <- cbind(list.out[['",vari,"']],",model,"=proj.tmp)",sep="")))
+            eval(parse(text=paste("list.out[['",vari,"']] <- cbind(list.out[['",vari,"']],",mod.name,"=proj.tmp)",sep="")))
           }
           
           # 5. Ploting results
@@ -256,8 +265,14 @@
     unlink(path.expand(file.path(get(models[1])@resp_name,'RespPlotTmp')), recursive=TRUE, force=TRUE)
   }
   
-  invisible(list.out)
+  # transform list.out into ggplot firendly shape
+  if(do.bivariate){
+    gg.out <- .as.ggdat.2D(list.out)
+  } else {
+    gg.out <- .as.ggdat.1D(list.out)
+  }
   
+  invisible(gg.out)
 }
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -445,3 +460,41 @@
   stop("Unknown model class")
   
 }
+
+.as.ggdat.1D <- function(rp.dat){
+  out_ <- bind_rows(lapply(rp.dat, function(dat_){
+  dat_$id <- rownames(dat_)
+#   dat_$expl.name <- as.character(dat_$expl.name)
+#   dat_$pred.name <- as.character(dat_$pred.name)
+  expl.dat_ <- dat_ %>% dplyr::select(1, id) %>% tidyr::gather("expl.name", "expl.val", 1)
+  pred.dat_ <- dat_ %>% dplyr::select(-1, id) %>% tidyr::gather("pred.name", "pred.val", -id)
+  out.dat_  <- dplyr::full_join(expl.dat_, pred.dat_) 
+  out.dat_$expl.name <- as.character(out.dat_$expl.name)
+  out.dat_$pred.name <- as.character(out.dat_$pred.name)
+  return(out.dat_)
+  }))
+  ## ensure that the stips are in the right order
+  out_$expl.name <- factor(out_$expl.name, levels = unique(out_$expl.name))
+  return(out_)
+} 
+
+
+.as.ggdat.2D <- function(rp.dat){
+  out_ <- bind_rows(lapply(rp.dat, function(dat_){
+    dat_$id <- rownames(dat_)
+    #   dat_$expl.name <- as.character(dat_$expl.name)
+    #   dat_$pred.name <- as.character(dat_$pred.name)
+    expl1.dat_ <- dat_ %>% dplyr::select(1, id) %>% tidyr::gather("expl1.name", "expl1.val", 1)
+    expl2.dat_ <- dat_ %>% dplyr::select(2, id) %>% tidyr::gather("expl2.name", "expl2.val", 1)
+    pred.dat_ <- dat_ %>% dplyr::select(3, id) %>% tidyr::gather("pred.name", "pred.val", 1)
+    out.dat_  <- dplyr::full_join(dplyr::full_join(expl1.dat_, expl2.dat_), pred.dat_)
+    out.dat_$expl1.name <- as.character(out.dat_$expl1.name)
+    out.dat_$expl2.name <- as.character(out.dat_$expl2.name)
+    out.dat_$pred.name <- as.character(out.dat_$pred.name)
+    return(out.dat_)
+  }))
+  ## ensure that the stips are in the right order
+  out_$expl1.name <- factor(out_$expl1.name, levels = unique(out_$expl1.name))
+  out_$expl2.name <- factor(out_$expl2.name, levels = unique(out_$expl2.name))
+  return(out_)
+} 

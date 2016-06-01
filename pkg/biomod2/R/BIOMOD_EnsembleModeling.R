@@ -405,19 +405,15 @@
                                          dimnames = list(c("Testing.data","Evaluating.data","Cutoff","Sensitivity", "Specificity"),
                                                          models.eval.meth))
             } else {
-              true.evaluation <- sapply(models.eval.meth,
-                                        function(x){
-                                          return( Find.Optim.Stat(Stat = x,
-                                                                  Fit = eval_pred.bm,
-                                                                  Obs = eval.obs,
-                                                                  Fixed.thresh = cross.validation["Cutoff",x]) )
-                                        })
+              true.evaluation <- sapply(models.eval.meth, function(x){
+                                        Find.Optim.Stat(
+                                        Fit = eval_pred.bm * 1000,
+                                        Obs = eval.obs,
+                                        Fixed.thresh = cross.validation["Cutoff",x])})
+              
               cross.validation <- rbind(cross.validation["Testing.data",], true.evaluation)
               rownames(cross.validation) <- c("Testing.data","Evaluating.data","Cutoff","Sensitivity", "Specificity")
             }
-            
-            
-            
           }
           
           ## store results

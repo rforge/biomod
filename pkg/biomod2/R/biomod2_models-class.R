@@ -538,13 +538,13 @@ setMethod('predict', signature(object = 'GAM_biomod2_model'),
             
             
             if(object@model_subclass %in% c("GAM_mgcv","BAM_mgcv")){
-#               cat("\n*** unloading gam package / loading mgcv package")
+              # cat("\n*** unloading gam package / loading mgcv package")
               if(isNamespaceLoaded("gam")){unloadNamespace("gam")}
               if(!isNamespaceLoaded("mgcv")){requireNamespace("mgcv", quietly = TRUE)}
             }
             
             if(object@model_subclass == "GAM_gam"){
-#               cat("\n*** unloading mgcv package / loading gam package")
+              # cat("\n*** unloading mgcv package / loading gam package")
               if(isNamespaceLoaded("mgcv")){
                 if(isNamespaceLoaded("caret")){unloadNamespace("caret")} ## need to unload caret before car
                 if(isNamespaceLoaded("car")){unloadNamespace("car")} ## need to unload car before mgcv

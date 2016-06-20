@@ -60,7 +60,7 @@
   m_predictFile <- file.path(m_predictDir, "Pred_swd.csv")
   MWD$m_predictFile <- m_predictFile
   Pred_swd <- cbind(rep("predict",nrow(xy)),xy,Data[,2:ncol(Data),drop=FALSE])
-  colnames(Pred_swd)  <- c("predict",colnames(Back_swd)[-1])
+  colnames(Pred_swd)  <- c("predict", colnames(xy), colnames(Data)[-1])
   write.table(Pred_swd, file=m_predictFile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",")
   
   

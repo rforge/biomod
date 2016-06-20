@@ -40,6 +40,7 @@
 ##'   
 ##' @examples
 ##' ## example with raster* object ---------- 
+##' library(raster)
 ##' ## create a factorial raster
 ##' r1 <- raster()
 ##' r1[] <- 1; r1[1] <- 2; r1[2:3] <- 3

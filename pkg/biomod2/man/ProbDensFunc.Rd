@@ -70,7 +70,7 @@ myRespXY <- DataSpecies[-rm_id,c("X_WGS84","Y_WGS84")]
 
 
 # Environmental variables extracted from BIOCLIM 
-myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
+myExpl = raster::stack( system.file( "external/bioclim/current/bio3.grd", 
                              package="biomod2"),
                 system.file( "external/bioclim/current/bio4.grd", 
                              package="biomod2"), 
@@ -115,7 +115,7 @@ myBiomodEM <- BIOMOD_EnsembleModeling( modeling.output = myBiomodModelOut,
 # 5. Projection on future environmental conditions
 
 ## load future environmental conditions from biomod2 package 
-myExpl_fut <- stack( system.file( "external/bioclim/future/bio3.grd", 
+myExpl_fut <- raster::stack( system.file( "external/bioclim/future/bio3.grd", 
                                   package="biomod2"),
                      system.file( "external/bioclim/future/bio4.grd", 
                                   package="biomod2"), 
@@ -139,8 +139,8 @@ BIOMOD_EnsembleForecasting(projection.output=myBiomodProjection,
                            binary.meth='TSS')
 
 # 6. load binary projections
-consensusBin <- stack('GuloGulo/proj_future/proj_future_GuloGulo_ensemble_TSSbin.grd')
-projectionsBin <- stack('GuloGulo/proj_future/proj_future_GuloGulo_TSSbin.grd')
+consensusBin <- raster::stack('GuloGulo/proj_future/proj_future_GuloGulo_ensemble_TSSbin.grd')
+projectionsBin <- raster::stack('GuloGulo/proj_future/proj_future_GuloGulo_TSSbin.grd')
 
 # 7. build a ref state based on ensemble-models
 ref <- sampleRandom(subset(consensusBin, 1, drop=T), size=5000, sp=T, na.rm=T)

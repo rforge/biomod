@@ -91,7 +91,7 @@ myRespXY <- DataSpecies[,c("X_WGS84","Y_WGS84")]
 
 
 # Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
-myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
+myExpl = raster::stack( system.file( "external/bioclim/current/bio3.grd", 
                      package="biomod2"),
                 system.file( "external/bioclim/current/bio4.grd", 
                              package="biomod2"), 
@@ -133,7 +133,7 @@ myBiomodProjection <- BIOMOD_Projection(modeling.output = myBiomodModelOut,
 
 \dontrun{
 # 4.2 Projection on future environemental conditions
-myExplFuture = stack(system.file("external/bioclim/future/bio3.grd",package="biomod2"),
+myExplFuture = raster::stack(system.file("external/bioclim/future/bio3.grd",package="biomod2"),
                      system.file("external/bioclim/future/bio4.grd",package="biomod2"),
                      system.file("external/bioclim/future/bio7.grd",package="biomod2"),
                      system.file("external/bioclim/future/bio11.grd",package="biomod2"),

@@ -5,6 +5,7 @@
 ### generic methods importation
 #import("graphics")
 #import("stats")
+import("lattice")
 import("methods") 
 import("raster")
 import("sp")
@@ -37,7 +38,8 @@ importFrom(rasterVis, levelplot)
 #import("spline") # for gbm package
 #importFrom("gam", s)
 import("maxent")
-importFrom("dplyr", "select", "bind_rows", "%>%")
+##importFrom("dplyr", "select", "bind_rows", "%>%")
+importFrom("dplyr", "bind_rows", "%>%")
 importFrom("tidyr", "gather")
 
 ### imports for ecospat.xxx functions (to be removed at some point?)

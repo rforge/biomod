@@ -45,6 +45,7 @@ sre(Response = NULL,
 \author{ Wilfried Thuiller, Bruno Lafourcade, Damien Georges }
 \seealso{ \code{\link[biomod2]{BIOMOD_Modeling}}, \code{\link[biomod2]{BIOMOD_ModelingOptions}}, \code{\link[biomod2]{BIOMOD_Projection}} }
 \examples{
+require(raster)
 
 # species occurrences
 DataSpecies <- read.csv(system.file("external/species/mammals_table.csv",
@@ -61,7 +62,7 @@ myResp <- as.numeric(DataSpecies[,myRespName])
 myRespXY <- DataSpecies[which(myResp==1),c("X_WGS84","Y_WGS84")]
 
 # Environmental variables extracted from BIOCLIM (bio_3, bio_4, bio_7, bio_11 & bio_12)
-myExpl = stack( system.file( "external/bioclim/current/bio3.grd", 
+myExpl = raster::stack( system.file( "external/bioclim/current/bio3.grd", 
                      package="biomod2"),
                 system.file( "external/bioclim/current/bio4.grd", 
                              package="biomod2"), 

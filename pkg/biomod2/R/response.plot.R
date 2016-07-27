@@ -461,23 +461,25 @@
   
 }
 
-.as.ggdat.1D <- function(rp.dat){
-  out_ <- bind_rows(lapply(rp.dat, function(dat_){
-  dat_$id <- rownames(dat_)
-#   dat_$expl.name <- as.character(dat_$expl.name)
-#   dat_$pred.name <- as.character(dat_$pred.name)
-  id.col.id <- which(colnames(dat_) == "id")
-  expl.dat_ <- dat_ %>% dplyr::select(1, id.col.id) %>% tidyr::gather("expl.name", "expl.val", 1)
-  pred.dat_ <- dat_ %>% dplyr::select(-1, id.col.id) %>% tidyr::gather("pred.name", "pred.val", -id.col.id)
-  out.dat_  <- dplyr::full_join(expl.dat_, pred.dat_) 
-  out.dat_$expl.name <- as.character(out.dat_$expl.name)
-  out.dat_$pred.name <- as.character(out.dat_$pred.name)
-  return(out.dat_)
-  }))
-  ## ensure that the stips are in the right order
-  out_$expl.name <- factor(out_$expl.name, levels = unique(out_$expl.name))
-  return(out_)
-} 
+.as.ggdat.1D <-
+  function (rp.dat) 
+  {
+    library(dplyr)
+    out_ <- bind_rows(lapply(rp.dat, function(dat_) {
+      dat_$id <- rownames(dat_)
+      id.col.id <- which(colnames(dat_) == "id")
+      expl.dat_ <- dat_ %>% dplyr::select(1, id.col.id) %>% 
+        tidyr::gather("expl.name", "expl.val", 1)
+      pred.dat_ <- dat_ %>% dplyr::select(-1, id.col.id) %>% 
+        tidyr::gather("pred.name", "pred.val", (1:(ncol(.)-1)))
+      out.dat_ <- dplyr::full_join(expl.dat_, pred.dat_)
+      out.dat_$expl.name <- as.character(out.dat_$expl.name)
+      out.dat_$pred.name <- as.character(out.dat_$pred.name)
+      return(out.dat_)
+    }))
+    out_$expl.name <- factor(out_$expl.name, levels = unique(out_$expl.name))
+    return(out_)
+  }
 
 
 .as.ggdat.2D <- function(rp.dat){

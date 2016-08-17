@@ -296,7 +296,7 @@ setMethod('random.pseudo.abs.selection', signature(env="RasterStack"),
                 ## repeat sampling until haing the right number of points
                 while(length(SR)<nb.points){
                   ## update the mask by removing already selected cells
-                  mask.tmp[SR] <- NA
+                  mask.env.tmp[SR] <- NA
                   ## extract the missing number of points
                   SR <- c(SR, sampleRandom(x = mask.env.tmp, 
                                            size = nb.points - length(SR), 
@@ -474,7 +474,7 @@ setMethod('sre.pseudo.abs.selection', signature(env="RasterStack"),
               ## repeat sampling until haing the right number of points
               while(length(SR) < nb.points){
                 ## update the mask by removing already selected cells
-                mask.tmp[SR] <- NA
+                mask.env.tmp[SR] <- NA
                 ## extract the missing number of points
                 SR <- c(SR, sampleRandom(x = mask.in.tmp, 
                                          size = nb.points - length(SR), 

@@ -2,41 +2,30 @@
 % Please edit documentation in R/BIOMOD_tuning.R
 \name{BIOMOD_tuning}
 \alias{BIOMOD_tuning}
+\alias{tuning.maxent}
 \title{Tune models parameters}
 \usage{
-BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN", "FDA",
-  "MARS", "RF", "MAXENT.Phillips"), models.options = BIOMOD_ModelingOptions(),
-  method.ANN = "avNNet", method.RF = "rf", method.MARS = "earth",
-  method.GAM = "gam", method.GLM = "glmStepAIC", trControl = NULL,
-  metric = "ROC", ctrl.CTA = NULL, ctrl.RF = NULL, ctrl.ANN = NULL,
-  ctrl.MARS = NULL, ctrl.FDA = NULL, ctrl.GAM = NULL, ctrl.GBM = NULL,
-  ctrl.GLM = NULL, tuneLength = 30, decay.tune.ANN = c(0.001, 0.01, 0.05,
-  0.1), size.tune.ANN = c(2, 4, 6, 8), maxit.ANN = 500, MaxNWts.ANN = 10 *
-  (ncol(data@data.env.var) + 1) + 10 + 1, type.GLM = "simple",
-  cvmethod.ME = "randomkfold", overlap.ME = FALSE, bin.output.ME = TRUE,
-  kfolds.ME = 10, n.bg.ME = 10000, env.ME = NULL, metric.ME = "ROC",
-  clamp.ME = T)
+tuning.maxent(occ, env = NULL, pres = NULL, bg = NULL, bg.coords = NULL,
+  occ.grp = NULL, bg.grp = NULL, method = NULL, maxent.args, args.lab,
+  categoricals = NULL, aggregation.factor = c(2, 2), kfolds = NA,
+  bin.output = FALSE, clamp, rasterPreds = FALSE, parallel = FALSE,
+  numCores = NULL, RMvalues = seq(0.5, 4, 0.5), fc = c("L", "LQ", "H",
+  "LQH", "LQHP", "LQHPT"))
 }
 \arguments{
 \item{data}{BIOMOD.formated.data object returned by BIOMOD_FormatingData}
 
-\item{models}{vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'FDA', 'MARS', 'RF' and 'MAXENT.Phillips'}
+\item{models}{vector of models names choosen among 'GLM', 'GBM', 'GAM', 'CTA', 'ANN', 'SRE', 'FDA', 'MARS', 'RF', 'MAXENT.Phillips' and 'MAXENT.Tsuruoka'}
 
 \item{models.options}{BIOMOD.models.options object returned by BIOMOD_ModelingOptions. Default: BIOMOD_ModelingOptions()}
 
-\item{method.ANN}{which classification or regression model to use for artificial neural networks (default: "avNNet"). see http://topepo.github.io/caret/Neural_Network.html}
-
-\item{method.RF}{which classification or regression model to use for randomForest (default: "rf"). see http://topepo.github.io/caret/Random_Forest.html}
-
-\item{method.MARS}{which classification or regression model to use for mars (default: "earth"). see http://topepo.github.io/caret/Multivariate_Adaptive_Regression_Splines.html}
-
-\item{method.GAM}{which classification or regression model to use for GAM (default: "gam"). see http://topepo.github.io/caret/Generalized_Additive_Model.html}
-
-\item{method.GLM}{which classification or regression model to use for GLM: (default: 'glmStepAIC'). see http://topepo.github.io/caret/Generalized_Linear_Model.html}
-
 \item{trControl}{global control parameters for runing (default trainControl(method="cv",summaryFunction=twoClassSummary,classProbs=T),returnData = FALSE). for details see trainControl}
 
-\item{metric}{metric to select the optimal model (Default ROC). TSS (maximizing Sensitivity and Specificity) is also possible. see ?train}
+\item{ctrl.GAM}{specify control parameters only for GAM (default trControl)}
+
+\item{ctrl.GBM}{specify control parameters only for GBM (default trControl)}
+
+\item{ctrl.GLM}{specify control parameters only for GLM (default trControl)}
 
 \item{ctrl.CTA}{specify control parameters only for CTA (default trControl)}
 
@@ -48,50 +37,55 @@ BIOMOD_tuning(data, models = c("GLM", "GBM", "GAM", "CTA", "ANN", "FDA",
 
 \item{ctrl.FDA}{specify control parameters only for FDA (default trControl)}
 
-\item{ctrl.GAM}{specify control parameters only for GAM (default trControl)}
+\item{metric}{metric to select the optimal model (Default ROC). TSS (maximizing Sensitivity and Specificity) is also possible. see ?train}
 
-\item{ctrl.GBM}{specify control parameters only for GBM (default trControl)}
-
-\item{ctrl.GLM}{specify control parameters only for GLM (default trControl)}
+\item{metric.ME}{metric to select the optimal model for MAXENT.Phillips (Default: ROC). One out of Mean.AUC (or ROC), Mean.AUC.DIFF, Mean.ORmin, Mean.OR10 and AICc. see ?ENMevaluate and Muscarella et al. 2014}
 
 \item{tuneLength}{see ?train (default 30)}
 
-\item{decay.tune.ANN}{weight decay parameters used for tuning for ANN (default: c(0.001, 0.01, 0.05, 0.1))  Will be optimised by method specified in ctrl.ANN (if not available trControl).}
+\item{method.RF}{which classification or regression model to use for randomForest (default: "rf"). see http://topepo.github.io/caret/Random_Forest.html}
 
-\item{size.tune.ANN}{size parameters (number of units in the hidden layer) for ANN used for tuning (default: c(2,4,6,8)).  Will be optimised using the method specified in ctrl.ANN (if not available trControl).}
+\item{method.ANN}{which classification or regression model to use for artificial neural networks (default: "avNNet"). see http://topepo.github.io/caret/Neural_Network.html}
 
-\item{maxit.ANN}{maximum number of iterations for ANN (default 500)}
+\item{method.MARS}{which classification or regression model to use for mars (default: "earth"). see http://topepo.github.io/caret/Multivariate_Adaptive_Regression_Splines.html}
 
-\item{MaxNWts.ANN}{The maximum allowable number of weights for ANN (default 10 * (ncol(myBiomodData'at'data.env.var) + 1) + 10 + 1).}
+\item{method.GAM}{which classification or regression model to use for GAM (default: "gam"). see http://topepo.github.io/caret/Generalized_Additive_Model.html}
 
-\item{type.GLM}{either 'simple', 'quadratic', 'polynomial' or 's_smoother' defining the type of formula you want to build with GLM}
+\item{method.GLM}{which classification or regression model to use for GLM: (default: 'glmStepAIC'). see http://topepo.github.io/caret/Generalized_Linear_Model.html}
+
+\item{type.GLM}{vector of modeling types choosen among 'simple', 'quadratic', 'polynomial' or 's_smoother' (default c('simple','quadratic','polynomial','s_smoother'))}
+
+\item{interaction.GLM}{vector of interaction type choosen among 0, 1. Default c(0,1)}
 
 \item{cvmethod.ME}{method used for data partitioning for MAXENT.Phillips (default: 'randomkfold')}
 
+\item{kfolds.ME}{number of bins to use for k-fold cross-validation used for MAXENT.Phillips (Default: 10).}
+
 \item{overlap.ME}{logical; Calculates pairwise metric of niche overlap if TRUE (Default: FALSE). (see ?calc.niche.overlap)}
 
-\item{bin.output.ME}{logical; If TRUE, appends evaluations metrics for each evaluation bin to results table (i.e., in addition to the average values across bins).}
-
-\item{kfolds.ME}{number of bins to use for k-fold cross-validation used for MAXENT.Phillips (Default: 10).}
+\item{clamp.ME}{logical; If TRUE (Default) "Features are constrained to remain within the range of values in the training data" (Elith et al. 2011)}
 
 \item{n.bg.ME}{Number of Background points used to run MAXENT.Phillips (Default: 10000)}
 
 \item{env.ME}{RasterStack of model predictor variables}
 
-\item{metric.ME}{metric to select the optimal model for Maxent (Default: ROC). One out of Mean.AUC (or ROC), delta.AICc, Mean.AUC.DIFF. see ?ENMevaluate}
+\item{size.tune.ANN}{size parameters (number of units in the hidden layer) for ANN used for tuning (default: c(2,4,6,8)).  Will be optimised using the method specified in ctrl.ANN (if not available trControl).}
 
-\item{clamp.ME}{logical; If TRUE (Default) "Features are constrained to remain within the range of values in the training data" (Elith et al. 2011)}
+\item{decay.tune.ANN}{weight decay parameters used for tuning for ANN (default: c(0.001, 0.01, 0.05, 0.1))  Will be optimised by method specified in ctrl.ANN (if not available trControl).}
+
+\item{maxit.ANN}{maximum number of iterations for ANN (default 500)}
+
+\item{MaxNWts.ANN}{The maximum allowable number of weights for ANN (default 10 * (ncol(myBiomodData'at'data.env.var) + 1) + 10 + 1).}
+
+\item{parallel.ME}{logical. If TRUE, the parallel computing is enabled for MAXENT.Phillips}
+
+\item{numCores.ME}{number of cores used to train MAXENT.Phillips}
 }
 \value{
 BIOMOD.models.options object with optimized parameters
 }
 \description{
 Function to tune biomod single models parameters
-}
-\details{
-Tuning ANN: if no parameters are specified for ANN, they are tuned internally
-  in BIOMOD_Modelling using cross-validation. ANN parameters are therefore 
-  tuned in every case either within ecospat.BIOMOD.tunning or BIOMOD_Modelling
 }
 \examples{
 \dontrun{
@@ -160,7 +154,11 @@ plot(Biomod.tuning$tune.RF)
 \author{
 Frank Breiner
 }
+\references{
+Kuhn, Max. "Building predictive models in R using the caret package." Journal of Statistical Software 28.5 (2008): 1-26.
+Muscarella, Robert, et al. "ENMeval: An R package for conducting spatially independent evaluations and estimating optimal model complexity for Maxent ecological niche models." Methods in Ecology and Evolution 5.11 (2014): 1198-1205.
+}
 \seealso{
-BIOMOD_ModelingOptions(), train
+BIOMOD_ModelingOptions(), caret::train(), ENMeval::ENMevaluate(), maxent::tune.maxent()
 }
 

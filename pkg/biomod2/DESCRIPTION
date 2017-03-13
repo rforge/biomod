@@ -36,6 +36,10 @@ Imports:
     methods,
     PresenceAbsence,
     dismo,
+    caret,
+    ENMeval,
+    doParallel,
+    foreach,
     maxent,
     earth,
     dplyr,
@@ -47,7 +51,6 @@ Suggests:
     mgcv,
     gam,
     testthat,
-    ecospat,
-    caret
+    ecospat
 License: GPL-2
 RoxygenNote: 5.0.1

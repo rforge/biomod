@@ -464,14 +464,14 @@
 .as.ggdat.1D <-
   function (rp.dat) 
   {
-    library(dplyr)
+    requireNamespace('dplyr')
     out_ <- bind_rows(lapply(rp.dat, function(dat_) {
       dat_$id <- rownames(dat_)
       id.col.id <- which(colnames(dat_) == "id")
       expl.dat_ <- dat_ %>% dplyr::select(1, id.col.id) %>% 
         tidyr::gather("expl.name", "expl.val", 1)
       pred.dat_ <- dat_ %>% dplyr::select(-1, id.col.id) %>% 
-        tidyr::gather("pred.name", "pred.val", (1:(ncol(.)-1)))
+        tidyr::gather("pred.name", "pred.val", (1:(ncol(dat_)-2)))
       out.dat_ <- dplyr::full_join(expl.dat_, pred.dat_)
       out.dat_$expl.name <- as.character(out.dat_$expl.name)
       out.dat_$pred.name <- as.character(out.dat_$pred.name)
